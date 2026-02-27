@@ -1,190 +1,211 @@
-import { useState, useRef, useEffect } from 'react';
-import { getToneFromFrequency, TONES, ToneData } from '@/lib/tones';
-
-// Konfiguration für FFT
-const FFT_SIZE = 2048; // Hohe Auflösung für genaue Frequenzen
-const MIN_DECIBELS = -90;
-const MAX_DECIBELS = -10;
-const SMOOTHING_TIME_CONSTANT = 0.85;
+import { getToneFromFrequency, ToneData } from '@/lib/tones';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface AnalysisResult {
-  fundamentalFreq: number; // Hz
-  dominantTone: ToneData;
+  fundamentalFreq: number;
+  tone: ToneData;
   cents: number;
-  spectrum: Float32Array; // Rohe FFT-Daten
-  volume: number; // Lautstärke (RMS)
-  isSpeaking: boolean; // Spracherkennung
+  diffHz: number;
+  noteName: string;
+  isSpeaking: boolean;
+  spectrum: Uint8Array;
+  volume: number;
+  // New: Accumulated tone data for final result
+  toneDistribution?: Record<string, number>;
 }
 
 export function useAudioAnalyzer() {
   const [isRecording, setIsRecording] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   
-  // Refs für Audio Context
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const rafRef = useRef<number | null>(null);
+  const rafIdRef = useRef<number | null>(null);
+  
+  // Store accumulated data for the final result
+  const accumulatedTonesRef = useRef<Record<string, number>>({});
+  const totalFramesRef = useRef(0);
+  const lastValidResultRef = useRef<AnalysisResult | null>(null);
 
-  // Einfache Pitch Detection (Autokorrelation)
-  const autoCorrelate = (buf: Float32Array, sampleRate: number) => {
-    let size = buf.length;
-    let rms = 0;
-
-    for (let i = 0; i < size; i++) {
-      const val = buf[i];
-      rms += val * val;
-    }
-    rms = Math.sqrt(rms / size);
-
-    if (rms < 0.01) // not enough signal
-      return -1;
-
-    let r1 = 0, r2 = size - 1, thres = 0.2;
-    for (let i = 0; i < size / 2; i++)
-      if (Math.abs(buf[i]) < thres) { r1 = i; break; }
-    for (let i = 1; i < size / 2; i++)
-      if (Math.abs(buf[size - i]) < thres) { r2 = size - i; break; }
-
-    const buf2 = buf.slice(r1, r2);
-    const size2 = buf2.length;
-
-    const c = new Array(size2).fill(0);
-    for (let i = 0; i < size2; i++)
-      for (let j = 0; j < size2 - i; j++)
-        c[i] = c[i] + buf2[j] * buf2[j + i];
-
-    let d = 0; while (c[d] > c[d + 1]) d++;
-    let maxval = -1, maxpos = -1;
-    for (let i = d; i < size2; i++) {
-      if (c[i] > maxval) {
-        maxval = c[i];
-        maxpos = i;
-      }
-    }
-    let T0 = maxpos;
-
-    const x1 = c[T0 - 1], x2 = c[T0], x3 = c[T0 + 1];
-    const a = (x1 + x3 - 2 * x2) / 2;
-    const b = (x3 - x1) / 2;
-    if (a) T0 = T0 - b / (2 * a);
-
-    return sampleRate / T0;
-  };
-
-  const startRecording = async () => {
+  const startRecording = useCallback(async () => {
     try {
       setError(null);
+      accumulatedTonesRef.current = {};
+      totalFramesRef.current = 0;
+      lastValidResultRef.current = null;
       
-      // Audio Context erstellen
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-      const ctx = new AudioContextClass();
-      audioContextRef.current = ctx;
-      
-      // Mikrofon-Zugriff
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       
-      // Analyser Node
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = FFT_SIZE;
-      analyser.minDecibels = MIN_DECIBELS;
-      analyser.maxDecibels = MAX_DECIBELS;
-      analyser.smoothingTimeConstant = SMOOTHING_TIME_CONSTANT;
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = audioContext;
+      
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
       analyserRef.current = analyser;
       
-      // Quelle verbinden
-      const source = ctx.createMediaStreamSource(stream);
+      const source = audioContext.createMediaStreamSource(stream);
       source.connect(analyser);
       sourceRef.current = source;
       
       setIsRecording(true);
-      
-      // Analyse Loop starten
-      const loop = () => {
-        analyzeStep();
-        rafRef.current = requestAnimationFrame(loop);
-      };
-      loop();
-      
+      analyze();
     } catch (err) {
-      console.error("Fehler beim Starten der Aufnahme:", err);
-      setError("Mikrofon-Zugriff verweigert oder nicht verfügbar.");
-      setIsRecording(false);
+      console.error("Error accessing microphone:", err);
+      setError("Mikrofonzugriff verweigert oder nicht verfügbar.");
     }
-  };
+  }, []);
 
-  const stopRecording = () => {
-    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+  const stopRecording = useCallback(() => {
+    if (rafIdRef.current) {
+      cancelAnimationFrame(rafIdRef.current);
+      rafIdRef.current = null;
+    }
     
-    if (sourceRef.current) sourceRef.current.disconnect();
-    if (analyserRef.current) analyserRef.current.disconnect();
+    if (sourceRef.current) {
+      sourceRef.current.disconnect();
+      sourceRef.current = null;
+    }
+    
+    if (analyserRef.current) {
+      analyserRef.current.disconnect();
+      analyserRef.current = null;
+    }
     
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
     }
     
     if (audioContextRef.current) {
       audioContextRef.current.close();
+      audioContextRef.current = null;
     }
     
     setIsRecording(false);
-    setResult(null);
-  };
+    
+    // Finalize result based on accumulated data or last valid result
+    if (totalFramesRef.current > 0) {
+        // Calculate dominant tone from accumulation
+        let maxCount = 0;
+        let dominantToneName = "";
+        
+        for (const [name, count] of Object.entries(accumulatedTonesRef.current)) {
+            if (count > maxCount) {
+                maxCount = count;
+                dominantToneName = name;
+            }
+        }
+        
+        if (dominantToneName && lastValidResultRef.current) {
+            // We have data! Update result with distribution
+            // Calculate percentages
+            const distribution: Record<string, number> = {};
+            for (const [name, count] of Object.entries(accumulatedTonesRef.current)) {
+                distribution[name] = (count / totalFramesRef.current) * 100;
+            }
+            
+            // If the last frame was silent (likely), use the last VALID result
+            // but update it with the distribution data
+            const finalResult = {
+                ...lastValidResultRef.current,
+                toneDistribution: distribution
+            };
+            setResult(finalResult);
+        } else if (lastValidResultRef.current) {
+            // Fallback to last valid result if accumulation failed
+            setResult(lastValidResultRef.current);
+        } else {
+             setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
+        }
+    } else if (lastValidResultRef.current) {
+        setResult(lastValidResultRef.current);
+    } else {
+        setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
+    }
+  }, []);
 
-  const analyzeStep = () => {
+  const analyze = useCallback(() => {
     if (!analyserRef.current || !audioContextRef.current) return;
     
     const bufferLength = analyserRef.current.frequencyBinCount;
-    const dataArray = new Float32Array(bufferLength); // Frequenz-Daten (dB)
-    const timeDomainArray = new Float32Array(FFT_SIZE); // Zeit-Daten (Waveform)
+    const dataArray = new Uint8Array(bufferLength);
+    analyserRef.current.getByteFrequencyData(dataArray);
     
-    analyserRef.current.getFloatFrequencyData(dataArray);
-    analyserRef.current.getFloatTimeDomainData(timeDomainArray);
-    
-    // Lautstärke berechnen (RMS)
+    // Calculate volume
     let sum = 0;
-    for (let i = 0; i < timeDomainArray.length; i++) {
-      sum += timeDomainArray[i] * timeDomainArray[i];
+    for (let i = 0; i < bufferLength; i++) {
+      sum += dataArray[i];
     }
-    const rms = Math.sqrt(sum / timeDomainArray.length);
-    const volume = Math.max(0, Math.min(1, rms * 5)); // Normalisieren
-    const isSpeaking = volume > 0.05; // Schwellenwert für Sprache
+    const volume = sum / bufferLength;
     
-    // Nur analysieren wenn gesprochen wird
-    if (isSpeaking) {
-      const pitch = autoCorrelate(timeDomainArray, audioContextRef.current.sampleRate);
-      
-      // Validieren: Menschliche Stimme ca. 80-500 Hz (Grundton)
-      if (pitch !== -1 && pitch > 70 && pitch < 600) {
-        const fundamentalFreq = pitch;
-        const toneInfo = getToneFromFrequency(fundamentalFreq);
-        const dominantTone = toneInfo.tone;
-        const cents = toneInfo.cents;
-        
-        setResult({
-          fundamentalFreq,
-          dominantTone,
-          cents,
-          spectrum: dataArray,
-          volume,
-          isSpeaking
-        });
+    // Simple Pitch Detection (Autocorrelation or Max Frequency Bin)
+    // For simplicity and performance in this demo, we use Max Frequency Bin with interpolation
+    // In a production app, we would use YIN or CREPE algorithm
+    
+    let maxVal = -1;
+    let maxIndex = -1;
+    
+    // Ignore low frequencies (DC offset and rumble) < 80Hz
+    // SampleRate usually 44100 or 48000
+    // Bin size = SampleRate / FFTSize = 44100 / 2048 ≈ 21.5 Hz
+    // Start at index 4 (~86Hz)
+    for (let i = 4; i < bufferLength; i++) {
+      if (dataArray[i] > maxVal) {
+        maxVal = dataArray[i];
+        maxIndex = i;
       }
     }
-  };
+    
+    const sampleRate = audioContextRef.current.sampleRate;
+    let fundamentalFreq = 0;
+    
+    // Interpolation for better precision
+    if (maxIndex > 0 && maxIndex < bufferLength - 1) {
+        const prev = dataArray[maxIndex - 1];
+        const next = dataArray[maxIndex + 1];
+        const pixel = maxIndex + (next - prev) / (2 * (2 * dataArray[maxIndex] - next - prev));
+        fundamentalFreq = pixel * sampleRate / analyserRef.current.fftSize;
+    } else {
+        fundamentalFreq = maxIndex * sampleRate / analyserRef.current.fftSize;
+    }
 
-  // Cleanup beim Unmount
-  useEffect(() => {
-    return () => {
-      // Nur stoppen, wenn noch aktiv
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-         audioContextRef.current.close();
+    // Filter out noise
+    const isSpeaking = volume > 10 && fundamentalFreq > 80 && fundamentalFreq < 1000;
+    
+    if (isSpeaking) {
+      const toneData = getToneFromFrequency(fundamentalFreq);
+      
+      const newResult: AnalysisResult = {
+        fundamentalFreq,
+        tone: toneData.tone,
+        cents: toneData.cents,
+        diffHz: toneData.diffHz,
+        noteName: toneData.tone.name,
+        isSpeaking,
+        spectrum: dataArray,
+        volume
+      };
+      
+      setResult(newResult);
+      lastValidResultRef.current = newResult;
+      
+      // Accumulate data
+      if (accumulatedTonesRef.current[toneData.tone.name]) {
+          accumulatedTonesRef.current[toneData.tone.name]++;
+      } else {
+          accumulatedTonesRef.current[toneData.tone.name] = 1;
       }
-    };
+      totalFramesRef.current++;
+    } else {
+        // Just update spectrum for visualization even if silence
+         setResult(prev => prev ? { ...prev, isSpeaking: false, spectrum: dataArray, volume } : null);
+    }
+    
+    rafIdRef.current = requestAnimationFrame(analyze);
   }, []);
 
   return {

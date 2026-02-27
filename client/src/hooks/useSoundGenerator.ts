@@ -1,14 +1,15 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export function useSoundGenerator() {
   const audioContextRef = useRef<AudioContext | null>(null);
   const activeOscillatorsRef = useRef<OscillatorNode[]>([]);
   const activeGainNodesRef = useRef<GainNode[]>([]);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // Initialisiere AudioContext bei Bedarf (User Interaction erforderlich)
   const initAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       audioContextRef.current = new AudioContextClass();
     }
     if (audioContextRef.current.state === 'suspended') {
@@ -33,15 +34,15 @@ export function useSoundGenerator() {
         } catch (e) { /* ignore */ }
     });
     activeGainNodesRef.current = [];
+    setIsPlaying(false);
   }, []);
 
   const playTone = useCallback((frequency: number, type: OscillatorType = 'sine', duration: number = 2) => {
     const ctx = initAudioContext();
     if (!ctx) return;
 
-    // Wir stoppen vorherige Sounds NICHT unbedingt, um Überlappung zu erlauben?
-    // Doch, für MDI ist Klarheit besser.
     stopAllSounds();
+    setIsPlaying(true);
 
     const osc = ctx.createOscillator();
     const gainNode = ctx.createGain();
@@ -66,11 +67,10 @@ export function useSoundGenerator() {
     activeOscillatorsRef.current.push(osc);
     activeGainNodesRef.current.push(gainNode);
 
-    // Cleanup nach Ende (verhindert Memory Leaks bei vielen Tönen)
+    // Cleanup nach Ende
     setTimeout(() => {
-        // Wir entfernen sie nur aus dem Array, wenn sie noch drin sind
-        // Da wir stopAllSounds haben, ist das Array evtl. schon leer
-    }, (duration + 0.2) * 1000);
+        setIsPlaying(false);
+    }, duration * 1000);
 
   }, [initAudioContext, stopAllSounds]);
 
@@ -79,6 +79,7 @@ export function useSoundGenerator() {
     if (!ctx) return;
 
     stopAllSounds();
+    setIsPlaying(true);
 
     const masterGain = ctx.createGain();
     masterGain.connect(ctx.destination);
@@ -107,6 +108,10 @@ export function useSoundGenerator() {
       
       activeOscillatorsRef.current.push(osc);
     });
+    
+    setTimeout(() => {
+        setIsPlaying(false);
+    }, duration * 1000);
 
   }, [initAudioContext, stopAllSounds]);
 
@@ -120,5 +125,11 @@ export function useSoundGenerator() {
     };
   }, [stopAllSounds]);
 
-  return { playTone, playChord, stopAllSounds };
+  return { 
+    playTone, 
+    playChord, 
+    stopAllSounds,
+    stopTone: stopAllSounds, // Alias for consistency with Home.tsx
+    isPlaying 
+  };
 }
