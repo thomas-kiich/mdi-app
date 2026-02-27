@@ -1,72 +1,123 @@
-import { AnalysisResult } from '@/hooks/useAudioAnalyzer';
 import React, { useEffect, useRef } from 'react';
 
+// Define a simplified AnalysisResult interface locally to avoid circular dependencies or import issues
+interface AnalysisResult {
+  spectrum: Uint8Array;
+  isSpeaking: boolean;
+  fundamentalFreq: number;
+}
+
 interface SpectrumVisualizerProps {
-  result: AnalysisResult | null;
+  // New props used in Home.tsx
+  frequencyData?: Uint8Array;
+  isActive?: boolean;
+  
+  // Legacy props support
+  result?: AnalysisResult | null;
+  
   width?: number;
   height?: number;
 }
 
-export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({ result, width = 600, height = 200 }) => {
+export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({ 
+  frequencyData, 
+  isActive, 
+  result, 
+  width = 600, 
+  height = 200 
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Normalize data source
+  // If frequencyData is provided, use it. Otherwise try result.spectrum.
+  const data = frequencyData || result?.spectrum || new Uint8Array(0);
+  
+  // Determine active state
+  const active = isActive !== undefined ? isActive : (result?.isSpeaking || false);
+  
+  // Frequency display only available if result object is passed or we could calculate it (but here we just use result)
+  const freq = result?.fundamentalFreq || 0;
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    const container = containerRef.current;
+    if (!canvas || !container) return;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Handle resizing
+    const updateCanvasSize = () => {
+      canvas.width = container.clientWidth;
+      canvas.height = container.clientHeight;
+    };
+    
+    updateCanvasSize();
+    window.addEventListener('resize', updateCanvasSize);
+
     // Clear background with black
     ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    if (!result || !result.spectrum) return;
+    // If no data or empty, stop here (after clearing)
+    if (data.length === 0) {
+      return () => window.removeEventListener('resize', updateCanvasSize);
+    }
 
-    const { spectrum } = result;
-    const bufferLength = spectrum.length;
+    const bufferLength = data.length;
     
-    // Wir zeichnen nur die relevanten Frequenzen (nicht bis Nyquist)
-    // Die meisten Sprachanteile sind < 4000 Hz
-    // Bei 44.1kHz SampleRate ist Nyquist 22kHz
-    // bufferLength = 1024 (bei FFT 2048) -> jeder Bin ca. 21.5 Hz
-    // Wir wollen ca. die ersten 200 Bins sehen (bis ~4300 Hz)
+    // We draw only relevant frequencies (not up to Nyquist)
+    // Most voice content is < 4000 Hz
+    // At 44.1kHz SampleRate, Nyquist is 22kHz
+    // bufferLength = 1024 (at FFT 2048) -> each bin approx 21.5 Hz
+    // We want to see approx first 200 bins (up to ~4300 Hz)
     const displayBins = Math.min(bufferLength, 200); 
     
-    const barWidth = width / displayBins;
+    const barWidth = canvas.width / displayBins;
     let x = 0;
 
     for (let i = 0; i < displayBins; i++) {
-      const db = spectrum[i];
-      let value = (db + 90) / 80; 
-      if (value < 0) value = 0;
-      if (value > 1) value = 1;
+      const value = data[i]; // 0-255
       
-      const barHeight = value * height;
+      // Calculate height relative to canvas height
+      const percent = value / 255;
+      const barHeight = percent * canvas.height;
 
       // KIICH Orange: #FF6B00 -> rgb(255, 107, 0)
-      const r = Math.floor(255 * value);
-      const g = Math.floor(107 * value);
-      const b = Math.floor(0 * value);
+      // Dynamic color based on intensity
+      const r = 255;
+      const g = Math.floor(107 + (148 * (1 - percent))); // Shift towards yellow/white for louder sounds
+      const b = Math.floor(255 * (1 - percent)); // Add blue for whiteness at high intensity
       
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-      ctx.fillRect(x, height - barHeight, barWidth - 1, barHeight);
+      // Simple orange gradient
+      ctx.fillStyle = `rgb(255, ${Math.floor(107 * percent)}, 0)`;
+      
+      if (active) {
+         // Add some glow effect
+         ctx.shadowBlur = 10;
+         ctx.shadowColor = "rgba(255, 107, 0, 0.5)";
+      } else {
+         ctx.shadowBlur = 0;
+      }
+      
+      ctx.fillRect(x, canvas.height - barHeight, barWidth + 0.5, barHeight);
 
       x += barWidth;
     }
-  }, [result, width, height]);
+    
+    return () => window.removeEventListener('resize', updateCanvasSize);
+  }, [data, active, width, height]);
 
   return (
-    <div className="relative border border-primary/20 bg-black rounded-lg overflow-hidden shadow-[0_0_15px_rgba(255,107,0,0.1)] w-full h-full">
+    <div ref={containerRef} className="relative border border-orange-500/20 bg-black rounded-lg overflow-hidden shadow-[0_0_15px_rgba(255,107,0,0.1)] w-full h-full">
         <canvas 
             ref={canvasRef} 
-            width={width} 
-            height={height} 
             className="w-full h-full block" 
         />
-        {result && result.isSpeaking && (
-            <div className="absolute top-2 right-2 text-xs font-mono text-primary animate-pulse bg-black/80 px-2 py-1 rounded border border-primary/30 shadow-[0_0_10px_rgba(255,107,0,0.3)]">
-                {result.fundamentalFreq.toFixed(2)} Hz
+        {active && freq > 0 && (
+            <div className="absolute top-2 right-2 text-xs font-mono text-orange-500 animate-pulse bg-black/80 px-2 py-1 rounded border border-orange-500/30 shadow-[0_0_10px_rgba(255,107,0,0.3)]">
+                {freq.toFixed(2)} Hz
             </div>
         )}
     </div>

@@ -1,301 +1,530 @@
-import { SpectrumVisualizer } from '@/components/SpectrumVisualizer';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { useAudioAnalyzer } from '@/hooks/useAudioAnalyzer';
-import { useSoundGenerator } from '@/hooks/useSoundGenerator';
-import { Loader2, Mic, Pause, Play, RefreshCw, Volume2 } from "lucide-react";
-import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { SpectrumVisualizer } from "@/components/SpectrumVisualizer";
+import { useAudioAnalyzer } from "@/hooks/useAudioAnalyzer";
+import { useSoundGenerator } from "@/hooks/useSoundGenerator";
+import { getToneFromFrequency, TONES } from "@/lib/tones";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { cn } from "@/lib/utils";
+
+// Define the steps of the wizard
+type WizardStep = 
+  | "intro" 
+  | "preparation" 
+  | "question1" 
+  | "question2" 
+  | "question3" 
+  | "analyzing" 
+  | "result";
 
 export default function Home() {
-  const { isRecording, startRecording, stopRecording, result, error } = useAudioAnalyzer();
-  const { isPlaying, playTone, stopTone } = useSoundGenerator();
-  const [scanStep, setScanStep] = useState<'idle' | 'scanning' | 'analyzing' | 'result'>('idle');
+  const [currentStep, setCurrentStep] = useState<WizardStep>("intro");
+  const { 
+    isRecording, 
+    startRecording, 
+    stopRecording, 
+    result: analysisResult,
+    error,
+    // frequencyData is now part of analysisResult.spectrum
+    // resetAnalysis is not exported, we handle reset via state
+  } = useAudioAnalyzer();
+  
+  const { isPlaying, playTone, stopTone, playChord } = useSoundGenerator();
+  
+  // Store results from each step
+  const [results, setResults] = useState<{
+    q1: any | null;
+    q2: any | null;
+    q3: any | null;
+  }>({
+    q1: null,
+    q2: null,
+    q3: null
+  });
 
-  const handleStartScan = async () => {
-    setScanStep('scanning');
+  // Combined result state
+  const [finalResult, setFinalResult] = useState<any | null>(null);
+
+  const handleStartRecording = async () => {
     await startRecording();
   };
 
-  const handleStopScan = () => {
+  const handleStopRecording = () => {
     stopRecording();
-    setScanStep('analyzing');
-    // Simulate analysis delay for dramatic effect
-    setTimeout(() => {
-      setScanStep('result');
-    }, 1500);
+    // The result will be available in analysisResult shortly after stopping
   };
 
-  const handleReset = () => {
-    setScanStep('idle');
-    stopTone();
-  };
-
-  const handlePlayTone = () => {
-    if (result && result.tone) {
-      if (isPlaying) {
-        stopTone();
-      } else {
-        playTone(result.fundamentalFreq);
+  // Effect to capture result when recording stops
+  useEffect(() => {
+    if (!isRecording && analysisResult) {
+      if (currentStep === "question1" && !results.q1) {
+        setResults(prev => ({ ...prev, q1: analysisResult }));
+      } else if (currentStep === "question2" && !results.q2) {
+        setResults(prev => ({ ...prev, q2: analysisResult }));
+      } else if (currentStep === "question3" && !results.q3) {
+        setResults(prev => ({ ...prev, q3: analysisResult }));
       }
+    }
+  }, [isRecording, analysisResult, currentStep]);
+
+  const nextStep = () => {
+    if (currentStep === "intro") setCurrentStep("preparation");
+    else if (currentStep === "preparation") setCurrentStep("question1");
+    else if (currentStep === "question1") {
+      // Reset is handled by startRecording internally in useAudioAnalyzer
+      setCurrentStep("question2");
+    }
+    else if (currentStep === "question2") {
+      setCurrentStep("question3");
+    }
+    else if (currentStep === "question3") {
+      calculateFinalResult();
+      setCurrentStep("result");
     }
   };
 
-  return (
-    <div className="min-h-screen bg-black text-white selection:bg-primary selection:text-black font-sans overflow-x-hidden">
-      {/* Header */}
-      <header className="fixed top-0 left-0 w-full z-50 border-b border-white/10 bg-black/80 backdrop-blur-md">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-1 h-6 bg-primary"></div>
-            <div>
-              <h1 className="text-lg font-bold tracking-tight leading-none">MDI SYSTEM</h1>
-              <p className="text-[10px] text-gray-500 tracking-widest uppercase">Multidimensionales Identitätssystem</p>
-            </div>
-          </div>
-          <div className="text-right hidden md:block">
-            <p className="text-xs text-primary font-mono">V 1.0 // BETA</p>
-            <p className="text-[10px] text-gray-600">KIICH WERKE</p>
-          </div>
-        </div>
-      </header>
+  const calculateFinalResult = () => {
+    // Logic to aggregate results from q1, q2, q3
+    // For now, we'll just use the last result or a simple average
+    // In a real implementation, we would merge the distribution maps
+    
+    // This is a placeholder for the aggregation logic
+    // We'll implement a proper merge function in the next step
+    if (results.q3) {
+      setFinalResult(results.q3);
+    } else if (analysisResult) {
+      setFinalResult(analysisResult);
+    }
+  };
 
-      <main className="pt-24 pb-12 container mx-auto px-4 min-h-screen flex flex-col items-center justify-center">
-        
-        {/* IDLE STATE */}
-        {scanStep === 'idle' && (
-          <div className="text-center max-w-2xl animate-in fade-in zoom-in duration-700">
-            <div className="mb-8 relative inline-block">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full"></div>
-              <Mic className="w-24 h-24 text-primary relative z-10" />
+  // Render different content based on current step
+  const renderContent = () => {
+    switch (currentStep) {
+      case "intro":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in duration-700">
+            <div className="space-y-4 max-w-2xl">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white">
+                MDI <span className="text-orange-500">SYSTEM</span>
+              </h1>
+              <p className="text-xl text-zinc-400">
+                Multidimensionales Identitätssystem
+              </p>
+              <div className="h-1 w-20 bg-orange-500 mx-auto rounded-full my-8" />
+              <p className="text-lg text-zinc-300 leading-relaxed">
+                Entdecke deine wahre Frequenz. <br/>
+                Eine Reise durch deine Vergangenheit, Gegenwart und Zukunft.
+              </p>
             </div>
-            
-            <h2 className="text-5xl md:text-7xl font-bold mb-6 tracking-tighter">
-              Entdecke deinen <br/>
-              <span className="text-primary text-glow">Ur-Klang</span>
-            </h2>
-            
-            <p className="text-xl text-gray-400 mb-12 leading-relaxed max-w-lg mx-auto">
-              Deine Stimme ist dein Fingerabdruck. MDI analysiert deine Frequenzstruktur und enthüllt deine multidimensionale Identität.
-            </p>
-
             <Button 
               size="lg" 
-              className="h-16 px-12 text-lg rounded-full bg-primary text-black hover:bg-white hover:text-black transition-all duration-300 shadow-[0_0_20px_rgba(255,107,0,0.4)] hover:shadow-[0_0_40px_rgba(255,255,255,0.4)]"
-              onClick={handleStartScan}
+              onClick={nextStep}
+              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-[0_0_30px_rgba(249,115,22,0.3)] transition-all hover:scale-105"
             >
-              <Mic className="mr-2 h-5 w-5" /> SCAN STARTEN
+              Analyse starten <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
-
-            <div className="mt-24 grid grid-cols-1 md:grid-cols-3 gap-8 text-left opacity-50">
-              <div className="border-t border-white/20 pt-4">
-                <h3 className="text-primary font-mono text-sm mb-2">01. SCAN</h3>
-                <p className="text-sm text-gray-400">Präzise FFT-Analyse deiner Stimme in Echtzeit.</p>
-              </div>
-              <div className="border-t border-white/20 pt-4">
-                <h3 className="text-primary font-mono text-sm mb-2">02. DECODE</h3>
-                <p className="text-sm text-gray-400">Bestimmung deines exakten Grundtons und Charakters.</p>
-              </div>
-              <div className="border-t border-white/20 pt-4">
-                <h3 className="text-primary font-mono text-sm mb-2">03. REVEAL</h3>
-                <p className="text-sm text-gray-400">Visualisierung deiner inneren Geometrie und Farbe.</p>
-              </div>
-            </div>
           </div>
-        )}
+        );
 
-        {/* SCANNING STATE */}
-        {scanStep === 'scanning' && (
-          <div className="w-full max-w-4xl animate-in fade-in duration-500">
-            <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-mono animate-pulse">
-                <div className="w-2 h-2 rounded-full bg-primary"></div>
-                AUFNAHME LÄUFT...
+      case "preparation":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <Card className="w-full max-w-2xl bg-zinc-900/50 border-zinc-800 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-2xl text-orange-500">VORBEREITUNG</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 text-left text-zinc-300 text-lg leading-relaxed">
+                <p>
+                  Finde einen ruhigen Platz, an dem du für die nächsten Minuten ungestört bist.
+                </p>
+                <p>
+                  Achte darauf, dass keine externen Geräusche deine Aufnahme beeinflussen.
+                </p>
+                <p>
+                  Setze dich aufrecht hin, ohne dich anzulehnen. Atme einige Male tief durch die Nase ein, halte kurz den Atem und lasse ihn sanft ausströmen.
+                </p>
+                <p>
+                  Schließe kurz die Augen und lasse störende Gedanken los.
+                </p>
+                <div className="pt-4 text-center">
+                  <p className="text-white font-medium mb-6">Wenn du bereit bist, starte das System.</p>
+                  <Button 
+                    size="lg" 
+                    onClick={nextStep}
+                    className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full"
+                  >
+                    Ich bin bereit
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        );
+
+      case "question1":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="w-full max-w-3xl space-y-8">
+              <div className="flex justify-between items-center text-sm text-zinc-500 mb-4">
+                <span>SCHRITT 1/3</span>
+                <span>GEGENWART</span>
               </div>
-              <p className="mt-4 text-gray-400">Sprich bitte natürlich in dein Mikrofon...</p>
-            </div>
-
-            <div className="h-64 mb-8">
-               <SpectrumVisualizer result={result} height={256} />
-            </div>
-
-            <div className="flex justify-center">
-              <Button 
-                size="lg" 
-                variant="destructive"
-                className="h-16 px-12 text-lg rounded-full"
-                onClick={handleStopScan}
-              >
-                <div className="w-4 h-4 bg-white rounded-sm mr-3"></div>
-                STOP & ANALYSIEREN
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* ANALYZING STATE */}
-        {scanStep === 'analyzing' && (
-          <div className="text-center animate-in fade-in zoom-in duration-500">
-            <div className="relative mb-8 inline-block">
-               <Loader2 className="w-24 h-24 text-primary animate-spin" />
-               <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full"></div>
-            </div>
-            <h2 className="text-3xl font-bold mb-2">MDI ALGORITHMUS</h2>
-            <p className="text-gray-400 font-mono">Decodiere Frequenzstruktur...</p>
-          </div>
-        )}
-
-        {/* RESULT STATE */}
-        {scanStep === 'result' && result && result.tone && (
-          <div className="w-full max-w-6xl animate-in fade-in slide-in-from-bottom-10 duration-700">
-            
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <Progress value={33} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
               
-              {/* LEFT COLUMN: VISUAL & TONE */}
-              <div className="lg:col-span-5 flex flex-col gap-6">
-                {/* TONE CARD */}
-                <Card className="bg-zinc-900/50 border-white/10 overflow-hidden relative group">
-                  <div 
-                    className="absolute inset-0 opacity-20 transition-opacity duration-1000 group-hover:opacity-30"
-                    style={{ backgroundColor: result.tone.color }}
-                  ></div>
-                  <CardContent className="p-8 relative z-10 text-center">
-                    <p className="text-sm text-gray-400 font-mono mb-2">DEIN GRUNDTON</p>
-                    <h2 className="text-8xl font-bold tracking-tighter mb-2" style={{ color: result.tone.color, textShadow: `0 0 30px ${result.tone.color}` }}>
-                      {result.tone.name}
-                    </h2>
-                    <div className="inline-block px-3 py-1 bg-black/50 backdrop-blur rounded border border-white/10 text-sm font-mono text-gray-300">
-                      {result.fundamentalFreq.toFixed(2)} Hz 
-                      <span className="text-gray-500 mx-2">|</span>
-                      {result.cents > 0 ? '+' : ''}{result.cents} Cent
+              <h2 className="text-3xl font-bold text-white mt-8">Dein heutiger Tag</h2>
+              
+              <div className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 text-lg text-zinc-300 leading-relaxed">
+                "Erzähle bitte mit normaler Sprechstimme, wie dein heutiger Tag begonnen hat und was du bislang getan hast. Bleibe entspannt und erzähle in ruhiger, dir angenehmer Sprechstimme."
+              </div>
+
+              <div className="flex flex-col items-center justify-center space-y-6 py-8">
+                {isRecording ? (
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full animate-pulse" />
+                    <Button
+                      size="lg"
+                      variant="destructive"
+                      onClick={handleStopRecording}
+                      className="h-24 w-24 rounded-full relative z-10 border-4 border-zinc-900 hover:scale-105 transition-all"
+                    >
+                      <Square className="h-8 w-8 fill-current" />
+                    </Button>
+                    <p className="mt-4 text-orange-500 animate-pulse font-medium">Aufnahme läuft...</p>
+                  </div>
+                ) : results.q1 ? (
+                  <div className="space-y-4">
+                    <div className="h-24 w-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto border border-green-500/50">
+                      <div className="text-green-500 font-bold text-xl">✓</div>
+                    </div>
+                    <Button 
+                      onClick={nextStep}
+                      className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full text-lg"
+                    >
+                      Weiter zu Schritt 2 <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    size="lg"
+                    onClick={handleStartRecording}
+                    className="h-24 w-24 rounded-full bg-orange-500 hover:bg-orange-600 border-4 border-zinc-900 hover:scale-105 transition-all shadow-[0_0_30px_rgba(249,115,22,0.3)]"
+                  >
+                    <Mic className="h-8 w-8" />
+                  </Button>
+                )}
+                
+                {/* Visualizer is always visible but active only during recording */}
+                <div className="w-full h-32 mt-8">
+                  <SpectrumVisualizer frequencyData={analysisResult?.spectrum || new Uint8Array(0)} isActive={isRecording} />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "question2":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="w-full max-w-3xl space-y-8">
+              <div className="flex justify-between items-center text-sm text-zinc-500 mb-4">
+                <span>SCHRITT 2/3</span>
+                <span>VERGANGENHEIT</span>
+              </div>
+              <Progress value={66} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
+              
+              <h2 className="text-3xl font-bold text-white mt-8">Ein schönes Erlebnis</h2>
+              
+              <div className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 text-lg text-zinc-300 leading-relaxed">
+                "Erinnere dich an ein wunderschönes Erlebnis aus deinem Leben. Erzähle in dieser freudvollen Stimmung davon."
+              </div>
+
+              <div className="flex flex-col items-center justify-center space-y-6 py-8">
+                {isRecording ? (
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full animate-pulse" />
+                    <Button
+                      size="lg"
+                      variant="destructive"
+                      onClick={handleStopRecording}
+                      className="h-24 w-24 rounded-full relative z-10 border-4 border-zinc-900 hover:scale-105 transition-all"
+                    >
+                      <Square className="h-8 w-8 fill-current" />
+                    </Button>
+                    <p className="mt-4 text-orange-500 animate-pulse font-medium">Aufnahme läuft...</p>
+                  </div>
+                ) : results.q2 ? (
+                  <div className="space-y-4">
+                    <div className="h-24 w-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto border border-green-500/50">
+                      <div className="text-green-500 font-bold text-xl">✓</div>
+                    </div>
+                    <Button 
+                      onClick={nextStep}
+                      className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full text-lg"
+                    >
+                      Weiter zu Schritt 3 <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    size="lg"
+                    onClick={handleStartRecording}
+                    className="h-24 w-24 rounded-full bg-orange-500 hover:bg-orange-600 border-4 border-zinc-900 hover:scale-105 transition-all shadow-[0_0_30px_rgba(249,115,22,0.3)]"
+                  >
+                    <Mic className="h-8 w-8" />
+                  </Button>
+                )}
+                
+                <div className="w-full h-32 mt-8">
+                  <SpectrumVisualizer frequencyData={analysisResult?.spectrum || new Uint8Array(0)} isActive={isRecording} />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "question3":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="w-full max-w-3xl space-y-8">
+              <div className="flex justify-between items-center text-sm text-zinc-500 mb-4">
+                <span>SCHRITT 3/3</span>
+                <span>ZUKUNFT</span>
+              </div>
+              <Progress value={100} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
+              
+              <h2 className="text-3xl font-bold text-white mt-8">Deine Vision</h2>
+              
+              <div className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 text-lg text-zinc-300 leading-relaxed">
+                "Stimme dich ein auf eine Vision, die du noch umsetzen möchtest. Was treibt dich an und erfüllt dich mit freudiger Erwartung?"
+              </div>
+
+              <div className="flex flex-col items-center justify-center space-y-6 py-8">
+                {isRecording ? (
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full animate-pulse" />
+                    <Button
+                      size="lg"
+                      variant="destructive"
+                      onClick={handleStopRecording}
+                      className="h-24 w-24 rounded-full relative z-10 border-4 border-zinc-900 hover:scale-105 transition-all"
+                    >
+                      <Square className="h-8 w-8 fill-current" />
+                    </Button>
+                    <p className="mt-4 text-orange-500 animate-pulse font-medium">Aufnahme läuft...</p>
+                  </div>
+                ) : results.q3 ? (
+                  <div className="space-y-4">
+                    <div className="h-24 w-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto border border-green-500/50">
+                      <div className="text-green-500 font-bold text-xl">✓</div>
+                    </div>
+                    <Button 
+                      onClick={nextStep}
+                      className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full text-lg"
+                    >
+                      Ergebnis anzeigen <ChevronRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <Button
+                    size="lg"
+                    onClick={handleStartRecording}
+                    className="h-24 w-24 rounded-full bg-orange-500 hover:bg-orange-600 border-4 border-zinc-900 hover:scale-105 transition-all shadow-[0_0_30px_rgba(249,115,22,0.3)]"
+                  >
+                    <Mic className="h-8 w-8" />
+                  </Button>
+                )}
+                
+                <div className="w-full h-32 mt-8">
+                  <SpectrumVisualizer frequencyData={analysisResult?.spectrum || new Uint8Array(0)} isActive={isRecording} />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case "result":
+        // Use finalResult or fallback to analysisResult
+        const res = finalResult || analysisResult;
+        
+        if (!res) return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <Loader2 className="h-12 w-12 animate-spin text-orange-500" />
+            <p className="mt-4 text-zinc-400">Analyse wird generiert...</p>
+          </div>
+        );
+
+        // We use the properties directly from the result object which matches AnalysisResult interface
+        const tone = res.tone;
+        const cents = res.cents;
+        const centsText = cents > 0 ? `+${cents}` : `${cents}`;
+
+        return (
+          <div className="space-y-8 animate-in fade-in duration-1000">
+            {/* Header */}
+            <div className="text-center space-y-2">
+              <div className="inline-block px-3 py-1 rounded-full bg-zinc-800 text-zinc-400 text-xs font-medium tracking-wider mb-4">
+                ANALYSE ABGESCHLOSSEN
+              </div>
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white">
+                {tone.name}
+                <span className="text-2xl md:text-3xl text-zinc-500 font-normal ml-2">
+                  {centsText} Cent
+                </span>
+              </h1>
+              <p className="text-orange-500 font-mono text-lg">
+                {res.fundamentalFreq.toFixed(2)} Hz
+              </p>
+            </div>
+
+            {/* Main Content Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+              
+              {/* Left Column: Profile */}
+              <div className="space-y-6">
+                <Card className="bg-zinc-900/50 border-zinc-800">
+                  <CardHeader>
+                    <CardTitle className="text-zinc-400 text-sm font-medium tracking-wider">
+                      IDENTITÄTS-PROFIL
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <h3 className="text-2xl font-bold text-white mb-2">{tone.character}</h3>
+                      <p className="text-zinc-400 leading-relaxed">
+                        Deine Stimme zeigt eine starke Resonanz im Bereich {tone.name}. 
+                        Dies steht für {tone.character.toLowerCase()} Qualitäten.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 rounded-lg bg-zinc-950/50 border border-zinc-800/50">
+                        <div className="text-xs text-zinc-500 mb-1">GEOMETRIE</div>
+                        <div className="text-white font-medium">{tone.geometry}</div>
+                      </div>
+                      <div className="p-4 rounded-lg bg-zinc-950/50 border border-zinc-800/50">
+                        <div className="text-xs text-zinc-500 mb-1">FARBE</div>
+                        <div className="text-white font-medium">{tone.color}</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-4">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-zinc-500">Intuitiv</span>
+                        <span className="text-white">{tone.dimensions.intuitive}/10</span>
+                      </div>
+                      <Progress value={tone.dimensions.intuitive * 10} className="h-1 bg-zinc-800" indicatorClassName="bg-white" />
+                      
+                      <div className="flex justify-between text-sm mt-2">
+                        <span className="text-zinc-500">Intellektuell</span>
+                        <span className="text-white">{tone.dimensions.intellectual}/10</span>
+                      </div>
+                      <Progress value={tone.dimensions.intellectual * 10} className="h-1 bg-zinc-800" indicatorClassName="bg-white" />
+                      
+                      <div className="flex justify-between text-sm mt-2">
+                        <span className="text-zinc-500">Emotional</span>
+                        <span className="text-white">{tone.dimensions.emotional}/10</span>
+                      </div>
+                      <Progress value={tone.dimensions.emotional * 10} className="h-1 bg-zinc-800" indicatorClassName="bg-white" />
                     </div>
                   </CardContent>
-                </Card>
-
-                {/* GEOMETRY PREVIEW (PLACEHOLDER FOR GENERATIVE ART) */}
-                <Card className="bg-black border-white/10 aspect-square flex items-center justify-center relative overflow-hidden">
-                   {/* Background Glow */}
-                   <div 
-                      className="absolute inset-0 opacity-20 blur-3xl"
-                      style={{ background: `radial-gradient(circle at center, ${result.tone.color}, transparent 70%)` }}
-                   ></div>
-                   
-                   {/* Geometry Representation based on Tone */}
-                   <div className="relative z-10 w-48 h-48 border-2 border-white/50 flex items-center justify-center" style={{ borderColor: result.tone.color }}>
-                      <div className="text-center">
-                        <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Geometrie</p>
-                        <p className="text-xl font-bold uppercase">{result.tone.geometry}</p>
-                      </div>
-                   </div>
                 </Card>
 
                 <div className="flex gap-4">
                   <Button 
-                    className="flex-1 h-14 text-lg bg-white text-black hover:bg-gray-200"
-                    onClick={handlePlayTone}
+                    variant="outline" 
+                    className="flex-1 h-14 border-zinc-800 hover:bg-zinc-800 text-white"
+                    onClick={() => isPlaying ? stopTone() : playTone(res.fundamentalFreq)}
                   >
-                    {isPlaying ? <Pause className="mr-2" /> : <Play className="mr-2" />}
-                    {isPlaying ? 'STOP' : 'TON ABSPIELEN'}
+                    {isPlaying ? <VolumeX className="mr-2 h-4 w-4" /> : <Volume2 className="mr-2 h-4 w-4" />}
+                    {isPlaying ? "Stop" : "Grundton hören"}
                   </Button>
                   <Button 
                     variant="outline" 
-                    className="h-14 w-14 border-white/20 hover:bg-white/10 hover:text-white"
-                    onClick={handleReset}
+                    className="flex-1 h-14 border-zinc-800 hover:bg-zinc-800 text-white"
+                    onClick={() => playChord(res.fundamentalFreq)}
                   >
-                    <RefreshCw className="h-5 w-5" />
+                    <Play className="mr-2 h-4 w-4" />
+                    Akkord abspielen
                   </Button>
                 </div>
               </div>
 
-              {/* RIGHT COLUMN: DATA & PROFILE */}
-              <div className="lg:col-span-7 flex flex-col gap-6">
-                
-                {/* CHARACTER CARD */}
-                <Card className="bg-zinc-900/50 border-white/10">
-                  <CardContent className="p-8">
-                    <div className="flex justify-between items-start mb-6">
-                      <div>
-                        <p className="text-sm text-gray-400 font-mono mb-1">CHARAKTER</p>
-                        <h3 className="text-3xl font-bold uppercase text-white">{result.tone.character}</h3>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-sm text-gray-400 font-mono mb-1">LICHTFARBE</p>
-                        <div className="flex items-center gap-2 justify-end">
-                          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: result.tone.color }}></div>
-                          <span className="text-xl font-bold uppercase" style={{ color: result.tone.color }}>{result.tone.lightColorNm}</span>
-                        </div>
-                      </div>
+              {/* Right Column: Visual Generation */}
+              <div className="relative aspect-square rounded-2xl overflow-hidden bg-black border border-zinc-800 shadow-2xl">
+                {/* Abstract Geometric Representation based on Tone */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  {/* Base Glow */}
+                  <div 
+                    className="absolute inset-0 opacity-30 blur-[100px]"
+                    style={{ backgroundColor: tone.color }} 
+                  />
+                  
+                  {/* Geometric Shapes - Generative Art Placeholder */}
+                  <div className="relative z-10 w-3/4 h-3/4 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <div 
+                      className="w-2/3 h-2/3 border border-white/40 flex items-center justify-center"
+                      style={{ 
+                        borderRadius: tone.geometry.includes("kreis") ? "50%" : "0%",
+                        transform: `rotate(${cents}deg)`
+                      }}
+                    >
+                      <div 
+                        className="w-1/2 h-1/2 bg-white/10 backdrop-blur-md border border-white/60"
+                        style={{ 
+                          borderRadius: tone.geometry.includes("kreis") ? "50%" : "0%",
+                          boxShadow: `0 0 50px ${tone.color}`
+                        }}
+                      />
                     </div>
+                  </div>
+                </div>
 
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {result.tone.keywords.map((keyword, i) => (
-                        <span key={i} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-xs font-mono text-gray-300">
-                          {keyword}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* DIMENSIONS BARS */}
-                    <div className="space-y-4">
-                      <p className="text-sm text-gray-400 font-mono border-b border-white/10 pb-2 mb-4">MDI PROFIL</p>
-                      
-                      <DimensionBar label="INTUITIV" value={result.tone.dimensions.intuitive} color={result.tone.color} />
-                      <DimensionBar label="INTELLEKTUELL" value={result.tone.dimensions.intellectual} color={result.tone.color} />
-                      <DimensionBar label="EMOTIONAL" value={result.tone.dimensions.emotional} color={result.tone.color} />
-                      <DimensionBar label="STRUKTURIERT" value={result.tone.dimensions.structured} color={result.tone.color} />
-                      <DimensionBar label="ABSTRAKT" value={result.tone.dimensions.abstract} color={result.tone.color} />
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* INFO CARD */}
-                <Card className="bg-zinc-900/30 border-white/5">
-                  <CardContent className="p-6 text-sm text-gray-400 leading-relaxed">
-                    <p>
-                      Dein Grundton <strong>{result.tone.name}</strong> ({result.fundamentalFreq.toFixed(1)} Hz) resoniert mit der Geometrie 
-                      des <strong>{result.tone.geometry}</strong>. In der vedischen Lehre entspricht dies einer 
-                      {result.tone.character}en Grundschwingung. Deine Stimme trägt die Qualität von 
-                      {result.tone.keywords.join(" und ")}.
-                    </p>
-                  </CardContent>
-                </Card>
-
+                <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
+                  <div>
+                    <div className="text-xs text-zinc-500 font-mono mb-1">MDI GENERATION</div>
+                    <div className="text-white font-mono text-sm">#{Math.floor(res.fundamentalFreq * 100)}</div>
+                  </div>
+                  <Button size="icon" variant="ghost" className="text-white hover:bg-white/10">
+                    <Download className="h-5 w-5" />
+                  </Button>
+                </div>
               </div>
             </div>
+            
+            <div className="text-center pt-12 pb-8">
+               <Button 
+                variant="ghost" 
+                onClick={() => window.location.reload()}
+                className="text-zinc-500 hover:text-white"
+              >
+                Neue Analyse starten
+              </Button>
+            </div>
           </div>
-        )}
+        );
+    }
+  };
 
-        {/* ERROR STATE */}
-        {error && (
-          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-red-900/90 text-white px-6 py-4 rounded-lg border border-red-500/50 shadow-2xl flex items-center gap-4 animate-in slide-in-from-bottom-5">
-             <div className="p-2 bg-red-800 rounded-full">
-               <Volume2 className="w-5 h-5" />
-             </div>
-             <div>
-               <p className="font-bold">Fehler bei der Aufnahme</p>
-               <p className="text-sm text-red-200">{error}</p>
-             </div>
-             <Button variant="ghost" size="sm" onClick={() => window.location.reload()} className="ml-4 hover:bg-red-800">
-               Neu laden
-             </Button>
-          </div>
-        )}
-
-      </main>
-    </div>
-  );
-}
-
-function DimensionBar({ label, value, color }: { label: string, value: number, color: string }) {
   return (
-    <div className="flex items-center gap-4">
-      <div className="w-24 text-xs font-mono text-gray-500 text-right">{label}</div>
-      <div className="flex-1 h-2 bg-white/5 rounded-full overflow-hidden">
-        <div 
-          className="h-full rounded-full transition-all duration-1000 ease-out"
-          style={{ width: `${value * 10}%`, backgroundColor: color, opacity: 0.8 }}
-        ></div>
+    <div className="min-h-screen bg-black text-foreground font-sans selection:bg-orange-500/30">
+      <div className="container max-w-5xl mx-auto px-4 py-8">
+        {/* Navbar */}
+        <header className="flex justify-between items-center mb-12">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-orange-500 rounded-sm" />
+            <span className="font-bold text-xl tracking-tight text-white">MDI</span>
+          </div>
+          <div className="text-xs font-mono text-zinc-600">
+            BETA 1.1
+          </div>
+        </header>
+
+        <main>
+          {renderContent()}
+        </main>
       </div>
-      <div className="w-8 text-xs font-mono text-gray-400">{value}</div>
     </div>
   );
 }
