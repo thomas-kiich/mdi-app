@@ -6,7 +6,7 @@ export function useSoundGenerator() {
   const activeGainNodesRef = useRef<GainNode[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Initialisiere AudioContext bei Bedarf (User Interaction erforderlich)
+  // Initialize AudioContext on user interaction
   const initAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -19,7 +19,7 @@ export function useSoundGenerator() {
   }, []);
 
   const stopAllSounds = useCallback(() => {
-    // Nur aktive Oszillatoren stoppen
+    // Stop only active oscillators
     activeOscillatorsRef.current.forEach(osc => {
       try {
         osc.stop();
@@ -37,20 +37,23 @@ export function useSoundGenerator() {
     setIsPlaying(false);
   }, []);
 
-  const playTone = useCallback((frequency: number, type: OscillatorType = 'sine', duration: number = 2) => {
+  const playTone = useCallback((frequency: number) => {
     const ctx = initAudioContext();
     if (!ctx) return;
 
     stopAllSounds();
     setIsPlaying(true);
+    
+    console.log(`Playing tone at: ${frequency} Hz`);
 
     const osc = ctx.createOscillator();
     const gainNode = ctx.createGain();
 
-    osc.type = type;
+    osc.type = 'sine';
     osc.frequency.setValueAtTime(frequency, ctx.currentTime);
 
     const now = ctx.currentTime;
+    const duration = 4; // Longer duration for better listening experience
     
     // Envelope
     gainNode.gain.setValueAtTime(0, now);
@@ -67,38 +70,50 @@ export function useSoundGenerator() {
     activeOscillatorsRef.current.push(osc);
     activeGainNodesRef.current.push(gainNode);
 
-    // Cleanup nach Ende
+    // Cleanup after end
     setTimeout(() => {
         setIsPlaying(false);
     }, duration * 1000);
 
   }, [initAudioContext, stopAllSounds]);
 
-  const playChord = useCallback((frequencies: number[], duration: number = 4) => {
+  const playChord = useCallback((fundamentalFreq: number) => {
     const ctx = initAudioContext();
     if (!ctx) return;
 
     stopAllSounds();
     setIsPlaying(true);
+    
+    console.log(`Playing chord based on fundamental: ${fundamentalFreq} Hz`);
+
+    // Create a major chord based on the fundamental frequency
+    // Fundamental, Major Third (5/4), Perfect Fifth (3/2), Octave (2/1)
+    const frequencies = [
+      fundamentalFreq,
+      fundamentalFreq * 1.2599, // Major Third (Equal Temperament) - approx 5/4
+      fundamentalFreq * 1.4983, // Perfect Fifth (Equal Temperament) - approx 3/2
+      fundamentalFreq * 2       // Octave
+    ];
 
     const masterGain = ctx.createGain();
     masterGain.connect(ctx.destination);
     activeGainNodesRef.current.push(masterGain);
 
     const now = ctx.currentTime;
+    const duration = 6; // Longer chord
     
-    // Master Envelope für den Akkord
+    // Master Envelope for the chord
     masterGain.gain.setValueAtTime(0, now);
-    masterGain.gain.linearRampToValueAtTime(0.3, now + 0.5); // Langsamer Attack
-    masterGain.gain.setValueAtTime(0.3, now + duration - 1);
+    masterGain.gain.linearRampToValueAtTime(0.3, now + 1); // Slow Attack
+    masterGain.gain.setValueAtTime(0.3, now + duration - 2);
     masterGain.gain.linearRampToValueAtTime(0, now + duration);
 
-    frequencies.forEach((freq) => {
+    frequencies.forEach((freq, index) => {
       const osc = ctx.createOscillator();
-      osc.type = 'sine'; // Sinus für reine Obertöne
+      osc.type = index === 0 ? 'triangle' : 'sine'; // Fundamental as triangle for more body
       
-      // Detune für Schwebung (lebendiger)
-      const detune = (Math.random() - 0.5) * 5; // +/- 2.5 cents
+      // Detune for chorus effect (more organic)
+      const detune = (Math.random() - 0.5) * 8; 
       osc.detune.value = detune;
 
       osc.frequency.setValueAtTime(freq, now);
@@ -115,7 +130,7 @@ export function useSoundGenerator() {
 
   }, [initAudioContext, stopAllSounds]);
 
-  // Cleanup beim Unmount
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopAllSounds();

@@ -127,22 +127,53 @@ export function useAudioAnalyzer() {
     }
     const volume = sum / bufferLength;
     
-    // Simple Pitch Detection (Autocorrelation or Max Frequency Bin)
-    // For simplicity and performance in this demo, we use Max Frequency Bin with interpolation
-    // In a production app, we would use YIN or CREPE algorithm
+    // Improved Pitch Detection
     
     let maxVal = -1;
     let maxIndex = -1;
     
-    // Ignore low frequencies (DC offset and rumble) < 80Hz
+    // Ignore low frequencies (DC offset and rumble) < 70Hz
     // SampleRate usually 44100 or 48000
     // Bin size = SampleRate / FFTSize = 44100 / 2048 ≈ 21.5 Hz
-    // Start at index 4 (~86Hz)
-    for (let i = 4; i < bufferLength; i++) {
+    // Start at index 3 (~65Hz)
+    // IMPORTANT: Only search in the range of human fundamental voice (70-500Hz approx for fundamental)
+    // 500Hz is around bin 23
+    // If we search too high, we might catch strong overtones
+    const searchLimit = Math.min(bufferLength, 50); // Search up to ~1000Hz
+
+    for (let i = 3; i < searchLimit; i++) {
       if (dataArray[i] > maxVal) {
         maxVal = dataArray[i];
         maxIndex = i;
       }
+    }
+    
+    // Sub-harmonic check (simple octave error correction)
+    // If we found a peak at maxIndex (e.g. 200Hz), check if there is a significant peak at maxIndex / 2 (100Hz)
+    // If the lower octave has at least 50% of the main peak's volume, it might be the true fundamental
+    if (maxIndex > 6) { 
+        const halfIndex = Math.round(maxIndex / 2);
+        
+        // Check a small window around the half index because bins are discrete
+        let halfVal = 0;
+        let bestHalfIndex = halfIndex;
+        
+        for (let j = halfIndex - 1; j <= halfIndex + 1; j++) {
+            if (dataArray[j] > halfVal) {
+                halfVal = dataArray[j];
+                bestHalfIndex = j;
+            }
+        }
+        
+        // Threshold: 50% of maxVal
+        const threshold = maxVal * 0.5;
+        
+        if (halfVal > threshold) {
+            // Found a strong sub-harmonic at 1/2 freq (octave down)
+            // Prioritize the lower tone as the fundamental
+            maxIndex = bestHalfIndex;
+            // No need to update maxVal as we just need the index for frequency calculation
+        }
     }
     
     const sampleRate = audioContextRef.current.sampleRate;
@@ -152,6 +183,7 @@ export function useAudioAnalyzer() {
     if (maxIndex > 0 && maxIndex < bufferLength - 1) {
         const prev = dataArray[maxIndex - 1];
         const next = dataArray[maxIndex + 1];
+        // Parabolic interpolation
         const pixel = maxIndex + (next - prev) / (2 * (2 * dataArray[maxIndex] - next - prev));
         fundamentalFreq = pixel * sampleRate / analyserRef.current.fftSize;
     } else {
@@ -159,7 +191,8 @@ export function useAudioAnalyzer() {
     }
 
     // Filter out noise
-    const isSpeaking = volume > 10 && fundamentalFreq > 80 && fundamentalFreq < 1000;
+    // Adjusted range: 70Hz - 800Hz is typical for human speech fundamental
+    const isSpeaking = volume > 10 && fundamentalFreq > 70 && fundamentalFreq < 800;
     
     if (isSpeaking) {
       const toneData = getToneFromFrequency(fundamentalFreq);
