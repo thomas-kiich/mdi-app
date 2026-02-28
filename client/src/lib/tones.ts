@@ -208,11 +208,14 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
   if (normalizedFreq < 1) return { tone: TONES[0], cents: 0, diffHz: 0 };
 
   // Iterativ oktavieren
-  while (normalizedFreq > maxFreq) {
+  // Toleranz für Rundungsfehler (0.01 Hz)
+  const epsilon = 0.01;
+  
+  while (normalizedFreq > maxFreq + epsilon) {
     normalizedFreq /= 2;
   }
   
-  while (normalizedFreq < minFreq) {
+  while (normalizedFreq < minFreq - epsilon) {
     normalizedFreq *= 2;
   }
 
@@ -221,7 +224,9 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
   let found = false;
   
   for (const tone of TONES) {
-    if (normalizedFreq >= tone.range[0] && normalizedFreq <= tone.range[1]) {
+    // Strikte Prüfung mit Epsilon für Floating Point Sicherheit
+    // range[0] <= freq <= range[1]
+    if (normalizedFreq >= tone.range[0] - epsilon && normalizedFreq <= tone.range[1] + epsilon) {
       bestTone = tone;
       found = true;
       break;
