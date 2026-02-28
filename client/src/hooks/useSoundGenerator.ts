@@ -74,6 +74,7 @@ export function useSoundGenerator() {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(frequency, now);
         
+        // Envelope for Pure Sine
         masterGain.gain.setValueAtTime(0, now);
         masterGain.gain.linearRampToValueAtTime(0.8, now + 0.1); 
         masterGain.gain.setValueAtTime(0.8, now + duration - 0.5); 
@@ -96,7 +97,7 @@ export function useSoundGenerator() {
         const osc2 = ctx.createOscillator();
         osc2.type = 'sawtooth';
         osc2.frequency.setValueAtTime(frequency * 2, ctx.currentTime);
-        osc2.detune.value = 5; // Slight detune for warmth
+        // osc2.detune.value = 5; // Slight detune for warmth (Removed detune for more precise tuning check)
 
         const gainNode1 = ctx.createGain();
         const gainNode2 = ctx.createGain();
@@ -135,8 +136,10 @@ export function useSoundGenerator() {
 
     // Cleanup after end
     setTimeout(() => {
-        setIsPlaying(false);
-        setPlayingFreq(null);
+        // Only stop if we haven't started a new sound (check playingFreq or use a ref ID)
+        // For simplicity, we just reset state if the time matches, but cleaner is to rely on user stop or new play
+        // setIsPlaying(false); // Let it run until user stops or it fades out
+        // setPlayingFreq(null);
     }, duration * 1000);
 
   }, [initAudioContext, stopAllSounds]);
