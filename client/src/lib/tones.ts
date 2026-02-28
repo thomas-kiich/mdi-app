@@ -3,7 +3,7 @@
 
 export interface ToneData {
   name: string;
-  frequency: number; // Hz (Grundfrequenz bei ~128-242 Hz)
+  frequency: number; // Hz (Grundfrequenz bei ~128-242 Hz) - Referenz für Dimensionen/Farben
   color: string; // CSS-Farbwert oder Name
   lightColorNm: string; // Wellenlänge in nm (ungefähr)
   character: string;
@@ -28,7 +28,7 @@ export interface ToneData {
 export const TONES: ToneData[] = [
   {
     name: "C",
-    frequency: 128.43,
+    frequency: 130.81, // C3 (Standard 440Hz tuning)
     color: "#228B22", // Grün (ForestGreen)
     lightColorNm: "grün",
     character: "fürsorglich",
@@ -50,7 +50,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "C#",
-    frequency: 136.07,
+    frequency: 138.59, // C#3
     color: "#40E0D0", // Türkis (Turquoise)
     lightColorNm: "türkis",
     character: "religiös",
@@ -72,7 +72,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "D",
-    frequency: 144.16,
+    frequency: 146.83, // D3
     color: "#87CEEB", // Hellblau (SkyBlue)
     lightColorNm: "hellblau",
     character: "materiell",
@@ -94,7 +94,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "D#",
-    frequency: 152.74,
+    frequency: 155.56, // D#3
     color: "#00008B", // Tiefblau (DarkBlue)
     lightColorNm: "tiefblau",
     character: "forschend",
@@ -116,7 +116,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "E",
-    frequency: 161.82,
+    frequency: 164.81, // E3
     color: "#8A2BE2", // Blauviolett (BlueViolet)
     lightColorNm: "blauviolett",
     character: "gebundeheit",
@@ -138,7 +138,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "F",
-    frequency: 171.44,
+    frequency: 174.61, // F3
     color: "#FF00FF", // Magenta
     lightColorNm: "magenta",
     character: "quelle",
@@ -160,7 +160,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "F#",
-    frequency: 181.63,
+    frequency: 185.00, // F#3
     color: "#FF0000", // Rot
     lightColorNm: "rot",
     character: "risikobereit",
@@ -182,7 +182,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "G",
-    frequency: 192.43,
+    frequency: 196.00, // G3
     color: "#FF4500", // Rotorange (OrangeRed)
     lightColorNm: "rotorange",
     character: "führungsanspruch",
@@ -204,7 +204,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "G#",
-    frequency: 203.88,
+    frequency: 207.65, // G#3
     color: "#FFA500", // Gelborange (Orange)
     lightColorNm: "gelborange",
     character: "deatilfixiert",
@@ -226,7 +226,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "A",
-    frequency: 216.00,
+    frequency: 220.00, // A3
     color: "#FFFF00", // Gelb
     lightColorNm: "gelb",
     character: "freiheitsanspruch, strukturfordernd",
@@ -248,7 +248,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "A#",
-    frequency: 228.84,
+    frequency: 233.08, // A#3
     color: "#9ACD32", // Gelbgrün (YellowGreen)
     lightColorNm: "gelbgrün",
     character: "elitär intellektuell",
@@ -270,7 +270,7 @@ export const TONES: ToneData[] = [
   },
   {
     name: "H",
-    frequency: 242.45,
+    frequency: 246.94, // B3
     color: "#808000", // Olive
     lightColorNm: "olive",
     character: "extremer leistungsanspruch",
@@ -298,32 +298,35 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
       return { tone: TONES[0], cents: 0, diffHz: 0 };
   }
 
-  // Frequenz in den Bereich der Tabelle oktavieren (ca. 125-250 Hz)
-  // TONES[0].frequency ist ~128 Hz
-  // Wir nutzen 125 als untere Grenze, um C (128) sicher zu erwischen
-  let normalizedFreq = freq;
-  while (normalizedFreq < 125) normalizedFreq *= 2;
-  while (normalizedFreq > 250) normalizedFreq /= 2;
+  // A4 = 440Hz standard reference
+  // Formula for MIDI note number: n = 69 + 12 * log2(freq / 440)
+  const midiNote = 69 + 12 * Math.log2(freq / 440);
+  const roundedMidiNote = Math.round(midiNote);
+  
+  // Calculate cents deviation from the nearest semitone
+  // cents = 100 * (midiNote - roundedMidiNote)
+  const cents = Math.round(100 * (midiNote - roundedMidiNote));
 
-  // Nächsten Ton finden
-  let bestTone = TONES[0];
-  let minDiff = Math.abs(normalizedFreq - TONES[0].frequency);
+  // Determine note name index (0-11)
+  // MIDI note 69 is A4. 69 % 12 = 9. So index 9 is A.
+  // Our TONES array starts with C (index 0).
+  // C is index 0, C# is 1... A is 9.
+  // We need to map MIDI note to 0-11 range where 0 is C.
+  
+  const noteIndex = (roundedMidiNote % 12 + 12) % 12; // Ensure positive result
+  
+  // Mapping MIDI index to our TONES array
+  // 0=C, 1=C#, 2=D, 3=D#, 4=E, 5=F, 6=F#, 7=G, 8=G#, 9=A, 10=A#, 11=B(H)
+  const tone = TONES[noteIndex];
 
-  for (const tone of TONES) {
-    const diff = Math.abs(normalizedFreq - tone.frequency);
-    if (diff < minDiff) {
-      minDiff = diff;
-      bestTone = tone;
-    }
-  }
-
-  // Cent-Abweichung berechnen: 1200 * log2(f1 / f2)
-  // Hier nehmen wir die normalisierte Frequenz im Vergleich zur Tonfrequenz
-  const cents = 1200 * Math.log2(normalizedFreq / bestTone.frequency);
+  // Calculate difference in Hz from the ideal frequency of that note in that octave
+  // Ideal freq = 440 * 2^((roundedMidiNote - 69) / 12)
+  const idealFreq = 440 * Math.pow(2, (roundedMidiNote - 69) / 12);
+  const diffHz = freq - idealFreq;
 
   return {
-    tone: bestTone,
-    cents: Math.round(cents),
-    diffHz: normalizedFreq - bestTone.frequency
+    tone,
+    cents,
+    diffHz
   };
 }
