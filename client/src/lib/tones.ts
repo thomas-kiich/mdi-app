@@ -1,10 +1,11 @@
 // 12-Ton-Tabelle für MDI (Benutzerdefiniert)
 // Quelle: tontabelle-frequenzbänder.csv (A=432Hz Basis, 9Hz Abstände)
+// ERWEITERT: Umfasst nun auch die tiefe Oktave (A=54Hz Basis)
 
 export interface ToneData {
   name: string;
-  frequency: number; // Mittenfrequenz aus CSV
-  range: [number, number]; // [min, max] aus CSV
+  frequency: number; // Mittenfrequenz
+  range: [number, number]; // [min, max]
   color: string;
   lightColorNm: string;
   character: string;
@@ -25,15 +26,13 @@ export interface ToneData {
   keywords: string[];
 }
 
-// Benutzerdefinierte Tabelle aus CSV
-// A=108, AIS=117, H=126, C=135, CIS=144, D=153, DIS=162, E=171, F=180, FIS=189, G=198, GIS=207
-// Bandbreite: +/- 4.5 Hz (9Hz Abstand)
+// Benutzerdefinierte Tabelle
+// Bereich 1: Tiefe Oktave (A=54Hz ... G#=103.5Hz)
+// Bereich 2: Mittlere Oktave (A=108Hz ... G#=207Hz)
 
-export const TONES: ToneData[] = [
+const BASE_TONES = [
   {
     name: "A",
-    frequency: 108.0,
-    range: [103.5, 112.4],
     color: "#FFFF00", // Gelb
     lightColorNm: "gelb",
     character: "freiheitsanspruch, strukturfordernd",
@@ -43,8 +42,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "A#", // AIS
-    frequency: 117.0,
-    range: [112.5, 121.4],
     color: "#9ACD32", // Gelbgrün
     lightColorNm: "gelbgrün",
     character: "elitär intellektuell",
@@ -54,8 +51,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "H",
-    frequency: 126.0,
-    range: [121.5, 130.4],
     color: "#808000", // Olive
     lightColorNm: "olive",
     character: "extremer leistungsanspruch",
@@ -65,8 +60,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "C",
-    frequency: 135.0,
-    range: [130.5, 139.4], // Korrigiert von 131.5 auf 130.5 für lückenlosen Anschluss an H (130.4)
     color: "#228B22", // Grün
     lightColorNm: "grün",
     character: "fürsorglich",
@@ -76,8 +69,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "C#", // CIS
-    frequency: 144.0,
-    range: [139.5, 148.4],
     color: "#40E0D0", // Türkis
     lightColorNm: "türkis",
     character: "religiös",
@@ -87,8 +78,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "D",
-    frequency: 153.0,
-    range: [148.5, 157.4],
     color: "#87CEEB", // Hellblau
     lightColorNm: "hellblau",
     character: "materiell",
@@ -98,8 +87,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "D#", // DIS
-    frequency: 162.0,
-    range: [157.5, 166.4],
     color: "#00008B", // Tiefblau
     lightColorNm: "tiefblau",
     character: "forschend",
@@ -109,8 +96,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "E",
-    frequency: 171.0,
-    range: [166.5, 175.4],
     color: "#8A2BE2", // Blauviolett
     lightColorNm: "blauviolett",
     character: "gebundeheit",
@@ -120,8 +105,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "F",
-    frequency: 180.0,
-    range: [175.5, 184.4],
     color: "#FF00FF", // Magenta
     lightColorNm: "magenta",
     character: "quelle",
@@ -131,8 +114,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "F#", // FIS
-    frequency: 189.0,
-    range: [184.5, 193.4],
     color: "#FF0000", // Rot
     lightColorNm: "rot",
     character: "risikobereit",
@@ -142,8 +123,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "G",
-    frequency: 198.0,
-    range: [193.5, 202.4],
     color: "#FF4500", // Rotorange
     lightColorNm: "rotorange",
     character: "führungsanspruch",
@@ -153,8 +132,6 @@ export const TONES: ToneData[] = [
   },
   {
     name: "G#", // GIS
-    frequency: 207.0,
-    range: [202.5, 211.4],
     color: "#FFA500", // Gelborange
     lightColorNm: "gelborange",
     character: "deatilfixiert",
@@ -164,40 +141,71 @@ export const TONES: ToneData[] = [
   },
 ];
 
+// Frequenzdaten für die mittlere Oktave (Original CSV)
+const MIDDLE_OCTAVE_FREQS = [
+  { freq: 108.0, range: [103.5, 112.4] }, // A
+  { freq: 117.0, range: [112.5, 121.4] }, // A#
+  { freq: 126.0, range: [121.5, 130.4] }, // H
+  { freq: 135.0, range: [130.5, 139.4] }, // C
+  { freq: 144.0, range: [139.5, 148.4] }, // C#
+  { freq: 153.0, range: [148.5, 157.4] }, // D
+  { freq: 162.0, range: [157.5, 166.4] }, // D#
+  { freq: 171.0, range: [166.5, 175.4] }, // E
+  { freq: 180.0, range: [175.5, 184.4] }, // F
+  { freq: 189.0, range: [184.5, 193.4] }, // F#
+  { freq: 198.0, range: [193.5, 202.4] }, // G
+  { freq: 207.0, range: [202.5, 211.4] }, // G#
+];
+
+// Frequenzdaten für die tiefe Oktave (Halbierte Werte)
+const LOWER_OCTAVE_FREQS = MIDDLE_OCTAVE_FREQS.map(data => ({
+  freq: data.freq / 2,
+  range: [data.range[0] / 2, data.range[1] / 2]
+}));
+
+// Zusammenbauen der TONES Liste (Erst Tief, dann Mittel)
+export const TONES: ToneData[] = [
+  // Tiefe Oktave
+  ...BASE_TONES.map((tone, i) => ({
+    ...tone,
+    frequency: LOWER_OCTAVE_FREQS[i].freq,
+    range: LOWER_OCTAVE_FREQS[i].range as [number, number],
+    name: tone.name
+  })),
+  // Mittlere Oktave
+  ...BASE_TONES.map((tone, i) => ({
+    ...tone,
+    frequency: MIDDLE_OCTAVE_FREQS[i].freq,
+    range: MIDDLE_OCTAVE_FREQS[i].range as [number, number],
+    name: tone.name
+  }))
+];
+
 // Hilfsfunktion: Frequenz zu Ton zuordnen basierend auf CUSTOM BANDS
 export function getToneFromFrequency(freq: number): { tone: ToneData; cents: number; diffHz: number } {
   if (!freq || freq <= 0) {
       return { tone: TONES[0], cents: 0, diffHz: 0 };
   }
 
-  // 1. Normalisiere Frequenz in den Bereich der Tabelle (ca. 103 - 212 Hz)
-  // Die Tabelle deckt ca. eine Oktave ab (A2 bis G#3 bzw. A3 bis G#4 je nach Definition)
-  // Wir nutzen 108 als Basis (A).
+  // 1. Normalisiere Frequenz in den Bereich der Tabelle (ca. 51.75 - 211.4 Hz)
   
   let normalizedFreq = freq;
-  const minFreq = 103.5; // Untergrenze A
-  const maxFreq = 211.4; // Obergrenze G# (eigentlich bis zum nächsten A)
+  // Min: Untergrenze des tiefsten Tons (A tief) = 103.5 / 2 = 51.75
+  const minFreq = 51.75; 
+  // Max: Obergrenze des höchsten Tons (G# mittel) = 211.4
+  const maxFreq = 211.4;
 
   // Wenn die Frequenz sehr klein ist (z.B. 0), Abbruch
   if (normalizedFreq < 1) return { tone: TONES[0], cents: 0, diffHz: 0 };
 
   // Iterativ oktavieren
-  // Fall 1: Zu hoch -> halbieren bis unter Obergrenze
   while (normalizedFreq > maxFreq) {
     normalizedFreq /= 2;
   }
   
-  // Fall 2: Zu tief -> verdoppeln bis über Untergrenze
-  // WICHTIG: Wir müssen sicherstellen, dass wir nicht "überspringen"
-  // Beispiel: 77 Hz * 2 = 154 Hz (D). Das ist > minFreq (103.5). Passt.
   while (normalizedFreq < minFreq) {
     normalizedFreq *= 2;
   }
-
-  // Sicherheitscheck: Falls durch Rundung knapp daneben (z.B. 211.5 Hz bei max 211.4),
-  // könnte es eigentlich das nächste A (108*2 = 216) sein, also in unserer Tabelle ein A.
-  // Da wir aber oben "while > maxFreq" haben, ist es jetzt <= 211.4.
-  // Das sollte passen.
 
   // 2. Finde den passenden Ton in der Tabelle
   let bestTone = TONES[0]; // Fallback
@@ -211,9 +219,8 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
     }
   }
 
-  // Fallback, falls knapp an der Grenze (z.B. Rundungsfehler)
+  // Fallback, falls knapp an der Grenze
   if (!found) {
-    // Suche den Ton mit der geringsten Distanz
     let minDiff = Number.MAX_VALUE;
     for (const tone of TONES) {
       const diff = Math.abs(normalizedFreq - tone.frequency);
@@ -225,12 +232,7 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
   }
 
   // 3. Berechne Abweichung
-  // Diff in Hz
   const diffHz = normalizedFreq - bestTone.frequency;
-  
-  // Diff in Cent
-  // Formel: 1200 * log2(f_mess / f_ref)
-  // Hier nehmen wir die normalisierte Frequenz vs. Tabellenfrequenz
   const cents = Math.round(1200 * Math.log2(normalizedFreq / bestTone.frequency));
 
   return {
