@@ -178,18 +178,49 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
   const minFreq = 103.5; // Untergrenze A
   const maxFreq = 211.4; // Obergrenze G# (eigentlich bis zum nächsten A)
 
-  // Solange Frequenz zu hoch, halbiere sie (Oktave runter)
-  while (normalizedFreq > maxFreq) normalizedFreq /= 2;
-  // Solange Frequenz zu tief, verdopple sie (Oktave hoch)
-  while (normalizedFreq < minFreq) normalizedFreq *= 2;
+  // Wenn die Frequenz sehr klein ist (z.B. 0), Abbruch
+  if (normalizedFreq < 1) return { tone: TONES[0], cents: 0, diffHz: 0 };
+
+  // Iterativ oktavieren
+  // Fall 1: Zu hoch -> halbieren bis unter Obergrenze
+  while (normalizedFreq > maxFreq) {
+    normalizedFreq /= 2;
+  }
+  
+  // Fall 2: Zu tief -> verdoppeln bis über Untergrenze
+  // WICHTIG: Wir müssen sicherstellen, dass wir nicht "überspringen"
+  // Beispiel: 77 Hz * 2 = 154 Hz (D). Das ist > minFreq (103.5). Passt.
+  while (normalizedFreq < minFreq) {
+    normalizedFreq *= 2;
+  }
+
+  // Sicherheitscheck: Falls durch Rundung knapp daneben (z.B. 211.5 Hz bei max 211.4),
+  // könnte es eigentlich das nächste A (108*2 = 216) sein, also in unserer Tabelle ein A.
+  // Da wir aber oben "while > maxFreq" haben, ist es jetzt <= 211.4.
+  // Das sollte passen.
 
   // 2. Finde den passenden Ton in der Tabelle
-  let bestTone = TONES[0];
+  let bestTone = TONES[0]; // Fallback
+  let found = false;
   
   for (const tone of TONES) {
     if (normalizedFreq >= tone.range[0] && normalizedFreq <= tone.range[1]) {
       bestTone = tone;
+      found = true;
       break;
+    }
+  }
+
+  // Fallback, falls knapp an der Grenze (z.B. Rundungsfehler)
+  if (!found) {
+    // Suche den Ton mit der geringsten Distanz
+    let minDiff = Number.MAX_VALUE;
+    for (const tone of TONES) {
+      const diff = Math.abs(normalizedFreq - tone.frequency);
+      if (diff < minDiff) {
+        minDiff = diff;
+        bestTone = tone;
+      }
     }
   }
 

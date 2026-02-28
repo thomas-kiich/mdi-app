@@ -12,9 +12,9 @@
     - [x] Manual Frequency Slider (fine-tune +/- 50 cents)
     - [x] 432 Hz / 440 Hz Global Switch
 - [x] **Fix Tone Mapping Logic**: Correct the `getToneFromFrequency` function to handle all octaves correctly.
-- [ ] **Implement Custom Frequency Bands**:
-    - [ ] Read `tontabelle-frequenzbänder.csv`.
-    - [ ] Update `client/src/lib/tones.ts` to use the exact frequency ranges from the user's file.
-    - [ ] Adjust the tone detection logic to check against these specific ranges instead of calculating from A4=440Hz.
+- [x] **Implement Custom Frequency Bands**: Use user's CSV data for tone definitions.
+- [ ] **Fix Octave Normalization**: 
+    - [ ] **CRITICAL**: Ensure frequencies below the custom range (e.g., 77Hz) are correctly doubled until they fit into the table (103-212Hz).
+    - [ ] Verify that 77.10Hz maps to D (154.2Hz) and not A.
 - [ ] **Verify Chart Data**: Check `FrequencyChart.tsx` to confirm exactly what the three bars represent (Likely dominant tone of Q1, Q2, Q3).
 - [ ] **Integrate User's Philosophy**: Add the "KIICH Philosophy" chapter using the user's provided material (on hold).
