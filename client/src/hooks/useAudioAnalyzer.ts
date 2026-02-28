@@ -30,35 +30,6 @@ export function useAudioAnalyzer() {
   const totalFramesRef = useRef(0);
   const lastValidResultRef = useRef<AnalysisResult | null>(null);
 
-  const startRecording = useCallback(async () => {
-    try {
-      setError(null);
-      accumulatedTonesRef.current = {};
-      totalFramesRef.current = 0;
-      lastValidResultRef.current = null;
-      
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
-      
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      audioContextRef.current = audioContext;
-      
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 2048;
-      analyserRef.current = analyser;
-      
-      const source = audioContext.createMediaStreamSource(stream);
-      source.connect(analyser);
-      sourceRef.current = source;
-      
-      setIsRecording(true);
-      analyze();
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
-      setError("Mikrofonzugriff verweigert oder nicht verfügbar.");
-    }
-  }, []);
-
   const stopRecording = useCallback(() => {
     if (rafIdRef.current) {
       cancelAnimationFrame(rafIdRef.current);
@@ -81,7 +52,9 @@ export function useAudioAnalyzer() {
     }
     
     if (audioContextRef.current) {
-      audioContextRef.current.close();
+      if (audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close();
+      }
       audioContextRef.current = null;
     }
     
@@ -124,8 +97,20 @@ export function useAudioAnalyzer() {
     } else if (lastValidResultRef.current) {
         setResult(lastValidResultRef.current);
     } else {
-        setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
+        // Only set error if we really have no data at all
+        if (!result) {
+            setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
+        }
     }
+  }, [result]);
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (isRecording) {
+        stopRecording();
+      }
+    };
   }, []);
 
   const analyze = useCallback(() => {
@@ -207,6 +192,42 @@ export function useAudioAnalyzer() {
     
     rafIdRef.current = requestAnimationFrame(analyze);
   }, []);
+
+  const startRecording = useCallback(async () => {
+    try {
+      // Ensure everything is stopped first
+      if (isRecording) {
+        stopRecording();
+      }
+      
+      setError(null);
+      // Reset accumulation for new session
+      accumulatedTonesRef.current = {};
+      totalFramesRef.current = 0;
+      lastValidResultRef.current = null;
+      setResult(null);
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = audioContext;
+      
+      const analyser = audioContext.createAnalyser();
+      analyser.fftSize = 2048;
+      analyserRef.current = analyser;
+      
+      const source = audioContext.createMediaStreamSource(stream);
+      source.connect(analyser);
+      sourceRef.current = source;
+      
+      setIsRecording(true);
+      analyze();
+    } catch (err) {
+      console.error("Error accessing microphone:", err);
+      setError("Mikrofonzugriff verweigert oder nicht verfügbar.");
+    }
+  }, [isRecording, stopRecording, analyze]);
 
   return {
     isRecording,

@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { SpectrumVisualizer } from "@/components/SpectrumVisualizer";
-import { useAudioAnalyzer } from "@/hooks/useAudioAnalyzer";
+import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
@@ -27,17 +27,15 @@ export default function Home() {
     stopRecording, 
     result: analysisResult,
     error,
-    // frequencyData is now part of analysisResult.spectrum
-    // resetAnalysis is not exported, we handle reset via state
   } = useAudioAnalyzer();
   
   const { isPlaying, playTone, stopTone, playChord } = useSoundGenerator();
   
   // Store results from each step
   const [results, setResults] = useState<{
-    q1: any | null;
-    q2: any | null;
-    q3: any | null;
+    q1: AnalysisResult | null;
+    q2: AnalysisResult | null;
+    q3: AnalysisResult | null;
   }>({
     q1: null,
     q2: null,
@@ -53,50 +51,141 @@ export default function Home() {
 
   const handleStopRecording = () => {
     stopRecording();
-    // The result will be available in analysisResult shortly after stopping
+    // The result capture is handled by the useEffect below
   };
 
   // Effect to capture result when recording stops
+  // We use a ref to track if we were recording to detect the falling edge
+  const wasRecordingRef = useRef(false);
+
   useEffect(() => {
-    if (!isRecording && analysisResult) {
-      if (currentStep === "question1" && !results.q1) {
+    if (wasRecordingRef.current && !isRecording && analysisResult) {
+      // Just finished recording
+      if (currentStep === "question1") {
         setResults(prev => ({ ...prev, q1: analysisResult }));
-      } else if (currentStep === "question2" && !results.q2) {
+      } else if (currentStep === "question2") {
         setResults(prev => ({ ...prev, q2: analysisResult }));
-      } else if (currentStep === "question3" && !results.q3) {
+      } else if (currentStep === "question3") {
         setResults(prev => ({ ...prev, q3: analysisResult }));
       }
     }
+    wasRecordingRef.current = isRecording;
   }, [isRecording, analysisResult, currentStep]);
 
   const nextStep = () => {
     if (currentStep === "intro") setCurrentStep("preparation");
     else if (currentStep === "preparation") setCurrentStep("question1");
     else if (currentStep === "question1") {
-      // Reset is handled by startRecording internally in useAudioAnalyzer
       setCurrentStep("question2");
     }
     else if (currentStep === "question2") {
       setCurrentStep("question3");
     }
     else if (currentStep === "question3") {
-      calculateFinalResult();
-      setCurrentStep("result");
+      setCurrentStep("analyzing");
+      // Simulate processing time for dramatic effect
+      setTimeout(() => {
+        calculateFinalResult();
+        setCurrentStep("result");
+      }, 2000);
     }
   };
 
   const calculateFinalResult = () => {
-    // Logic to aggregate results from q1, q2, q3
-    // For now, we'll just use the last result or a simple average
-    // In a real implementation, we would merge the distribution maps
+    // Aggregation Logic:
+    // Combine distribution maps from all 3 recordings
     
-    // This is a placeholder for the aggregation logic
-    // We'll implement a proper merge function in the next step
+    const combinedDistribution: Record<string, number> = {};
+    let totalCombinedSamples = 0;
+    
+    const processResult = (res: AnalysisResult | null) => {
+      if (!res || !res.toneDistribution) return;
+      
+      for (const [tone, percent] of Object.entries(res.toneDistribution)) {
+        if (!combinedDistribution[tone]) combinedDistribution[tone] = 0;
+        // Add weighted contribution
+        combinedDistribution[tone] += percent;
+      }
+      totalCombinedSamples++;
+    };
+    
+    processResult(results.q1);
+    processResult(results.q2);
+    processResult(results.q3);
+    
+    // Find dominant tone across all sessions
+    let maxScore = 0;
+    let dominantToneName = "";
+    
+    for (const [tone, score] of Object.entries(combinedDistribution)) {
+      if (score > maxScore) {
+        maxScore = score;
+        dominantToneName = tone;
+      }
+    }
+    
+    // If we have a winner, construct the final result
+    if (dominantToneName) {
+      // Find the tone data
+      const toneData = TONES.find(t => t.name === dominantToneName);
+      
+      if (toneData) {
+        // Calculate average Hz for this tone from the sessions where it appeared
+        // This is a simplification - ideally we'd track exact Hz per frame
+        // Instead we'll use the Hz from the session where this tone was most prominent
+        
+        let bestHz = 0;
+        let bestConfidence = 0;
+        
+        const checkSession = (res: AnalysisResult | null) => {
+            if (!res || !res.toneDistribution) return;
+            const score = res.toneDistribution[dominantToneName] || 0;
+            if (score > bestConfidence) {
+                bestConfidence = score;
+                bestHz = res.fundamentalFreq;
+            }
+        };
+        
+        checkSession(results.q1);
+        checkSession(results.q2);
+        checkSession(results.q3);
+        
+        // Recalculate cents/diff based on the chosen Hz
+        const { cents, diffHz } = getToneFromFrequency(bestHz);
+        
+        setFinalResult({
+          fundamentalFreq: bestHz,
+          tone: toneData,
+          cents,
+          diffHz,
+          noteName: toneData.name,
+          toneDistribution: combinedDistribution // Normalized?
+        });
+        return;
+      }
+    }
+    
+    // Fallback: If aggregation fails (shouldn't happen if we have data), use the last valid result
     if (results.q3) {
       setFinalResult(results.q3);
     } else if (analysisResult) {
       setFinalResult(analysisResult);
     }
+  };
+
+  // Helper to check if current step has a result
+  const hasResult = () => {
+    if (currentStep === "question1") return !!results.q1;
+    if (currentStep === "question2") return !!results.q2;
+    if (currentStep === "question3") return !!results.q3;
+    return false;
+  };
+
+  // Helper to reset current step recording
+  const resetStep = () => {
+    if (currentStep === "question1") setResults(prev => ({ ...prev, q1: null }));
+    if (currentStep === "question2") setResults(prev => ({ ...prev, q2: null }));
+    if (currentStep === "question3") setResults(prev => ({ ...prev, q3: null }));
   };
 
   // Render different content based on current step
@@ -164,19 +253,29 @@ export default function Home() {
         );
 
       case "question1":
+      case "question2":
+      case "question3":
+        const stepData = {
+          question1: { title: "GEGENWART", progress: 33, heading: "Dein heutiger Tag", text: "Erzähle bitte mit normaler Sprechstimme, wie dein heutiger Tag begonnen hat und was du bislang getan hast. Bleibe entspannt und erzähle in ruhiger, dir angenehmer Sprechstimme." },
+          question2: { title: "VERGANGENHEIT", progress: 66, heading: "Ein schönes Erlebnis", text: "Erinnere dich an ein wunderschönes Erlebnis aus deinem Leben. Erzähle in dieser freudvollen Stimmung davon." },
+          question3: { title: "ZUKUNFT", progress: 100, heading: "Deine Vision", text: "Stimme dich ein auf eine Vision, die du noch umsetzen möchtest. Was treibt dich an und erfüllt dich mit freudiger Erwartung?" }
+        }[currentStep];
+
+        const stepHasResult = hasResult();
+
         return (
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
             <div className="w-full max-w-3xl space-y-8">
               <div className="flex justify-between items-center text-sm text-zinc-500 mb-4">
-                <span>SCHRITT 1/3</span>
-                <span>GEGENWART</span>
+                <span>SCHRITT {currentStep === "question1" ? "1" : currentStep === "question2" ? "2" : "3"}/3</span>
+                <span>{stepData.title}</span>
               </div>
-              <Progress value={33} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
+              <Progress value={stepData.progress} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
               
-              <h2 className="text-3xl font-bold text-white mt-8">Dein heutiger Tag</h2>
+              <h2 className="text-3xl font-bold text-white mt-8">{stepData.heading}</h2>
               
               <div className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 text-lg text-zinc-300 leading-relaxed">
-                "Erzähle bitte mit normaler Sprechstimme, wie dein heutiger Tag begonnen hat und was du bislang getan hast. Bleibe entspannt und erzähle in ruhiger, dir angenehmer Sprechstimme."
+                "{stepData.text}"
               </div>
 
               <div className="flex flex-col items-center justify-center space-y-6 py-8">
@@ -193,17 +292,26 @@ export default function Home() {
                     </Button>
                     <p className="mt-4 text-orange-500 animate-pulse font-medium">Aufnahme läuft...</p>
                   </div>
-                ) : results.q1 ? (
-                  <div className="space-y-4">
+                ) : stepHasResult ? (
+                  <div className="space-y-4 animate-in zoom-in duration-300">
                     <div className="h-24 w-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto border border-green-500/50">
                       <div className="text-green-500 font-bold text-xl">✓</div>
                     </div>
-                    <Button 
-                      onClick={nextStep}
-                      className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full text-lg"
-                    >
-                      Weiter zu Schritt 2 <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
+                    <div className="flex gap-4 justify-center">
+                        <Button 
+                        variant="outline"
+                        onClick={resetStep}
+                        className="border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 px-6 py-6 rounded-full"
+                        >
+                        <RotateCcw className="mr-2 h-4 w-4" /> Wiederholen
+                        </Button>
+                        <Button 
+                        onClick={nextStep}
+                        className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full text-lg"
+                        >
+                        {currentStep === "question3" ? "Ergebnis anzeigen" : "Weiter"} <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
                   </div>
                 ) : (
                   <Button
@@ -224,122 +332,16 @@ export default function Home() {
           </div>
         );
 
-      case "question2":
+      case "analyzing":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="w-full max-w-3xl space-y-8">
-              <div className="flex justify-between items-center text-sm text-zinc-500 mb-4">
-                <span>SCHRITT 2/3</span>
-                <span>VERGANGENHEIT</span>
-              </div>
-              <Progress value={66} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
-              
-              <h2 className="text-3xl font-bold text-white mt-8">Ein schönes Erlebnis</h2>
-              
-              <div className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 text-lg text-zinc-300 leading-relaxed">
-                "Erinnere dich an ein wunderschönes Erlebnis aus deinem Leben. Erzähle in dieser freudvollen Stimmung davon."
-              </div>
-
-              <div className="flex flex-col items-center justify-center space-y-6 py-8">
-                {isRecording ? (
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full animate-pulse" />
-                    <Button
-                      size="lg"
-                      variant="destructive"
-                      onClick={handleStopRecording}
-                      className="h-24 w-24 rounded-full relative z-10 border-4 border-zinc-900 hover:scale-105 transition-all"
-                    >
-                      <Square className="h-8 w-8 fill-current" />
-                    </Button>
-                    <p className="mt-4 text-orange-500 animate-pulse font-medium">Aufnahme läuft...</p>
-                  </div>
-                ) : results.q2 ? (
-                  <div className="space-y-4">
-                    <div className="h-24 w-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto border border-green-500/50">
-                      <div className="text-green-500 font-bold text-xl">✓</div>
-                    </div>
-                    <Button 
-                      onClick={nextStep}
-                      className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full text-lg"
-                    >
-                      Weiter zu Schritt 3 <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    size="lg"
-                    onClick={handleStartRecording}
-                    className="h-24 w-24 rounded-full bg-orange-500 hover:bg-orange-600 border-4 border-zinc-900 hover:scale-105 transition-all shadow-[0_0_30px_rgba(249,115,22,0.3)]"
-                  >
-                    <Mic className="h-8 w-8" />
-                  </Button>
-                )}
-                
-                <div className="w-full h-32 mt-8">
-                  <SpectrumVisualizer frequencyData={analysisResult?.spectrum || new Uint8Array(0)} isActive={isRecording} />
-                </div>
-              </div>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8 animate-in fade-in duration-700">
+            <div className="relative">
+                <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full animate-pulse" />
+                <Loader2 className="h-24 w-24 animate-spin text-orange-500 relative z-10" />
             </div>
-          </div>
-        );
-
-      case "question3":
-        return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="w-full max-w-3xl space-y-8">
-              <div className="flex justify-between items-center text-sm text-zinc-500 mb-4">
-                <span>SCHRITT 3/3</span>
-                <span>ZUKUNFT</span>
-              </div>
-              <Progress value={100} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
-              
-              <h2 className="text-3xl font-bold text-white mt-8">Deine Vision</h2>
-              
-              <div className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 text-lg text-zinc-300 leading-relaxed">
-                "Stimme dich ein auf eine Vision, die du noch umsetzen möchtest. Was treibt dich an und erfüllt dich mit freudiger Erwartung?"
-              </div>
-
-              <div className="flex flex-col items-center justify-center space-y-6 py-8">
-                {isRecording ? (
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full animate-pulse" />
-                    <Button
-                      size="lg"
-                      variant="destructive"
-                      onClick={handleStopRecording}
-                      className="h-24 w-24 rounded-full relative z-10 border-4 border-zinc-900 hover:scale-105 transition-all"
-                    >
-                      <Square className="h-8 w-8 fill-current" />
-                    </Button>
-                    <p className="mt-4 text-orange-500 animate-pulse font-medium">Aufnahme läuft...</p>
-                  </div>
-                ) : results.q3 ? (
-                  <div className="space-y-4">
-                    <div className="h-24 w-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto border border-green-500/50">
-                      <div className="text-green-500 font-bold text-xl">✓</div>
-                    </div>
-                    <Button 
-                      onClick={nextStep}
-                      className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full text-lg"
-                    >
-                      Ergebnis anzeigen <ChevronRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    size="lg"
-                    onClick={handleStartRecording}
-                    className="h-24 w-24 rounded-full bg-orange-500 hover:bg-orange-600 border-4 border-zinc-900 hover:scale-105 transition-all shadow-[0_0_30px_rgba(249,115,22,0.3)]"
-                  >
-                    <Mic className="h-8 w-8" />
-                  </Button>
-                )}
-                
-                <div className="w-full h-32 mt-8">
-                  <SpectrumVisualizer frequencyData={analysisResult?.spectrum || new Uint8Array(0)} isActive={isRecording} />
-                </div>
-              </div>
+            <div className="text-center space-y-2">
+                <h2 className="text-2xl font-bold text-white">Daten werden verarbeitet</h2>
+                <p className="text-zinc-400">Vergangenheit, Gegenwart und Zukunft werden synchronisiert...</p>
             </div>
           </div>
         );
@@ -351,7 +353,7 @@ export default function Home() {
         if (!res) return (
           <div className="flex flex-col items-center justify-center min-h-[60vh]">
             <Loader2 className="h-12 w-12 animate-spin text-orange-500" />
-            <p className="mt-4 text-zinc-400">Analyse wird generiert...</p>
+            <p className="mt-4 text-zinc-400">Ergebnis wird geladen...</p>
           </div>
         );
 
