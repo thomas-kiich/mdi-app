@@ -6,6 +6,7 @@ export function useSoundGenerator() {
   const activeGainNodesRef = useRef<GainNode[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
   const [playingFreq, setPlayingFreq] = useState<number | null>(null);
+  const [octaveShift, setOctaveShift] = useState(0);
 
   // Initialize AudioContext on user interaction
   const initAudioContext = useCallback(() => {
@@ -39,15 +40,19 @@ export function useSoundGenerator() {
     setPlayingFreq(null);
   }, []);
 
-  const playTone = useCallback((frequency: number) => {
+  const playTone = useCallback((baseFrequency: number, shift: number = 0) => {
     const ctx = initAudioContext();
     if (!ctx) return;
 
     stopAllSounds();
     setIsPlaying(true);
-    setPlayingFreq(frequency);
     
-    console.log(`Playing improved tone at: ${frequency} Hz`);
+    // Calculate frequency with octave shift
+    const frequency = baseFrequency * Math.pow(2, shift);
+    setPlayingFreq(frequency);
+    setOctaveShift(shift);
+    
+    console.log(`Playing tone at: ${frequency} Hz (Shift: ${shift})`);
 
     // Create multiple oscillators for a richer sound
     // Fundamental: Triangle wave (more body than sine)
@@ -105,13 +110,16 @@ export function useSoundGenerator() {
 
   }, [initAudioContext, stopAllSounds]);
 
-  const playChord = useCallback((fundamentalFreq: number) => {
+  const playChord = useCallback((baseFrequency: number, shift: number = 0) => {
     const ctx = initAudioContext();
     if (!ctx) return;
 
     stopAllSounds();
     setIsPlaying(true);
+    
+    const fundamentalFreq = baseFrequency * Math.pow(2, shift);
     setPlayingFreq(fundamentalFreq); // Show base freq
+    setOctaveShift(shift);
     
     console.log(`Playing chord based on fundamental: ${fundamentalFreq} Hz`);
 
@@ -177,6 +185,7 @@ export function useSoundGenerator() {
     stopAllSounds,
     stopTone: stopAllSounds, // Alias for consistency with Home.tsx
     isPlaying,
-    playingFreq
+    playingFreq,
+    octaveShift
   };
 }

@@ -6,7 +6,7 @@ import { FrequencyChart } from "@/components/FrequencyChart";
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,8 @@ export default function Home() {
     error,
   } = useAudioAnalyzer();
   
-  const { isPlaying, playTone, stopTone, playChord, playingFreq } = useSoundGenerator();
+  const { isPlaying, playTone, stopTone, playChord, playingFreq, octaveShift } = useSoundGenerator();
+  const [currentOctaveShift, setCurrentOctaveShift] = useState(0);
   
   // Store results from each step
   const [results, setResults] = useState<{
@@ -444,7 +445,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       className="flex-1 h-14 border-zinc-800 hover:bg-zinc-800 text-white"
-                      onClick={() => isPlaying ? stopTone() : playTone(res.fundamentalFreq)}
+                      onClick={() => isPlaying ? stopTone() : playTone(res.fundamentalFreq, currentOctaveShift)}
                     >
                       {isPlaying ? <VolumeX className="mr-2 h-4 w-4" /> : <Volume2 className="mr-2 h-4 w-4" />}
                       {isPlaying ? "Stop" : "Grundton hören"}
@@ -452,11 +453,37 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       className="flex-1 h-14 border-zinc-800 hover:bg-zinc-800 text-white"
-                      onClick={() => playChord(res.fundamentalFreq)}
+                      onClick={() => playChord(res.fundamentalFreq, currentOctaveShift)}
                     >
                       <Play className="mr-2 h-4 w-4" />
                       Akkord abspielen
                     </Button>
+                  </div>
+                  
+                  {/* Octave Controls */}
+                  <div className="flex items-center justify-center gap-4 py-2 bg-zinc-900/30 rounded-lg border border-zinc-800/50">
+                    <span className="text-xs text-zinc-500 uppercase tracking-wider">Oktave</span>
+                    <div className="flex items-center gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-8 w-8 p-0 hover:bg-zinc-800 text-zinc-400"
+                        onClick={() => setCurrentOctaveShift(prev => prev - 1)}
+                      >
+                        <ArrowDown className="h-4 w-4" />
+                      </Button>
+                      <span className="text-sm font-mono text-white w-8 text-center">
+                        {currentOctaveShift > 0 ? `+${currentOctaveShift}` : currentOctaveShift}
+                      </span>
+                      <Button 
+                        size="sm" 
+                        variant="ghost" 
+                        className="h-8 w-8 p-0 hover:bg-zinc-800 text-zinc-400"
+                        onClick={() => setCurrentOctaveShift(prev => prev + 1)}
+                      >
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
                   
                   {isPlaying && playingFreq && (
