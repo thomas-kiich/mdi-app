@@ -1,14 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { SpectrumVisualizer } from "@/components/SpectrumVisualizer";
 import { FrequencyChart } from "@/components/FrequencyChart";
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 // Define the steps of the wizard
 type WizardStep = 
@@ -30,9 +38,30 @@ export default function Home() {
     error,
   } = useAudioAnalyzer();
   
-  const { isPlaying, playTone, stopTone, playChord, playingFreq, octaveShift } = useSoundGenerator();
+  const { 
+    isPlaying, 
+    playTone, 
+    stopTone, 
+    playChord, 
+    playingFreq, 
+    octaveShift, 
+    fineTune,
+    usePureSine,
+    referencePitch,
+    setReferencePitch
+  } = useSoundGenerator();
+
   const [currentOctaveShift, setCurrentOctaveShift] = useState(0);
+  const [currentFineTune, setCurrentFineTune] = useState(0); // in cents
+  const [isPureSineMode, setIsPureSineMode] = useState(false);
+  const [isExpertOpen, setIsExpertOpen] = useState(false);
+  const [is432Hz, setIs432Hz] = useState(false);
   
+  // Update reference pitch when 432Hz switch changes
+  useEffect(() => {
+    setReferencePitch(is432Hz ? 432 : 440);
+  }, [is432Hz, setReferencePitch]);
+
   // Store results from each step
   const [results, setResults] = useState<{
     q1: AnalysisResult | null;
@@ -445,7 +474,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       className="flex-1 h-14 border-zinc-800 hover:bg-zinc-800 text-white"
-                      onClick={() => isPlaying ? stopTone() : playTone(res.fundamentalFreq, currentOctaveShift)}
+                      onClick={() => isPlaying ? stopTone() : playTone(res.fundamentalFreq, currentOctaveShift, currentFineTune, isPureSineMode)}
                     >
                       {isPlaying ? <VolumeX className="mr-2 h-4 w-4" /> : <Volume2 className="mr-2 h-4 w-4" />}
                       {isPlaying ? "Stop" : "Grundton hören"}
@@ -453,7 +482,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       className="flex-1 h-14 border-zinc-800 hover:bg-zinc-800 text-white"
-                      onClick={() => playChord(res.fundamentalFreq, currentOctaveShift)}
+                      onClick={() => playChord(res.fundamentalFreq, currentOctaveShift, currentFineTune)}
                     >
                       <Play className="mr-2 h-4 w-4" />
                       Akkord abspielen
@@ -485,10 +514,69 @@ export default function Home() {
                       </Button>
                     </div>
                   </div>
+
+                  {/* EXPERT MODE TOGGLE */}
+                  <Collapsible
+                    open={isExpertOpen}
+                    onOpenChange={setIsExpertOpen}
+                    className="w-full space-y-2 border border-zinc-800 rounded-lg p-2 bg-zinc-950/30"
+                  >
+                    <div className="flex items-center justify-between px-2">
+                        <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium">
+                            <Settings className="h-3 w-3" /> EXPERTEN-MODUS
+                        </div>
+                        <CollapsibleTrigger asChild>
+                            <Button variant="ghost" size="sm" className="w-9 p-0 h-6">
+                                <ChevronRight className={cn("h-4 w-4 transition-transform", isExpertOpen && "rotate-90")} />
+                                <span className="sr-only">Toggle</span>
+                            </Button>
+                        </CollapsibleTrigger>
+                    </div>
+                    
+                    <CollapsibleContent className="space-y-4 pt-2 px-2">
+                        {/* 432 Hz Switch */}
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="432-mode" className="text-sm text-zinc-300">432 Hz Referenz</Label>
+                            <Switch 
+                                id="432-mode" 
+                                checked={is432Hz}
+                                onCheckedChange={setIs432Hz}
+                            />
+                        </div>
+
+                        {/* Pure Sine Switch */}
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="sine-mode" className="text-sm text-zinc-300">Reiner Sinus (Kalibrierung)</Label>
+                            <Switch 
+                                id="sine-mode" 
+                                checked={isPureSineMode}
+                                onCheckedChange={setIsPureSineMode}
+                            />
+                        </div>
+
+                        {/* Fine Tune Slider */}
+                        <div className="space-y-3 pt-2">
+                            <div className="flex justify-between">
+                                <Label className="text-xs text-zinc-400">Feinabstimmung (Cents)</Label>
+                                <span className="text-xs font-mono text-orange-500">{currentFineTune > 0 ? '+' : ''}{currentFineTune}</span>
+                            </div>
+                            <Slider
+                                defaultValue={[0]}
+                                max={100}
+                                min={-100}
+                                step={1}
+                                value={[currentFineTune]}
+                                onValueChange={(val) => setCurrentFineTune(val[0])}
+                                className="py-2"
+                            />
+                        </div>
+                    </CollapsibleContent>
+                  </Collapsible>
                   
                   {isPlaying && playingFreq && (
-                    <div className="text-center text-xs text-orange-500 animate-pulse">
-                      Spiele Frequenz: {playingFreq.toFixed(2)} Hz
+                    <div className="text-center text-xs text-orange-500 animate-pulse font-mono border border-orange-500/30 bg-orange-500/10 py-2 rounded">
+                      <Activity className="h-3 w-3 inline mr-2" />
+                      OUTPUT: {playingFreq.toFixed(2)} Hz
                     </div>
                   )}
                 </div>
