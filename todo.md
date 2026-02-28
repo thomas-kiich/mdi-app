@@ -11,8 +11,10 @@
     - [x] Pure Sine Wave Toggle (for tuner calibration)
     - [x] Manual Frequency Slider (fine-tune +/- 50 cents)
     - [x] 432 Hz / 440 Hz Global Switch
-- [ ] **Fix Tone Mapping Logic**: 
-    - [ ] **CRITICAL**: Correct the `getToneFromFrequency` function. 75Hz is D/Dis, not G.
-    - [ ] Verify the reference frequency (A4 = 440Hz) and the formula used for calculation.
+- [x] **Fix Tone Mapping Logic**: Correct the `getToneFromFrequency` function to handle all octaves correctly.
+- [ ] **Implement Custom Frequency Bands**:
+    - [ ] Read `tontabelle-frequenzbänder.csv`.
+    - [ ] Update `client/src/lib/tones.ts` to use the exact frequency ranges from the user's file.
+    - [ ] Adjust the tone detection logic to check against these specific ranges instead of calculating from A4=440Hz.
 - [ ] **Verify Chart Data**: Check `FrequencyChart.tsx` to confirm exactly what the three bars represent (Likely dominant tone of Q1, Q2, Q3).
 - [ ] **Integrate User's Philosophy**: Add the "KIICH Philosophy" chapter using the user's provided material (on hold).
