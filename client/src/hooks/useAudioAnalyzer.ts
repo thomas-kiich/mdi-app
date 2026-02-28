@@ -1,4 +1,4 @@
-import { getToneFromFrequency, ToneData } from '@/lib/tones';
+import { getToneFromFrequency, ToneData, TONES } from '@/lib/tones';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface AnalysisResult {
@@ -29,6 +29,119 @@ export function useAudioAnalyzer() {
   const accumulatedTonesRef = useRef<Record<string, number>>({});
   const totalFramesRef = useRef(0);
   const lastValidResultRef = useRef<AnalysisResult | null>(null);
+
+  const analyze = useCallback(() => {
+    if (!analyserRef.current || !audioContextRef.current) return;
+    
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+    analyserRef.current.getByteFrequencyData(dataArray);
+    
+    // Calculate volume
+    let sum = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      sum += dataArray[i];
+    }
+    const volume = sum / bufferLength;
+    
+    // Improved Pitch Detection
+    
+    let maxVal = -1;
+    let maxIndex = -1;
+    
+    // Ignore low frequencies (DC offset and rumble) < 70Hz
+    // SampleRate usually 44100 or 48000
+    // Bin size = SampleRate / FFTSize = 44100 / 2048 ≈ 21.5 Hz
+    // Start at index 3 (~65Hz)
+    // IMPORTANT: Only search in the range of human fundamental voice (50-500Hz approx for fundamental)
+    // 500Hz is around bin 23
+    // If we search too high, we might catch strong overtones
+    const searchLimit = Math.min(bufferLength, 50); // Search up to ~1000Hz
+
+    for (let i = 2; i < searchLimit; i++) { // Start from index 2 (~43Hz) to catch deep voices
+      if (dataArray[i] > maxVal) {
+        maxVal = dataArray[i];
+        maxIndex = i;
+      }
+    }
+    
+    // Sub-harmonic check (simple octave error correction)
+    // If we found a peak at maxIndex (e.g. 200Hz), check if there is a significant peak at maxIndex / 2 (100Hz)
+    // If the lower octave has at least 50% of the main peak's volume, it might be the true fundamental
+    if (maxIndex > 4) { 
+        const halfIndex = Math.round(maxIndex / 2);
+        
+        // Check a small window around the half index because bins are discrete
+        let halfVal = 0;
+        let bestHalfIndex = halfIndex;
+        
+        for (let j = halfIndex - 1; j <= halfIndex + 1; j++) {
+            if (dataArray[j] > halfVal) {
+                halfVal = dataArray[j];
+                bestHalfIndex = j;
+            }
+        }
+        
+        // Threshold: 50% of maxVal
+        const threshold = maxVal * 0.5;
+        
+        if (halfVal > threshold) {
+            // Found a strong sub-harmonic at 1/2 freq (octave down)
+            // Prioritize the lower tone as the fundamental
+            maxIndex = bestHalfIndex;
+            // No need to update maxVal as we just need the index for frequency calculation
+        }
+    }
+    
+    const sampleRate = audioContextRef.current.sampleRate;
+    let fundamentalFreq = 0;
+    
+    // Interpolation for better precision
+    if (maxIndex > 0 && maxIndex < bufferLength - 1) {
+        const prev = dataArray[maxIndex - 1];
+        const next = dataArray[maxIndex + 1];
+        // Parabolic interpolation
+        const pixel = maxIndex + (next - prev) / (2 * (2 * dataArray[maxIndex] - next - prev));
+        fundamentalFreq = pixel * sampleRate / analyserRef.current.fftSize;
+    } else {
+        fundamentalFreq = maxIndex * sampleRate / analyserRef.current.fftSize;
+    }
+
+    // Filter out noise
+    // Adjusted range: 50Hz - 800Hz is typical for human speech fundamental (Lowered to 50Hz for deep voices)
+    const isSpeaking = volume > 10 && fundamentalFreq > 50 && fundamentalFreq < 800;
+    
+    if (isSpeaking) {
+      const toneData = getToneFromFrequency(fundamentalFreq);
+      
+      const newResult: AnalysisResult = {
+        fundamentalFreq,
+        tone: toneData.tone,
+        cents: toneData.cents,
+        diffHz: toneData.diffHz,
+        noteName: toneData.tone.name,
+        isSpeaking,
+        spectrum: dataArray,
+        volume
+      };
+      
+      setResult(newResult);
+      lastValidResultRef.current = newResult;
+      
+      // Accumulate data
+      if (accumulatedTonesRef.current[toneData.tone.name]) {
+          accumulatedTonesRef.current[toneData.tone.name]++;
+      } else {
+          accumulatedTonesRef.current[toneData.tone.name] = 1;
+      }
+      totalFramesRef.current++;
+    } else {
+        // Just update spectrum for visualization even if silence
+         setResult(prev => prev ? { ...prev, isSpeaking: false, spectrum: dataArray, volume } : null);
+    }
+    
+    rafIdRef.current = requestAnimationFrame(analyze);
+  }, []);
 
   const stopRecording = useCallback(() => {
     if (rafIdRef.current) {
@@ -81,10 +194,49 @@ export function useAudioAnalyzer() {
                 distribution[name] = (count / totalFramesRef.current) * 100;
             }
             
+            // QUINT CORRECTION LOGIC (Post-Processing)
+            // If the dominant tone is a Fifth (e.g. C, ~1.5x) of a likely fundamental (e.g. F),
+            // and the fundamental was also detected or makes sense contextually, swap it.
+            
+            // Find the tone object for the dominant name to get its frequency
+            // Fallback to last valid result if dominantToneName not found (should not happen)
+            const dominantToneObj = TONES.find(t => t.name === dominantToneName);
+            let finalTone = dominantToneObj || lastValidResultRef.current.tone;
+            let finalFreq = dominantToneObj ? dominantToneObj.frequency : lastValidResultRef.current.fundamentalFreq;
+
+            if (dominantToneObj) {
+                 // Check if this tone is potentially a Quint (Overtone)
+                 // Calculate potential fundamental frequency (Quint is 1.5x Fundamental)
+                 const potentialFundamentalFreq = dominantToneObj.frequency / 1.5;
+                 
+                 // Get the tone for this potential fundamental
+                 const fundamentalCheck = getToneFromFrequency(potentialFundamentalFreq);
+                 
+                 // If the potential fundamental is in our valid range (e.g. > 50Hz)
+                 // AND the dominant tone was high enough to be a quint (e.g. > 100Hz)
+                 if (potentialFundamentalFreq > 50 && dominantToneObj.frequency > 100) {
+                     // Specific check for C -> F correction (135Hz -> 90Hz)
+                     // If detected is C and calculated fundamental is F, correct it.
+                     if (dominantToneName === 'C' && fundamentalCheck.tone.name === 'F') {
+                         finalTone = fundamentalCheck.tone;
+                         finalFreq = potentialFundamentalFreq; // Use the calculated fundamental frequency
+                     }
+                     // General check: if we are in the typical overtone range (>130Hz)
+                     // and the fundamental is in the typical voice range (<100Hz)
+                     else if (dominantToneObj.frequency > 130 && potentialFundamentalFreq < 100) {
+                          finalTone = fundamentalCheck.tone;
+                          finalFreq = potentialFundamentalFreq;
+                     }
+                 }
+            }
+
             // If the last frame was silent (likely), use the last VALID result
-            // but update it with the distribution data
+            // but update it with the distribution data AND the corrected tone
             const finalResult = {
                 ...lastValidResultRef.current,
+                tone: finalTone,
+                fundamentalFreq: finalFreq,
+                noteName: finalTone.name,
                 toneDistribution: distribution
             };
             setResult(finalResult);
@@ -102,129 +254,7 @@ export function useAudioAnalyzer() {
             setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
         }
     }
-  }, [result]);
-
-  // Clean up on unmount
-  useEffect(() => {
-    return () => {
-      if (isRecording) {
-        stopRecording();
-      }
-    };
-  }, []);
-
-  const analyze = useCallback(() => {
-    if (!analyserRef.current || !audioContextRef.current) return;
-    
-    const bufferLength = analyserRef.current.frequencyBinCount;
-    const dataArray = new Uint8Array(bufferLength);
-    analyserRef.current.getByteFrequencyData(dataArray);
-    
-    // Calculate volume
-    let sum = 0;
-    for (let i = 0; i < bufferLength; i++) {
-      sum += dataArray[i];
-    }
-    const volume = sum / bufferLength;
-    
-    // Improved Pitch Detection
-    
-    let maxVal = -1;
-    let maxIndex = -1;
-    
-    // Ignore low frequencies (DC offset and rumble) < 70Hz
-    // SampleRate usually 44100 or 48000
-    // Bin size = SampleRate / FFTSize = 44100 / 2048 ≈ 21.5 Hz
-    // Start at index 3 (~65Hz)
-    // IMPORTANT: Only search in the range of human fundamental voice (70-500Hz approx for fundamental)
-    // 500Hz is around bin 23
-    // If we search too high, we might catch strong overtones
-    const searchLimit = Math.min(bufferLength, 50); // Search up to ~1000Hz
-
-    for (let i = 3; i < searchLimit; i++) {
-      if (dataArray[i] > maxVal) {
-        maxVal = dataArray[i];
-        maxIndex = i;
-      }
-    }
-    
-    // Sub-harmonic check (simple octave error correction)
-    // If we found a peak at maxIndex (e.g. 200Hz), check if there is a significant peak at maxIndex / 2 (100Hz)
-    // If the lower octave has at least 50% of the main peak's volume, it might be the true fundamental
-    if (maxIndex > 6) { 
-        const halfIndex = Math.round(maxIndex / 2);
-        
-        // Check a small window around the half index because bins are discrete
-        let halfVal = 0;
-        let bestHalfIndex = halfIndex;
-        
-        for (let j = halfIndex - 1; j <= halfIndex + 1; j++) {
-            if (dataArray[j] > halfVal) {
-                halfVal = dataArray[j];
-                bestHalfIndex = j;
-            }
-        }
-        
-        // Threshold: 50% of maxVal
-        const threshold = maxVal * 0.5;
-        
-        if (halfVal > threshold) {
-            // Found a strong sub-harmonic at 1/2 freq (octave down)
-            // Prioritize the lower tone as the fundamental
-            maxIndex = bestHalfIndex;
-            // No need to update maxVal as we just need the index for frequency calculation
-        }
-    }
-    
-    const sampleRate = audioContextRef.current.sampleRate;
-    let fundamentalFreq = 0;
-    
-    // Interpolation for better precision
-    if (maxIndex > 0 && maxIndex < bufferLength - 1) {
-        const prev = dataArray[maxIndex - 1];
-        const next = dataArray[maxIndex + 1];
-        // Parabolic interpolation
-        const pixel = maxIndex + (next - prev) / (2 * (2 * dataArray[maxIndex] - next - prev));
-        fundamentalFreq = pixel * sampleRate / analyserRef.current.fftSize;
-    } else {
-        fundamentalFreq = maxIndex * sampleRate / analyserRef.current.fftSize;
-    }
-
-    // Filter out noise
-    // Adjusted range: 70Hz - 800Hz is typical for human speech fundamental
-    const isSpeaking = volume > 10 && fundamentalFreq > 70 && fundamentalFreq < 800;
-    
-    if (isSpeaking) {
-      const toneData = getToneFromFrequency(fundamentalFreq);
-      
-      const newResult: AnalysisResult = {
-        fundamentalFreq,
-        tone: toneData.tone,
-        cents: toneData.cents,
-        diffHz: toneData.diffHz,
-        noteName: toneData.tone.name,
-        isSpeaking,
-        spectrum: dataArray,
-        volume
-      };
-      
-      setResult(newResult);
-      lastValidResultRef.current = newResult;
-      
-      // Accumulate data
-      if (accumulatedTonesRef.current[toneData.tone.name]) {
-          accumulatedTonesRef.current[toneData.tone.name]++;
-      } else {
-          accumulatedTonesRef.current[toneData.tone.name] = 1;
-      }
-      totalFramesRef.current++;
-    } else {
-        // Just update spectrum for visualization even if silence
-         setResult(prev => prev ? { ...prev, isSpeaking: false, spectrum: dataArray, volume } : null);
-    }
-    
-    rafIdRef.current = requestAnimationFrame(analyze);
-  }, []);
+  }, [result]); // Removed 'analyze' from dependency array to avoid loop
 
   const startRecording = useCallback(async () => {
     try {

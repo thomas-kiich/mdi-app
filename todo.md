@@ -16,9 +16,11 @@
 - [x] **Fix Octave Normalization**: Ensure frequencies are correctly mapped to the custom table range.
 - [x] **Expand Frequency Table**: Add the lower octave (A=54Hz to G#=103.5Hz) to `TONES` in `client/src/lib/tones.ts`.
 - [x] **Implement Frequency Table V2**: Use `tontabelle-frequenzbänder2.csv` for exact tone definitions.
-- [ ] **Debug Frequency Boundaries**: 
-    - [ ] Check why 112.27Hz is identified as A# (AIS) when A goes up to 112.4Hz.
-    - [ ] Verify the `>=` and `<=` logic in `getToneFromFrequency`.
-    - [ ] Ensure no rounding happens before the comparison.
+- [x] **Debug Frequency Boundaries**: Check strict inequality for tone ranges.
+- [ ] **Implement Quint Correction**:
+    - [ ] If result is a Fifth (e.g., C) of a previously detected strong Fundamental (e.g., F), prioritize the Fundamental.
+    - [ ] Specifically check if `measured_freq / 1.5` matches a known fundamental tone.
+    - [ ] If so, force the result to be the fundamental tone and use the calculated fundamental frequency for playback.
+- [ ] **Fix Playback Button**: Debug why the "Play Tone" button might be unresponsive or silent.
 - [ ] **Verify Chart Data**: Check `FrequencyChart.tsx` to confirm exactly what the three bars represent (Likely dominant tone of Q1, Q2, Q3).
 - [ ] **Integrate User's Philosophy**: Add the "KIICH Philosophy" chapter using the user's provided material (on hold).

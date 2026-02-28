@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { SpectrumVisualizer } from "@/components/SpectrumVisualizer";
 import { FrequencyChart } from "@/components/FrequencyChart";
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
@@ -290,295 +289,300 @@ export default function Home() {
 
       case "question1":
       case "question2":
-      case "question3":
-        const stepData = {
-          question1: { title: "GEGENWART", progress: 33, heading: "Dein heutiger Tag", text: "Erzähle bitte mit normaler Sprechstimme, wie dein heutiger Tag begonnen hat und was du bislang getan hast. Bleibe entspannt und erzähle in ruhiger, dir angenehmer Sprechstimme." },
-          question2: { title: "VERGANGENHEIT", progress: 66, heading: "Ein schönes Erlebnis", text: "Erinnere dich an ein wunderschönes Erlebnis aus deinem Leben. Erzähle in dieser freudvollen Stimmung davon." },
-          question3: { title: "ZUKUNFT", progress: 100, heading: "Deine Vision", text: "Stimme dich ein auf eine Vision, die du noch umsetzen möchtest. Was treibt dich an und erfüllt dich mit freudiger Erwartung?" }
-        }[currentStep];
-
-        const stepHasResult = hasResult();
-
+      case "question3": {
+        const qNum = currentStep === "question1" ? 1 : currentStep === "question2" ? 2 : 3;
+        const qText = 
+          qNum === 1 ? "Erzähle bitte mit normaler Sprechstimme, wie dein heutiger Tag begonnen hat." :
+          qNum === 2 ? "Erinnere dich an ein wunderschönes Erlebnis aus deinem Leben (Kindheit oder nah)." :
+          "Stimme dich ein auf eine Vision, die du selbst in deinem Leben noch umsetzen möchtest.";
+        
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="w-full max-w-3xl space-y-8">
-              <div className="flex justify-between items-center text-sm text-zinc-500 mb-4">
-                <span>SCHRITT {currentStep === "question1" ? "1" : currentStep === "question2" ? "2" : "3"}/3</span>
-                <span>{stepData.title}</span>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-right-8 duration-500">
+            <div className="w-full max-w-2xl space-y-2 mb-8">
+              <div className="flex justify-between text-xs text-zinc-500 uppercase tracking-widest">
+                <span>Analyse</span>
+                <span>Schritt {qNum} von 3</span>
               </div>
-              <Progress value={stepData.progress} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
-              
-              <h2 className="text-3xl font-bold text-white mt-8">{stepData.heading}</h2>
-              
-              <div className="bg-zinc-900/50 p-8 rounded-2xl border border-zinc-800 text-lg text-zinc-300 leading-relaxed">
-                "{stepData.text}"
-              </div>
+              <Progress value={qNum * 33} className="h-1 bg-zinc-800" indicatorClassName="bg-orange-500" />
+            </div>
 
-              <div className="flex flex-col items-center justify-center space-y-6 py-8">
-                {isRecording ? (
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full animate-pulse" />
-                    <Button
-                      size="lg"
-                      variant="destructive"
-                      onClick={handleStopRecording}
-                      className="h-24 w-24 rounded-full relative z-10 border-4 border-zinc-900 hover:scale-105 transition-all"
+            <Card className="w-full max-w-2xl bg-zinc-900/50 border-zinc-800 backdrop-blur-sm relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-1 h-full bg-orange-500" />
+              <CardHeader>
+                <CardTitle className="text-xl text-zinc-400 font-normal">
+                  FRAGE {qNum}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-8">
+                <p className="text-2xl text-white font-medium leading-relaxed">
+                  {qText}
+                </p>
+
+                <div className="h-48 w-full bg-black/50 rounded-xl border border-zinc-800 flex items-center justify-center relative overflow-hidden">
+                  {isRecording ? (
+                    <SpectrumVisualizer 
+                      isActive={isRecording} 
+                      frequencyData={analysisResult?.spectrum || new Uint8Array(0)} 
+                    />
+                  ) : (
+                    <div className="text-zinc-600 flex flex-col items-center gap-2">
+                      <Mic className="h-8 w-8 opacity-50" />
+                      <span>Bereit zur Aufnahme</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex justify-center gap-4">
+                  {!isRecording ? (
+                    <Button 
+                      size="lg" 
+                      onClick={handleStartRecording}
+                      className="bg-red-500 hover:bg-red-600 text-white px-8 py-6 rounded-full shadow-[0_0_20px_rgba(239,68,68,0.4)]"
                     >
-                      <Square className="h-8 w-8 fill-current" />
+                      <Mic className="mr-2 h-5 w-5" /> Aufnahme starten
                     </Button>
-                    <p className="mt-4 text-orange-500 animate-pulse font-medium">Aufnahme läuft...</p>
-                  </div>
-                ) : stepHasResult ? (
-                  <div className="space-y-4 animate-in zoom-in duration-300">
-                    <div className="h-24 w-24 rounded-full bg-green-500/10 flex items-center justify-center mx-auto border border-green-500/50">
-                      <div className="text-green-500 font-bold text-xl">✓</div>
+                  ) : (
+                    <Button 
+                      size="lg" 
+                      onClick={handleStopRecording}
+                      className="bg-zinc-800 hover:bg-zinc-700 text-white px-8 py-6 rounded-full animate-pulse border border-red-500/50"
+                    >
+                      <Square className="mr-2 h-5 w-5 fill-current" /> Stop
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Error Message */}
+                {error && (
+                    <div className="text-red-400 text-sm mt-2 bg-red-900/20 p-2 rounded border border-red-900/50">
+                        {error}
                     </div>
-                    <div className="flex gap-4 justify-center">
-                        <Button 
-                        variant="outline"
-                        onClick={resetStep}
-                        className="border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 px-6 py-6 rounded-full"
-                        >
-                        <RotateCcw className="mr-2 h-4 w-4" /> Wiederholen
-                        </Button>
-                        <Button 
-                        onClick={nextStep}
-                        className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full text-lg"
-                        >
-                        {currentStep === "question3" ? "Ergebnis anzeigen" : "Weiter"} <ChevronRight className="ml-2 h-4 w-4" />
-                        </Button>
-                    </div>
-                  </div>
-                ) : (
-                  <Button
-                    size="lg"
-                    onClick={handleStartRecording}
-                    className="h-24 w-24 rounded-full bg-orange-500 hover:bg-orange-600 border-4 border-zinc-900 hover:scale-105 transition-all shadow-[0_0_30px_rgba(249,115,22,0.3)]"
-                  >
-                    <Mic className="h-8 w-8" />
-                  </Button>
                 )}
                 
-                {/* Visualizer is always visible but active only during recording */}
-                <div className="w-full h-32 mt-8">
-                  <SpectrumVisualizer frequencyData={analysisResult?.spectrum || new Uint8Array(0)} isActive={isRecording} />
-                </div>
-              </div>
-            </div>
+                {/* Retry Button (Only if we have a result for this step but aren't recording) */}
+                {!isRecording && hasResult() && (
+                    <div className="flex justify-center pt-2">
+                        <Button variant="ghost" size="sm" onClick={resetStep} className="text-zinc-500 hover:text-white">
+                            <RotateCcw className="mr-2 h-3 w-3" /> Aufnahme wiederholen
+                        </Button>
+                    </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {hasResult() && !isRecording && (
+              <Button 
+                size="lg" 
+                variant="secondary"
+                onClick={nextStep}
+                className="animate-in fade-in slide-in-from-bottom-4 duration-300"
+              >
+                Weiter zum nächsten Schritt <ChevronRight className="ml-2 h-4 w-4" />
+              </Button>
+            )}
           </div>
         );
+      }
 
       case "analyzing":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8 animate-in fade-in duration-700">
-            <div className="relative">
-                <div className="absolute inset-0 bg-orange-500/20 blur-xl rounded-full animate-pulse" />
-                <Loader2 className="h-24 w-24 animate-spin text-orange-500 relative z-10" />
-            </div>
-            <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold text-white">Daten werden verarbeitet</h2>
-                <p className="text-zinc-400">Vergangenheit, Gegenwart und Zukunft werden synchronisiert...</p>
-            </div>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8">
+            <Loader2 className="h-16 w-16 text-orange-500 animate-spin" />
+            <h2 className="text-2xl text-white font-light">
+              Frequenzen werden synchronisiert...
+            </h2>
+            <p className="text-zinc-500">
+              Vergangenheit • Gegenwart • Zukunft
+            </p>
           </div>
         );
 
-      case "result":
-        // Use finalResult or fallback to analysisResult
-        const res = finalResult || analysisResult;
+      case "result": {
+        if (!finalResult) return null;
+        const res = finalResult;
+        const { tone, cents, noteName } = res;
         
-        if (!res) return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh]">
-            <Loader2 className="h-12 w-12 animate-spin text-orange-500" />
-            <p className="mt-4 text-zinc-400">Ergebnis wird geladen...</p>
-          </div>
-        );
-
-        // We use the properties directly from the result object which matches AnalysisResult interface
-        const tone = res.tone;
-        const cents = res.cents;
-        const centsText = cents > 0 ? `+${cents}` : `${cents}`;
-
         return (
-          <div className="space-y-8 animate-in fade-in duration-1000">
-            {/* Header */}
-            <div className="text-center space-y-2">
-              <div className="inline-block px-3 py-1 rounded-full bg-zinc-800 text-zinc-400 text-xs font-medium tracking-wider mb-4">
-                ANALYSE ABGESCHLOSSEN
-              </div>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-white">
-                {tone.name}
-                <span className="text-2xl md:text-3xl text-zinc-500 font-normal ml-2">
-                  {centsText} Cent
-                </span>
+          <div className="animate-in fade-in zoom-in-95 duration-1000">
+            <div className="text-center mb-12 space-y-2">
+              <h2 className="text-zinc-500 uppercase tracking-[0.2em] text-sm">Dein Identitäts-Grundton</h2>
+              <h1 className="text-6xl md:text-8xl font-bold text-white tracking-tighter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                {noteName}
               </h1>
-              <p className="text-orange-500 font-mono text-lg">
-                {res.fundamentalFreq.toFixed(2)} Hz
-              </p>
+              <div className="flex items-center justify-center gap-2 text-zinc-400">
+                <span className="bg-zinc-800 px-3 py-1 rounded-full text-sm font-mono">
+                  {cents > 0 ? '+' : ''}{Math.round(cents)} cent
+                </span>
+                <span className="bg-zinc-800 px-3 py-1 rounded-full text-sm font-mono">
+                  {res.fundamentalFreq.toFixed(2)} Hz
+                </span>
+              </div>
             </div>
 
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-              
-              {/* Left Column: Profile */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+              {/* Left Column: Details & Sound */}
               <div className="space-y-6">
-                <Card className="bg-zinc-900/50 border-zinc-800">
+                <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm">
                   <CardHeader>
-                    <CardTitle className="text-zinc-400 text-sm font-medium tracking-wider">
-                      IDENTITÄTS-PROFIL
-                    </CardTitle>
+                    <CardTitle className="text-zinc-400 text-sm uppercase tracking-wider">Frequenz-Analyse</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6">
                     <div>
-                      <h3 className="text-2xl font-bold text-white mb-2">{tone.character}</h3>
-                      <p className="text-zinc-400 leading-relaxed">
-                        Deine Stimme zeigt eine starke Resonanz im Bereich {tone.name}. 
-                        Dies steht für {tone.character.toLowerCase()} Qualitäten.
-                      </p>
+                      <div className="text-sm text-zinc-500 mb-1">Dominante Qualität</div>
+                      <div className="text-2xl text-white font-medium">{tone.quality}</div>
                     </div>
-
+                    
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 rounded-lg bg-zinc-950/50 border border-zinc-800/50">
-                        <div className="text-xs text-zinc-500 mb-1">GEOMETRIE</div>
-                        <div className="text-white font-medium">{tone.geometry}</div>
+                      <div>
+                        <div className="text-sm text-zinc-500 mb-1">Element</div>
+                        <div className="text-lg text-white">{tone.element}</div>
                       </div>
-                      <div className="p-4 rounded-lg bg-zinc-950/50 border border-zinc-800/50">
-                        <div className="text-xs text-zinc-500 mb-1">FARBE</div>
-                        <div className="text-white font-medium">{tone.color}</div>
+                      <div>
+                        <div className="text-sm text-zinc-500 mb-1">Farbe</div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-4 h-4 rounded-full" style={{ backgroundColor: tone.color }} />
+                          <span className="text-lg text-white">{tone.colorName}</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-3 pt-4">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-zinc-500">Intuitiv</span>
-                        <span className="text-white">{tone.dimensions.intuitive}/10</span>
-                      </div>
-                      <Progress value={tone.dimensions.intuitive * 10} className="h-1 bg-zinc-800" indicatorClassName="bg-white" />
-                      
-                      <div className="flex justify-between text-sm mt-2">
-                        <span className="text-zinc-500">Intellektuell</span>
-                        <span className="text-white">{tone.dimensions.intellectual}/10</span>
-                      </div>
-                      <Progress value={tone.dimensions.intellectual * 10} className="h-1 bg-zinc-800" indicatorClassName="bg-white" />
-                      
-                      <div className="flex justify-between text-sm mt-2">
-                        <span className="text-zinc-500">Emotional</span>
-                        <span className="text-white">{tone.dimensions.emotional}/10</span>
-                      </div>
-                      <Progress value={tone.dimensions.emotional * 10} className="h-1 bg-zinc-800" indicatorClassName="bg-white" />
+                    <div>
+                      <div className="text-sm text-zinc-500 mb-1">Geometrie</div>
+                      <div className="text-lg text-white">{tone.geometry}</div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <div className="flex gap-4 flex-col">
-                  <div className="flex gap-4">
-                    <Button 
-                      variant="outline" 
-                      className="flex-1 h-14 border-zinc-800 hover:bg-zinc-800 text-white"
-                      onClick={() => isPlaying ? stopTone() : playTone(res.fundamentalFreq, currentOctaveShift, currentFineTune, isPureSineMode)}
-                    >
-                      {isPlaying ? <VolumeX className="mr-2 h-4 w-4" /> : <Volume2 className="mr-2 h-4 w-4" />}
-                      {isPlaying ? "Stop" : "Grundton hören"}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="flex-1 h-14 border-zinc-800 hover:bg-zinc-800 text-white"
-                      onClick={() => playChord(res.fundamentalFreq, currentOctaveShift, currentFineTune)}
-                    >
-                      <Play className="mr-2 h-4 w-4" />
-                      Akkord abspielen
-                    </Button>
+                {/* Sound Control */}
+                <div className="bg-zinc-900/80 rounded-xl p-6 border border-zinc-800 space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-white font-medium flex items-center gap-2">
+                      <Volume2 className="h-4 w-4 text-orange-500" /> Frequenz erleben
+                    </h3>
                   </div>
                   
-                  {/* Octave Controls */}
-                  <div className="flex items-center justify-center gap-4 py-2 bg-zinc-900/30 rounded-lg border border-zinc-800/50">
-                    <span className="text-xs text-zinc-500 uppercase tracking-wider">Oktave</span>
-                    <div className="flex items-center gap-2">
+                  <div className="space-y-4">
+                    <div className="flex gap-2 w-full">
                       <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="h-8 w-8 p-0 hover:bg-zinc-800 text-zinc-400"
-                        onClick={() => setCurrentOctaveShift(prev => prev - 1)}
+                        onClick={() => {
+                          if (isPlaying) {
+                            stopTone();
+                          } else {
+                            // Calculate frequency with octave shift
+                            const baseFreq = res.fundamentalFreq;
+                            // Apply octave shift locally
+                            const factor = Math.pow(2, currentOctaveShift);
+                            const finalFreq = baseFreq * factor;
+                            
+                            // playTone(baseFrequency, shift, fineTuneCents, isPureSine)
+                            // We pass 0 for shift because we already applied it to finalFreq
+                            playTone(finalFreq, 0, currentFineTune, isPureSineMode);
+                          }
+                        }}
+                        className={cn(
+                          "flex-1 h-12 text-lg font-medium transition-all",
+                          isPlaying 
+                            ? "bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/50" 
+                            : "bg-white text-black hover:bg-zinc-200"
+                        )}
                       >
-                        <ArrowDown className="h-4 w-4" />
-                      </Button>
-                      <span className="text-sm font-mono text-white w-8 text-center">
-                        {currentOctaveShift > 0 ? `+${currentOctaveShift}` : currentOctaveShift}
-                      </span>
-                      <Button 
-                        size="sm" 
-                        variant="ghost" 
-                        className="h-8 w-8 p-0 hover:bg-zinc-800 text-zinc-400"
-                        onClick={() => setCurrentOctaveShift(prev => prev + 1)}
-                      >
-                        <ArrowUp className="h-4 w-4" />
+                        {isPlaying ? (
+                          <><Square className="mr-2 h-5 w-5 fill-current" /> Stop</>
+                        ) : (
+                          <><Play className="mr-2 h-5 w-5 fill-current" /> Grundton hören</>
+                        )}
                       </Button>
                     </div>
-                  </div>
 
-                  {/* EXPERT MODE TOGGLE */}
-                  <Collapsible
-                    open={isExpertOpen}
-                    onOpenChange={setIsExpertOpen}
-                    className="w-full space-y-2 border border-zinc-800 rounded-lg p-2 bg-zinc-950/30"
-                  >
-                    <div className="flex items-center justify-between px-2">
-                        <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium">
-                            <Settings className="h-3 w-3" /> EXPERTEN-MODUS
-                        </div>
-                        <CollapsibleTrigger asChild>
-                            <Button variant="ghost" size="sm" className="w-9 p-0 h-6">
-                                <ChevronRight className={cn("h-4 w-4 transition-transform", isExpertOpen && "rotate-90")} />
-                                <span className="sr-only">Toggle</span>
-                            </Button>
-                        </CollapsibleTrigger>
+                    {/* Octave Shift Controls */}
+                    <div className="flex items-center justify-between bg-black/40 p-2 rounded-lg border border-zinc-800/50">
+                      <span className="text-xs text-zinc-500 pl-2">Oktave</span>
+                      <div className="flex items-center gap-2">
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-8 w-8 p-0 hover:bg-zinc-800 text-zinc-400"
+                          onClick={() => setCurrentOctaveShift(prev => prev - 1)}
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
+                        <span className="text-sm font-mono text-white w-8 text-center">
+                          {currentOctaveShift > 0 ? `+${currentOctaveShift}` : currentOctaveShift}
+                        </span>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-8 w-8 p-0 hover:bg-zinc-800 text-zinc-400"
+                          onClick={() => setCurrentOctaveShift(prev => prev + 1)}
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
+
+                    {/* EXPERT MODE TOGGLE */}
+                    <Collapsible
+                      open={isExpertOpen}
+                      onOpenChange={setIsExpertOpen}
+                      className="w-full space-y-2 border border-zinc-800 rounded-lg p-2 bg-zinc-950/30"
+                    >
+                      <div className="flex items-center justify-between px-2">
+                          <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium">
+                              <Settings className="h-3 w-3" /> EXPERTEN-MODUS
+                          </div>
+                          <CollapsibleTrigger asChild>
+                              <Button variant="ghost" size="sm" className="w-9 p-0 h-6">
+                                  <ChevronRight className={cn("h-4 w-4 transition-transform", isExpertOpen && "rotate-90")} />
+                                  <span className="sr-only">Toggle</span>
+                              </Button>
+                          </CollapsibleTrigger>
+                      </div>
+                      
+                      <CollapsibleContent className="space-y-4 pt-2 px-2">
+                          {/* 432 Hz Switch */}
+                          <div className="flex items-center justify-between">
+                              <span className="text-sm text-zinc-300">432 Hz Referenz</span>
+                              <Switch 
+                                  checked={is432Hz}
+                                  onCheckedChange={setIs432Hz}
+                              />
+                          </div>
+
+                          {/* Pure Sine Switch */}
+                          <div className="flex items-center justify-between">
+                              <span className="text-sm text-zinc-300">Reiner Sinus (Kalibrierung)</span>
+                              <Switch 
+                                  checked={isPureSineMode}
+                                  onCheckedChange={setIsPureSineMode}
+                              />
+                          </div>
+
+                          {/* Fine Tune Slider */}
+                          <div className="space-y-3 pt-2">
+                              <div className="flex justify-between">
+                                  <span className="text-xs text-zinc-400">Feinabstimmung (Cents)</span>
+                                  <span className="text-xs font-mono text-orange-500">{currentFineTune > 0 ? '+' : ''}{currentFineTune}</span>
+                              </div>
+                              <Slider
+                                  defaultValue={[0]}
+                                  max={100}
+                                  min={-100}
+                                  step={1}
+                                  value={[currentFineTune]}
+                                  onValueChange={(val) => setCurrentFineTune(val[0])}
+                                  className="py-2"
+                              />
+                          </div>
+                      </CollapsibleContent>
+                    </Collapsible>
                     
-                    <CollapsibleContent className="space-y-4 pt-2 px-2">
-                        {/* 432 Hz Switch */}
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="432-mode" className="text-sm text-zinc-300">432 Hz Referenz</Label>
-                            <Switch 
-                                id="432-mode" 
-                                checked={is432Hz}
-                                onCheckedChange={setIs432Hz}
-                            />
-                        </div>
-
-                        {/* Pure Sine Switch */}
-                        <div className="flex items-center justify-between">
-                            <Label htmlFor="sine-mode" className="text-sm text-zinc-300">Reiner Sinus (Kalibrierung)</Label>
-                            <Switch 
-                                id="sine-mode" 
-                                checked={isPureSineMode}
-                                onCheckedChange={setIsPureSineMode}
-                            />
-                        </div>
-
-                        {/* Fine Tune Slider */}
-                        <div className="space-y-3 pt-2">
-                            <div className="flex justify-between">
-                                <Label className="text-xs text-zinc-400">Feinabstimmung (Cents)</Label>
-                                <span className="text-xs font-mono text-orange-500">{currentFineTune > 0 ? '+' : ''}{currentFineTune}</span>
-                            </div>
-                            <Slider
-                                defaultValue={[0]}
-                                max={100}
-                                min={-100}
-                                step={1}
-                                value={[currentFineTune]}
-                                onValueChange={(val) => setCurrentFineTune(val[0])}
-                                className="py-2"
-                            />
-                        </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                  
-                  {isPlaying && playingFreq && (
-                    <div className="text-center text-xs text-orange-500 animate-pulse font-mono border border-orange-500/30 bg-orange-500/10 py-2 rounded">
-                      <Activity className="h-3 w-3 inline mr-2" />
-                      OUTPUT: {playingFreq.toFixed(2)} Hz
-                    </div>
-                  )}
+                    {isPlaying && playingFreq && (
+                      <div className="text-center text-xs text-orange-500 animate-pulse font-mono border border-orange-500/30 bg-orange-500/10 py-2 rounded">
+                        <Activity className="h-3 w-3 inline mr-2" />
+                        OUTPUT: {playingFreq.toFixed(2)} Hz
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -645,6 +649,7 @@ export default function Home() {
             </div>
           </div>
         );
+      }
     }
   };
 
