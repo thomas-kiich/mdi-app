@@ -5,6 +5,7 @@ export function useSoundGenerator() {
   const activeOscillatorsRef = useRef<OscillatorNode[]>([]);
   const activeGainNodesRef = useRef<GainNode[]>([]);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [playingFreq, setPlayingFreq] = useState<number | null>(null);
 
   // Initialize AudioContext on user interaction
   const initAudioContext = useCallback(() => {
@@ -35,6 +36,7 @@ export function useSoundGenerator() {
     });
     activeGainNodesRef.current = [];
     setIsPlaying(false);
+    setPlayingFreq(null);
   }, []);
 
   const playTone = useCallback((frequency: number) => {
@@ -43,36 +45,62 @@ export function useSoundGenerator() {
 
     stopAllSounds();
     setIsPlaying(true);
+    setPlayingFreq(frequency);
     
-    console.log(`Playing tone at: ${frequency} Hz`);
+    console.log(`Playing improved tone at: ${frequency} Hz`);
 
-    const osc = ctx.createOscillator();
-    const gainNode = ctx.createGain();
+    // Create multiple oscillators for a richer sound
+    // Fundamental: Triangle wave (more body than sine)
+    const osc1 = ctx.createOscillator();
+    osc1.type = 'triangle';
+    osc1.frequency.setValueAtTime(frequency, ctx.currentTime);
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(frequency, ctx.currentTime);
+    // Overtone 1: Sawtooth (adds brilliance), 1 octave up, lower volume
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'sawtooth';
+    osc2.frequency.setValueAtTime(frequency * 2, ctx.currentTime);
+    osc2.detune.value = 5; // Slight detune for warmth
+
+    const gainNode1 = ctx.createGain();
+    const gainNode2 = ctx.createGain();
+    const masterGain = ctx.createGain();
 
     const now = ctx.currentTime;
     const duration = 4; // Longer duration for better listening experience
     
-    // Envelope
-    gainNode.gain.setValueAtTime(0, now);
-    gainNode.gain.linearRampToValueAtTime(0.5, now + 0.1); // Attack
-    gainNode.gain.setValueAtTime(0.5, now + duration - 0.5); // Sustain
-    gainNode.gain.linearRampToValueAtTime(0, now + duration); // Release
+    // Envelope for Fundamental
+    gainNode1.gain.setValueAtTime(0, now);
+    gainNode1.gain.linearRampToValueAtTime(0.6, now + 0.1); // Attack
+    gainNode1.gain.setValueAtTime(0.6, now + duration - 0.5); // Sustain
+    gainNode1.gain.linearRampToValueAtTime(0, now + duration); // Release
 
-    osc.connect(gainNode);
-    gainNode.connect(ctx.destination);
+    // Envelope for Overtone (Subtler)
+    gainNode2.gain.setValueAtTime(0, now);
+    gainNode2.gain.linearRampToValueAtTime(0.15, now + 0.1); 
+    gainNode2.gain.setValueAtTime(0.15, now + duration - 0.5); 
+    gainNode2.gain.linearRampToValueAtTime(0, now + duration);
 
-    osc.start(now);
-    osc.stop(now + duration + 0.1);
+    osc1.connect(gainNode1);
+    osc2.connect(gainNode2);
+    
+    gainNode1.connect(masterGain);
+    gainNode2.connect(masterGain);
+    
+    masterGain.connect(ctx.destination);
 
-    activeOscillatorsRef.current.push(osc);
-    activeGainNodesRef.current.push(gainNode);
+    osc1.start(now);
+    osc2.start(now);
+    
+    osc1.stop(now + duration + 0.1);
+    osc2.stop(now + duration + 0.1);
+
+    activeOscillatorsRef.current.push(osc1, osc2);
+    activeGainNodesRef.current.push(gainNode1, gainNode2, masterGain);
 
     // Cleanup after end
     setTimeout(() => {
         setIsPlaying(false);
+        setPlayingFreq(null);
     }, duration * 1000);
 
   }, [initAudioContext, stopAllSounds]);
@@ -83,6 +111,7 @@ export function useSoundGenerator() {
 
     stopAllSounds();
     setIsPlaying(true);
+    setPlayingFreq(fundamentalFreq); // Show base freq
     
     console.log(`Playing chord based on fundamental: ${fundamentalFreq} Hz`);
 
@@ -110,7 +139,8 @@ export function useSoundGenerator() {
 
     frequencies.forEach((freq, index) => {
       const osc = ctx.createOscillator();
-      osc.type = index === 0 ? 'triangle' : 'sine'; // Fundamental as triangle for more body
+      // Mix waveforms for richer texture
+      osc.type = index === 0 ? 'triangle' : 'sine'; 
       
       // Detune for chorus effect (more organic)
       const detune = (Math.random() - 0.5) * 8; 
@@ -126,6 +156,7 @@ export function useSoundGenerator() {
     
     setTimeout(() => {
         setIsPlaying(false);
+        setPlayingFreq(null);
     }, duration * 1000);
 
   }, [initAudioContext, stopAllSounds]);
@@ -145,6 +176,7 @@ export function useSoundGenerator() {
     playChord, 
     stopAllSounds,
     stopTone: stopAllSounds, // Alias for consistency with Home.tsx
-    isPlaying 
+    isPlaying,
+    playingFreq
   };
 }
