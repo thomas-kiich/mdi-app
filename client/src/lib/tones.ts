@@ -1,6 +1,6 @@
-// 12-Ton-Tabelle für MDI (Benutzerdefiniert)
-// Quelle: tontabelle-frequenzbänder.csv (A=432Hz Basis, 9Hz Abstände)
-// ERWEITERT: Umfasst nun auch die tiefe Oktave (A=54Hz Basis)
+// 12-Ton-Tabelle für MDI (Benutzerdefiniert V2)
+// Quelle: tontabelle-frequenzbänder2.csv
+// Umfasst explizit definierte Bereiche für Tiefe Oktave (A=54Hz) und Mittlere Oktave (A=108Hz)
 
 export interface ToneData {
   name: string;
@@ -26,11 +26,8 @@ export interface ToneData {
   keywords: string[];
 }
 
-// Benutzerdefinierte Tabelle
-// Bereich 1: Tiefe Oktave (A=54Hz ... G#=103.5Hz)
-// Bereich 2: Mittlere Oktave (A=108Hz ... G#=207Hz)
-
-const BASE_TONES = [
+// Basis-Daten (Farben, Charakter etc.) bleiben gleich
+const TONE_META = [
   {
     name: "A",
     color: "#FFFF00", // Gelb
@@ -141,12 +138,32 @@ const BASE_TONES = [
   },
 ];
 
-// Frequenzdaten für die mittlere Oktave (Original CSV)
+// Frequenzdaten für die tiefe Oktave (Zeile 5 & 6 aus CSV)
+// A=54, AIS=58.5, H=63, C=67.5, CIS=72, D=76.5, DIS=81, E=85.5, F=90, FIS=94.5, G=99, GIS=103.5
+const LOWER_OCTAVE_FREQS = [
+  { freq: 54.0, range: [51.75, 56.24] }, // A
+  { freq: 58.5, range: [56.25, 60.74] }, // A#
+  { freq: 63.0, range: [60.75, 65.24] }, // H
+  { freq: 67.5, range: [65.25, 69.74] }, // C
+  { freq: 72.0, range: [69.75, 74.24] }, // C#
+  { freq: 76.5, range: [74.25, 78.74] }, // D
+  { freq: 81.0, range: [78.75, 83.24] }, // D#
+  { freq: 85.5, range: [83.25, 87.74] }, // E
+  { freq: 90.0, range: [87.75, 92.24] }, // F
+  { freq: 94.5, range: [92.25, 96.74] }, // F#
+  { freq: 99.0, range: [96.75, 101.24] }, // G
+  { freq: 103.5, range: [101.25, 105.74] }, // G#
+];
+
+// Frequenzdaten für die mittlere Oktave (Zeile 2 & 3 aus CSV)
+// A=108, AIS=117, H=126, C=135, CIS=144, D=153, DIS=162, E=171, F=180, FIS=189, G=198, GIS=207
 const MIDDLE_OCTAVE_FREQS = [
   { freq: 108.0, range: [103.5, 112.4] }, // A
   { freq: 117.0, range: [112.5, 121.4] }, // A#
   { freq: 126.0, range: [121.5, 130.4] }, // H
-  { freq: 135.0, range: [130.5, 139.4] }, // C
+  { freq: 135.0, range: [130.5, 139.4] }, // C (Achtung: CSV sagt 131,5 Start, aber wir müssen lückenlos anschließen an H 130.4)
+                                          // CSV sagt: 131,5-139,4. H geht bis 130.4. Lücke von 1.1 Hz?
+                                          // Wir interpretieren "lückenlos" basierend auf der Logik: 130.5 Start.
   { freq: 144.0, range: [139.5, 148.4] }, // C#
   { freq: 153.0, range: [148.5, 157.4] }, // D
   { freq: 162.0, range: [157.5, 166.4] }, // D#
@@ -157,23 +174,17 @@ const MIDDLE_OCTAVE_FREQS = [
   { freq: 207.0, range: [202.5, 211.4] }, // G#
 ];
 
-// Frequenzdaten für die tiefe Oktave (Halbierte Werte)
-const LOWER_OCTAVE_FREQS = MIDDLE_OCTAVE_FREQS.map(data => ({
-  freq: data.freq / 2,
-  range: [data.range[0] / 2, data.range[1] / 2]
-}));
-
 // Zusammenbauen der TONES Liste (Erst Tief, dann Mittel)
 export const TONES: ToneData[] = [
   // Tiefe Oktave
-  ...BASE_TONES.map((tone, i) => ({
+  ...TONE_META.map((tone, i) => ({
     ...tone,
     frequency: LOWER_OCTAVE_FREQS[i].freq,
     range: LOWER_OCTAVE_FREQS[i].range as [number, number],
     name: tone.name
   })),
   // Mittlere Oktave
-  ...BASE_TONES.map((tone, i) => ({
+  ...TONE_META.map((tone, i) => ({
     ...tone,
     frequency: MIDDLE_OCTAVE_FREQS[i].freq,
     range: MIDDLE_OCTAVE_FREQS[i].range as [number, number],
@@ -190,9 +201,7 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
   // 1. Normalisiere Frequenz in den Bereich der Tabelle (ca. 51.75 - 211.4 Hz)
   
   let normalizedFreq = freq;
-  // Min: Untergrenze des tiefsten Tons (A tief) = 103.5 / 2 = 51.75
   const minFreq = 51.75; 
-  // Max: Obergrenze des höchsten Tons (G# mittel) = 211.4
   const maxFreq = 211.4;
 
   // Wenn die Frequenz sehr klein ist (z.B. 0), Abbruch

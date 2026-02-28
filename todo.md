@@ -14,10 +14,10 @@
 - [x] **Fix Tone Mapping Logic**: Correct the `getToneFromFrequency` function to handle all octaves correctly.
 - [x] **Implement Custom Frequency Bands**: Use user's CSV data for tone definitions.
 - [x] **Fix Octave Normalization**: Ensure frequencies are correctly mapped to the custom table range.
-- [ ] **Expand Frequency Table**: 
-    - [ ] Add the lower octave (A=54Hz to G#=103.5Hz) to `TONES` in `client/src/lib/tones.ts`.
-    - [ ] Calculate the exact frequency bands for this lower octave based on the user's 9Hz intervals (halved to 4.5Hz?). Wait, if A=108 has range +/- 4.5Hz (9Hz width), then A=54 should logically have +/- 2.25Hz (4.5Hz width) to maintain the octave relationship? Or does the user want linear extension?
-    - [ ] **Decision**: Since the user said "A=54Hz und die bandbreiten dazu", I will calculate them proportionally (halving the frequencies implies halving the bandwidths in linear Hz terms to maintain the same musical interval size in cents).
-    - [ ] Update `getToneFromFrequency` to handle the extended range (52Hz - 212Hz).
+- [x] **Expand Frequency Table**: Add the lower octave (A=54Hz to G#=103.5Hz) to `TONES` in `client/src/lib/tones.ts`.
+- [ ] **Implement Frequency Table V2**: 
+    - [ ] Read `tontabelle-frequenzbänder2.csv` to understand the new definitions (where 87.55Hz = E).
+    - [ ] Update `client/src/lib/tones.ts` with the exact values from the new CSV.
+    - [ ] Ensure the system respects these new boundaries without trying to "outsmart" them with calculations.
 - [ ] **Verify Chart Data**: Check `FrequencyChart.tsx` to confirm exactly what the three bars represent (Likely dominant tone of Q1, Q2, Q3).
 - [ ] **Integrate User's Philosophy**: Add the "KIICH Philosophy" chapter using the user's provided material (on hold).
