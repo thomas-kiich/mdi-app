@@ -134,14 +134,6 @@ export function useSoundGenerator() {
     
     activeGainNodesRef.current.push(masterGain);
 
-    // Cleanup after end
-    setTimeout(() => {
-        // Only stop if we haven't started a new sound (check playingFreq or use a ref ID)
-        // For simplicity, we just reset state if the time matches, but cleaner is to rely on user stop or new play
-        // setIsPlaying(false); // Let it run until user stops or it fades out
-        // setPlayingFreq(null);
-    }, duration * 1000);
-
   }, [initAudioContext, stopAllSounds]);
 
   const playChord = useCallback((baseFrequency: number, shift: number = 0, fineTuneCents: number = 0) => {
