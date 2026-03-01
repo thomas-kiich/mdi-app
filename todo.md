@@ -21,7 +21,9 @@
     - [x] If result is a Fifth (e.g., C) of a previously detected strong Fundamental (e.g., F), prioritize the Fundamental.
     - [x] Specifically check if `measured_freq / 1.5` matches a known fundamental tone.
     - [x] If so, force the result to be the fundamental tone and use the calculated fundamental frequency for playback.
-- [ ] **Refine Quint Correction Precision**: Use exact measured frequency / 1.5 instead of ideal note frequency.
-- [ ] **Fix Playback Silence**: Debug why the "Play Tone" button is silent (check for NaN or 0 frequency).
+- [x] **Refine Quint Correction Precision**: Use exact measured frequency / 1.5 instead of ideal note frequency.
+- [x] **Fix Playback Silence**: Debug why the "Play Tone" button is silent (check for NaN or 0 frequency).
+- [ ] **Restore Raw Frequency Data**: Ensure the displayed Hz is the exact measured value (e.g., 94.73Hz) and not the center frequency of the band.
+- [ ] **Add Detail Table**: Add a table below the chart showing detailed breakdown for each step (Tone, Hz, Cents, Notes).
 - [ ] **Verify Chart Data**: Check `FrequencyChart.tsx` to confirm exactly what the three bars represent (Likely dominant tone of Q1, Q2, Q3).
 - [ ] **Integrate User's Philosophy**: Add the "KIICH Philosophy" chapter using the user's provided material (on hold).
