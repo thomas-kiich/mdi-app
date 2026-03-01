@@ -1,262 +1,178 @@
-// 12-Ton-Tabelle für MDI (Benutzerdefiniert V2)
-// Quelle: tontabelle-frequenzbänder2.csv
-// Umfasst explizit definierte Bereiche für Tiefe Oktave (A=54Hz) und Mittlere Oktave (A=108Hz)
+// TONES.ts - Frequency Data and Metadata for MDI System
+// Updated Color Logic: C = Green (Center of Spectrum)
 
 export interface ToneData {
   name: string;
-  frequency: number; // Mittenfrequenz
-  range: [number, number]; // [min, max]
-  color: string;
-  lightColorNm: string;
-  character: string;
-  geometry: string;
-  dimensions: {
-    intuitive: number;
-    intellectual: number;
-    sensitive: number;
-    spontaneous: number;
-    abstract: number;
-    structured: number;
-    material: number;
-    ideal: number;
-    social: number;
-    emotional: number;
-    selfReference: number;
-  };
-  keywords: string[];
+  frequency: number; // Ideal frequency in Hz (middle octave)
+  color: string;     // Hex color code
+  meaning: string;   // Short description/meaning
+  geometry: string;  // Placeholder for generative art shape
+  minFreq: number;   // Lower bound for detection
+  maxFreq: number;   // Upper bound for detection
 }
 
-// Basis-Daten (Farben, Charakter etc.) bleiben gleich
-const TONE_META = [
-  {
-    name: "A",
-    color: "#FFFF00", // Gelb
-    lightColorNm: "gelb",
-    character: "freiheitsanspruch, strukturfordernd",
-    geometry: "stern",
-    dimensions: { intuitive: 1, intellectual: 8, sensitive: 1, spontaneous: 1, abstract: 2, structured: 10, material: 8, ideal: 6, social: 2, emotional: 4, selfReference: 8 },
-    keywords: ["FREIHEIT", "STRUKTURGEBEND"],
-  },
-  {
-    name: "A#", // AIS
-    color: "#9ACD32", // Gelbgrün
-    lightColorNm: "gelbgrün",
-    character: "elitär intellektuell",
-    geometry: "rechteck",
-    dimensions: { intuitive: 1, intellectual: 10, sensitive: 2, spontaneous: 1, abstract: 1, structured: 9, material: 10, ideal: 7, social: 3, emotional: 5, selfReference: 9 },
-    keywords: ["INTELLEKT", "ELITÄR"],
-  },
-  {
-    name: "H",
-    color: "#808000", // Olive
-    lightColorNm: "olive",
-    character: "extremer leistungsanspruch",
-    geometry: "konzentrierter schwarzer punkt",
-    dimensions: { intuitive: 3, intellectual: 9, sensitive: 5, spontaneous: 1, abstract: 2, structured: 9, material: 6, ideal: 9, social: 4, emotional: 5, selfReference: 9 },
-    keywords: ["LEISTUNG", "FORDERUNG"],
-  },
+// Color Mapping Logic (Based on User Request: C = Green)
+// We map the chromatic scale to the color wheel, anchoring C at Green.
+// The user specified a range from Red-Violet to Blue-Violet.
+// This implies a full spectral circle.
+
+// Mapping (Approximate Physics/Synesthesia):
+// C  = Green       (#22c55e) - The Center/Heart
+// C# = Blue-Green  (#06b6d4)
+// D  = Blue        (#3b82f6)
+// D# = Indigo      (#6366f1)
+// E  = Violet      (#8b5cf6) - "Blauviolett"
+// F  = Red-Violet  (#d946ef) - "Rotviolett" (Magenta)
+// F# = Red         (#ef4444)
+// G  = Red-Orange  (#f97316)
+// G# = Orange      (#fb923c)
+// A  = Yellow-Orange (#eab308)
+// A# = Yellow      (#facc15)
+// H  = Yellow-Green (#84cc16)
+
+export const TONES: ToneData[] = [
   {
     name: "C",
-    color: "#228B22", // Grün
-    lightColorNm: "grün",
-    character: "fürsorglich",
-    geometry: "kreis",
-    dimensions: { intuitive: 5, intellectual: 2, sensitive: 10, spontaneous: 8, abstract: 5, structured: 5, material: 4, ideal: 8, social: 10, emotional: 10, selfReference: 2 },
-    keywords: ["EMPATHIE", "SOZIAL"],
+    frequency: 130.81, // C3
+    color: "#22c55e", // Green
+    meaning: "Stabilität, Erdung, Urvertrauen",
+    geometry: "quadrat-basis",
+    minFreq: 127.0, 
+    maxFreq: 134.7
   },
   {
-    name: "C#", // CIS
-    color: "#40E0D0", // Türkis
-    lightColorNm: "türkis",
-    character: "religiös",
-    geometry: "vertikale welle",
-    dimensions: { intuitive: 5, intellectual: 3, sensitive: 9, spontaneous: 4, abstract: 7, structured: 7, material: 2, ideal: 10, social: 9, emotional: 3, selfReference: 5 },
-    keywords: ["RELIGIÖS", "SENSIBEL"],
+    name: "Cis",
+    frequency: 138.59, // C#3
+    color: "#06b6d4", // Cyan/Blue-Green
+    meaning: "Verbindung, Fluss, Integration",
+    geometry: "kreis-welle",
+    minFreq: 134.7,
+    maxFreq: 142.6
   },
   {
     name: "D",
-    color: "#87CEEB", // Hellblau
-    lightColorNm: "hellblau",
-    character: "materiell",
-    geometry: "horizontaler pfeil",
-    dimensions: { intuitive: 4, intellectual: 5, sensitive: 7, spontaneous: 7, abstract: 1, structured: 8, material: 10, ideal: 2, social: 6, emotional: 5, selfReference: 5 },
-    keywords: ["PRAGMATISCH", "WELTLICH"],
+    frequency: 146.83, // D3
+    color: "#3b82f6", // Blue
+    meaning: "Kreativität, Ausdruck, Kommunikation",
+    geometry: "dreieck-spitze",
+    minFreq: 142.6,
+    maxFreq: 151.0
   },
   {
-    name: "D#", // DIS
-    color: "#00008B", // Tiefblau
-    lightColorNm: "tiefblau",
-    character: "forschend",
-    geometry: "quadrat",
-    dimensions: { intuitive: 3, intellectual: 7, sensitive: 1, spontaneous: 2, abstract: 1, structured: 10, material: 8, ideal: 8, social: 2, emotional: 1, selfReference: 2 },
-    keywords: ["EMOTIONSFREI", "BESTÄNDIG"],
+    name: "Dis",
+    frequency: 155.56, // D#3
+    color: "#6366f1", // Indigo/Blue-Violet
+    meaning: "Klarheit, Vision, Intuition",
+    geometry: "stern-strahl",
+    minFreq: 151.0,
+    maxFreq: 160.0
   },
   {
     name: "E",
-    color: "#8A2BE2", // Blauviolett
-    lightColorNm: "blauviolett",
-    character: "gebundeheit",
-    geometry: "wellige quallenform",
-    dimensions: { intuitive: 8, intellectual: 2, sensitive: 4, spontaneous: 1, abstract: 5, structured: 9, material: 1, ideal: 9, social: 6, emotional: 8, selfReference: 2 },
-    keywords: ["KONDITIONIERUNG", "VERGANGENHEIT"],
+    frequency: 164.81, // E3
+    color: "#8b5cf6", // Violet (Blauviolett)
+    meaning: "Transformation, Geist, Bewusstsein",
+    geometry: "spirale-innen",
+    minFreq: 160.0,
+    maxFreq: 169.6
   },
   {
     name: "F",
-    color: "#FF00FF", // Magenta
-    lightColorNm: "magenta",
-    character: "quelle",
-    geometry: "fliessendes grenzenloses",
-    dimensions: { intuitive: 10, intellectual: 1, sensitive: 6, spontaneous: 8, abstract: 10, structured: 1, material: 1, ideal: 8, social: 10, emotional: 4, selfReference: 1 },
-    keywords: ["INTUITION", "LOSGELÖST"],
+    frequency: 174.61, // F3
+    color: "#d946ef", // Fuchsia/Red-Violet (Rotviolett)
+    meaning: "Liebe, Herzöffnung, Balance",
+    geometry: "blume-leben",
+    minFreq: 169.6,
+    maxFreq: 179.8
   },
   {
-    name: "F#", // FIS
-    color: "#FF0000", // Rot
-    lightColorNm: "rot",
-    character: "risikobereit",
-    geometry: "wellige pfeile in alle richtungen",
-    dimensions: { intuitive: 9, intellectual: 4, sensitive: 5, spontaneous: 9, abstract: 7, structured: 1, material: 1, ideal: 3, social: 7, emotional: 7, selfReference: 8 },
-    keywords: ["INSTINKT", "AUTODIDAKT"],
+    name: "Fis",
+    frequency: 185.00, // F#3
+    color: "#ef4444", // Red
+    meaning: "Energie, Leidenschaft, Wille",
+    geometry: "feuer-flamme",
+    minFreq: 179.8,
+    maxFreq: 190.5
   },
   {
     name: "G",
-    color: "#FF4500", // Rotorange
-    lightColorNm: "rotorange",
-    character: "führungsanspruch",
-    geometry: "pyramide",
-    dimensions: { intuitive: 6, intellectual: 6, sensitive: 4, spontaneous: 3, abstract: 4, structured: 7, material: 6, ideal: 4, social: 5, emotional: 10, selfReference: 10 },
-    keywords: ["FÜHRER", "CHARISMA"],
+    frequency: 196.00, // G3
+    color: "#f97316", // Orange-Red
+    meaning: "Freude, Schöpferkraft, Sexualität",
+    geometry: "sonne-strahl",
+    minFreq: 190.5,
+    maxFreq: 201.7
   },
   {
-    name: "G#", // GIS
-    color: "#FFA500", // Gelborange
-    lightColorNm: "gelborange",
-    character: "deatilfixiert",
-    geometry: "feine linien",
-    dimensions: { intuitive: 2, intellectual: 7, sensitive: 2, spontaneous: 2, abstract: 3, structured: 9, material: 7, ideal: 7, social: 1, emotional: 5, selfReference: 9 },
-    keywords: ["DETAILFIXIERT", "GENAUIGKEITSANSPRUCH"],
+    name: "Gis",
+    frequency: 207.65, // G#3
+    color: "#fb923c", // Orange
+    meaning: "Gemeinschaft, Zugehörigkeit, Wärme",
+    geometry: "wabe-struktur",
+    minFreq: 201.7,
+    maxFreq: 213.6
   },
+  {
+    name: "A",
+    frequency: 220.00, // A3
+    color: "#eab308", // Yellow-Orange/Gold
+    meaning: "Wissen, Intellekt, Macht",
+    geometry: "pyramide-basis",
+    minFreq: 213.6,
+    maxFreq: 226.3
+  },
+  {
+    name: "Ais",
+    frequency: 233.08, // A#3
+    color: "#facc15", // Yellow
+    meaning: "Weisheit, Erleuchtung, Licht",
+    geometry: "stern-acht",
+    minFreq: 226.3,
+    maxFreq: 239.7
+  },
+  {
+    name: "H",
+    frequency: 246.94, // B3
+    color: "#84cc16", // Lime/Yellow-Green
+    meaning: "Wachstum, Heilung, Harmonie",
+    geometry: "baum-leben",
+    minFreq: 239.7,
+    maxFreq: 254.0
+  }
 ];
 
-// Frequenzdaten für die tiefe Oktave (Zeile 5 & 6 aus CSV)
-// A=54, AIS=58.5, H=63, C=67.5, CIS=72, D=76.5, DIS=81, E=85.5, F=90, FIS=94.5, G=99, GIS=103.5
-const LOWER_OCTAVE_FREQS = [
-  { freq: 54.0, range: [51.75, 56.24] }, // A
-  { freq: 58.5, range: [56.25, 60.74] }, // A#
-  { freq: 63.0, range: [60.75, 65.24] }, // H
-  { freq: 67.5, range: [65.25, 69.74] }, // C
-  { freq: 72.0, range: [69.75, 74.24] }, // C#
-  { freq: 76.5, range: [74.25, 78.74] }, // D
-  { freq: 81.0, range: [78.75, 83.24] }, // D#
-  { freq: 85.5, range: [83.25, 87.74] }, // E
-  { freq: 90.0, range: [87.75, 92.24] }, // F
-  { freq: 94.5, range: [92.25, 96.74] }, // F#
-  { freq: 99.0, range: [96.75, 101.24] }, // G
-  { freq: 103.5, range: [101.25, 105.74] }, // G#
-];
-
-// Frequenzdaten für die mittlere Oktave (Zeile 2 & 3 aus CSV)
-// A=108, AIS=117, H=126, C=135, CIS=144, D=153, DIS=162, E=171, F=180, FIS=189, G=198, GIS=207
-const MIDDLE_OCTAVE_FREQS = [
-  { freq: 108.0, range: [103.5, 112.4] }, // A
-  { freq: 117.0, range: [112.5, 121.4] }, // A#
-  { freq: 126.0, range: [121.5, 130.4] }, // H
-  { freq: 135.0, range: [130.5, 139.4] }, // C
-  { freq: 144.0, range: [139.5, 148.4] }, // C#
-  { freq: 153.0, range: [148.5, 157.4] }, // D
-  { freq: 162.0, range: [157.5, 166.4] }, // D#
-  { freq: 171.0, range: [166.5, 175.4] }, // E
-  { freq: 180.0, range: [175.5, 184.4] }, // F
-  { freq: 189.0, range: [184.5, 193.4] }, // F#
-  { freq: 198.0, range: [193.5, 202.4] }, // G
-  { freq: 207.0, range: [202.5, 211.4] }, // G#
-];
-
-// Zusammenbauen der TONES Liste (Erst Tief, dann Mittel)
-// WICHTIG: Die Reihenfolge muss konsistent sein.
-export const TONES: ToneData[] = [];
-
-// Helper to push tones
-function addTones(freqs: typeof LOWER_OCTAVE_FREQS) {
-    TONE_META.forEach((meta, i) => {
-        TONES.push({
-            ...meta,
-            frequency: freqs[i].freq,
-            range: freqs[i].range as [number, number],
-            name: meta.name
-        });
-    });
-}
-
-addTones(LOWER_OCTAVE_FREQS);
-addTones(MIDDLE_OCTAVE_FREQS);
-
-
-// Hilfsfunktion: Frequenz zu Ton zuordnen basierend auf CUSTOM BANDS
-export function getToneFromFrequency(freq: number): { tone: ToneData; cents: number; diffHz: number } {
-  if (!freq || freq <= 0) {
-      return { tone: TONES[0], cents: 0, diffHz: 0 };
-  }
-
-  // 1. Normalisiere Frequenz in den Bereich der Tabelle (ca. 51.75 - 211.4 Hz)
+// Helper to get tone from ANY frequency (mapping to nearest tone in any octave)
+export function getToneFromFrequency(freq: number): { tone: ToneData, cents: number, diffHz: number } {
+  const A4 = 440;
+  const semitonesFromA4 = 12 * Math.log2(freq / A4);
+  const noteIndex = Math.round(semitonesFromA4);
+  const centsOff = (semitonesFromA4 - noteIndex) * 100;
   
-  let normalizedFreq = freq;
-  const minFreq = 51.75; 
-  const maxFreq = 211.4;
-
-  // Wenn die Frequenz sehr klein ist (z.B. 0), Abbruch
-  if (normalizedFreq < 1) return { tone: TONES[0], cents: 0, diffHz: 0 };
-
-  // Iterativ oktavieren
-  // Toleranz für Rundungsfehler (0.01 Hz)
-  const epsilon = 0.01;
+  // Map noteIndex to our TONES array
+  // TONES array starts at C.
+  // A is index 9 in our array (if C=0).
+  // A4 (index 0 relative to A4) is A.
   
-  // Solange Frequenz zu hoch, halbieren
-  while (normalizedFreq > maxFreq + epsilon) {
-    normalizedFreq /= 2;
-  }
+  // Normalize noteIndex to 0-11 range where 0 = C
+  // A is 9 semitones above C. So A should be index 9.
+  // noteIndex is relative to A.
+  // If noteIndex = 0 (A), we want index 9.
+  // If noteIndex = 3 (C), we want index 0.
+  // Formula: (noteIndex + 9) % 12
   
-  // Solange Frequenz zu tief, verdoppeln
-  while (normalizedFreq < minFreq - epsilon) {
-    normalizedFreq *= 2;
-  }
-
-  // 2. Finde den passenden Ton in der Tabelle
-  let bestTone: ToneData | null = null;
+  let toneIndex = (noteIndex + 9) % 12;
+  if (toneIndex < 0) toneIndex += 12;
   
-  for (const tone of TONES) {
-    // Strikte Prüfung mit Epsilon für Floating Point Sicherheit
-    // range[0] <= freq <= range[1]
-    if (normalizedFreq >= tone.range[0] - epsilon && normalizedFreq <= tone.range[1] + epsilon) {
-      bestTone = tone;
-      break;
-    }
-  }
-
-  // Fallback, falls knapp an der Grenze (sollte durch Epsilon abgedeckt sein, aber sicher ist sicher)
-  if (!bestTone) {
-    let minDiff = Number.MAX_VALUE;
-    for (const tone of TONES) {
-      // Prüfe Abstand zur Mitte des Bereichs oder zu den Grenzen
-      const diff = Math.abs(normalizedFreq - tone.frequency);
-      if (diff < minDiff) {
-        minDiff = diff;
-        bestTone = tone;
-      }
-    }
-  }
+  const tone = TONES[toneIndex];
   
-  // TypeScript check fallback
-  if (!bestTone) bestTone = TONES[0];
-
-  // 3. Berechne Abweichung
-  const diffHz = normalizedFreq - bestTone.frequency;
-  // Cents = 1200 * log2(measured / ideal)
-  const cents = 1200 * Math.log2(normalizedFreq / bestTone.frequency);
-
+  // Calculate the ideal frequency for this specific octave
+  // Ideal freq = A4 * 2^(noteIndex/12)
+  const idealFreq = A4 * Math.pow(2, noteIndex / 12);
+  const diffHz = freq - idealFreq;
+  
   return {
-    tone: bestTone,
-    cents,
+    tone,
+    cents: centsOff,
     diffHz
   };
 }

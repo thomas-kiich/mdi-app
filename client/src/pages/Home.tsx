@@ -5,6 +5,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { SpectrumVisualizer } from "@/components/SpectrumVisualizer";
 import { FrequencyChart } from "@/components/FrequencyChart";
+import { SpectralMatrix } from "@/components/SpectralMatrix"; // Import new component
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
@@ -147,6 +148,20 @@ export default function Home() {
     processResult(results.q2);
     processResult(results.q3);
     
+    // Normalize to 100%
+    // If we simply summed percentages from 3 steps, the total could be 300%
+    // We should divide by the number of valid steps (1, 2, or 3)
+    let validSteps = 0;
+    if (results.q1) validSteps++;
+    if (results.q2) validSteps++;
+    if (results.q3) validSteps++;
+    
+    if (validSteps > 0) {
+        for (const tone in combinedDistribution) {
+            combinedDistribution[tone] /= validSteps;
+        }
+    }
+
     // Find dominant tone across all sessions
     let maxScore = 0;
     let dominantToneName = "";
@@ -410,8 +425,6 @@ export default function Home() {
         const { tone, cents, noteName } = res;
         
         // Calculate display values
-        // Use the exact fundamental frequency from the result for display
-        // This ensures the user sees the "krumm" value (e.g. 94.73Hz) not the ideal one
         const displayHz = res.fundamentalFreq.toFixed(2); 
         
         // Calculate playback frequency (including octave shift)
@@ -583,16 +596,11 @@ export default function Home() {
                                     { name: "Zukunft", data: results.q3 }
                                 ].map((step) => {
                                     // RE-CALCULATE TONE FOR DISPLAY TO ENSURE CONSISTENCY
-                                    // If we have a frequency, we should ask the tones library what tone it is
-                                    // instead of trusting the potentially stale or corrected 'noteName' from the result object.
-                                    // This guarantees the table shows exactly what the frequency maps to.
-                                    
                                     let displayTone = step.data?.noteName || "-";
                                     let displayCents = step.data?.cents;
                                     let displayFreq = step.data?.fundamentalFreq;
                                     
                                     if (displayFreq) {
-                                        // Force re-evaluation based on the exact frequency stored
                                         const check = getToneFromFrequency(displayFreq);
                                         displayTone = check.tone.name;
                                         displayCents = check.cents;
@@ -665,13 +673,20 @@ export default function Home() {
                   </div>
                 </div>
                 
-                {/* Frequency Distribution Chart */}
+                {/* NEW: Spectral Resonance Matrix */}
+                {res.toneDistribution && (
+                    <SpectralMatrix distribution={res.toneDistribution} />
+                )}
+                
+                {/* Legacy Frequency Distribution Chart (Optional, kept for reference if needed) */}
+                {/* 
                 {res.toneDistribution && (
                   <FrequencyChart 
                     distribution={res.toneDistribution} 
                     stepDistributions={res.stepDistributions}
                   />
                 )}
+                */}
               </div>
             </div>
             
