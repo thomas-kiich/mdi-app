@@ -1,5 +1,20 @@
-# MDI App Improvements & Fixes
+# MDI App Debugging Tasks
 
+## Priority: Fix Tone vs. Frequency Mismatch
+- [ ] **Analyze `tones.ts`**: Verify the exact frequency ranges for F# (Fis) and A# (Ais) in the custom table.
+- [ ] **Debug `useAudioAnalyzer.ts`**:
+    - [ ] Check why ~116-119 Hz (Ais) is being mapped to F# (Fis).
+    - [ ] Inspect the Quint-Check logic: Is it incorrectly dividing by 1.5? (117 / 1.5 = 78 Hz -> D#?).
+    - [ ] Verify if `getToneFromFrequency` is returning the correct tone before any correction.
+- [ ] **Review Aggregation Logic**: Ensure the final result calculation isn't picking a different tone than the individual measurements.
+- [ ] **Test Case**: Simulate input of 117 Hz and trace the output.
+
+## Verification
+- [ ] User should see "Ais" (A#) if input is ~117 Hz.
+- [ ] If 117 Hz is an overtone, the fundamental would be ~78 Hz (D#), not F#.
+- [ ] Ensure the displayed frequency matches the displayed tone name.
+
+## Previous Completed Tasks
 - [x] **Fix Recording Bug**: Ensure microphone stops correctly after each step and restarts cleanly for the next question.
 - [x] **Implement Tone Aggregation**: Create logic to combine frequency distributions from all 3 recordings.
 - [x] **Refine Tone Detection**: Prioritize fundamental frequency over overtones (fix A vs F issue).
@@ -23,7 +38,5 @@
     - [x] If so, force the result to be the fundamental tone and use the calculated fundamental frequency for playback.
 - [x] **Refine Quint Correction Precision**: Use exact measured frequency / 1.5 instead of ideal note frequency.
 - [x] **Fix Playback Silence**: Debug why the "Play Tone" button is silent (check for NaN or 0 frequency).
-- [ ] **Restore Raw Frequency Data**: Ensure the displayed Hz is the exact measured value (e.g., 94.73Hz) and not the center frequency of the band.
-- [ ] **Add Detail Table**: Add a table below the chart showing detailed breakdown for each step (Tone, Hz, Cents, Notes).
-- [ ] **Verify Chart Data**: Check `FrequencyChart.tsx` to confirm exactly what the three bars represent (Likely dominant tone of Q1, Q2, Q3).
-- [ ] **Integrate User's Philosophy**: Add the "KIICH Philosophy" chapter using the user's provided material (on hold).
+- [x] **Restore Raw Frequency Data**: Ensure the displayed Hz is the exact measured value (e.g., 94.73Hz) and not the center frequency of the band.
+- [x] **Add Detail Table**: Add a table below the chart showing detailed breakdown for each step (Tone, Hz, Cents, Notes).

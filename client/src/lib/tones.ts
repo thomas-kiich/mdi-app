@@ -161,9 +161,7 @@ const MIDDLE_OCTAVE_FREQS = [
   { freq: 108.0, range: [103.5, 112.4] }, // A
   { freq: 117.0, range: [112.5, 121.4] }, // A#
   { freq: 126.0, range: [121.5, 130.4] }, // H
-  { freq: 135.0, range: [130.5, 139.4] }, // C (Achtung: CSV sagt 131,5 Start, aber wir müssen lückenlos anschließen an H 130.4)
-                                          // CSV sagt: 131,5-139,4. H geht bis 130.4. Lücke von 1.1 Hz?
-                                          // Wir interpretieren "lückenlos" basierend auf der Logik: 130.5 Start.
+  { freq: 135.0, range: [130.5, 139.4] }, // C
   { freq: 144.0, range: [139.5, 148.4] }, // C#
   { freq: 153.0, range: [148.5, 157.4] }, // D
   { freq: 162.0, range: [157.5, 166.4] }, // D#
@@ -175,22 +173,24 @@ const MIDDLE_OCTAVE_FREQS = [
 ];
 
 // Zusammenbauen der TONES Liste (Erst Tief, dann Mittel)
-export const TONES: ToneData[] = [
-  // Tiefe Oktave
-  ...TONE_META.map((tone, i) => ({
-    ...tone,
-    frequency: LOWER_OCTAVE_FREQS[i].freq,
-    range: LOWER_OCTAVE_FREQS[i].range as [number, number],
-    name: tone.name
-  })),
-  // Mittlere Oktave
-  ...TONE_META.map((tone, i) => ({
-    ...tone,
-    frequency: MIDDLE_OCTAVE_FREQS[i].freq,
-    range: MIDDLE_OCTAVE_FREQS[i].range as [number, number],
-    name: tone.name
-  }))
-];
+// WICHTIG: Die Reihenfolge muss konsistent sein.
+export const TONES: ToneData[] = [];
+
+// Helper to push tones
+function addTones(freqs: typeof LOWER_OCTAVE_FREQS) {
+    TONE_META.forEach((meta, i) => {
+        TONES.push({
+            ...meta,
+            frequency: freqs[i].freq,
+            range: freqs[i].range as [number, number],
+            name: meta.name
+        });
+    });
+}
+
+addTones(LOWER_OCTAVE_FREQS);
+addTones(MIDDLE_OCTAVE_FREQS);
+
 
 // Hilfsfunktion: Frequenz zu Ton zuordnen basierend auf CUSTOM BANDS
 export function getToneFromFrequency(freq: number): { tone: ToneData; cents: number; diffHz: number } {
@@ -211,32 +211,33 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
   // Toleranz für Rundungsfehler (0.01 Hz)
   const epsilon = 0.01;
   
+  // Solange Frequenz zu hoch, halbieren
   while (normalizedFreq > maxFreq + epsilon) {
     normalizedFreq /= 2;
   }
   
+  // Solange Frequenz zu tief, verdoppeln
   while (normalizedFreq < minFreq - epsilon) {
     normalizedFreq *= 2;
   }
 
   // 2. Finde den passenden Ton in der Tabelle
-  let bestTone = TONES[0]; // Fallback
-  let found = false;
+  let bestTone: ToneData | null = null;
   
   for (const tone of TONES) {
     // Strikte Prüfung mit Epsilon für Floating Point Sicherheit
     // range[0] <= freq <= range[1]
     if (normalizedFreq >= tone.range[0] - epsilon && normalizedFreq <= tone.range[1] + epsilon) {
       bestTone = tone;
-      found = true;
       break;
     }
   }
 
-  // Fallback, falls knapp an der Grenze
-  if (!found) {
+  // Fallback, falls knapp an der Grenze (sollte durch Epsilon abgedeckt sein, aber sicher ist sicher)
+  if (!bestTone) {
     let minDiff = Number.MAX_VALUE;
     for (const tone of TONES) {
+      // Prüfe Abstand zur Mitte des Bereichs oder zu den Grenzen
       const diff = Math.abs(normalizedFreq - tone.frequency);
       if (diff < minDiff) {
         minDiff = diff;
@@ -244,10 +245,14 @@ export function getToneFromFrequency(freq: number): { tone: ToneData; cents: num
       }
     }
   }
+  
+  // TypeScript check fallback
+  if (!bestTone) bestTone = TONES[0];
 
   // 3. Berechne Abweichung
   const diffHz = normalizedFreq - bestTone.frequency;
-  const cents = Math.round(1200 * Math.log2(normalizedFreq / bestTone.frequency));
+  // Cents = 1200 * log2(measured / ideal)
+  const cents = 1200 * Math.log2(normalizedFreq / bestTone.frequency);
 
   return {
     tone: bestTone,

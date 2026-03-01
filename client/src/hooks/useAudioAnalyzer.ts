@@ -176,25 +176,28 @@ export function useAudioAnalyzer() {
             let finalTone = TONES.find(t => t.name === dominantToneName) || lastValidResultRef.current.tone;
             let correctionNote = undefined;
 
-            // QUINT CORRECTION LOGIC
-            const potentialFundamentalFreq = finalFreq / 1.5;
-            const fundamentalCheck = getToneFromFrequency(potentialFundamentalFreq);
+            // QUINT CORRECTION LOGIC (REVISED)
+            // Only apply specific corrections for known problematic overtone pairs (C -> F, G -> C)
+            // Avoid generic "freq > 130" check which caused false positives for valid high tones (e.g. Ais)
             
-            // Specific C -> F check or general high overtone check
-            if ((dominantToneName === 'C' && fundamentalCheck.tone.name === 'F') || 
-                (finalFreq > 130 && potentialFundamentalFreq < 100)) {
-                
-                finalTone = fundamentalCheck.tone;
-                finalFreq = potentialFundamentalFreq; // Use exact calculated fundamental
-                correctionNote = `Quint-Korrektur: ${dominantToneName} (${avgMeasuredFreq.toFixed(2)}Hz) -> ${finalTone.name}`;
+            if (dominantToneName === 'C' && finalFreq > 130) {
+                 const check = getToneFromFrequency(finalFreq / 1.5);
+                 if (check.tone.name === 'F') {
+                     finalTone = check.tone;
+                     finalFreq = finalFreq / 1.5;
+                     correctionNote = `Quint-Korrektur: C (${avgMeasuredFreq.toFixed(2)}Hz) -> F`;
+                 }
+            }
+            else if (dominantToneName === 'G' && finalFreq > 190) {
+                 const check = getToneFromFrequency(finalFreq / 1.5);
+                 if (check.tone.name === 'C') {
+                     finalTone = check.tone;
+                     finalFreq = finalFreq / 1.5;
+                     correctionNote = `Quint-Korrektur: G (${avgMeasuredFreq.toFixed(2)}Hz) -> C`;
+                 }
             }
 
-            // Re-calculate cents for the final (potentially corrected) frequency
-            // We need to find the ideal frequency of the FINAL tone to calculate cents deviation
-            // But we want to keep the "krumm" finalFreq for display
-            // Cents = 1200 * log2(measured / ideal)
-            // Ideally we use the center of the tone's band or the user's defined frequency if available
-            // For now, we'll use the tone's defined frequency from TONES
+            // Recalculate cents for the final (potentially corrected) frequency
             const idealFreq = finalTone.frequency; 
             const finalCents = 1200 * Math.log2(finalFreq / idealFreq);
 
