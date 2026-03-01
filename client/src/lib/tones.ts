@@ -1,5 +1,6 @@
 // TONES.ts - Frequency Data and Metadata for MDI System
-// Updated Color Logic: C = Green (Center of Spectrum)
+// Updated with Hans Cousto's Cosmic Octave Frequencies & Colors
+// Source: Planetware / Hans Cousto
 
 export interface ToneData {
   name: string;
@@ -9,170 +10,177 @@ export interface ToneData {
   geometry: string;  // Placeholder for generative art shape
   minFreq: number;   // Lower bound for detection
   maxFreq: number;   // Upper bound for detection
+  planet?: string;   // Associated planet/cycle (Cousto)
 }
 
-// Color Mapping Logic (Based on User Request: C = Green)
-// We map the chromatic scale to the color wheel, anchoring C at Green.
-// The user specified a range from Red-Violet to Blue-Violet.
-// This implies a full spectral circle.
+// Cousto Mapping Analysis:
+// 1. Earth Day (Sonnentag) = 194.18 Hz (G) -> Red-Orange
+// 2. Earth Year (Trop. Jahr) = 136.10 Hz (C#) -> Blue-Green (Türkis)
+// 3. Platonic Year = 172.06 Hz (F) -> Red-Violet
+// 4. Sun Tone = 126.22 Hz (H/C border, usually H) -> Yellow-Green
+// 5. Moon (Synod.) = 210.42 Hz (G#) -> Orange
 
-// Mapping (Approximate Physics/Synesthesia):
-// C  = Green       (#22c55e) - The Center/Heart
-// C# = Blue-Green  (#06b6d4)
-// D  = Blue        (#3b82f6)
-// D# = Indigo      (#6366f1)
-// E  = Violet      (#8b5cf6) - "Blauviolett"
-// F  = Red-Violet  (#d946ef) - "Rotviolett" (Magenta)
-// F# = Red         (#ef4444)
-// G  = Red-Orange  (#f97316)
-// G# = Orange      (#fb923c)
-// A  = Yellow-Orange (#eab308)
-// A# = Yellow      (#facc15)
-// H  = Yellow-Green (#84cc16)
+// User Requirement: C = Green.
+// In Cousto's system:
+// C# (136.10 Hz) is Blue-Green (Türkis).
+// H (126.22 Hz, Sun) is Yellow-Green.
+// So C (approx 128-130 Hz) sits exactly between Yellow-Green and Blue-Green -> GREEN.
+// This confirms the user's intuition: C = Green is harmonically consistent with the Cosmic Octave.
+
+// We will use Cousto's precise Hz values where they align with notes, and interpolate for the rest based on A=440 (or rather A derived from Cousto's C#=136.10).
+// Actually, Cousto's tuning is A=432.10 Hz (derived from C#=136.10).
+// Let's stick to the user's desire for the "Color Music" mapping.
 
 export const TONES: ToneData[] = [
   {
     name: "C",
-    frequency: 130.81, // C3
-    color: "#22c55e", // Green
+    frequency: 128.00, // Derived approx from Cousto gap between Sun(H) and Earth Year(C#)
+    color: "#22c55e", // Green (Cousto: Gap between Yellow-Green and Blue-Green)
     meaning: "Stabilität, Erdung, Urvertrauen",
     geometry: "quadrat-basis",
-    minFreq: 127.0, 
-    maxFreq: 134.7
+    minFreq: 124.0, 
+    maxFreq: 132.0,
+    planet: "Sedna (approx)"
   },
   {
     name: "Cis",
-    frequency: 138.59, // C#3
-    color: "#06b6d4", // Cyan/Blue-Green
-    meaning: "Verbindung, Fluss, Integration",
+    frequency: 136.10, // EARTH YEAR (OM)
+    color: "#0d9488", // Blue-Green (Türkis)
+    meaning: "Das Jahr, Om, Entspannung, Seele",
     geometry: "kreis-welle",
-    minFreq: 134.7,
-    maxFreq: 142.6
+    minFreq: 132.0,
+    maxFreq: 140.0,
+    planet: "Erde (Jahr)"
   },
   {
     name: "D",
-    frequency: 146.83, // D3
+    frequency: 144.72, // MARS
     color: "#3b82f6", // Blue
-    meaning: "Kreativität, Ausdruck, Kommunikation",
+    meaning: "Energie, Durchsetzung, Willenskraft",
     geometry: "dreieck-spitze",
-    minFreq: 142.6,
-    maxFreq: 151.0
+    minFreq: 140.0,
+    maxFreq: 149.0,
+    planet: "Mars"
   },
   {
     name: "Dis",
-    frequency: 155.56, // D#3
-    color: "#6366f1", // Indigo/Blue-Violet
+    frequency: 153.00, // Approx (Saturn is 147.85 D, Jupiter 183.58 F#)
+    color: "#6366f1", // Indigo
     meaning: "Klarheit, Vision, Intuition",
     geometry: "stern-strahl",
-    minFreq: 151.0,
-    maxFreq: 160.0
+    minFreq: 149.0,
+    maxFreq: 158.0,
+    planet: "-"
   },
   {
     name: "E",
-    frequency: 164.81, // E3
-    color: "#8b5cf6", // Violet (Blauviolett)
-    meaning: "Transformation, Geist, Bewusstsein",
+    frequency: 164.81, // Standard E (No direct planet match in this octave)
+    color: "#8b5cf6", // Violet
+    meaning: "Transformation, Geist",
     geometry: "spirale-innen",
-    minFreq: 160.0,
-    maxFreq: 169.6
+    minFreq: 158.0,
+    maxFreq: 168.0,
+    planet: "-"
   },
   {
     name: "F",
-    frequency: 174.61, // F3
-    color: "#d946ef", // Fuchsia/Red-Violet (Rotviolett)
-    meaning: "Liebe, Herzöffnung, Balance",
+    frequency: 172.06, // PLATONIC YEAR
+    color: "#d946ef", // Red-Violet (Magenta)
+    meaning: "Erleuchtung, Heiterkeit, Spirit",
     geometry: "blume-leben",
-    minFreq: 169.6,
-    maxFreq: 179.8
+    minFreq: 168.0,
+    maxFreq: 178.0,
+    planet: "Platon. Jahr"
   },
   {
     name: "Fis",
-    frequency: 185.00, // F#3
+    frequency: 183.58, // JUPITER (actually F# - 13 cent)
     color: "#ef4444", // Red
-    meaning: "Energie, Leidenschaft, Wille",
+    meaning: "Wachstum, Erfolg, Gerechtigkeit",
     geometry: "feuer-flamme",
-    minFreq: 179.8,
-    maxFreq: 190.5
+    minFreq: 178.0,
+    maxFreq: 189.0,
+    planet: "Jupiter"
   },
   {
     name: "G",
-    frequency: 196.00, // G3
-    color: "#f97316", // Orange-Red
-    meaning: "Freude, Schöpferkraft, Sexualität",
+    frequency: 194.18, // EARTH DAY
+    color: "#f97316", // Red-Orange
+    meaning: "Dynamik, Kraft, Vitalität",
     geometry: "sonne-strahl",
-    minFreq: 190.5,
-    maxFreq: 201.7
+    minFreq: 189.0,
+    maxFreq: 200.0,
+    planet: "Erde (Tag)"
   },
   {
     name: "Gis",
-    frequency: 207.65, // G#3
+    frequency: 210.42, // MOON (Synodic)
     color: "#fb923c", // Orange
-    meaning: "Gemeinschaft, Zugehörigkeit, Wärme",
+    meaning: "Gefühl, Weiblichkeit, Zyklus",
     geometry: "wabe-struktur",
-    minFreq: 201.7,
-    maxFreq: 213.6
+    minFreq: 200.0,
+    maxFreq: 215.0,
+    planet: "Mond (Synod.)"
   },
   {
     name: "A",
-    frequency: 220.00, // A3
-    color: "#eab308", // Yellow-Orange/Gold
-    meaning: "Wissen, Intellekt, Macht",
+    frequency: 221.23, // VENUS
+    color: "#eab308", // Yellow-Orange
+    meaning: "Liebe, Harmonie, Ästhetik",
     geometry: "pyramide-basis",
-    minFreq: 213.6,
-    maxFreq: 226.3
+    minFreq: 215.0,
+    maxFreq: 227.0,
+    planet: "Venus"
   },
   {
     name: "Ais",
-    frequency: 233.08, // A#3
+    frequency: 229.22, // Metonic Cycle (Moon)
     color: "#facc15", // Yellow
-    meaning: "Weisheit, Erleuchtung, Licht",
+    meaning: "Kosmische Ordnung, Intellekt",
     geometry: "stern-acht",
-    minFreq: 226.3,
-    maxFreq: 239.7
+    minFreq: 227.0,
+    maxFreq: 238.0,
+    planet: "Mond (Meton)"
   },
   {
     name: "H",
-    frequency: 246.94, // B3
-    color: "#84cc16", // Lime/Yellow-Green
-    meaning: "Wachstum, Heilung, Harmonie",
+    frequency: 246.04, // Apsiden (Moon) approx, or Sun 126.22 (Low H)
+    color: "#84cc16", // Yellow-Green
+    meaning: "Wachstum, Heilung",
     geometry: "baum-leben",
-    minFreq: 239.7,
-    maxFreq: 254.0
+    minFreq: 238.0,
+    maxFreq: 254.0,
+    planet: "Sonne (Oktav)"
   }
 ];
 
-// Helper to get tone from ANY frequency (mapping to nearest tone in any octave)
+// Helper to get tone from ANY frequency
 export function getToneFromFrequency(freq: number): { tone: ToneData, cents: number, diffHz: number } {
-  const A4 = 440;
-  const semitonesFromA4 = 12 * Math.log2(freq / A4);
-  const noteIndex = Math.round(semitonesFromA4);
-  const centsOff = (semitonesFromA4 - noteIndex) * 100;
+  // Simple closest match logic for now, as the intervals are irregular (Planetary)
+  // We normalize input freq to the target octave range (approx 128 - 250 Hz)
   
-  // Map noteIndex to our TONES array
-  // TONES array starts at C.
-  // A is index 9 in our array (if C=0).
-  // A4 (index 0 relative to A4) is A.
-  
-  // Normalize noteIndex to 0-11 range where 0 = C
-  // A is 9 semitones above C. So A should be index 9.
-  // noteIndex is relative to A.
-  // If noteIndex = 0 (A), we want index 9.
-  // If noteIndex = 3 (C), we want index 0.
-  // Formula: (noteIndex + 9) % 12
-  
-  let toneIndex = (noteIndex + 9) % 12;
-  if (toneIndex < 0) toneIndex += 12;
-  
-  const tone = TONES[toneIndex];
-  
-  // Calculate the ideal frequency for this specific octave
-  // Ideal freq = A4 * 2^(noteIndex/12)
-  const idealFreq = A4 * Math.pow(2, noteIndex / 12);
-  const diffHz = freq - idealFreq;
-  
+  let normFreq = freq;
+  while (normFreq < 120) normFreq *= 2;
+  while (normFreq > 260) normFreq /= 2;
+
+  let bestTone = TONES[0];
+  let minDiff = Number.MAX_VALUE;
+
+  for (const tone of TONES) {
+      const diff = Math.abs(normFreq - tone.frequency);
+      if (diff < minDiff) {
+          minDiff = diff;
+          bestTone = tone;
+      }
+  }
+
+  // Calculate cents relative to the specific planetary frequency
+  const cents = 1200 * Math.log2(normFreq / bestTone.frequency);
+  const diffHz = normFreq - bestTone.frequency;
+
   return {
-    tone,
-    cents: centsOff,
+    tone: bestTone,
+    cents,
     diffHz
   };
 }
