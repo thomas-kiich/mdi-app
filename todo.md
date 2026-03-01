@@ -1,42 +1,13 @@
 # MDI App Debugging Tasks
 
-## Priority: Fix Tone vs. Frequency Mismatch
-- [ ] **Analyze `tones.ts`**: Verify the exact frequency ranges for F# (Fis) and A# (Ais) in the custom table.
-- [ ] **Debug `useAudioAnalyzer.ts`**:
-    - [ ] Check why ~116-119 Hz (Ais) is being mapped to F# (Fis).
-    - [ ] Inspect the Quint-Check logic: Is it incorrectly dividing by 1.5? (117 / 1.5 = 78 Hz -> D#?).
-    - [ ] Verify if `getToneFromFrequency` is returning the correct tone before any correction.
-- [ ] **Review Aggregation Logic**: Ensure the final result calculation isn't picking a different tone than the individual measurements.
-- [ ] **Test Case**: Simulate input of 117 Hz and trace the output.
+## Priority: Fix Aggregation & Correction Logic
+- [ ] **Analyze `Home.tsx`**: Check how `results.q1`, `results.q2`, `results.q3` are stored. Are they overwritten by the final result calculation?
+- [ ] **Debug `calculateFinalResult`**: Ensure it doesn't modify the individual step results.
+- [ ] **Inspect `useAudioAnalyzer.ts`**: Verify if the `result` state is being updated with corrected values that persist across steps.
+- [ ] **Disable Aggressive Correction**: Ensure that if a frequency clearly falls into a specific band (e.g., 103.75 Hz -> G#), it is NOT forced to another tone (e.g., F) just because F was dominant in another step.
+- [ ] **Verify Detail Table**: The table must show the exact tone corresponding to the frequency measured in that specific step.
 
 ## Verification
-- [ ] User should see "Ais" (A#) if input is ~117 Hz.
-- [ ] If 117 Hz is an overtone, the fundamental would be ~78 Hz (D#), not F#.
-- [ ] Ensure the displayed frequency matches the displayed tone name.
-
-## Previous Completed Tasks
-- [x] **Fix Recording Bug**: Ensure microphone stops correctly after each step and restarts cleanly for the next question.
-- [x] **Implement Tone Aggregation**: Create logic to combine frequency distributions from all 3 recordings.
-- [x] **Refine Tone Detection**: Prioritize fundamental frequency over overtones (fix A vs F issue).
-- [x] **Implement Frequency Chart**: Add a visual chart in the result view showing the distribution of all detected tones across the 3 steps.
-- [x] **Improve Playback Quality**: Change oscillator type (e.g., triangle/sawtooth) or add harmonics to make the played tone sound more natural and match the user's perception better.
-- [x] **Show Exact Hz**: Display the exact Hz value being played to the user for verification.
-- [x] **Add Octave Toggle**: Allow user to shift playback up/down an octave to find the perceptual match.
-- [x] **Add Expert Mode**: 
-    - [x] Pure Sine Wave Toggle (for tuner calibration)
-    - [x] Manual Frequency Slider (fine-tune +/- 50 cents)
-    - [x] 432 Hz / 440 Hz Global Switch
-- [x] **Fix Tone Mapping Logic**: Correct the `getToneFromFrequency` function to handle all octaves correctly.
-- [x] **Implement Custom Frequency Bands**: Use user's CSV data for tone definitions.
-- [x] **Fix Octave Normalization**: Ensure frequencies are correctly mapped to the custom table range.
-- [x] **Expand Frequency Table**: Add the lower octave (A=54Hz to G#=103.5Hz) to `TONES` in `client/src/lib/tones.ts`.
-- [x] **Implement Frequency Table V2**: Use `tontabelle-frequenzbänder2.csv` for exact tone definitions.
-- [x] **Debug Frequency Boundaries**: Check strict inequality for tone ranges.
-- [x] **Implement Quint Correction**:
-    - [x] If result is a Fifth (e.g., C) of a previously detected strong Fundamental (e.g., F), prioritize the Fundamental.
-    - [x] Specifically check if `measured_freq / 1.5` matches a known fundamental tone.
-    - [x] If so, force the result to be the fundamental tone and use the calculated fundamental frequency for playback.
-- [x] **Refine Quint Correction Precision**: Use exact measured frequency / 1.5 instead of ideal note frequency.
-- [x] **Fix Playback Silence**: Debug why the "Play Tone" button is silent (check for NaN or 0 frequency).
-- [x] **Restore Raw Frequency Data**: Ensure the displayed Hz is the exact measured value (e.g., 94.73Hz) and not the center frequency of the band.
-- [x] **Add Detail Table**: Add a table below the chart showing detailed breakdown for each step (Tone, Hz, Cents, Notes).
+- [ ] Input 103.75 Hz -> Output G# (not F +246 cents).
+- [ ] Input 93.63 Hz -> Output F# (or F depending on exact boundary).
+- [ ] Input 113.19 Hz -> Output A (not F# +313 cents).

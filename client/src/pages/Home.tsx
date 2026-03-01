@@ -110,23 +110,19 @@ export default function Home() {
     wasRecordingRef.current = isRecording;
   }, [isRecording, analysisResult, currentStep]);
 
-  const nextStep = () => {
-    if (currentStep === "intro") setCurrentStep("preparation");
-    else if (currentStep === "preparation") setCurrentStep("question1");
-    else if (currentStep === "question1") {
-      setCurrentStep("question2");
-    }
-    else if (currentStep === "question2") {
-      setCurrentStep("question3");
-    }
-    else if (currentStep === "question3") {
-      setCurrentStep("analyzing");
-      // Simulate processing time for dramatic effect
-      setTimeout(() => {
-        calculateFinalResult();
-        setCurrentStep("result");
-      }, 2000);
-    }
+  // CORRECT NAVIGATION LOGIC
+  const advanceStep = () => {
+      if (currentStep === "intro") setCurrentStep("preparation");
+      else if (currentStep === "preparation") setCurrentStep("question1");
+      else if (currentStep === "question1") setCurrentStep("question2");
+      else if (currentStep === "question2") setCurrentStep("question3");
+      else if (currentStep === "question3") {
+          setCurrentStep("analyzing");
+          setTimeout(() => {
+              calculateFinalResult();
+              setCurrentStep("result");
+          }, 2000);
+      }
   };
 
   const calculateFinalResult = () => {
@@ -252,7 +248,7 @@ export default function Home() {
             </div>
             <Button 
               size="lg" 
-              onClick={nextStep}
+              onClick={advanceStep}
               className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-[0_0_30px_rgba(249,115,22,0.3)] transition-all hover:scale-105"
             >
               Analyse starten <ChevronRight className="ml-2 h-5 w-5" />
@@ -284,7 +280,7 @@ export default function Home() {
                   <p className="text-white font-medium mb-6">Wenn du bereit bist, starte das System.</p>
                   <Button 
                     size="lg" 
-                    onClick={nextStep}
+                    onClick={advanceStep}
                     className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full"
                   >
                     Ich bin bereit
@@ -385,7 +381,7 @@ export default function Home() {
                             <RotateCcw className="mr-2 h-4 w-4" /> Wiederholen
                         </Button>
                         <Button 
-                            onClick={nextStep}
+                            onClick={advanceStep}
                             className="bg-white text-black hover:bg-zinc-200 rounded-full px-8"
                         >
                             Weiter <ChevronRight className="ml-2 h-4 w-4" />
@@ -453,7 +449,7 @@ export default function Home() {
                     
                     <div className="flex flex-col gap-4">
                       <Button 
-                        size="lg"
+                        size="lg" 
                         onClick={() => isPlaying ? stopTone() : playTone(finalFreq, 0, currentFineTune, isPureSineMode)}
                         className={cn(
                           "w-full py-8 text-lg rounded-xl transition-all",
@@ -585,24 +581,42 @@ export default function Home() {
                                     { name: "Gegenwart", data: results.q1 },
                                     { name: "Vergangenheit", data: results.q2 },
                                     { name: "Zukunft", data: results.q3 }
-                                ].map((step) => (
+                                ].map((step) => {
+                                    // RE-CALCULATE TONE FOR DISPLAY TO ENSURE CONSISTENCY
+                                    // If we have a frequency, we should ask the tones library what tone it is
+                                    // instead of trusting the potentially stale or corrected 'noteName' from the result object.
+                                    // This guarantees the table shows exactly what the frequency maps to.
+                                    
+                                    let displayTone = step.data?.noteName || "-";
+                                    let displayCents = step.data?.cents;
+                                    let displayFreq = step.data?.fundamentalFreq;
+                                    
+                                    if (displayFreq) {
+                                        // Force re-evaluation based on the exact frequency stored
+                                        const check = getToneFromFrequency(displayFreq);
+                                        displayTone = check.tone.name;
+                                        displayCents = check.cents;
+                                    }
+
+                                    return (
                                     <TableRow key={step.name} className="border-zinc-800 hover:bg-zinc-800/50">
                                         <TableCell className="font-medium text-zinc-300">{step.name}</TableCell>
                                         <TableCell className="text-white">
-                                            {step.data?.noteName || "-"}
+                                            {displayTone}
                                         </TableCell>
                                         <TableCell className="text-right font-mono text-orange-500">
-                                            {step.data?.fundamentalFreq ? `${step.data.fundamentalFreq.toFixed(2)} Hz` : "-"}
+                                            {displayFreq ? `${displayFreq.toFixed(2)} Hz` : "-"}
                                         </TableCell>
                                         <TableCell className="text-right text-xs text-zinc-500">
                                             {step.data?.correctionNote ? (
                                                 <span className="text-orange-400" title={step.data.correctionNote}>Korr.</span>
                                             ) : (
-                                                <span>{step.data?.cents ? `${step.data.cents > 0 ? '+' : ''}${Math.round(step.data.cents)} ct` : ""}</span>
+                                                <span>{displayCents !== undefined ? `${displayCents > 0 ? '+' : ''}${Math.round(displayCents)} ct` : ""}</span>
                                             )}
                                         </TableCell>
                                     </TableRow>
-                                ))}
+                                    );
+                                })}
                             </TableBody>
                         </Table>
                     </CardContent>
