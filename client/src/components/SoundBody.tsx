@@ -47,15 +47,15 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   // The path must go through the center of each bar column at the correct width
   // height is total height (e.g. 600), width is max width (e.g. 200)
   const generateVerticalPath = (width: number, height: number, invert: boolean = false) => {
-    if (sortedData.length === 0) return "";
+    if (sortedData.length === 0) return { path: "", points: [] };
 
     const numPoints = sortedData.length;
     
     // Find index of dominant tone
     const domIndex = sortedData.findIndex(d => d.name === dominantToneName);
-    if (domIndex === -1) return "";
+    if (domIndex === -1) return { path: "", points: [] };
 
-    // Rotate the array so dominant tone is first
+    // Rotate the array so dominant tone is first (at Navel)
     const rotatedData = [
       ...sortedData.slice(domIndex),
       ...sortedData.slice(0, domIndex)
@@ -67,72 +67,29 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
       // Linear interpolation for y: 0 (Navel) to height (Head/Feet)
       const y = (i / (numPoints - 1)) * height;
       
-      // Map percentage (0-100) to width (x). 
-      // 0% -> 0 width (center line), 100% -> max width
-      // If INVERT (Outer Field), we show 100 - percentage
-      // But we need to handle the scaling carefully.
-      // Inner Field: 0% -> 0 width, 100% -> max width
-      // Outer Field: 0% -> max width, 100% -> 0 width (missing potential)
-      // Actually, "Outer Field" is what is MISSING. So if I have 10% Inner, I have 90% Outer.
-      
       let val = d.percentage;
       if (invert) {
-          // For Outer Field, we visualize the GAP.
-          // If percentage is 0, gap is 100. If percentage is 100, gap is 0.
-          // However, usually percentages sum to 100 total across all tones? 
-          // No, here 'percentage' is the relative strength in the distribution.
-          // The sum of all toneDistribution values is 100.
-          // So the max possible value for a single tone is 100 (if it's the only tone).
-          // But typically peaks are around 20-40%.
-          // If we just do 100 - val, we get huge values everywhere.
-          // We should probably normalize or just invert the shape visually relative to a "full" cylinder.
-          // Let's assume a "Full Potential" is a straight cylinder of width 100.
-          // Inner Field is the shape inside. Outer Field is the shape outside?
-          // Or simply: Outer Field value = (Max Observed % in dataset) - current %.
-          // Or better: Outer Field = 100 - (val * scale).
-          // Let's stick to the "Inverse Wave" concept: 
-          // Where there is a peak in Inner, there is a valley in Outer.
-          
-          // Let's try: val = 30 (max typical) - val. 
-          // If val > 30, result is 0.
-          // This might be too arbitrary.
-          
-          // Let's use a simple inversion relative to a fixed "100%" width reference.
-          // If we assume the max width represents 100% potential (which is rare to reach for one tone),
-          // then Outer Field is simply 100 - val.
-          // But since val is usually small (e.g. 5-10%), 100-val is huge (90-95%).
-          // This would make the Outer Field look like a giant block with small holes.
-          // Maybe that's the point? "You are mostly empty space / potential".
-          
-          // Alternative interpretation: 
-          // Outer Field is the COMPLEMENTARY shape.
-          // Let's try mapping 100 - val, but maybe scale the visualization so it fits nicely.
-          // Let's cap the visual width at 100 units.
-          
-          val = 100 - val; // Invert
+          // Outer Field: 100 - val
+          val = Math.max(0, 100 - val);
       }
       
       // Scale factor:
       // Inner: val * 3 (so 33% fills the width)
-      // Outer: val is now large (e.g. 90). 90 * 3 = 270. Too big.
-      // We need a different scale for Outer if we want it to look comparable.
-      // Or we just use the same scale and let it be big?
-      // Let's use a dynamic scale based on the view mode.
-      
+      // Outer: val is large, so we scale it differently to fit nicely
       let normalizedW = 0;
       if (!invert) {
-          normalizedW = Math.min(val * 3, 100); 
+          normalizedW = Math.min(val * 4, 100); 
       } else {
-          // For outer field, we want to see the "negative space".
-          // If Inner is 10%, Outer is 90%.
-          // If we map 90% to width, it should be wide.
-          // Let's scale it down a bit so it fits.
-          // Maybe max width corresponds to 100%?
+          // For outer field, we visualize the GAP.
+          // Scale it so it doesn't look like a solid block
+          // Let's say max width is 100% gap.
+          // But visually we want it to look like the "complementary" wave.
+          // Let's scale it similarly but maybe cap it.
           normalizedW = Math.min(val, 100); 
       }
       
       const x = (normalizedW / 100) * width;
-      return { x, y, color: d.color };
+      return { x, y, color: d.color, tone: d.name };
     });
 
     // Start path at Navel (0,0)
@@ -164,15 +121,15 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     return { path, points };
   };
 
-  const headHeight = 250; // Length from Navel to Head
-  const feetHeight = 350; // Length from Navel to Feet (longer legs)
-  const maxWidth = 150;   // Max width of the aura
+  const headHeight = 280; // Length from Navel to Head
+  const feetHeight = 420; // Length from Navel to Feet (longer legs)
+  const maxWidth = 160;   // Max width of the aura
 
   const isOuter = viewMode === 'outer';
   const upperWave = generateVerticalPath(maxWidth, headHeight, isOuter);
   const lowerWave = generateVerticalPath(maxWidth, feetHeight, isOuter);
 
-  if (!upperWave || !lowerWave) return null;
+  if (!upperWave.path || !lowerWave.path) return null;
 
   return (
     <div className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-6 mt-8 flex flex-col items-center transition-colors duration-500">
@@ -213,27 +170,44 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
         </div>
       </div>
 
-      <div className="relative h-[700px] w-full max-w-md flex justify-center items-center">
+      <div className="relative h-[800px] w-full max-w-md flex justify-center items-center">
         
-        {/* SILHOUETTE (Abstract) */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30" viewBox="0 0 400 800">
+        {/* SILHOUETTE (Abstract - Improved) */}
+        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-80 z-10" viewBox="0 0 400 800">
+            <defs>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
             {/* Head */}
-            <circle cx="200" cy="100" r="40" fill="none" stroke="white" strokeWidth="2" />
-            {/* Body Line */}
-            <path d="M 200 140 L 200 450" stroke="white" strokeWidth="2" />
-            {/* Shoulders */}
-            <path d="M 160 160 L 240 160" stroke="white" strokeWidth="2" />
-            {/* Arms */}
-            <path d="M 160 160 L 140 350" stroke="white" strokeWidth="2" />
-            <path d="M 240 160 L 260 350" stroke="white" strokeWidth="2" />
-            {/* Hips */}
-            <path d="M 170 450 L 230 450" stroke="white" strokeWidth="2" />
-            {/* Legs */}
-            <path d="M 170 450 L 160 750" stroke="white" strokeWidth="2" />
-            <path d="M 230 450 L 240 750" stroke="white" strokeWidth="2" />
+            <path d="M 200 80 C 180 80, 165 95, 165 120 C 165 150, 180 160, 200 160 C 220 160, 235 150, 235 120 C 235 95, 220 80, 200 80 Z" 
+                fill="rgba(255,255,255,0.05)" stroke="white" strokeWidth="2" filter="url(#glow)" />
             
-            {/* Navel Marker */}
-            <circle cx="200" cy="380" r="4" fill="white" />
+            {/* Neck */}
+            <path d="M 200 160 L 200 180" stroke="white" strokeWidth="2" filter="url(#glow)" />
+            
+            {/* Shoulders & Arms */}
+            <path d="M 200 180 L 140 200 L 120 400" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
+            <path d="M 200 180 L 260 200 L 280 400" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
+            
+            {/* Torso */}
+            <path d="M 140 200 C 140 200, 150 350, 160 380" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
+            <path d="M 260 200 C 260 200, 250 350, 240 380" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
+            
+            {/* Hips */}
+            <path d="M 160 380 C 160 380, 200 400, 240 380" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
+            
+            {/* Legs */}
+            <path d="M 170 390 L 160 750" stroke="white" strokeWidth="2" filter="url(#glow)" />
+            <path d="M 230 390 L 240 750" stroke="white" strokeWidth="2" filter="url(#glow)" />
+            
+            {/* Navel Marker - Center of Universe */}
+            <circle cx="200" cy="380" r="4" fill="white" filter="url(#glow)" />
+            <circle cx="200" cy="380" r="10" fill="none" stroke="white" strokeWidth="1" opacity="0.8" />
         </svg>
 
         {/* AURA / WAVE VISUALIZATION */}
@@ -249,20 +223,29 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             >
                 <defs>
                     <filter id="auraGlow">
-                        <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                        <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
                         <feMerge>
                             <feMergeNode in="coloredBlur"/>
                             <feMergeNode in="SourceGraphic"/>
                         </feMerge>
                     </filter>
                     
-                    <linearGradient id="auraGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
-                        <stop offset="0%" stopColor={isOuter ? "#FFFFFF" : "#FFFFFF"} stopOpacity={isOuter ? 0.4 : 0.8} />
-                        <stop offset="100%" stopColor={isOuter ? "#888888" : "#8A2BE2"} stopOpacity={isOuter ? 0.1 : 0.2} />
+                    {/* Dynamic Gradients based on points color would be complex in SVG defs. 
+                        Instead, we use a multi-stop gradient or simply use the dominant color. 
+                        But user wants "Full Spectrum". 
+                        To achieve full spectrum in a single path, we need a gradient that matches the points.
+                        Since the path is continuous, we can use a linear gradient along the Y axis.
+                    */}
+                    <linearGradient id="spectrumGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
+                        {upperWave.points.map((p, i) => (
+                             <stop key={i} offset={`${(i / (Math.max(1, upperWave.points.length - 1))) * 100}%`} stopColor={isOuter ? "#ffffff" : p.color} stopOpacity={isOuter ? 0.2 : 0.6} />
+                        ))}
                     </linearGradient>
-                    <linearGradient id="auraGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor={isOuter ? "#FFFFFF" : "#FFFFFF"} stopOpacity={isOuter ? 0.4 : 0.8} />
-                        <stop offset="100%" stopColor={isOuter ? "#888888" : "#8A2BE2"} stopOpacity={isOuter ? 0.1 : 0.2} />
+                    
+                    <linearGradient id="spectrumGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
+                         {lowerWave.points.map((p, i) => (
+                             <stop key={i} offset={`${(i / (Math.max(1, lowerWave.points.length - 1))) * 100}%`} stopColor={isOuter ? "#ffffff" : p.color} stopOpacity={isOuter ? 0.2 : 0.6} />
+                        ))}
                     </linearGradient>
                 </defs>
 
@@ -272,8 +255,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     {/* UPPER WAVE (Right Side) */}
                     <motion.path
                         d={upperWave.path}
-                        fill="url(#auraGradientUp)"
-                        stroke={isOuter ? "rgba(255,255,255,0.5)" : "white"}
+                        fill="url(#spectrumGradientUp)"
+                        stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
                         filter="url(#auraGlow)"
                         transform="scale(1, -1)" 
@@ -284,8 +267,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     {/* UPPER WAVE (Left Side - Mirrored) */}
                     <motion.path
                         d={upperWave.path}
-                        fill="url(#auraGradientUp)"
-                        stroke={isOuter ? "rgba(255,255,255,0.5)" : "white"}
+                        fill="url(#spectrumGradientUp)"
+                        stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
                         filter="url(#auraGlow)"
                         transform="scale(-1, -1)" 
@@ -297,8 +280,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     {/* LOWER WAVE (Right Side) */}
                     <motion.path
                         d={lowerWave.path}
-                        fill="url(#auraGradientDown)"
-                        stroke={isOuter ? "rgba(255,255,255,0.5)" : "white"}
+                        fill="url(#spectrumGradientDown)"
+                        stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
                         filter="url(#auraGlow)"
                         initial={{ scale: 0 }}
@@ -308,8 +291,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     {/* LOWER WAVE (Left Side - Mirrored) */}
                     <motion.path
                         d={lowerWave.path}
-                        fill="url(#auraGradientDown)"
-                        stroke={isOuter ? "rgba(255,255,255,0.5)" : "white"}
+                        fill="url(#spectrumGradientDown)"
+                        stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
                         filter="url(#auraGlow)"
                         transform="scale(-1, 1)"
