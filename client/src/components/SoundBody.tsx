@@ -28,7 +28,7 @@ const SPECTRAL_ORDER = [
 ];
 
 export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps) {
-  const [viewMode, setViewMode] = useState<'inner' | 'outer'>('inner');
+  const [viewMode, setViewMode] = useState<'inner' | 'outer' | 'both'>('inner');
   
   // Prepare data sorted by SPECTRAL_ORDER
   const sortedData = useMemo(() => {
@@ -185,15 +185,27 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   const feetHeight = 370; 
   const maxWidth = 160;   // Max width of the aura
 
-  const isOuter = viewMode === 'outer';
-  // Direction: -1 for UP (Head), 1 for DOWN (Feet)
-  // Side: 1 for Right, -1 for Left
-  const upperWaveRight = generateVerticalPath(maxWidth, headHeight, isOuter, -1, 1);
-  const upperWaveLeft = generateVerticalPath(maxWidth, headHeight, isOuter, -1, -1);
-  const lowerWaveRight = generateVerticalPath(maxWidth, feetHeight, isOuter, 1, 1);
-  const lowerWaveLeft = generateVerticalPath(maxWidth, feetHeight, isOuter, 1, -1);
+  // Determine what to render based on viewMode
+  const renderInner = viewMode === 'inner' || viewMode === 'both';
+  const renderOuter = viewMode === 'outer' || viewMode === 'both';
 
-  if (!upperWaveRight.path || !lowerWaveRight.path) return null;
+  // Generate paths for INNER Field
+  const innerUpperRight = generateVerticalPath(maxWidth, headHeight, false, -1, 1);
+  const innerUpperLeft = generateVerticalPath(maxWidth, headHeight, false, -1, -1);
+  const innerLowerRight = generateVerticalPath(maxWidth, feetHeight, false, 1, 1);
+  const innerLowerLeft = generateVerticalPath(maxWidth, feetHeight, false, 1, -1);
+
+  // Generate paths for OUTER Field
+  const outerUpperRight = generateVerticalPath(maxWidth, headHeight, true, -1, 1);
+  const outerUpperLeft = generateVerticalPath(maxWidth, headHeight, true, -1, -1);
+  const outerLowerRight = generateVerticalPath(maxWidth, feetHeight, true, 1, 1);
+  const outerLowerLeft = generateVerticalPath(maxWidth, feetHeight, true, 1, -1);
+
+  // Use the appropriate path for the main "isOuter" check in gradients if only one is shown,
+  // but for "both", we need separate gradients.
+  // We will define gradients for both Inner and Outer.
+  
+  if (!innerUpperRight.path || !innerLowerRight.path) return null;
 
   return (
     <div className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-6 mt-8 flex flex-col items-center transition-colors duration-500">
@@ -204,7 +216,9 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             KLANG-KÖRPER RESONANZ
             </h3>
             <span className="text-xs text-white/40 uppercase tracking-widest block mt-1">
-            {isOuter ? "AUSSENFELD (POTENZIAL)" : "INNENFELD (RESSOURCE)"}
+            {viewMode === 'inner' && "INNENFELD (RESSOURCE)"}
+            {viewMode === 'outer' && "AUSSENFELD (POTENZIAL)"}
+            {viewMode === 'both' && "GANZHEIT (INTEGRATION)"}
             </span>
         </div>
 
@@ -212,24 +226,35 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             <button
                 onClick={() => setViewMode('inner')}
                 className={cn(
-                    "px-4 py-1.5 text-xs font-medium rounded-md transition-all",
-                    !isOuter 
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                    viewMode === 'inner'
                         ? "bg-white text-black shadow-sm" 
                         : "text-zinc-400 hover:text-white"
                 )}
             >
-                INNENFELD
+                INNEN
             </button>
             <button
                 onClick={() => setViewMode('outer')}
                 className={cn(
-                    "px-4 py-1.5 text-xs font-medium rounded-md transition-all",
-                    isOuter 
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                    viewMode === 'outer'
                         ? "bg-white text-black shadow-sm" 
                         : "text-zinc-400 hover:text-white"
                 )}
             >
-                AUSSENFELD
+                AUSSEN
+            </button>
+            <button
+                onClick={() => setViewMode('both')}
+                className={cn(
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                    viewMode === 'both'
+                        ? "bg-white text-black shadow-sm" 
+                        : "text-zinc-400 hover:text-white"
+                )}
+            >
+                GANZHEIT
             </button>
         </div>
       </div>
@@ -281,16 +306,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
         </svg>
 
         {/* AURA / WAVE VISUALIZATION */}
-        <AnimatePresence mode="wait">
-            <motion.svg 
-                key={viewMode} // Re-render on mode change to animate
-                className="absolute inset-0 w-full h-full overflow-visible" 
-                viewBox="0 0 400 800"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-            >
+        <motion.svg 
+            className="absolute inset-0 w-full h-full overflow-visible" 
+            viewBox="0 0 400 800"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
                 <defs>
                     <filter id="auraGlow">
                         <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
@@ -306,75 +328,73 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         To achieve full spectrum in a single path, we need a gradient that matches the points.
                         Since the path is continuous, we can use a linear gradient along the Y axis.
                     */}
-                    <linearGradient id="spectrumGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
-                        {upperWaveRight.points.map((p, i) => {
-                             const color = isOuter ? getComplementaryColor(p.color) : p.color;
-                             const opacity = isOuter ? 0.5 : 0.6; // Higher opacity for outer to make colors visible
-                             return <stop key={i} offset={`${(i / (Math.max(1, upperWaveRight.points.length - 1))) * 100}%`} stopColor={color} stopOpacity={opacity} />;
-                        })}
+                    {/* INNER FIELD GRADIENTS */}
+                    <linearGradient id="innerGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
+                        {innerUpperRight.points.map((p, i) => (
+                             <stop key={i} offset={`${(i / (Math.max(1, innerUpperRight.points.length - 1))) * 100}%`} stopColor={p.color} stopOpacity={0.6} />
+                        ))}
                     </linearGradient>
-                    
-                    <linearGradient id="spectrumGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
-                         {lowerWaveRight.points.map((p, i) => {
-                             const color = isOuter ? getComplementaryColor(p.color) : p.color;
-                             const opacity = isOuter ? 0.5 : 0.6;
-                             return <stop key={i} offset={`${(i / (Math.max(1, lowerWaveRight.points.length - 1))) * 100}%`} stopColor={color} stopOpacity={opacity} />;
-                        })}
+                    <linearGradient id="innerGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
+                         {innerLowerRight.points.map((p, i) => (
+                             <stop key={i} offset={`${(i / (Math.max(1, innerLowerRight.points.length - 1))) * 100}%`} stopColor={p.color} stopOpacity={0.6} />
+                        ))}
+                    </linearGradient>
+
+                    {/* OUTER FIELD GRADIENTS */}
+                    <linearGradient id="outerGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
+                        {outerUpperRight.points.map((p, i) => (
+                             <stop key={i} offset={`${(i / (Math.max(1, outerUpperRight.points.length - 1))) * 100}%`} stopColor={getComplementaryColor(p.color)} stopOpacity={0.5} />
+                        ))}
+                    </linearGradient>
+                    <linearGradient id="outerGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
+                         {outerLowerRight.points.map((p, i) => (
+                             <stop key={i} offset={`${(i / (Math.max(1, outerLowerRight.points.length - 1))) * 100}%`} stopColor={getComplementaryColor(p.color)} stopOpacity={0.5} />
+                        ))}
                     </linearGradient>
                 </defs>
 
                 {/* Center Group at Navel (200, 380) */}
                 <g transform="translate(200, 380)">
                     
-                    {/* UPPER WAVE (Right Side) */}
-                    <motion.path
-                        d={upperWaveRight.path}
-                        fill="url(#spectrumGradientUp)"
-                        stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
-                        strokeWidth="1"
-                        filter="url(#auraGlow)"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    />
-                    {/* UPPER WAVE (Left Side - Explicitly Calculated) */}
-                    <motion.path
-                        d={upperWaveLeft.path}
-                        fill="url(#spectrumGradientUp)"
-                        stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
-                        strokeWidth="1"
-                        filter="url(#auraGlow)"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    />
+                    <AnimatePresence>
+                    {/* OUTER FIELD LAYERS (Render first so they are behind if overlapping, though they shouldn't overlap) */}
+                    {renderOuter && (
+                        <>
+                            {/* UPPER */}
+                            <motion.path key="outerUR" d={outerUpperRight.path} fill="url(#outerGradientUp)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="outerUL" d={outerUpperLeft.path} fill="url(#outerGradientUp)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            {/* LOWER */}
+                            <motion.path key="outerLR" d={outerLowerRight.path} fill="url(#outerGradientDown)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="outerLL" d={outerLowerLeft.path} fill="url(#outerGradientDown)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                        </>
+                    )}
 
-                    {/* LOWER WAVE (Right Side) */}
-                    <motion.path
-                        d={lowerWaveRight.path}
-                        fill="url(#spectrumGradientDown)"
-                        stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
-                        strokeWidth="1"
-                        filter="url(#auraGlow)"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    />
-                    {/* LOWER WAVE (Left Side - Explicitly Calculated) */}
-                    <motion.path
-                        d={lowerWaveLeft.path}
-                        fill="url(#spectrumGradientDown)"
-                        stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
-                        strokeWidth="1"
-                        filter="url(#auraGlow)"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    />
+                    {/* INNER FIELD LAYERS */}
+                    {renderInner && (
+                        <>
+                            {/* UPPER */}
+                            <motion.path key="innerUR" d={innerUpperRight.path} fill="url(#innerGradientUp)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="innerUL" d={innerUpperLeft.path} fill="url(#innerGradientUp)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            {/* LOWER */}
+                            <motion.path key="innerLR" d={innerLowerRight.path} fill="url(#innerGradientDown)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="innerLL" d={innerLowerLeft.path} fill="url(#innerGradientDown)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                        </>
+                    )}
+                    </AnimatePresence>
+                    
+                    {/* BOUNDARY HIGHLIGHT FOR 'BOTH' MODE */}
+                    {viewMode === 'both' && (
+                        <>
+                             {/* Re-draw the wave line with brighter stroke to highlight the meeting point */}
+                             <motion.path d={innerUpperRight.path} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" filter="url(#auraGlow)" />
+                             <motion.path d={innerUpperLeft.path} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" filter="url(#auraGlow)" />
+                             <motion.path d={innerLowerRight.path} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" filter="url(#auraGlow)" />
+                             <motion.path d={innerLowerLeft.path} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" filter="url(#auraGlow)" />
+                        </>
+                    )}
 
                 </g>
             </motion.svg>
-        </AnimatePresence>
 
       </div>
     </div>
