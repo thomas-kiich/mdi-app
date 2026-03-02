@@ -17,14 +17,12 @@
 - [x] Add Soles line (Horizontal marker)
 - [x] Implement "Key-Lock" principle: Mirror Outer Field with offset
 - [x] Strict Boundary Enforcement: Wave MUST stop exactly at Nose Root (Top) and Soles (Bottom).
-- [ ] **Implement Vertical Aura Contour (Navel-Anchored)**
-    - [ ] **Navel Anchor:** The Fundamental Tone (Peak) is ALWAYS at the Navel (y=0 relative).
-    - [ ] **Vertical Mapping:** Map the 12 tones from Navel upwards to Head and downwards to Feet.
-    - [ ] **Width = Intensity:** The width of the aura at any vertical point corresponds to the % intensity of that tone.
-    - [ ] **Symmetry:** Mirror left/right and up/down (Navel -> Head / Navel -> Feet).
-- [ ] **Expert Mode Toggle:**
-    - [ ] Hide Hz/Cent/Details by default.
-    - [ ] Add a "Gear" icon button to toggle visibility.
+- [x] Implement Vertical Aura Contour (Navel-Anchored)
+- [x] Expert Mode Toggle
+- [ ] **Fix Upper Wave Alignment:**
+    - [ ] Force Upper Wave to start exactly at y=0 (Navel) in the local coordinate system.
+    - [ ] Ensure SVG transform/scale doesn't shift the origin.
+    - [ ] Verify visual connection between Upper and Lower waves at the Navel.
 
 ## Logic & Analysis
 - [x] Fix quint correction logic

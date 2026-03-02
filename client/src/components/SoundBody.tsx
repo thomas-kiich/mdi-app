@@ -46,7 +46,12 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   // Generate SVG path for the "Wave Diagram" - VERTICAL
   // The path must go through the center of each bar column at the correct width
   // height is total height (e.g. 600), width is max width (e.g. 200)
-  const generateVerticalPath = (width: number, height: number, invert: boolean = false) => {
+  // generateVerticalPath:
+  // width: max width of wave
+  // height: length of wave (vertical)
+  // isOuterField: true if rendering Outer Field (Key-Lock)
+  // direction: -1 for UP (Head), 1 for DOWN (Feet)
+  const generateVerticalPath = (width: number, height: number, isOuterField: boolean, direction: number) => {
     if (sortedData.length === 0) return { path: "", points: [] };
 
     const numPoints = sortedData.length;
@@ -69,10 +74,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     // We need points for the path.
     const points = rotatedData.map((d, i) => {
       // Linear interpolation for y: 0 (Navel) to height (Head/Feet)
-      const y = (i / (numPoints - 1)) * height;
+      // For Upper Wave (invertY=true), we go from 0 to -height
+      // For Lower Wave (invertY=false), we go from 0 to +height
+      const rawY = (i / (numPoints - 1)) * height;
+      const y = rawY * direction;
       
       let val = d.percentage;
-      if (invert) {
+      if (isOuterField) {
           // Outer Field: 100 - val
           val = Math.max(0, 100 - val);
       }
@@ -83,7 +91,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
       let normalizedW = 0;
       let offset = 0; // Key-Lock gap
 
-      if (!invert) {
+      if (!isOuterField) {
           // INNER FIELD
           // Scale intensity to width. 
           // Max intensity (usually around 30-40%) should fill significant width.
@@ -103,8 +111,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     });
 
     // Start path
-    // If Outer Field (invert), start at offset, not 0
-    const startX = invert ? 20 : 0;
+    // If Outer Field (isOuterField), start at offset, not 0
+    const startX = isOuterField ? 20 : 0;
     let path = `M ${startX} 0`;
 
     if (points.length > 0) {
@@ -125,7 +133,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
         }
         
         // Return to axis
-        path += ` L ${startX} ${height}`;
+        path += ` L ${startX} ${direction * height}`;
         // Close back to start
         path += ` L ${startX} 0 Z`;
     }
@@ -141,8 +149,9 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   const maxWidth = 160;   // Max width of the aura
 
   const isOuter = viewMode === 'outer';
-  const upperWave = generateVerticalPath(maxWidth, headHeight, isOuter);
-  const lowerWave = generateVerticalPath(maxWidth, feetHeight, isOuter);
+  // Direction: -1 for UP (Head), 1 for DOWN (Feet)
+  const upperWave = generateVerticalPath(maxWidth, headHeight, isOuter, -1);
+  const lowerWave = generateVerticalPath(maxWidth, feetHeight, isOuter, 1);
 
   if (!upperWave.path || !lowerWave.path) return null;
 
@@ -274,25 +283,26 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 <g transform="translate(200, 380)">
                     
                     {/* UPPER WAVE (Right Side) */}
+                    {/* Removed transform scale(1, -1) because path is now generated with negative Y */}
                     <motion.path
                         d={upperWave.path}
                         fill="url(#spectrumGradientUp)"
                         stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
                         filter="url(#auraGlow)"
-                        transform="scale(1, -1)" 
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     />
                     {/* UPPER WAVE (Left Side - Mirrored) */}
+                    {/* Only mirror X (scale -1, 1). Y is already correct (negative) */}
                     <motion.path
                         d={upperWave.path}
                         fill="url(#spectrumGradientUp)"
                         stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
                         filter="url(#auraGlow)"
-                        transform="scale(-1, -1)" 
+                        transform="scale(-1, 1)" 
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
