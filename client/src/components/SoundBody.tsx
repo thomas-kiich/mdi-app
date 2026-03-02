@@ -28,7 +28,7 @@ const SPECTRAL_ORDER = [
 ];
 
 export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps) {
-  const [viewMode, setViewMode] = useState<'inner' | 'outer' | 'both'>('inner');
+  const [viewMode, setViewMode] = useState<'inner' | 'outer' | 'both' | 'art'>('inner');
   
   // Prepare data sorted by SPECTRAL_ORDER
   const sortedData = useMemo(() => {
@@ -208,8 +208,9 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   const maxWidth = 160;   // Max width of the aura
 
   // Determine what to render based on viewMode
-  const renderInner = viewMode === 'inner' || viewMode === 'both';
-  const renderOuter = viewMode === 'outer' || viewMode === 'both';
+  const renderInner = viewMode === 'inner' || viewMode === 'both' || viewMode === 'art';
+  const renderOuter = viewMode === 'outer' || viewMode === 'both' || viewMode === 'art';
+  const isArtMode = viewMode === 'art';
 
   // Generate paths for INNER Field
   const innerUpperRight = generateVerticalPath(maxWidth, headHeight, false, -1, 1);
@@ -241,6 +242,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             {viewMode === 'inner' && "INNENFELD (RESSOURCE)"}
             {viewMode === 'outer' && "AUSSENFELD (POTENZIAL)"}
             {viewMode === 'both' && "GANZHEIT (INTEGRATION)"}
+            {viewMode === 'art' && "SEELENBILD (ART MODE)"}
             </span>
         </div>
 
@@ -277,6 +279,17 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 )}
             >
                 GANZHEIT
+            </button>
+             <button
+                onClick={() => setViewMode('art')}
+                className={cn(
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg hover:opacity-90",
+                    viewMode === 'art'
+                        ? "ring-2 ring-white ring-offset-2 ring-offset-black" 
+                        : "opacity-70"
+                )}
+            >
+                ART
             </button>
         </div>
       </div>
@@ -344,6 +357,19 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         </feMerge>
                     </filter>
                     
+                    <filter id="artBlur">
+                        {/* Complex filter for Art Mode: Heavy blur + turbulence for organic feel */}
+                        <feGaussianBlur stdDeviation="20" result="blur1" />
+                        <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="2" result="noise" />
+                        <feDisplacementMap in="blur1" in2="noise" scale="30" result="displaced" />
+                        <feComposite operator="in" in="displaced" in2="SourceGraphic" result="composite" />
+                         {/* Mix with original slightly to keep shape */}
+                        <feMerge>
+                             <feMergeNode in="blur1" />
+                             <feMergeNode in="displaced" />
+                        </feMerge>
+                    </filter>
+                    
                     {/* Dynamic Gradients based on points color would be complex in SVG defs. 
                         Instead, we use a multi-stop gradient or simply use the dominant color. 
                         But user wants "Full Spectrum". 
@@ -379,15 +405,15 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 <g transform="translate(200, 380)">
                     
                     <AnimatePresence>
-                    {/* OUTER FIELD LAYERS (Render first so they are behind if overlapping, though they shouldn't overlap) */}
+                    {/* OUTER FIELD LAYERS */}
                     {renderOuter && (
                         <>
                             {/* UPPER */}
-                            <motion.path key="outerUR" d={outerUpperRight.path} fill="url(#outerGradientUp)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
-                            <motion.path key="outerUL" d={outerUpperLeft.path} fill="url(#outerGradientUp)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="outerUR" d={outerUpperRight.path} fill="url(#outerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="outerUL" d={outerUpperLeft.path} fill="url(#outerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
                             {/* LOWER */}
-                            <motion.path key="outerLR" d={outerLowerRight.path} fill="url(#outerGradientDown)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
-                            <motion.path key="outerLL" d={outerLowerLeft.path} fill="url(#outerGradientDown)" stroke="rgba(255,255,255,0.3)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="outerLR" d={outerLowerRight.path} fill="url(#outerGradientDown)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="outerLL" d={outerLowerLeft.path} fill="url(#outerGradientDown)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
                         </>
                     )}
 
@@ -395,11 +421,11 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     {renderInner && (
                         <>
                             {/* UPPER */}
-                            <motion.path key="innerUR" d={innerUpperRight.path} fill="url(#innerGradientUp)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
-                            <motion.path key="innerUL" d={innerUpperLeft.path} fill="url(#innerGradientUp)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="innerUR" d={innerUpperRight.path} fill="url(#innerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="innerUL" d={innerUpperLeft.path} fill="url(#innerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
                             {/* LOWER */}
-                            <motion.path key="innerLR" d={innerLowerRight.path} fill="url(#innerGradientDown)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
-                            <motion.path key="innerLL" d={innerLowerLeft.path} fill="url(#innerGradientDown)" stroke="rgba(255,255,255,0.5)" strokeWidth="1" filter="url(#auraGlow)" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="innerLR" d={innerLowerRight.path} fill="url(#innerGradientDown)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+                            <motion.path key="innerLL" d={innerLowerLeft.path} fill="url(#innerGradientDown)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
                         </>
                     )}
                     </AnimatePresence>
