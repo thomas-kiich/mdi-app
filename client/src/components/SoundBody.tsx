@@ -56,6 +56,10 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     if (domIndex === -1) return { path: "", points: [] };
 
     // Rotate the array so dominant tone is first (at Navel)
+    // IMPORTANT: The user wants the dominant tone (Peak) at the Navel (y=0 relative)
+    // and then the spectrum unfolds upwards to Head and downwards to Feet.
+    // So we need to reorder the data such that dominant tone is at index 0.
+    // The sequence follows the spectral order from the dominant tone.
     const rotatedData = [
       ...sortedData.slice(domIndex),
       ...sortedData.slice(0, domIndex)
@@ -81,7 +85,10 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
       if (!invert) {
           // INNER FIELD
-          normalizedW = Math.min(val * 4, 100); 
+          // Scale intensity to width. 
+          // Max intensity (usually around 30-40%) should fill significant width.
+          // Let's say 40% -> 100% width. Factor 2.5
+          normalizedW = Math.min(val * 3.5, 100); 
       } else {
           // OUTER FIELD (Key-Lock)
           // Visualize the GAP.

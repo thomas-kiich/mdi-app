@@ -16,9 +16,15 @@
 - [x] Add Nose Root marker (Center of Spirit)
 - [x] Add Soles line (Horizontal marker)
 - [x] Implement "Key-Lock" principle: Mirror Outer Field with offset
-- [ ] **Final Polish: Sound Body**
-    - [ ] **Strict Boundary Enforcement:** Wave MUST stop exactly at Nose Root (Top) and Soles (Bottom). No overflow.
-    - [ ] Ensure closed energetic system (Scheitel to Sohle).
+- [x] Strict Boundary Enforcement: Wave MUST stop exactly at Nose Root (Top) and Soles (Bottom).
+- [ ] **Implement Vertical Aura Contour (Navel-Anchored)**
+    - [ ] **Navel Anchor:** The Fundamental Tone (Peak) is ALWAYS at the Navel (y=0 relative).
+    - [ ] **Vertical Mapping:** Map the 12 tones from Navel upwards to Head and downwards to Feet.
+    - [ ] **Width = Intensity:** The width of the aura at any vertical point corresponds to the % intensity of that tone.
+    - [ ] **Symmetry:** Mirror left/right and up/down (Navel -> Head / Navel -> Feet).
+- [ ] **Expert Mode Toggle:**
+    - [ ] Hide Hz/Cent/Details by default.
+    - [ ] Add a "Gear" icon button to toggle visibility.
 
 ## Logic & Analysis
 - [x] Fix quint correction logic
