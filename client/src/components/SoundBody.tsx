@@ -28,7 +28,9 @@ const SPECTRAL_ORDER = [
 ];
 
 export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps) {
-  const [viewMode, setViewMode] = useState<'inner' | 'outer' | 'both' | 'art'>('inner');
+  const [viewMode, setViewMode] = useState<'inner' | 'outer' | 'both' | 'art' | 'vision'>('inner');
+  const [visionPrompt, setVisionPrompt] = useState('');
+  const [isGenerating, setIsGenerating] = useState(false);
   
   // Prepare data sorted by SPECTRAL_ORDER
   const sortedData = useMemo(() => {
@@ -208,9 +210,10 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   const maxWidth = 160;   // Max width of the aura
 
   // Determine what to render based on viewMode
-  const renderInner = viewMode === 'inner' || viewMode === 'both' || viewMode === 'art';
-  const renderOuter = viewMode === 'outer' || viewMode === 'both' || viewMode === 'art';
+  const renderInner = viewMode === 'inner' || viewMode === 'both' || viewMode === 'art' || viewMode === 'vision';
+  const renderOuter = viewMode === 'outer' || viewMode === 'both' || viewMode === 'art' || viewMode === 'vision';
   const isArtMode = viewMode === 'art';
+  const isVisionMode = viewMode === 'vision';
 
   // Generate paths for INNER Field
   const innerUpperRight = generateVerticalPath(maxWidth, headHeight, false, -1, 1);
@@ -243,10 +246,11 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             {viewMode === 'outer' && "AUSSENFELD (POTENZIAL)"}
             {viewMode === 'both' && "GANZHEIT (INTEGRATION)"}
             {viewMode === 'art' && "SEELENBILD (ART MODE)"}
+            {viewMode === 'vision' && "VISIONS-GENERATOR"}
             </span>
         </div>
 
-        <div className="flex bg-zinc-900/80 p-1 rounded-lg border border-zinc-800">
+        <div className="flex bg-zinc-900/80 p-1 rounded-lg border border-zinc-800 overflow-x-auto max-w-full">
             <button
                 onClick={() => setViewMode('inner')}
                 className={cn(
@@ -261,7 +265,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             <button
                 onClick={() => setViewMode('outer')}
                 className={cn(
-                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all ml-1",
                     viewMode === 'outer'
                         ? "bg-white text-black shadow-sm" 
                         : "text-zinc-400 hover:text-white"
@@ -272,7 +276,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             <button
                 onClick={() => setViewMode('both')}
                 className={cn(
-                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all ml-1",
                     viewMode === 'both'
                         ? "bg-white text-black shadow-sm" 
                         : "text-zinc-400 hover:text-white"
@@ -280,74 +284,40 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             >
                 GANZHEIT
             </button>
-             <button
+            <button
                 onClick={() => setViewMode('art')}
                 className={cn(
-                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg hover:opacity-90",
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all ml-1",
                     viewMode === 'art'
-                        ? "ring-2 ring-white ring-offset-2 ring-offset-black" 
-                        : "opacity-70"
+                        ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-sm" 
+                        : "text-zinc-400 hover:text-white"
                 )}
             >
                 ART
             </button>
+            <button
+                onClick={() => setViewMode('vision')}
+                className={cn(
+                    "px-3 py-1.5 text-xs font-medium rounded-md transition-all ml-1",
+                    viewMode === 'vision'
+                        ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-sm" 
+                        : "text-zinc-400 hover:text-white"
+                )}
+            >
+                VISION
+            </button>
         </div>
       </div>
 
-      <div className="relative h-[800px] w-full max-w-md flex justify-center items-center">
-        
-        {/* SILHOUETTE (Abstract - Improved) */}
-        <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-80 z-10" viewBox="0 0 400 800">
-            <defs>
-                <filter id="glow">
-                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
-                    <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                </filter>
-            </defs>
-            {/* Head */}
-            <path d="M 200 80 C 180 80, 165 95, 165 120 C 165 150, 180 160, 200 160 C 220 160, 235 150, 235 120 C 235 95, 220 80, 200 80 Z" 
-                fill="rgba(255,255,255,0.05)" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            
-            {/* Neck */}
-            <path d="M 200 160 L 200 180" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            
-            {/* Shoulders & Arms */}
-            <path d="M 200 180 L 140 200 L 120 400" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            <path d="M 200 180 L 260 200 L 280 400" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            
-            {/* Torso */}
-            <path d="M 140 200 C 140 200, 150 350, 160 380" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            <path d="M 260 200 C 260 200, 250 350, 240 380" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            
-            {/* Hips */}
-            <path d="M 160 380 C 160 380, 200 400, 240 380" fill="none" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            
-            {/* Legs */}
-            <path d="M 170 390 L 160 750" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            <path d="M 230 390 L 240 750" stroke="white" strokeWidth="2" filter="url(#glow)" />
-            
-            {/* Navel Marker - Center of Universe */}
-            <circle cx="200" cy="380" r="4" fill="white" filter="url(#glow)" />
-            <circle cx="200" cy="380" r="10" fill="none" stroke="white" strokeWidth="1" opacity="0.8" />
-            
-            {/* Nose Root Marker - Center of Spirit */}
-            <circle cx="200" cy="120" r="3" fill="white" filter="url(#glow)" opacity="0.8" />
-            
-            {/* Soles Line - Grounding */}
-            <line x1="140" y1="750" x2="260" y2="750" stroke="white" strokeWidth="1" opacity="0.5" strokeDasharray="4 4" />
-        </svg>
-
-        {/* AURA / WAVE VISUALIZATION */}
-        <motion.svg 
-            className="absolute inset-0 w-full h-full overflow-visible" 
-            viewBox="0 0 400 800"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-        >
+      <div className="relative w-full h-[600px] flex justify-center items-center overflow-hidden bg-black/20 rounded-lg border border-white/5">
+            {/* SVG Visualization */}
+            <motion.svg
+                viewBox="0 0 400 800" // Standardize viewport for body silhouette
+                className="w-full h-full max-h-[800px] z-10"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1 }}
+            >
                 <defs>
                     <filter id="auraGlow">
                         <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
@@ -406,9 +376,14 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 {/* Center Group at Navel (200, 380) */}
                 <g transform="translate(200, 380)">
                     
+                    {/* VISION MODE BACKGROUND (Full Screen Energy) */}
+                    {isVisionMode && (
+                        <rect x="-200" y="-380" width="400" height="800" fill="url(#artBlur)" opacity="0.8" />
+                    )}
+
                     <AnimatePresence>
                     {/* OUTER FIELD LAYERS */}
-                    {renderOuter && (
+                    {(!isVisionMode && renderOuter) && (
                         <>
                             {/* UPPER */}
                             <motion.path key="outerUR" d={outerUpperRight.path} fill="url(#outerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
@@ -420,7 +395,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     )}
 
                     {/* INNER FIELD LAYERS */}
-                    {renderInner && (
+                    {(!isVisionMode && renderInner) && (
                         <>
                             {/* UPPER */}
                             <motion.path key="innerUR" d={innerUpperRight.path} fill="url(#innerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
@@ -443,10 +418,76 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         </>
                     )}
 
-
-
                 </g>
             </motion.svg>
+
+      {/* HUMAN BODY SILHOUETTE OVERLAY - Hidden in Vision Mode */}
+      {!isVisionMode && (
+          <div className="absolute inset-0 pointer-events-none flex justify-center items-start pt-[120px] opacity-80 mix-blend-overlay">
+             {/* Simple SVG Silhouette */}
+             <svg width="400" height="800" viewBox="0 0 400 800" className="opacity-30">
+                {/* Head */}
+                <circle cx="200" cy="120" r="35" fill="none" stroke="white" strokeWidth="2" />
+                {/* Body Lines */}
+                <path d="M 200 155 L 200 380" stroke="white" strokeWidth="1" strokeDasharray="4 4" />
+                <line x1="160" y1="180" x2="240" y2="180" stroke="white" strokeWidth="1" />
+                <line x1="200" y1="380" x2="160" y2="600" stroke="white" strokeWidth="1" />
+                <line x1="200" y1="380" x2="240" y2="600" stroke="white" strokeWidth="1" />
+             </svg>
+          </div>
+      )}
+
+      {/* VISION MODE INTERFACE */}
+      {isVisionMode && (
+        <div className="absolute inset-0 flex flex-col justify-center items-center p-8 z-20 bg-black/20 backdrop-blur-sm">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }} 
+                animate={{ opacity: 1, y: 0 }} 
+                className="w-full max-w-md bg-black/80 border border-white/10 rounded-xl p-6 shadow-2xl backdrop-blur-md"
+            >
+                <h3 className="text-xl font-light text-white mb-4 text-center">VISIONS-GENERATOR</h3>
+                <p className="text-xs text-zinc-400 mb-6 text-center">
+                    Deine Frequenz-Aura dient als energetische Leinwand. Formuliere deine Vision und lade ein Foto hoch, um dich selbst in deiner vollendeten Energie zu sehen.
+                </p>
+
+                <div className="space-y-4">
+                    <div>
+                        <label className="text-xs uppercase tracking-wider text-zinc-500 mb-1 block">Dein Foto (Optional)</label>
+                        <div className="border border-dashed border-zinc-700 rounded-lg p-4 text-center hover:bg-zinc-900/50 transition-colors cursor-pointer">
+                            <span className="text-zinc-400 text-sm">Foto hochladen oder hier ablegen</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="text-xs uppercase tracking-wider text-zinc-500 mb-1 block">Deine Vision</label>
+                        <textarea 
+                            value={visionPrompt}
+                            onChange={(e) => setVisionPrompt(e.target.value)}
+                            placeholder="Ich stehe selbstbewusst auf einer großen Bühne und inspiriere tausende Menschen..."
+                            className="w-full bg-zinc-900 border border-zinc-700 rounded-lg p-3 text-white text-sm focus:outline-none focus:border-cyan-500 min-h-[100px]"
+                        />
+                    </div>
+
+                    <Button 
+                        onClick={() => {
+                            setIsGenerating(true);
+                            setTimeout(() => setIsGenerating(false), 3000);
+                        }}
+                        disabled={!visionPrompt || isGenerating}
+                        className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white border-none py-6"
+                    >
+                        {isGenerating ? (
+                            <span className="flex items-center gap-2">
+                                <span className="animate-spin">◌</span> GENERIERE VISION...
+                            </span>
+                        ) : (
+                            "VISION GENERIEREN"
+                        )}
+                    </Button>
+                </div>
+            </motion.div>
+        </div>
+      )}
 
       </div>
     </div>
