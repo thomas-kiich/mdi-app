@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { TONES } from '@/lib/tones';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { getComplementaryColor } from "@/lib/colors";
 
 interface SoundBodyProps {
   toneDistribution: Record<string, number>;
@@ -271,15 +272,19 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         Since the path is continuous, we can use a linear gradient along the Y axis.
                     */}
                     <linearGradient id="spectrumGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
-                        {upperWaveRight.points.map((p, i) => (
-                             <stop key={i} offset={`${(i / (Math.max(1, upperWaveRight.points.length - 1))) * 100}%`} stopColor={isOuter ? "#ffffff" : p.color} stopOpacity={isOuter ? 0.2 : 0.6} />
-                        ))}
+                        {upperWaveRight.points.map((p, i) => {
+                             const color = isOuter ? getComplementaryColor(p.color) : p.color;
+                             const opacity = isOuter ? 0.5 : 0.6; // Higher opacity for outer to make colors visible
+                             return <stop key={i} offset={`${(i / (Math.max(1, upperWaveRight.points.length - 1))) * 100}%`} stopColor={color} stopOpacity={opacity} />;
+                        })}
                     </linearGradient>
                     
                     <linearGradient id="spectrumGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
-                         {lowerWaveRight.points.map((p, i) => (
-                             <stop key={i} offset={`${(i / (Math.max(1, lowerWaveRight.points.length - 1))) * 100}%`} stopColor={isOuter ? "#ffffff" : p.color} stopOpacity={isOuter ? 0.2 : 0.6} />
-                        ))}
+                         {lowerWaveRight.points.map((p, i) => {
+                             const color = isOuter ? getComplementaryColor(p.color) : p.color;
+                             const opacity = isOuter ? 0.5 : 0.6;
+                             return <stop key={i} offset={`${(i / (Math.max(1, lowerWaveRight.points.length - 1))) * 100}%`} stopColor={color} stopOpacity={opacity} />;
+                        })}
                     </linearGradient>
                 </defs>
 
