@@ -51,7 +51,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   // height: length of wave (vertical)
   // isOuterField: true if rendering Outer Field (Key-Lock)
   // direction: -1 for UP (Head), 1 for DOWN (Feet)
-  const generateVerticalPath = (width: number, height: number, isOuterField: boolean, direction: number) => {
+  // side: 1 for Right, -1 for Left
+  const generateVerticalPath = (width: number, height: number, isOuterField: boolean, direction: number, side: number) => {
     if (sortedData.length === 0) return { path: "", points: [] };
 
     const numPoints = sortedData.length;
@@ -106,13 +107,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
           offset = 20; // Distance from center line
       }
       
-      const x = offset + (normalizedW / 100) * width;
+      const x = (offset + (normalizedW / 100) * width) * side;
       return { x, y, color: d.color, tone: d.name };
     });
 
     // Start path
     // If Outer Field (isOuterField), start at offset, not 0
-    const startX = isOuterField ? 20 : 0;
+    const startX = (isOuterField ? 20 : 0) * side;
     let path = `M ${startX} 0`;
 
     if (points.length > 0) {
@@ -150,10 +151,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
   const isOuter = viewMode === 'outer';
   // Direction: -1 for UP (Head), 1 for DOWN (Feet)
-  const upperWave = generateVerticalPath(maxWidth, headHeight, isOuter, -1);
-  const lowerWave = generateVerticalPath(maxWidth, feetHeight, isOuter, 1);
+  // Side: 1 for Right, -1 for Left
+  const upperWaveRight = generateVerticalPath(maxWidth, headHeight, isOuter, -1, 1);
+  const upperWaveLeft = generateVerticalPath(maxWidth, headHeight, isOuter, -1, -1);
+  const lowerWaveRight = generateVerticalPath(maxWidth, feetHeight, isOuter, 1, 1);
+  const lowerWaveLeft = generateVerticalPath(maxWidth, feetHeight, isOuter, 1, -1);
 
-  if (!upperWave.path || !lowerWave.path) return null;
+  if (!upperWaveRight.path || !lowerWaveRight.path) return null;
 
   return (
     <div className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-6 mt-8 flex flex-col items-center transition-colors duration-500">
@@ -267,14 +271,14 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         Since the path is continuous, we can use a linear gradient along the Y axis.
                     */}
                     <linearGradient id="spectrumGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
-                        {upperWave.points.map((p, i) => (
-                             <stop key={i} offset={`${(i / (Math.max(1, upperWave.points.length - 1))) * 100}%`} stopColor={isOuter ? "#ffffff" : p.color} stopOpacity={isOuter ? 0.2 : 0.6} />
+                        {upperWaveRight.points.map((p, i) => (
+                             <stop key={i} offset={`${(i / (Math.max(1, upperWaveRight.points.length - 1))) * 100}%`} stopColor={isOuter ? "#ffffff" : p.color} stopOpacity={isOuter ? 0.2 : 0.6} />
                         ))}
                     </linearGradient>
                     
                     <linearGradient id="spectrumGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
-                         {lowerWave.points.map((p, i) => (
-                             <stop key={i} offset={`${(i / (Math.max(1, lowerWave.points.length - 1))) * 100}%`} stopColor={isOuter ? "#ffffff" : p.color} stopOpacity={isOuter ? 0.2 : 0.6} />
+                         {lowerWaveRight.points.map((p, i) => (
+                             <stop key={i} offset={`${(i / (Math.max(1, lowerWaveRight.points.length - 1))) * 100}%`} stopColor={isOuter ? "#ffffff" : p.color} stopOpacity={isOuter ? 0.2 : 0.6} />
                         ))}
                     </linearGradient>
                 </defs>
@@ -283,9 +287,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 <g transform="translate(200, 380)">
                     
                     {/* UPPER WAVE (Right Side) */}
-                    {/* Removed transform scale(1, -1) because path is now generated with negative Y */}
                     <motion.path
-                        d={upperWave.path}
+                        d={upperWaveRight.path}
                         fill="url(#spectrumGradientUp)"
                         stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
@@ -294,15 +297,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     />
-                    {/* UPPER WAVE (Left Side - Mirrored) */}
-                    {/* Only mirror X (scale -1, 1). Y is already correct (negative) */}
+                    {/* UPPER WAVE (Left Side - Explicitly Calculated) */}
                     <motion.path
-                        d={upperWave.path}
+                        d={upperWaveLeft.path}
                         fill="url(#spectrumGradientUp)"
                         stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
                         filter="url(#auraGlow)"
-                        transform="scale(-1, 1)" 
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -310,7 +311,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
                     {/* LOWER WAVE (Right Side) */}
                     <motion.path
-                        d={lowerWave.path}
+                        d={lowerWaveRight.path}
                         fill="url(#spectrumGradientDown)"
                         stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
@@ -319,14 +320,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     />
-                    {/* LOWER WAVE (Left Side - Mirrored) */}
+                    {/* LOWER WAVE (Left Side - Explicitly Calculated) */}
                     <motion.path
-                        d={lowerWave.path}
+                        d={lowerWaveLeft.path}
                         fill="url(#spectrumGradientDown)"
                         stroke={isOuter ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.5)"}
                         strokeWidth="1"
                         filter="url(#auraGlow)"
-                        transform="scale(-1, 1)"
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ duration: 0.8, ease: "easeOut" }}

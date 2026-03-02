@@ -19,10 +19,11 @@
 - [x] Strict Boundary Enforcement: Wave MUST stop exactly at Nose Root (Top) and Soles (Bottom).
 - [x] Implement Vertical Aura Contour (Navel-Anchored)
 - [x] Expert Mode Toggle
-- [ ] **Fix Upper Wave Alignment:**
-    - [ ] Force Upper Wave to start exactly at y=0 (Navel) in the local coordinate system.
-    - [ ] Ensure SVG transform/scale doesn't shift the origin.
-    - [ ] Verify visual connection between Upper and Lower waves at the Navel.
+- [x] Fix Upper Wave Alignment (Navel Anchor)
+- [ ] **Ensure Left-Side Aura Visibility:**
+    - [ ] Explicitly calculate points for the left side (negative X).
+    - [ ] Render left-side paths independently (no `transform="scale(-1, 1)"`).
+    - [ ] Verify gradients and visibility for the left side.
 
 ## Logic & Analysis
 - [x] Fix quint correction logic
