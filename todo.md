@@ -1,20 +1,34 @@
 # MDI App Development Tasks
 
-## Phase 10: Implement Custom Color Palette (E-BlueViolet to F-Magenta)
-- [ ] Update `tones.ts` with the user's specific color mapping:
-    - E: Blauviolett (#8A2BE2)
-    - Dis: Schwarzblau (#191970)
-    - D: Königsblau (#4169E1)
-    - Cis: Türkis (#40E0D0)
-    - C: Grün (#008000)
-    - H: Olive (#808000)
-    - Ais: Gelbgrün (#9ACD32)
-    - A: Gelb (#FFFF00)
-    - Gis: Gelborange (#FFAE42)
-    - G: Rotorange (#FF4500)
-    - Fis: Rot (#FF0000)
-    - F: Magenta (#FF00FF)
-- [ ] Update `SpectralMatrix.tsx` to visualize this palette as a wave diagram.
-    - Ensure X-axis has equal spacing for the 12 tones.
-    - Ensure Y-axis represents percentage (0-100).
-    - Use the exact colors for the gradient and bars.
+## Phase 11: Finalize Visualization & Frequency Display
+- [ ] **Visualization Fix:** Update `SpectralMatrix.tsx` to align Tone E to the Y-axis (x=0) and Tone F to the far right edge.
+    - Adjust the X-coordinate calculation in `generatePath` to start at 0 and end at `width`.
+    - Ensure the control points for the Bezier curves create a smooth start and end.
+- [ ] **Frequency Display Fix:** Update `Home.tsx` logic for `calculateFinalResult`.
+    - Instead of picking the frequency from the *most confident session* (which might be a different tone), it must calculate the frequency based on the *dominant tone* determined by the overall distribution.
+    - If the dominant tone is F#, find the session where F# was detected (or use the ideal frequency if not explicitly detected as fundamental but present in distribution, though ideally we want measured data).
+    - BETTER APPROACH: If F# is the winner, look for a session where the fundamental frequency was close to F#. If not found (e.g. F# came from harmonics or aggregation of adjacent tones), use the theoretical F# frequency adjusted by the average cents deviation found in the sessions.
+    - REVISED APPROACH based on user feedback: The user says "Fis -27 cent ist richtig". This implies we should calculate the Hz from the Tone + Cents.
+    - Logic: `FinalHz = ToneFreq * 2^(Cents/1200)`.
+    - We need to ensure `cents` is calculated correctly for the *dominant tone*.
+    - Current bug: It takes `bestHz` from a session where `dominantTone` had the highest score. But if in that session the fundamental was actually G# (and F# was just a high % overtone or neighbor), `bestHz` will be ~103Hz (G#).
+    - FIX: We need to find a session where the *Fundamental Frequency* itself was the Dominant Tone.
+    - IF no session had the Dominant Tone as the fundamental (e.g. mixed results C, G#, G# -> Winner F# due to distribution sum?), then we must derive the Hz.
+    - User case: 1. C, 2. G#, 3. G#. Winner F#?
+    - Wait, user said: "1. messung Ton C... 2. messung Ton GIS... 3. messung Ton GIS".
+    - And "man sieht in der farbwelle jedoch eindeutig den höchsten peak bei fis".
+    - So F# won by accumulation.
+    - But the displayed Hz was 103.59 (G#).
+    - CORRECTION: If the dominant tone (F#) was never the fundamental of a recording, we cannot show a "measured fundamental frequency" for it directly from a session.
+    - However, we can calculate the "Target Frequency" based on the detected Cents deviation.
+    - If we don't have a measured F# fundamental, how do we know the cents deviation for F#?
+    - We can infer it from the weighted average of deviations of the neighbor tones, OR just show the ideal F# frequency if we can't measure it.
+    - BUT user said "Fis -27 cent". Where did -27 come from?
+    - If the system calculated -27 cents, it must have compared *some* measured Hz to the F# target.
+    - If it compared 103.59 (G#) to F#, the deviation would be huge (200+ cents).
+    - So, if the result says "Fis -27 cents", the Hz *should* be approx 91 Hz (F#) or 183 Hz.
+    - If it displays "Fis -27 cents" AND "103.59 Hz", then the display logic is mixing data:
+        - Tone/Cents from Aggregation (correct)
+        - Hz from Last Session (incorrect)
+    - **TASK:** Ensure `finalResult.fundamentalFreq` is consistent with `finalResult.tone` and `finalResult.cents`.
+    - Recalculate `fundamentalFreq` = `tone.frequency * 2^(cents/1200)`. This ensures consistency.

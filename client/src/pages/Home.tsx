@@ -179,34 +179,68 @@ export default function Home() {
       const toneData = TONES.find(t => t.name === dominantToneName);
       
       if (toneData) {
-        // Calculate average Hz for this tone from the sessions where it appeared
-        // This is a simplification - ideally we'd track exact Hz per frame
-        // Instead we'll use the Hz from the session where this tone was most prominent
-        
-        let bestHz = 0;
+        // Determine the "Final Hz" for the result.
+        // User Requirement: The result should be consistent. If Tone is F# and Cents is -27, 
+        // the Hz must match F# -27 cents, NOT the Hz of a different tone from a specific session.
+
+        // 1. Try to find if the dominant tone was ever the fundamental in any session
+        let measuredHz = 0;
         let bestConfidence = 0;
         
         const checkSession = (res: AnalysisResult | null) => {
             if (!res || !res.toneDistribution) return;
-            const score = res.toneDistribution[dominantToneName] || 0;
-            if (score > bestConfidence) {
-                bestConfidence = score;
-                bestHz = res.fundamentalFreq;
+            // Check if this session's FUNDAMENTAL tone matches our dominant tone
+            // We need to re-check the tone of the fundamental freq
+            const fundCheck = getToneFromFrequency(res.fundamentalFreq);
+            
+            if (fundCheck.tone.name === dominantToneName) {
+                // This session actually measured our dominant tone as the fundamental!
+                // We prefer this real measurement.
+                const score = res.toneDistribution[dominantToneName] || 0;
+                if (score > bestConfidence) {
+                    bestConfidence = score;
+                    measuredHz = res.fundamentalFreq;
+                }
             }
         };
         
         checkSession(results.q1);
         checkSession(results.q2);
         checkSession(results.q3);
-        
-        // Recalculate cents/diff based on the chosen Hz
-        const { cents, diffHz } = getToneFromFrequency(bestHz);
+
+        let finalHz = 0;
+        let finalCents = 0;
+        let finalDiffHz = 0;
+
+        if (measuredHz > 0) {
+            // Case A: We have a real measurement of this tone
+            finalHz = measuredHz;
+            const check = getToneFromFrequency(finalHz);
+            finalCents = check.cents;
+            finalDiffHz = check.diffHz;
+        } else {
+            // Case B: The dominant tone (e.g. F#) won by accumulation/distribution, 
+            // but was never the fundamental of a single session (e.g. sessions were C, G#, G#).
+            // In this case, we cannot show "103 Hz" (G#) as the frequency for F#.
+            // We must CALCULATE the frequency based on the weighted average deviation of the tone.
+            
+            // Let's calculate the weighted average cents deviation for the dominant tone across sessions
+            // Note: This is tricky because we only have tone distribution %, not cents deviation per tone per session in the simple struct.
+            // Fallback: We will use the ideal frequency of the tone, and perhaps 0 cents, 
+            // OR if we want to be smarter, we assume the user's voice has a general shift.
+            // For now, to avoid confusion like "F# with 103Hz", we will use the IDEAL frequency of the detected tone.
+            // This is safer than showing a wrong Hz.
+            
+            finalHz = toneData.frequency;
+            finalCents = 0;
+            finalDiffHz = 0;
+        }
         
         setFinalResult({
-          fundamentalFreq: bestHz,
+          fundamentalFreq: finalHz,
           tone: toneData,
-          cents,
-          diffHz,
+          cents: finalCents,
+          diffHz: finalDiffHz,
           noteName: toneData.name,
           toneDistribution: combinedDistribution,
           stepDistributions: {

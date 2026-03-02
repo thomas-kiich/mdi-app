@@ -47,12 +47,15 @@ export function SpectralMatrix({ toneDistribution }: SpectralMatrixProps) {
     if (sortedData.length === 0) return "";
 
     const numPoints = sortedData.length;
-    // We want the points to be in the CENTER of each column.
-    // Width is divided into 12 columns.
-    const colWidth = width / numPoints;
+    // We want the points to span from 0 to width.
+    // Tone E (index 0) -> x = 0
+    // Tone F (index 11) -> x = width
+    // The others are equally spaced in between.
     
     const points = sortedData.map((d, i) => {
-      const x = (i * colWidth) + (colWidth / 2); // Center of column
+      // Linear interpolation for x: 0 to width
+      const x = (i / (numPoints - 1)) * width;
+      
       // Map percentage (0-100) to height (y). 0% -> height (bottom), 100% -> 0 (top)
       // Scale: Let's use 100% as full height.
       const normalizedH = Math.min(d.percentage * 2.5, 95); // Scale factor for visibility
@@ -64,7 +67,7 @@ export function SpectralMatrix({ toneDistribution }: SpectralMatrixProps) {
     let path = `M 0 ${height}`;
 
     if (points.length > 0) {
-        // Line to first point
+        // Line to first point (Tone E at x=0)
         path += ` L ${points[0].x} ${points[0].y}`;
 
         // Cubic Bezier interpolation through all points
@@ -73,9 +76,12 @@ export function SpectralMatrix({ toneDistribution }: SpectralMatrixProps) {
             const p1 = points[i + 1];
             
             // Control points for smooth curve (tension 0.5)
-            const cp1x = p0.x + (p1.x - p0.x) * 0.5;
+            // Since x spacing is uniform, we can use fixed offset
+            const offset = (p1.x - p0.x) * 0.4;
+            
+            const cp1x = p0.x + offset;
             const cp1y = p0.y;
-            const cp2x = p0.x + (p1.x - p0.x) * 0.5;
+            const cp2x = p1.x - offset;
             const cp2y = p1.y;
 
             path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
@@ -125,9 +131,9 @@ export function SpectralMatrix({ toneDistribution }: SpectralMatrixProps) {
         />
 
         {/* 2. GRID LINES (Vertical) & LABELS for each Tone (Equal Spacing) */}
-        <div className="absolute inset-0 flex w-full pointer-events-none z-10">
+        <div className="absolute inset-0 flex w-full pointer-events-none z-10 justify-between px-0">
           {sortedData.map((d, i) => (
-            <div key={i} className="flex-1 h-full border-r border-white/5 flex flex-col justify-end items-center pb-2 relative group">
+            <div key={i} className="flex-1 h-full border-r border-white/5 last:border-r-0 flex flex-col justify-end items-center pb-2 relative group">
               <span className="text-[10px] text-white/50 font-mono mb-1 absolute bottom-6">{d.name}</span>
               <div 
                 className="w-1.5 rounded-t-sm absolute bottom-0 transition-all duration-1000"
