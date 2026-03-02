@@ -1,19 +1,20 @@
 # MDI App Development Tasks
 
-## Phase 9: Implement Rainbow Gradient (E-Violet to F-Red)
-- [ ] Update `tones.ts` to implement the natural rainbow gradient (Descending Chromatic Scale E -> F):
-    - E = Violet (Start / Shortest Wavelength)
-    - Dis = Indigo
-    - D = Blue
-    - Cis = Blue-Green (Turquoise)
-    - C = Green (Center)
-    - H = Yellow-Green
-    - Ais = Yellow
-    - A = Yellow-Orange
-    - Gis = Orange
-    - G = Red-Orange
-    - Fis = Red
-    - F = Deep Red (End / Longest Wavelength)
-- [ ] Update `SpectralMatrix.tsx` to sort the X-axis explicitly in this order: [E, Dis, D, Cis, C, H, Ais, A, Gis, G, Fis, F].
-- [ ] Ensure the background gradient visualizes this full spectrum smoothly.
-- [ ] Verify that C is exactly Green.
+## Phase 10: Implement Custom Color Palette (E-BlueViolet to F-Magenta)
+- [ ] Update `tones.ts` with the user's specific color mapping:
+    - E: Blauviolett (#8A2BE2)
+    - Dis: Schwarzblau (#191970)
+    - D: Königsblau (#4169E1)
+    - Cis: Türkis (#40E0D0)
+    - C: Grün (#008000)
+    - H: Olive (#808000)
+    - Ais: Gelbgrün (#9ACD32)
+    - A: Gelb (#FFFF00)
+    - Gis: Gelborange (#FFAE42)
+    - G: Rotorange (#FF4500)
+    - Fis: Rot (#FF0000)
+    - F: Magenta (#FF00FF)
+- [ ] Update `SpectralMatrix.tsx` to visualize this palette as a wave diagram.
+    - Ensure X-axis has equal spacing for the 12 tones.
+    - Ensure Y-axis represents percentage (0-100).
+    - Use the exact colors for the gradient and bars.
