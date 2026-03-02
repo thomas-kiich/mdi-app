@@ -5,7 +5,8 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { SpectrumVisualizer } from "@/components/SpectrumVisualizer";
 import { FrequencyChart } from "@/components/FrequencyChart";
-import { SpectralMatrix } from "@/components/SpectralMatrix"; // Import new component
+import { SpectralMatrix } from '@/components/SpectralMatrix'; // Import new component
+import { SoundBody } from '@/components/SoundBody'; // Import new component
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
@@ -710,6 +711,14 @@ export default function Home() {
                 {/* NEW: Spectral Resonance Matrix */}
                 {res.toneDistribution && (
                     <SpectralMatrix toneDistribution={res.toneDistribution} />
+                )}
+
+                {/* NEW: Sound Body Visualization */}
+                {res.toneDistribution && (
+                    <SoundBody 
+                        toneDistribution={res.toneDistribution} 
+                        dominantToneName={res.tone.name} 
+                    />
                 )}
                 
                 {/* Legacy Frequency Distribution Chart (Optional, kept for reference if needed) */}

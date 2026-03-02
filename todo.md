@@ -1,34 +1,30 @@
 # MDI App Development Tasks
 
-## Phase 11: Finalize Visualization & Frequency Display
-- [ ] **Visualization Fix:** Update `SpectralMatrix.tsx` to align Tone E to the Y-axis (x=0) and Tone F to the far right edge.
-    - Adjust the X-coordinate calculation in `generatePath` to start at 0 and end at `width`.
-    - Ensure the control points for the Bezier curves create a smooth start and end.
-- [ ] **Frequency Display Fix:** Update `Home.tsx` logic for `calculateFinalResult`.
-    - Instead of picking the frequency from the *most confident session* (which might be a different tone), it must calculate the frequency based on the *dominant tone* determined by the overall distribution.
-    - If the dominant tone is F#, find the session where F# was detected (or use the ideal frequency if not explicitly detected as fundamental but present in distribution, though ideally we want measured data).
-    - BETTER APPROACH: If F# is the winner, look for a session where the fundamental frequency was close to F#. If not found (e.g. F# came from harmonics or aggregation of adjacent tones), use the theoretical F# frequency adjusted by the average cents deviation found in the sessions.
-    - REVISED APPROACH based on user feedback: The user says "Fis -27 cent ist richtig". This implies we should calculate the Hz from the Tone + Cents.
-    - Logic: `FinalHz = ToneFreq * 2^(Cents/1200)`.
-    - We need to ensure `cents` is calculated correctly for the *dominant tone*.
-    - Current bug: It takes `bestHz` from a session where `dominantTone` had the highest score. But if in that session the fundamental was actually G# (and F# was just a high % overtone or neighbor), `bestHz` will be ~103Hz (G#).
-    - FIX: We need to find a session where the *Fundamental Frequency* itself was the Dominant Tone.
-    - IF no session had the Dominant Tone as the fundamental (e.g. mixed results C, G#, G# -> Winner F# due to distribution sum?), then we must derive the Hz.
-    - User case: 1. C, 2. G#, 3. G#. Winner F#?
-    - Wait, user said: "1. messung Ton C... 2. messung Ton GIS... 3. messung Ton GIS".
-    - And "man sieht in der farbwelle jedoch eindeutig den höchsten peak bei fis".
-    - So F# won by accumulation.
-    - But the displayed Hz was 103.59 (G#).
-    - CORRECTION: If the dominant tone (F#) was never the fundamental of a recording, we cannot show a "measured fundamental frequency" for it directly from a session.
-    - However, we can calculate the "Target Frequency" based on the detected Cents deviation.
-    - If we don't have a measured F# fundamental, how do we know the cents deviation for F#?
-    - We can infer it from the weighted average of deviations of the neighbor tones, OR just show the ideal F# frequency if we can't measure it.
-    - BUT user said "Fis -27 cent". Where did -27 come from?
-    - If the system calculated -27 cents, it must have compared *some* measured Hz to the F# target.
-    - If it compared 103.59 (G#) to F#, the deviation would be huge (200+ cents).
-    - So, if the result says "Fis -27 cents", the Hz *should* be approx 91 Hz (F#) or 183 Hz.
-    - If it displays "Fis -27 cents" AND "103.59 Hz", then the display logic is mixing data:
-        - Tone/Cents from Aggregation (correct)
-        - Hz from Last Session (incorrect)
-    - **TASK:** Ensure `finalResult.fundamentalFreq` is consistent with `finalResult.tone` and `finalResult.cents`.
-    - Recalculate `fundamentalFreq` = `tone.frequency * 2^(cents/1200)`. This ensures consistency.
+## Phase 12: Implement Sound Body Visualization & Finalize Frequency Display
+
+- [ ] **Frequency Display Logic Fix (Home.tsx):**
+    - Ensure the displayed frequency (`fundamentalFreq`) corresponds to the *measured* frequency of the dominant tone if available.
+    - If the dominant tone was not the fundamental in any session (but won by accumulation), fallback to `ToneFreq * 2^(cents/1200)` using the *weighted average cents* deviation of that tone across sessions (if available) OR just use the ideal tone frequency.
+    - *Crucial:* Do NOT show the frequency of the last session's fundamental (e.g. G#) if the result is F#. This is the main bug to fix.
+    - Implementation detail: Calculate weighted average cents for the dominant tone from the `stepDistributions` if possible, or simpler: just use the ideal frequency of the dominant tone if no direct measurement exists. The user prefers "stimmig" (consistent) data over "raw but contradictory" data.
+
+- [ ] **Sound Body Visualization (SoundBody.tsx):**
+    - Create a new component `SoundBody` that takes `toneDistribution` and `dominantTone` as props.
+    - **Visual Metaphor:** A human silhouette (standing, arms by side).
+    - **Mapping:**
+        - **Center (Navel):** The location of the Dominant Tone (Fundamental).
+        - **Upward (Navel to Head):** The frequency spectrum mapped vertically.
+        - **Downward (Navel to Feet):** The mirrored spectrum.
+    - **Implementation:**
+        - Use an SVG for the silhouette.
+        - Overlay a vertical gradient or "aura" visualization inside/around the silhouette.
+        - The "Wave" from `SpectralMatrix` should be rotated 90 degrees and applied along the vertical axis of the body.
+        - Colors should match the user's specific palette (E-BlueViolet to F-Magenta).
+    - **Placement:** Add this component below the `SpectralMatrix` in `Home.tsx`.
+
+- [ ] **Inverse Matrix (Optional/Next Step):**
+    - The user mentioned an "Inverse" view. We can incorporate this into the Sound Body or keep it as a separate view later. For now, focus on the "Sound Body" as the primary new visualization.
+    - *Note:* The user said "wir füllen einfach den fehlbereich des therethischen diagrammrechtecks mit der zugehörigen farbwelle auf... im nächsten veranschaulichungsschritt drehen wir diese darstellung um 90 Grad...". So the Sound Body *is* the next step of the "Inverse/Filled" idea.
+
+- [ ] **Cleanup:**
+    - Move technical details (Hz, Cents) to a "Details" toggle to declutter the main view as requested ("maximale anschaulichkeit").
