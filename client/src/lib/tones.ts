@@ -1,6 +1,6 @@
 // TONES.ts - Frequency Data and Metadata for MDI System
-// Updated with Hans Cousto's Cosmic Octave Frequencies & Colors
-// Source: Planetware / Hans Cousto
+// Updated with Hans Cousto's Cosmic Octave Frequencies & Natural Rainbow Color Mapping
+// Order: Descending Chromatic Scale (E -> F) = Rainbow (Violet -> Red)
 
 export interface ToneData {
   name: string;
@@ -13,119 +13,89 @@ export interface ToneData {
   planet?: string;   // Associated planet/cycle (Cousto)
 }
 
-// Cousto Mapping Analysis:
-// 1. Earth Day (Sonnentag) = 194.18 Hz (G) -> Red-Orange
-// 2. Earth Year (Trop. Jahr) = 136.10 Hz (C#) -> Blue-Green (Türkis)
-// 3. Platonic Year = 172.06 Hz (F) -> Red-Violet
-// 4. Sun Tone = 126.22 Hz (H/C border, usually H) -> Yellow-Green
-// 5. Moon (Synod.) = 210.42 Hz (G#) -> Orange
+// User Requirement:
+// "Der natürliche Farbverlauf des Regenbogens: VIOLETT-INDIGO-BLAU-GRÜN-GELB-ORANGE-ROT
+// ... entspricht exakt der Tonfolge von E-DIS-D-CIS-C-H-AIS-A-GIS-G-FIS-F"
 
-// User Requirement: C = Green.
-// In Cousto's system:
-// C# (136.10 Hz) is Blue-Green (Türkis).
-// H (126.22 Hz, Sun) is Yellow-Green.
-// So C (approx 128-130 Hz) sits exactly between Yellow-Green and Blue-Green -> GREEN.
-// This confirms the user's intuition: C = Green is harmonically consistent with the Cosmic Octave.
-
-// We will use Cousto's precise Hz values where they align with notes, and interpolate for the rest based on A=440 (or rather A derived from Cousto's C#=136.10).
-// Actually, Cousto's tuning is A=432.10 Hz (derived from C#=136.10).
-// Let's stick to the user's desire for the "Color Music" mapping.
+// Implementation Strategy:
+// 1. We keep Cousto's frequencies for accuracy.
+// 2. We apply the User's Color Mapping strictly.
 
 export const TONES: ToneData[] = [
   {
-    name: "C",
-    frequency: 128.00, // Derived approx from Cousto gap between Sun(H) and Earth Year(C#)
-    color: "#22c55e", // Green (Cousto: Gap between Yellow-Green and Blue-Green)
-    meaning: "Stabilität, Erdung, Urvertrauen",
-    geometry: "quadrat-basis",
-    minFreq: 124.0, 
-    maxFreq: 132.0,
-    planet: "Sedna (approx)"
-  },
-  {
-    name: "Cis",
-    frequency: 136.10, // EARTH YEAR (OM)
-    color: "#0d9488", // Blue-Green (Türkis)
-    meaning: "Das Jahr, Om, Entspannung, Seele",
-    geometry: "kreis-welle",
-    minFreq: 132.0,
-    maxFreq: 140.0,
-    planet: "Erde (Jahr)"
-  },
-  {
-    name: "D",
-    frequency: 144.72, // MARS
-    color: "#3b82f6", // Blue
-    meaning: "Energie, Durchsetzung, Willenskraft",
-    geometry: "dreieck-spitze",
-    minFreq: 140.0,
-    maxFreq: 149.0,
-    planet: "Mars"
-  },
-  {
-    name: "Dis",
-    frequency: 153.00, // Approx (Saturn is 147.85 D, Jupiter 183.58 F#)
-    color: "#6366f1", // Indigo
-    meaning: "Klarheit, Vision, Intuition",
-    geometry: "stern-strahl",
-    minFreq: 149.0,
-    maxFreq: 158.0,
-    planet: "-"
-  },
-  {
     name: "E",
-    frequency: 164.81, // Standard E (No direct planet match in this octave)
-    color: "#8b5cf6", // Violet
-    meaning: "Transformation, Geist",
+    frequency: 164.81, 
+    color: "#8b5cf6", // VIOLET (Start)
+    meaning: "Transformation, Geist, Scheitel-Chakra",
     geometry: "spirale-innen",
     minFreq: 158.0,
     maxFreq: 168.0,
     planet: "-"
   },
   {
-    name: "F",
-    frequency: 172.06, // PLATONIC YEAR
-    color: "#d946ef", // Red-Violet (Magenta)
-    meaning: "Erleuchtung, Heiterkeit, Spirit",
-    geometry: "blume-leben",
-    minFreq: 168.0,
-    maxFreq: 178.0,
-    planet: "Platon. Jahr"
+    name: "Dis",
+    frequency: 153.00, 
+    color: "#6366f1", // INDIGO
+    meaning: "Klarheit, Vision, Stirn-Chakra",
+    geometry: "stern-strahl",
+    minFreq: 149.0,
+    maxFreq: 158.0,
+    planet: "-"
   },
   {
-    name: "Fis",
-    frequency: 183.58, // JUPITER (actually F# - 13 cent)
-    color: "#ef4444", // Red
-    meaning: "Wachstum, Erfolg, Gerechtigkeit",
-    geometry: "feuer-flamme",
-    minFreq: 178.0,
-    maxFreq: 189.0,
-    planet: "Jupiter"
+    name: "D",
+    frequency: 144.72, // MARS
+    color: "#3b82f6", // BLUE
+    meaning: "Energie, Kommunikation, Hals-Chakra",
+    geometry: "dreieck-spitze",
+    minFreq: 140.0,
+    maxFreq: 149.0,
+    planet: "Mars"
   },
   {
-    name: "G",
-    frequency: 194.18, // EARTH DAY
-    color: "#f97316", // Red-Orange
-    meaning: "Dynamik, Kraft, Vitalität",
-    geometry: "sonne-strahl",
-    minFreq: 189.0,
-    maxFreq: 200.0,
-    planet: "Erde (Tag)"
+    name: "Cis",
+    frequency: 136.10, // EARTH YEAR (OM)
+    color: "#0d9488", // BLUE-GREEN (Turquoise)
+    meaning: "Das Jahr, Om, Seele",
+    geometry: "kreis-welle",
+    minFreq: 132.0,
+    maxFreq: 140.0,
+    planet: "Erde (Jahr)"
   },
   {
-    name: "Gis",
-    frequency: 210.42, // MOON (Synodic)
-    color: "#fb923c", // Orange
-    meaning: "Gefühl, Weiblichkeit, Zyklus",
-    geometry: "wabe-struktur",
-    minFreq: 200.0,
-    maxFreq: 215.0,
-    planet: "Mond (Synod.)"
+    name: "C",
+    frequency: 128.00, 
+    color: "#22c55e", // GREEN (Heart Center)
+    meaning: "Stabilität, Erdung, Herz-Chakra",
+    geometry: "quadrat-basis",
+    minFreq: 124.0, 
+    maxFreq: 132.0,
+    planet: "Sedna (approx)"
+  },
+  {
+    name: "H",
+    frequency: 123.02, // Using B (H) just below C
+    color: "#84cc16", // YELLOW-GREEN
+    meaning: "Wachstum, Heilung",
+    geometry: "baum-leben",
+    minFreq: 118.0,
+    maxFreq: 124.0,
+    planet: "Sonne (Oktav)"
+  },
+  {
+    name: "Ais",
+    frequency: 229.22, // Metonic Cycle (Moon) - Scaled down would be ~114.6
+    color: "#facc15", // YELLOW
+    meaning: "Kosmische Ordnung, Intellekt, Solarplexus",
+    geometry: "stern-acht",
+    minFreq: 227.0, // Keeping high octave definitions for detection logic
+    maxFreq: 238.0,
+    planet: "Mond (Meton)"
   },
   {
     name: "A",
     frequency: 221.23, // VENUS
-    color: "#eab308", // Yellow-Orange
+    color: "#eab308", // YELLOW-ORANGE
     meaning: "Liebe, Harmonie, Ästhetik",
     geometry: "pyramide-basis",
     minFreq: 215.0,
@@ -133,32 +103,49 @@ export const TONES: ToneData[] = [
     planet: "Venus"
   },
   {
-    name: "Ais",
-    frequency: 229.22, // Metonic Cycle (Moon)
-    color: "#facc15", // Yellow
-    meaning: "Kosmische Ordnung, Intellekt",
-    geometry: "stern-acht",
-    minFreq: 227.0,
-    maxFreq: 238.0,
-    planet: "Mond (Meton)"
+    name: "Gis",
+    frequency: 210.42, // MOON (Synodic)
+    color: "#fb923c", // ORANGE
+    meaning: "Gefühl, Weiblichkeit, Sakral-Chakra",
+    geometry: "wabe-struktur",
+    minFreq: 200.0,
+    maxFreq: 215.0,
+    planet: "Mond (Synod.)"
   },
   {
-    name: "H",
-    frequency: 246.04, // Apsiden (Moon) approx, or Sun 126.22 (Low H)
-    color: "#84cc16", // Yellow-Green
-    meaning: "Wachstum, Heilung",
-    geometry: "baum-leben",
-    minFreq: 238.0,
-    maxFreq: 254.0,
-    planet: "Sonne (Oktav)"
+    name: "G",
+    frequency: 194.18, // EARTH DAY
+    color: "#f97316", // RED-ORANGE
+    meaning: "Dynamik, Kraft, Vitalität",
+    geometry: "sonne-strahl",
+    minFreq: 189.0,
+    maxFreq: 200.0,
+    planet: "Erde (Tag)"
+  },
+  {
+    name: "Fis",
+    frequency: 183.58, // JUPITER
+    color: "#ef4444", // RED
+    meaning: "Wachstum, Erfolg, Wurzel-Chakra",
+    geometry: "feuer-flamme",
+    minFreq: 178.0,
+    maxFreq: 189.0,
+    planet: "Jupiter"
+  },
+  {
+    name: "F",
+    frequency: 172.06, // PLATONIC YEAR
+    color: "#9f1239", // DEEP RED (End of visible spectrum)
+    meaning: "Erleuchtung, Heiterkeit, Spirit",
+    geometry: "blume-leben",
+    minFreq: 168.0,
+    maxFreq: 178.0,
+    planet: "Platon. Jahr"
   }
 ];
 
 // Helper to get tone from ANY frequency
 export function getToneFromFrequency(freq: number): { tone: ToneData, cents: number, diffHz: number } {
-  // Simple closest match logic for now, as the intervals are irregular (Planetary)
-  // We normalize input freq to the target octave range (approx 128 - 250 Hz)
-  
   let normFreq = freq;
   while (normFreq < 120) normFreq *= 2;
   while (normFreq > 260) normFreq /= 2;
@@ -167,7 +154,16 @@ export function getToneFromFrequency(freq: number): { tone: ToneData, cents: num
   let minDiff = Number.MAX_VALUE;
 
   for (const tone of TONES) {
-      const diff = Math.abs(normFreq - tone.frequency);
+      // Handle the octave jump for low notes (F, F#, G) defined in higher octaves in the list
+      // We need a robust way to compare. Let's compare against the tone.frequency AND tone.frequency/2 if needed.
+      
+      let toneFreq = tone.frequency;
+      // If tone is defined in 200+ range (G, G#, A, A#, B) but normFreq is low (120-130), check half
+      if (toneFreq > 200 && normFreq < 150) toneFreq /= 2;
+      // If tone is defined in 120-190 range but normFreq is high, check double
+      if (toneFreq < 140 && normFreq > 200) toneFreq *= 2;
+
+      const diff = Math.abs(normFreq - toneFreq);
       if (diff < minDiff) {
           minDiff = diff;
           bestTone = tone;
@@ -175,8 +171,13 @@ export function getToneFromFrequency(freq: number): { tone: ToneData, cents: num
   }
 
   // Calculate cents relative to the specific planetary frequency
-  const cents = 1200 * Math.log2(normFreq / bestTone.frequency);
-  const diffHz = normFreq - bestTone.frequency;
+  // Need to use the specific octave matched above for accurate cents
+  let refFreq = bestTone.frequency;
+  if (refFreq > 200 && normFreq < 150) refFreq /= 2;
+  if (refFreq < 140 && normFreq > 200) refFreq *= 2;
+
+  const cents = 1200 * Math.log2(normFreq / refFreq);
+  const diffHz = normFreq - refFreq;
 
   return {
     tone: bestTone,

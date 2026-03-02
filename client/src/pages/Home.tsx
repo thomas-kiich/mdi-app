@@ -675,7 +675,7 @@ export default function Home() {
                 
                 {/* NEW: Spectral Resonance Matrix */}
                 {res.toneDistribution && (
-                    <SpectralMatrix distribution={res.toneDistribution} />
+                    <SpectralMatrix toneDistribution={res.toneDistribution} />
                 )}
                 
                 {/* Legacy Frequency Distribution Chart (Optional, kept for reference if needed) */}
