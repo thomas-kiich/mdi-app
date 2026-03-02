@@ -62,19 +62,41 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     const domIndex = sortedData.findIndex(d => d.name === dominantToneName);
     if (domIndex === -1) return { path: "", points: [] };
 
-    // Rotate the array so dominant tone is first (at Navel)
-    // IMPORTANT: The user wants the dominant tone (Peak) at the Navel (y=0 relative)
-    // and then the spectrum unfolds upwards to Head and downwards to Feet.
-    // So we need to reorder the data such that dominant tone is at index 0.
-    // The sequence follows the spectral order from the dominant tone.
-    const rotatedData = [
-      ...sortedData.slice(domIndex),
-      ...sortedData.slice(0, domIndex)
-    ];
+    // Determine spectral direction based on body part (UP/DOWN)
+    // The list 'sortedData' is ordered: E, Dis, D, Cis, C, H, Ais, A, Gis, G, Fis, F.
+    // This is a DESCENDING chromatic scale (e.g. F -> E is a descending step if wrapping).
+    // Or E -> Dis is descending.
+    
+    // User requirement:
+    // UP (Head): Ascending Scale (F -> Fis -> G...)
+    // DOWN (Feet): Descending Scale (F -> E -> Dis...)
+    
+    let directionalData: typeof sortedData = [];
 
-    // Now map this rotated spectrum from Navel (y=0 relative) to Head (y=max relative)
+    if (direction === -1) {
+        // UP (Head): Ascending.
+        // Since the list is Descending, we need to traverse it BACKWARDS to get Ascending order.
+        // Start at domIndex, then domIndex-1, domIndex-2...
+        
+        for (let i = 0; i < numPoints; i++) {
+            let idx = domIndex - i;
+            if (idx < 0) idx += numPoints; // Wrap around
+            directionalData.push(sortedData[idx]);
+        }
+    } else {
+        // DOWN (Feet): Descending.
+        // Since the list is Descending, we traverse it FORWARDS.
+        // Start at domIndex, then domIndex+1, domIndex+2...
+        
+        for (let i = 0; i < numPoints; i++) {
+            let idx = (domIndex + i) % numPoints; // Wrap around
+            directionalData.push(sortedData[idx]);
+        }
+    }
+
+    // Now map this directional spectrum from Navel (y=0 relative) to Head/Feet
     // We need points for the path.
-    const points = rotatedData.map((d, i) => {
+    const points = directionalData.map((d, i) => {
       // Linear interpolation for y: 0 (Navel) to height (Head/Feet)
       // For Upper Wave (invertY=true), we go from 0 to -height
       // For Lower Wave (invertY=false), we go from 0 to +height
