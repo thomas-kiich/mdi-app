@@ -82,10 +82,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
       const y = rawY * direction;
       
       let val = d.percentage;
-      if (isOuterField) {
-          // Outer Field: 100 - val
-          val = Math.max(0, 100 - val);
-      }
+      // Note: We use d.percentage directly for both Inner and Outer fields now
+      // to ensure the Key-Lock fit (Outer starts where Inner ends).
       
       // Scale factor:
       // Inner: val * 3 (so 33% fills the width)
@@ -99,45 +97,82 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
           // Max intensity (usually around 30-40%) should fill significant width.
           // Let's say 40% -> 100% width. Factor 2.5
           normalizedW = Math.min(val * 3.5, 100); 
+          
+          const x = (normalizedW / 100) * width * side;
+          return { x, y, color: d.color, tone: d.name };
       } else {
           // OUTER FIELD (Key-Lock)
-          // Visualize the GAP.
-          // We add an offset so it doesn't touch the center line directly,
-          // creating the "negative space" effect.
-          normalizedW = Math.min(val, 100); 
-          offset = 20; // Distance from center line
+          // The wave is the INNER edge. The outer edge is straight.
+          // We calculate the inner edge X position.
+          // It should match the inner field's wave shape exactly, but be the "hole".
+          // Inner field x = (val * 3.5 / 100) * width
+          // So Outer field inner edge starts there.
+          
+          // We use the same calculation as Inner Field to get the boundary line
+          const innerVal = Math.min(d.percentage * 3.5, 100);
+          const x = (innerVal / 100) * width * side;
+          
+          return { x, y, color: d.color, tone: d.name };
       }
-      
-      const x = (offset + (normalizedW / 100) * width) * side;
-      return { x, y, color: d.color, tone: d.name };
     });
 
-    // Start path
-    // If Outer Field (isOuterField), start at offset, not 0
-    const startX = (isOuterField ? 20 : 0) * side;
-    let path = `M ${startX} 0`;
+    let path = "";
 
-    if (points.length > 0) {
-        // Line to first point
-        path += ` L ${points[0].x} ${points[0].y}`;
-
-        // Cubic Bezier interpolation
-        for (let i = 0; i < points.length - 1; i++) {
-            const p0 = points[i];
-            const p1 = points[i + 1];
-            
-            const cp1y = p0.y + (p1.y - p0.y) * 0.5;
-            const cp1x = p0.x;
-            const cp2y = p0.y + (p1.y - p0.y) * 0.5;
-            const cp2x = p1.x;
-
-            path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
-        }
+    if (!isOuterField) {
+        // INNER FIELD: Standard wave shape from center outwards
+        const startX = 0;
+        path = `M ${startX} 0`;
         
-        // Return to axis
-        path += ` L ${startX} ${direction * height}`;
-        // Close back to start
-        path += ` L ${startX} 0 Z`;
+        if (points.length > 0) {
+            path += ` L ${points[0].x} ${points[0].y}`;
+            for (let i = 0; i < points.length - 1; i++) {
+                const p0 = points[i];
+                const p1 = points[i + 1];
+                const cp1y = p0.y + (p1.y - p0.y) * 0.5;
+                const cp1x = p0.x;
+                const cp2y = p0.y + (p1.y - p0.y) * 0.5;
+                const cp2x = p1.x;
+                path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
+            }
+            path += ` L ${startX} ${direction * height}`;
+            path += ` L ${startX} 0 Z`;
+        }
+    } else {
+        // OUTER FIELD: Rectangle with inner wave cutout
+        // We draw the outer box first, then the wave as the inner edge
+        
+        const outerX = width * 1.2 * side; // Fixed outer edge (slightly wider than wave max to fit in view)
+        const startY = 0;
+        const endY = direction * height;
+        
+        // Start at inner wave top (Navel)
+        if (points.length > 0) {
+            // Start at the first point of the wave (Navel area)
+            path = `M ${points[0].x} ${points[0].y}`;
+            
+            // Draw the wave (Inner Edge)
+            for (let i = 0; i < points.length - 1; i++) {
+                const p0 = points[i];
+                const p1 = points[i + 1];
+                
+                // Control points for smooth curve
+                const cp1y = p0.y + (p1.y - p0.y) * 0.5;
+                const cp1x = p0.x;
+                const cp2y = p0.y + (p1.y - p0.y) * 0.5;
+                const cp2x = p1.x;
+                
+                path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
+            }
+            
+            // From the last wave point (Head/Feet), draw line OUT to the box edge
+            path += ` L ${outerX} ${endY}`;
+            
+            // Draw line UP/DOWN along the outer edge back to the Navel level (Y=0)
+            path += ` L ${outerX} ${startY}`;
+            
+            // Close the shape by drawing line back to the first wave point
+            path += ` Z`;
+        }
     }
 
     return { path, points };
