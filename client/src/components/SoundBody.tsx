@@ -212,10 +212,6 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   const renderOuter = viewMode === 'outer' || viewMode === 'both' || viewMode === 'art';
   const isArtMode = viewMode === 'art';
 
-  // Get geometry for dominant tone
-  const dominantToneInfo = TONES.find(t => t.name === dominantToneName);
-  const geometryType = dominantToneInfo?.geometry || "kreis-welle";
-
   // Generate paths for INNER Field
   const innerUpperRight = generateVerticalPath(maxWidth, headHeight, false, -1, 1);
   const innerUpperLeft = generateVerticalPath(maxWidth, headHeight, false, -1, -1);
@@ -374,11 +370,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         </feMerge>
                     </filter>
                     
-                    {/* Geometry Glow Filter */}
-                    <filter id="geoGlow">
-                        <feGaussianBlur stdDeviation="2" result="blur"/>
-                        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-                    </filter>
+
                     
                     {/* Dynamic Gradients based on points color would be complex in SVG defs. 
                         Instead, we use a multi-stop gradient or simply use the dominant color. 
@@ -451,78 +443,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                         </>
                     )}
 
-                    {/* GEOMETRIC OVERLAY FOR 'ART' MODE */}
-                    {isArtMode && (
-                        <g className="mix-blend-overlay opacity-60" filter="url(#geoGlow)">
-                            {/* Render geometry based on dominant tone */}
-                            {geometryType === 'spirale-innen' && ( // E
-                                <motion.path d="M 0 0 C 20 -20, 40 -10, 50 0 C 60 10, 50 30, 30 40 C 10 50, -20 40, -40 20 C -60 0, -50 -40, -20 -60 C 10 -80, 60 -70, 90 -40" fill="none" stroke="white" strokeWidth="2" initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.8 }} transition={{ duration: 3, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }} />
-                            )}
-                            {geometryType === 'stern-strahl' && ( // Dis
-                                <motion.g initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1.2, opacity: 0.8 }} transition={{ duration: 4, repeat: Infinity, repeatType: "reverse" }}>
-                                    <circle cx="0" cy="0" r="5" fill="white" />
-                                    <line x1="0" y1="-80" x2="0" y2="80" stroke="white" strokeWidth="1" />
-                                    <line x1="-80" y1="0" x2="80" y2="0" stroke="white" strokeWidth="1" />
-                                    <line x1="-60" y1="-60" x2="60" y2="60" stroke="white" strokeWidth="1" />
-                                    <line x1="-60" y1="60" x2="60" y2="-60" stroke="white" strokeWidth="1" />
-                                </motion.g>
-                            )}
-                            {geometryType === 'dreieck-spitze' && ( // D
-                                <motion.polygon points="0,-80 70,40 -70,40" fill="none" stroke="white" strokeWidth="2" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1.1, opacity: 0.8 }} transition={{ duration: 3, repeat: Infinity, repeatType: "mirror" }} />
-                            )}
-                            {geometryType === 'kreis-welle' && ( // Cis
-                                <>
-                                    <motion.circle cx="0" cy="0" r="40" fill="none" stroke="white" strokeWidth="1" initial={{ r: 30, opacity: 0.8 }} animate={{ r: 60, opacity: 0 }} transition={{ duration: 3, repeat: Infinity }} />
-                                    <motion.circle cx="0" cy="0" r="40" fill="none" stroke="white" strokeWidth="1" initial={{ r: 30, opacity: 0.8 }} animate={{ r: 60, opacity: 0 }} transition={{ duration: 3, delay: 1, repeat: Infinity }} />
-                                </>
-                            )}
-                            {geometryType === 'quadrat-basis' && ( // C
-                                <motion.rect x="-50" y="-50" width="100" height="100" fill="none" stroke="white" strokeWidth="2" transform="rotate(45)" initial={{ rotate: 0, scale: 0.9 }} animate={{ rotate: 90, scale: 1.1 }} transition={{ duration: 10, repeat: Infinity, repeatType: "mirror" }} />
-                            )}
-                            {geometryType === 'baum-leben' && ( // H
-                                <motion.path d="M 0 80 L 0 -80 M 0 0 L 40 -40 M 0 0 L -40 -40 M 0 20 L 30 0 M 0 20 L -30 0" fill="none" stroke="white" strokeWidth="2" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 3, repeat: Infinity, repeatType: "reverse" }} />
-                            )}
-                            {geometryType === 'stern-acht' && ( // Ais
-                                <motion.g initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }}>
-                                    <polygon points="0,-60 15,-15 60,0 15,15 0,60 -15,15 -60,0 -15,-15" fill="none" stroke="white" strokeWidth="1.5" />
-                                    <circle cx="0" cy="0" r="20" fill="none" stroke="white" strokeWidth="1" />
-                                </motion.g>
-                            )}
-                            {geometryType === 'pyramide-basis' && ( // A
-                                <motion.g>
-                                    <polygon points="0,-60 50,30 -50,30" fill="none" stroke="white" strokeWidth="2" />
-                                    <polygon points="0,-60 0,30" fill="none" stroke="white" strokeWidth="1" opacity="0.5" />
-                                    <line x1="-50" y1="30" x2="0" y2="0" stroke="white" strokeWidth="1" opacity="0.5" />
-                                    <line x1="50" y1="30" x2="0" y2="0" stroke="white" strokeWidth="1" opacity="0.5" />
-                                </motion.g>
-                            )}
-                            {geometryType === 'wabe-struktur' && ( // Gis
-                                <motion.g initial={{ opacity: 0.5 }} animate={{ opacity: 1 }} transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}>
-                                    <polygon points="0,-40 35,-20 35,20 0,40 -35,20 -35,-20" fill="none" stroke="white" strokeWidth="2" />
-                                    <polygon points="0,-20 17,-10 17,10 0,20 -17,10 -17,-10" fill="none" stroke="white" strokeWidth="1" />
-                                </motion.g>
-                            )}
-                            {geometryType === 'sonne-strahl' && ( // G
-                                <motion.g initial={{ rotate: 0 }} animate={{ rotate: 360 }} transition={{ duration: 15, repeat: Infinity, ease: "linear" }}>
-                                    <circle cx="0" cy="0" r="20" fill="white" opacity="0.8" />
-                                    {[...Array(12)].map((_, i) => (
-                                        <line key={i} x1="0" y1="-30" x2="0" y2="-60" stroke="white" strokeWidth="2" transform={`rotate(${i * 30})`} />
-                                    ))}
-                                </motion.g>
-                            )}
-                            {geometryType === 'feuer-flamme' && ( // Fis
-                                <motion.path d="M 0 60 Q 30 30 10 0 Q 40 -30 0 -80 Q -40 -30 -10 0 Q -30 30 0 60" fill="none" stroke="white" strokeWidth="2" initial={{ scaleY: 0.9 }} animate={{ scaleY: 1.1 }} transition={{ duration: 0.5, repeat: Infinity, repeatType: "mirror" }} />
-                            )}
-                            {geometryType === 'blume-leben' && ( // F
-                                <motion.g initial={{ rotate: 0 }} animate={{ rotate: 60 }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }}>
-                                    <circle cx="0" cy="0" r="30" fill="none" stroke="white" strokeWidth="1" />
-                                    {[...Array(6)].map((_, i) => (
-                                        <circle key={i} cx="0" cy="-30" r="30" fill="none" stroke="white" strokeWidth="1" transform={`rotate(${i * 60} 0 0)`} />
-                                    ))}
-                                </motion.g>
-                            )}
-                        </g>
-                    )}
+
 
                 </g>
             </motion.svg>
