@@ -1,6 +1,8 @@
-import React, { useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { TONES, ToneData } from '@/lib/tones';
+import React, { useMemo, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { TONES } from '@/lib/tones';
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface SoundBodyProps {
   toneDistribution: Record<string, number>;
@@ -25,6 +27,7 @@ const SPECTRAL_ORDER = [
 ];
 
 export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps) {
+  const [viewMode, setViewMode] = useState<'inner' | 'outer'>('inner');
   
   // Prepare data sorted by SPECTRAL_ORDER
   const sortedData = useMemo(() => {
@@ -48,24 +51,6 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
     const numPoints = sortedData.length;
     
-    // We want the points to span from bottom (feet) to top (head) or vice versa?
-    // User says: "PEAK/Grundton setzt genau beim Nabel an. er entwickelt sich nach oben... Gleichzeitig die selbe welle nach unten"
-    // So we need TWO waves mirrored from the center (Navel).
-    // Let's assume Navel is at Y = height / 2.
-    // Upward wave: Navel -> Head. Downward wave: Navel -> Feet.
-    // The wave shape itself is defined by the sortedData (E -> F).
-    // Which end is at the Navel?
-    // "Grundton setzt genau beim Nabel an." -> The fundamental (Dominant Tone) is at the Navel.
-    // But the wave is a spectrum (E...F). We can't just put one tone at the Navel and the rest elsewhere unless we shift the spectrum.
-    // However, the user says "er entwickelt sich nach oben...".
-    // Maybe the user means the *amplitude* of the wave at the Navel is the Dominant Tone's amplitude?
-    // Let's map the entire spectrum (E to F) along the vertical axis (Navel to Head), and mirror it (Navel to Feet).
-    // The "Navel" is the starting point (E? or F? or Center of Spectrum?).
-    // User: "Grundton setzt genau beim Nabel an."
-    // If the Dominant Tone is F#, then F# is at the Navel.
-    // This implies a SHIFT of the spectrum so that the Dominant Tone is at the center (Navel).
-    // Let's try to shift the `sortedData` so that `dominantToneName` is at index 0 (Navel).
-    
     // Find index of dominant tone
     const domIndex = sortedData.findIndex(d => d.name === dominantToneName);
     if (domIndex === -1) return "";
@@ -84,7 +69,68 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
       
       // Map percentage (0-100) to width (x). 
       // 0% -> 0 width (center line), 100% -> max width
-      const normalizedW = Math.min(d.percentage * 3, 100); // Scale factor
+      // If INVERT (Outer Field), we show 100 - percentage
+      // But we need to handle the scaling carefully.
+      // Inner Field: 0% -> 0 width, 100% -> max width
+      // Outer Field: 0% -> max width, 100% -> 0 width (missing potential)
+      // Actually, "Outer Field" is what is MISSING. So if I have 10% Inner, I have 90% Outer.
+      
+      let val = d.percentage;
+      if (invert) {
+          // For Outer Field, we visualize the GAP.
+          // If percentage is 0, gap is 100. If percentage is 100, gap is 0.
+          // However, usually percentages sum to 100 total across all tones? 
+          // No, here 'percentage' is the relative strength in the distribution.
+          // The sum of all toneDistribution values is 100.
+          // So the max possible value for a single tone is 100 (if it's the only tone).
+          // But typically peaks are around 20-40%.
+          // If we just do 100 - val, we get huge values everywhere.
+          // We should probably normalize or just invert the shape visually relative to a "full" cylinder.
+          // Let's assume a "Full Potential" is a straight cylinder of width 100.
+          // Inner Field is the shape inside. Outer Field is the shape outside?
+          // Or simply: Outer Field value = (Max Observed % in dataset) - current %.
+          // Or better: Outer Field = 100 - (val * scale).
+          // Let's stick to the "Inverse Wave" concept: 
+          // Where there is a peak in Inner, there is a valley in Outer.
+          
+          // Let's try: val = 30 (max typical) - val. 
+          // If val > 30, result is 0.
+          // This might be too arbitrary.
+          
+          // Let's use a simple inversion relative to a fixed "100%" width reference.
+          // If we assume the max width represents 100% potential (which is rare to reach for one tone),
+          // then Outer Field is simply 100 - val.
+          // But since val is usually small (e.g. 5-10%), 100-val is huge (90-95%).
+          // This would make the Outer Field look like a giant block with small holes.
+          // Maybe that's the point? "You are mostly empty space / potential".
+          
+          // Alternative interpretation: 
+          // Outer Field is the COMPLEMENTARY shape.
+          // Let's try mapping 100 - val, but maybe scale the visualization so it fits nicely.
+          // Let's cap the visual width at 100 units.
+          
+          val = 100 - val; // Invert
+      }
+      
+      // Scale factor:
+      // Inner: val * 3 (so 33% fills the width)
+      // Outer: val is now large (e.g. 90). 90 * 3 = 270. Too big.
+      // We need a different scale for Outer if we want it to look comparable.
+      // Or we just use the same scale and let it be big?
+      // Let's use a dynamic scale based on the view mode.
+      
+      let normalizedW = 0;
+      if (!invert) {
+          normalizedW = Math.min(val * 3, 100); 
+      } else {
+          // For outer field, we want to see the "negative space".
+          // If Inner is 10%, Outer is 90%.
+          // If we map 90% to width, it should be wide.
+          // Let's scale it down a bit so it fits.
+          // Maybe max width corresponds to 100%?
+          normalizedW = Math.min(val, 100); 
+      }
+      
       const x = (normalizedW / 100) * width;
       return { x, y, color: d.color };
     });
@@ -122,20 +168,49 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   const feetHeight = 350; // Length from Navel to Feet (longer legs)
   const maxWidth = 150;   // Max width of the aura
 
-  const upperWave = generateVerticalPath(maxWidth, headHeight);
-  const lowerWave = generateVerticalPath(maxWidth, feetHeight);
+  const isOuter = viewMode === 'outer';
+  const upperWave = generateVerticalPath(maxWidth, headHeight, isOuter);
+  const lowerWave = generateVerticalPath(maxWidth, feetHeight, isOuter);
 
   if (!upperWave || !lowerWave) return null;
 
   return (
-    <div className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-6 mt-8 flex flex-col items-center">
-      <div className="flex justify-between items-center w-full mb-6">
-        <h3 className="text-xl font-light tracking-wider text-white">
-          KLANG-KÖRPER RESONANZ
-        </h3>
-        <span className="text-xs text-white/40 uppercase tracking-widest">
-          INNENFELD & AUSSENFELD
-        </span>
+    <div className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-6 mt-8 flex flex-col items-center transition-colors duration-500">
+      
+      <div className="flex flex-col md:flex-row justify-between items-center w-full mb-8 gap-4">
+        <div>
+            <h3 className="text-xl font-light tracking-wider text-white">
+            KLANG-KÖRPER RESONANZ
+            </h3>
+            <span className="text-xs text-white/40 uppercase tracking-widest block mt-1">
+            {isOuter ? "AUSSENFELD (POTENZIAL)" : "INNENFELD (RESSOURCE)"}
+            </span>
+        </div>
+
+        <div className="flex bg-zinc-900/80 p-1 rounded-lg border border-zinc-800">
+            <button
+                onClick={() => setViewMode('inner')}
+                className={cn(
+                    "px-4 py-1.5 text-xs font-medium rounded-md transition-all",
+                    !isOuter 
+                        ? "bg-white text-black shadow-sm" 
+                        : "text-zinc-400 hover:text-white"
+                )}
+            >
+                INNENFELD
+            </button>
+            <button
+                onClick={() => setViewMode('outer')}
+                className={cn(
+                    "px-4 py-1.5 text-xs font-medium rounded-md transition-all",
+                    isOuter 
+                        ? "bg-white text-black shadow-sm" 
+                        : "text-zinc-400 hover:text-white"
+                )}
+            >
+                AUSSENFELD
+            </button>
+        </div>
       </div>
 
       <div className="relative h-[700px] w-full max-w-md flex justify-center items-center">
@@ -162,76 +237,90 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
         </svg>
 
         {/* AURA / WAVE VISUALIZATION */}
-        <svg className="absolute inset-0 w-full h-full overflow-visible" viewBox="0 0 400 800">
-            <defs>
-                <filter id="auraGlow">
-                    <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
-                    <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
-                </filter>
-                
-                <linearGradient id="auraGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#8A2BE2" stopOpacity="0.2" />
-                </linearGradient>
-                <linearGradient id="auraGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.8" />
-                    <stop offset="100%" stopColor="#8A2BE2" stopOpacity="0.2" />
-                </linearGradient>
-            </defs>
+        <AnimatePresence mode="wait">
+            <motion.svg 
+                key={viewMode} // Re-render on mode change to animate
+                className="absolute inset-0 w-full h-full overflow-visible" 
+                viewBox="0 0 400 800"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <defs>
+                    <filter id="auraGlow">
+                        <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                    
+                    <linearGradient id="auraGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
+                        <stop offset="0%" stopColor={isOuter ? "#FFFFFF" : "#FFFFFF"} stopOpacity={isOuter ? 0.4 : 0.8} />
+                        <stop offset="100%" stopColor={isOuter ? "#888888" : "#8A2BE2"} stopOpacity={isOuter ? 0.1 : 0.2} />
+                    </linearGradient>
+                    <linearGradient id="auraGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor={isOuter ? "#FFFFFF" : "#FFFFFF"} stopOpacity={isOuter ? 0.4 : 0.8} />
+                        <stop offset="100%" stopColor={isOuter ? "#888888" : "#8A2BE2"} stopOpacity={isOuter ? 0.1 : 0.2} />
+                    </linearGradient>
+                </defs>
 
-            {/* Center Group at Navel (200, 380) */}
-            <g transform="translate(200, 380)">
-                
-                {/* UPPER WAVE (Right Side) */}
-                <motion.path
-                    d={upperWave.path}
-                    fill="url(#auraGradientUp)"
-                    stroke="white"
-                    strokeWidth="1"
-                    filter="url(#auraGlow)"
-                    transform="scale(1, -1)" 
-                    initial={{ opacity: 0, scale: 0 }}
-                    animate={{ opacity: 0.8, scale: 1 }} 
-                />
-                 {/* UPPER WAVE (Left Side - Mirrored) */}
-                 <motion.path
-                    d={upperWave.path}
-                    fill="url(#auraGradientUp)"
-                    stroke="white"
-                    strokeWidth="1"
-                    filter="url(#auraGlow)"
-                    transform="scale(-1, -1)" 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.8 }}
-                />
+                {/* Center Group at Navel (200, 380) */}
+                <g transform="translate(200, 380)">
+                    
+                    {/* UPPER WAVE (Right Side) */}
+                    <motion.path
+                        d={upperWave.path}
+                        fill="url(#auraGradientUp)"
+                        stroke={isOuter ? "rgba(255,255,255,0.5)" : "white"}
+                        strokeWidth="1"
+                        filter="url(#auraGlow)"
+                        transform="scale(1, -1)" 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+                    {/* UPPER WAVE (Left Side - Mirrored) */}
+                    <motion.path
+                        d={upperWave.path}
+                        fill="url(#auraGradientUp)"
+                        stroke={isOuter ? "rgba(255,255,255,0.5)" : "white"}
+                        strokeWidth="1"
+                        filter="url(#auraGlow)"
+                        transform="scale(-1, -1)" 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
 
-                {/* LOWER WAVE (Right Side) */}
-                <motion.path
-                    d={lowerWave.path}
-                    fill="url(#auraGradientDown)"
-                    stroke="white"
-                    strokeWidth="1"
-                    filter="url(#auraGlow)"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.8 }}
-                />
-                {/* LOWER WAVE (Left Side - Mirrored) */}
-                <motion.path
-                    d={lowerWave.path}
-                    fill="url(#auraGradientDown)"
-                    stroke="white"
-                    strokeWidth="1"
-                    filter="url(#auraGlow)"
-                    transform="scale(-1, 1)"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 0.8 }}
-                />
+                    {/* LOWER WAVE (Right Side) */}
+                    <motion.path
+                        d={lowerWave.path}
+                        fill="url(#auraGradientDown)"
+                        stroke={isOuter ? "rgba(255,255,255,0.5)" : "white"}
+                        strokeWidth="1"
+                        filter="url(#auraGlow)"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
+                    {/* LOWER WAVE (Left Side - Mirrored) */}
+                    <motion.path
+                        d={lowerWave.path}
+                        fill="url(#auraGradientDown)"
+                        stroke={isOuter ? "rgba(255,255,255,0.5)" : "white"}
+                        strokeWidth="1"
+                        filter="url(#auraGlow)"
+                        transform="scale(-1, 1)"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    />
 
-            </g>
-        </svg>
+                </g>
+            </motion.svg>
+        </AnimatePresence>
 
       </div>
     </div>
