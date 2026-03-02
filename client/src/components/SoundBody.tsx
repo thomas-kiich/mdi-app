@@ -126,8 +126,11 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     return { path, points };
   };
 
-  const headHeight = 280; // Length from Navel to Head
-  const feetHeight = 420; // Length from Navel to Feet (longer legs)
+  // Precise Anatomical Heights relative to Navel (0,0)
+  // Head/Pineal: Navel to Nose Root (~260px in this scale)
+  const headHeight = 260; 
+  // Feet/Soles: Navel to Soles (~370px in this scale)
+  const feetHeight = 370; 
   const maxWidth = 160;   // Max width of the aura
 
   const isOuter = viewMode === 'outer';

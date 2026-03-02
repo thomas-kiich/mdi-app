@@ -13,17 +13,18 @@
 - [x] Refine Sound Body: Improve human silhouette (more visible, aesthetic)
 - [x] Remove color square from result view
 - [x] Move Hz/Cent details to collapsible "Expert Mode"
+- [x] Add Nose Root marker (Center of Spirit)
+- [x] Add Soles line (Horizontal marker)
+- [x] Implement "Key-Lock" principle: Mirror Outer Field with offset
 - [ ] **Final Polish: Sound Body**
-    - [ ] Add Nose Root marker (Center of Spirit)
-    - [ ] Add Soles line (Horizontal marker)
-    - [ ] Implement "Key-Lock" principle: Mirror Outer Field with offset
-    - [ ] Ensure wave flows symmetrically Left/Right and Up/Down
+    - [ ] **Strict Boundary Enforcement:** Wave MUST stop exactly at Nose Root (Top) and Soles (Bottom). No overflow.
+    - [ ] Ensure closed energetic system (Scheitel to Sohle).
 
 ## Logic & Analysis
 - [x] Fix quint correction logic
 - [x] Fix aggregation logic
 - [x] Fix frequency display (dominant tone logic)
-- [ ] **Refine Frequency Logic:** Calculate true average of measured frequencies for the dominant tone (fix "perfect" Hz display)
+- [x] Refine Frequency Logic: Calculate true average of measured frequencies for the dominant tone
 - [ ] Debug: Why F# displays 183.58Hz (F) and 0 cent? Ensure precise calculation.
 
 ## General
