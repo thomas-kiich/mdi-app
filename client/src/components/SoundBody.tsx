@@ -77,23 +77,28 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
       // Inner: val * 3 (so 33% fills the width)
       // Outer: val is large, so we scale it differently to fit nicely
       let normalizedW = 0;
+      let offset = 0; // Key-Lock gap
+
       if (!invert) {
+          // INNER FIELD
           normalizedW = Math.min(val * 4, 100); 
       } else {
-          // For outer field, we visualize the GAP.
-          // Scale it so it doesn't look like a solid block
-          // Let's say max width is 100% gap.
-          // But visually we want it to look like the "complementary" wave.
-          // Let's scale it similarly but maybe cap it.
+          // OUTER FIELD (Key-Lock)
+          // Visualize the GAP.
+          // We add an offset so it doesn't touch the center line directly,
+          // creating the "negative space" effect.
           normalizedW = Math.min(val, 100); 
+          offset = 20; // Distance from center line
       }
       
-      const x = (normalizedW / 100) * width;
+      const x = offset + (normalizedW / 100) * width;
       return { x, y, color: d.color, tone: d.name };
     });
 
-    // Start path at Navel (0,0)
-    let path = `M 0 0`;
+    // Start path
+    // If Outer Field (invert), start at offset, not 0
+    const startX = invert ? 20 : 0;
+    let path = `M ${startX} 0`;
 
     if (points.length > 0) {
         // Line to first point
@@ -112,10 +117,10 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             path += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p1.x} ${p1.y}`;
         }
         
-        // Return to center axis at the end
-        path += ` L 0 ${height}`;
-        // Close back to start along the center axis
-        path += ` L 0 0 Z`;
+        // Return to axis
+        path += ` L ${startX} ${height}`;
+        // Close back to start
+        path += ` L ${startX} 0 Z`;
     }
 
     return { path, points };
@@ -208,6 +213,12 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             {/* Navel Marker - Center of Universe */}
             <circle cx="200" cy="380" r="4" fill="white" filter="url(#glow)" />
             <circle cx="200" cy="380" r="10" fill="none" stroke="white" strokeWidth="1" opacity="0.8" />
+            
+            {/* Nose Root Marker - Center of Spirit */}
+            <circle cx="200" cy="120" r="3" fill="white" filter="url(#glow)" opacity="0.8" />
+            
+            {/* Soles Line - Grounding */}
+            <line x1="140" y1="750" x2="260" y2="750" stroke="white" strokeWidth="1" opacity="0.5" strokeDasharray="4 4" />
         </svg>
 
         {/* AURA / WAVE VISUALIZATION */}

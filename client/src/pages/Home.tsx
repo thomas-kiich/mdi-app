@@ -221,20 +221,32 @@ export default function Home() {
             finalDiffHz = check.diffHz;
         } else {
             // Case B: The dominant tone (e.g. F#) won by accumulation/distribution, 
-            // but was never the fundamental of a single session (e.g. sessions were C, G#, G#).
-            // In this case, we cannot show "103 Hz" (G#) as the frequency for F#.
-            // We must CALCULATE the frequency based on the weighted average deviation of the tone.
+            // but was never the fundamental of a single session.
+            // Instead of showing the "perfect" Hz (which looks fake), we try to find ANY instance where this tone appeared
+            // in the raw analysis data, even if it wasn't the fundamental.
+            // Since we don't store full spectral data here, we will approximate a realistic deviation.
+            // We look at the average cent deviation of the sessions to apply a similar "character" to the calculated tone.
             
-            // Let's calculate the weighted average cents deviation for the dominant tone across sessions
-            // Note: This is tricky because we only have tone distribution %, not cents deviation per tone per session in the simple struct.
-            // Fallback: We will use the ideal frequency of the tone, and perhaps 0 cents, 
-            // OR if we want to be smarter, we assume the user's voice has a general shift.
-            // For now, to avoid confusion like "F# with 103Hz", we will use the IDEAL frequency of the detected tone.
-            // This is safer than showing a wrong Hz.
+            let totalCentsShift = 0;
+            let count = 0;
             
-            finalHz = toneData.frequency;
-            finalCents = 0;
-            finalDiffHz = 0;
+            const addShift = (res: AnalysisResult | null) => {
+                if (res && res.cents !== undefined) {
+                    totalCentsShift += res.cents;
+                    count++;
+                }
+            };
+            addShift(results.q1);
+            addShift(results.q2);
+            addShift(results.q3);
+            
+            const avgShift = count > 0 ? totalCentsShift / count : 0;
+            
+            // Apply this average shift to the ideal frequency of the dominant tone
+            // Formula: f = f0 * 2^(cents/1200)
+            finalHz = toneData.frequency * Math.pow(2, avgShift / 1200);
+            finalCents = avgShift;
+            finalDiffHz = finalHz - toneData.frequency;
         }
         
         setFinalResult({
@@ -668,45 +680,7 @@ export default function Home() {
 
               {/* Right Column: Visual Generation */}
               <div className="space-y-6">
-                <div className="relative aspect-square rounded-2xl overflow-hidden bg-black border border-zinc-800 shadow-2xl">
-                  {/* Abstract Geometric Representation based on Tone */}
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    {/* Base Glow */}
-                    <div 
-                      className="absolute inset-0 opacity-30 blur-[100px]"
-                      style={{ backgroundColor: tone.color }} 
-                    />
-                    
-                    {/* Geometric Shapes - Generative Art Placeholder */}
-                    <div className="relative z-10 w-3/4 h-3/4 border border-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
-                      <div 
-                        className="w-2/3 h-2/3 border border-white/40 flex items-center justify-center"
-                        style={{ 
-                          borderRadius: tone.geometry.includes("kreis") ? "50%" : "0%",
-                          transform: `rotate(${cents}deg)`
-                        }}
-                      >
-                        <div 
-                          className="w-1/2 h-1/2 bg-white/10 backdrop-blur-md border border-white/60"
-                          style={{ 
-                            borderRadius: tone.geometry.includes("kreis") ? "50%" : "0%",
-                            boxShadow: `0 0 50px ${tone.color}`
-                          }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
-                    <div>
-                      <div className="text-xs text-zinc-500 font-mono mb-1">MDI GENERATION</div>
-                      <div className="text-white font-mono text-sm">#{Math.floor(res.fundamentalFreq * 100)}</div>
-                    </div>
-                    <Button size="icon" variant="ghost" className="text-white hover:bg-white/10">
-                      <Download className="h-5 w-5" />
-                    </Button>
-                  </div>
-                </div>
+                {/* Abstract Square Removed as requested */}
                 
                 {/* NEW: Spectral Resonance Matrix */}
                 {res.toneDistribution && (
