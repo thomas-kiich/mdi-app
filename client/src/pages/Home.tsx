@@ -10,8 +10,9 @@ import { SoundBody } from '@/components/SoundBody'; // Import new component
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { useLongitudinalStudy } from "@/hooks/useLongitudinalStudy";
+import { InterpretationView } from "@/components/InterpretationView";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -92,6 +93,7 @@ export default function Home() {
 
   // Combined result state
   const [finalResult, setFinalResult] = useState<any | null>(null);
+  const [showInterpretation, setShowInterpretation] = useState(false);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -760,15 +762,44 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="text-center pt-12 pb-8">
-               <Button 
-                variant="ghost" 
-                onClick={() => window.location.reload()}
-                className="text-zinc-500 hover:text-white"
-              >
-                Neue Analyse starten
-              </Button>
+            <div className="flex flex-col items-center gap-6 pt-12 pb-20">
+              <div className="flex gap-4 flex-wrap justify-center">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => window.location.reload()}
+                  className="rounded-full border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+                >
+                  <RotateCcw className="mr-2 h-4 w-4" />
+                  Neue Analyse
+                </Button>
+                
+                <Button 
+                  size="lg"
+                  className="rounded-full bg-white text-black hover:bg-zinc-200"
+                  onClick={() => setShowInterpretation(true)}
+                >
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Deutung lesen
+                </Button>
+
+                <Button 
+                  size="lg"
+                  className="rounded-full bg-orange-500 hover:bg-orange-600 text-white"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Ergebnis speichern
+                </Button>
+              </div>
             </div>
+
+            {showInterpretation && res && (
+                <InterpretationView 
+                  innerTone={res.tone}
+                  outerTone={TONES[(TONES.findIndex(t => t.name === res.tone.name) + 6) % 12]}
+                  onClose={() => setShowInterpretation(false)}
+                />
+            )}
           </div>
         );
     }
