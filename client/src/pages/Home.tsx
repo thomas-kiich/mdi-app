@@ -11,6 +11,7 @@ import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { useLongitudinalStudy } from "@/hooks/useLongitudinalStudy";
 import { InterpretationView } from "@/components/InterpretationView";
+import { ConnectionStory } from "@/components/ConnectionStory";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -94,6 +95,7 @@ export default function Home() {
   // Combined result state
   const [finalResult, setFinalResult] = useState<any | null>(null);
   const [showInterpretation, setShowInterpretation] = useState(false);
+  const [showStory, setShowStory] = useState(false);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -355,6 +357,15 @@ export default function Home() {
               className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-[0_0_30px_rgba(249,115,22,0.3)] transition-all hover:scale-105"
             >
               {isStudyComplete ? "Neue Messung starten" : "Analyse starten"} <ChevronRight className="ml-2 h-5 w-5" />
+            </Button>
+
+            <Button 
+              variant="ghost"
+              className="mt-4 text-zinc-400 hover:text-white block mx-auto"
+              onClick={() => setShowStory(true)}
+            >
+              <Play className="mr-2 h-4 w-4 inline" />
+              Das Prinzip entdecken
             </Button>
 
             {isStudyComplete && studyResult && (
@@ -820,7 +831,11 @@ export default function Home() {
         </header>
 
         <main>
-          {renderContent()}
+          {showStory ? (
+            <ConnectionStory onClose={() => setShowStory(false)} />
+          ) : (
+            renderContent()
+          )}
         </main>
       </div>
     </div>
