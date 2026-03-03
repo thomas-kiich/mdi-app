@@ -9,6 +9,7 @@ import { SpectralMatrix } from '@/components/SpectralMatrix'; // Import new comp
 import { SoundBody } from '@/components/SoundBody'; // Import new component
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
+import { useLongitudinalStudy } from "@/hooks/useLongitudinalStudy";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -59,6 +60,13 @@ export default function Home() {
     referencePitch,
     setReferencePitch
   } = useSoundGenerator();
+
+  const {
+    daysCompleted,
+    isComplete: isStudyComplete,
+    finalResult: studyResult,
+    saveDailyResult
+  } = useLongitudinalStudy();
 
   const [currentOctaveShift, setCurrentOctaveShift] = useState(0);
   const [currentFineTune, setCurrentFineTune] = useState(0); // in cents
@@ -249,7 +257,7 @@ export default function Home() {
             finalDiffHz = finalHz - toneData.frequency;
         }
         
-        setFinalResult({
+        const result = {
           fundamentalFreq: finalHz,
           tone: toneData,
           cents: finalCents,
@@ -260,8 +268,17 @@ export default function Home() {
             q1: results.q1?.toneDistribution,
             q2: results.q2?.toneDistribution,
             q3: results.q3?.toneDistribution
-          }
-        });
+          },
+          isSpeaking: false,
+          spectrum: new Uint8Array(0),
+          volume: 0
+        };
+
+        setFinalResult(result);
+        
+        // Save to longitudinal study
+        saveDailyResult(result);
+        
         return;
       }
     }
@@ -296,6 +313,28 @@ export default function Home() {
         return (
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in duration-700">
             <div className="space-y-4 max-w-2xl">
+              {/* Longitudinal Progress Badge */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 mb-4 mx-auto">
+                  <Activity className="w-4 h-4 text-orange-500" />
+                  <span className="text-xs font-medium text-zinc-400">
+                      {isStudyComplete 
+                          ? "LANGZEIT-STUDIE ABGESCHLOSSEN" 
+                          : `TAG ${Math.min(daysCompleted + 1, 7)} VON 7`
+                      }
+                  </span>
+                  <div className="flex gap-1 ml-2">
+                      {[...Array(7)].map((_, i) => (
+                          <div 
+                              key={i} 
+                              className={cn(
+                                  "w-1.5 h-1.5 rounded-full",
+                                  i < daysCompleted ? "bg-orange-500" : "bg-zinc-700"
+                              )} 
+                          />
+                      ))}
+                  </div>
+              </div>
+
               <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white">
                 MDI <span className="text-orange-500">SYSTEM</span>
               </h1>
@@ -313,8 +352,22 @@ export default function Home() {
               onClick={advanceStep}
               className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-[0_0_30px_rgba(249,115,22,0.3)] transition-all hover:scale-105"
             >
-              Analyse starten <ChevronRight className="ml-2 h-5 w-5" />
+              {isStudyComplete ? "Neue Messung starten" : "Analyse starten"} <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
+
+            {isStudyComplete && studyResult && (
+                  <Button 
+                    variant="outline"
+                    size="lg" 
+                    className="mt-4 text-lg px-8 py-6 rounded-full border-orange-500/50 text-orange-500 hover:bg-orange-500/10"
+                    onClick={() => {
+                        setFinalResult(studyResult);
+                        setCurrentStep("result");
+                    }}
+                  >
+                    Langzeit-Ergebnis ansehen <Activity className="ml-2 w-5 h-5" />
+                  </Button>
+            )}
           </div>
         );
 
