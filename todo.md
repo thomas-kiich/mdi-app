@@ -35,19 +35,17 @@
 - [x] Refine Frequency Logic: Calculate true average of measured frequencies for the dominant tone
 - [ ] Debug: Why F# displays 183.58Hz (F) and 0 cent? Ensure precise calculation.
 
-## Interactive Story (Connection Principle) - NEW
-- [ ] Implement `ConnectionStory.tsx` with the new "Pointillism" narrative:
-  - [ ] **Scene 1: The Source (White Noise)**: Create a canvas/SVG with thousands of white dots on a black background, representing the "Seinsfeld" (field of being) where all possibilities exist.
-  - [ ] **Scene 2: The Formation**: Animate the white dots converging in the center to form a rounded rectangular shape (representing the human configuration).
-  - [ ] **Scene 3: The Split (Polarity)**: 
-    - [ ] Create a vertical wave split in the middle of the rectangle.
-    - [ ] Animate the left half drifting to top-left and turning **Blue** (representing one pole).
-    - [ ] Animate the right half drifting to bottom-right and turning **Red** (representing the other pole).
-  - [ ] **Scene 4: The Longing (Connection)**: Render vibrating wave lines connecting the two separated halves, symbolizing the physical/emotional connection and longing.
-  - [ ] **Scene 5: The Union (Fusion)**: Animate the two halves being drawn back together to the center, merging into a single shape that glows **Magenta** (the synthesis of Red and Blue).
-  - [ ] **Interaction**: Ensure the animation is smooth, aesthetically pleasing (minimalist/pointillist style), and can be replayed or closed via the "Das Prinzip entdecken" button.
-- [ ] Update `Home.tsx` to ensure the "Das Prinzip entdecken" button triggers this new `ConnectionStory` component correctly.
-- [ ] (Optional) Add a subtle sound effect or voice-over placeholder if requested later (currently just visual).
+## Interactive Story (Connection Principle) - REFINEMENT
+- [ ] **Slow Down & Meditative Pacing**: Significantly increase the duration of each act (e.g., 8-10s instead of 4s) for a slower, more contemplative experience.
+- [ ] **Text Positioning**: Move all text overlays to the bottom of the screen to avoid obstructing the central visualization.
+- [ ] **Persistent Background Field**:
+  - [ ] Separate particles into "Background Field" (eternal, sparse white noise) and "Form Particles" (dynamic, condensing).
+  - [ ] Ensure the background field remains visible throughout the entire animation.
+- [ ] **Refined Formation**: Animate the "Form Particles" condensing from the background into a denser, vibrating rounded rectangle in the center.
+- [ ] **Geometric Puzzle Split**:
+  - [ ] Implement a precise sine-wave split logic for the particles.
+  - [ ] Ensure the two halves (Blue/Top-Left and Red/Bottom-Right) look like interlocking puzzle pieces that perfectly form the whole when combined.
+- [ ] **Smoother Fusion**: Enhance the final merging animation to be a slow, fluid blending of the two halves into a glowing Magenta whole.
 
 ## General
 - [x] Fix audio playback
