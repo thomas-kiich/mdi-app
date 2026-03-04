@@ -104,8 +104,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // RED ALERT TEST - Force Red Background
-    ctx.fillStyle = '#FF0000'; 
+    // Initial Clear to Deep Black
+    ctx.fillStyle = '#000000'; 
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     // Reset scanner position
@@ -134,7 +134,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       // Clear the column we are about to draw on (Eraser bar)
       // This creates the "Radar Scanner" effect
       ctx.globalCompositeOperation = 'source-over'; // Normal drawing for clearing
-      ctx.fillStyle = '#FF0000'; // RED ALERT Background
+      ctx.fillStyle = '#000000'; // DEEP BLACK Background
       // Clear a slightly wider strip to remove old data
       ctx.fillRect(scanXRef.current, 0, speed + 1, h);
       
@@ -203,7 +203,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-red-900 text-white font-sans overflow-hidden">
+    <div className="fixed inset-0 z-50 flex flex-col bg-black text-white font-sans overflow-hidden">
       
       {/* Canvas Layer */}
       <canvas 
@@ -217,8 +217,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         {/* Header */}
         <div className="flex justify-between items-start pointer-events-auto">
             <div>
-                <h2 className="text-2xl font-bold tracking-widest uppercase text-white drop-shadow-md">VERSION TEST</h2>
-                <p className="text-sm text-white drop-shadow-md">RED ALERT MODE</p>
+                <h2 className="text-2xl font-bold tracking-widest uppercase text-white/80 drop-shadow-md">Live Spektrum</h2>
+                <p className="text-sm text-white/50 drop-shadow-md">MDI Radar Scan</p>
             </div>
             <div className="flex gap-4">
                  <Button 

@@ -72,9 +72,12 @@
   - [x] **Moving Scanline**: Draw a vertical line moving L->R instead of shifting image.
   - [x] **Additive Mixing**: Use `globalCompositeOperation = 'lighter'`.
   - [x] **Cache Busting**: Use dark blue background temporarily to verify update.
-- [ ] **Red Alert Test**:
-  - [ ] **Force Red Background**: Set background to bright red to confirm update propagation.
-  - [ ] **Version Label**: Add 'VERSION TEST' label.
+- [x] **Red Alert Test**:
+  - [x] **Force Red Background**: Set background to bright red to confirm update propagation.
+  - [x] **Version Label**: Add 'VERSION TEST' label.
+- [ ] **Finalize**:
+  - [ ] **Revert Red Alert**: Set background back to Deep Black (#000000).
+  - [ ] **Remove Test Label**: Clean up UI.
 
 ## General
 - [x] Fix audio playback
