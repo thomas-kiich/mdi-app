@@ -27,6 +27,7 @@
 - [x] Implement 7-day longitudinal study logic
 - [x] Implement Interpretation Framework (Deutung)
 - [x] Implement Interactive Connection Story (Initial Version)
+- [x] Refine Connection Story (Slower, Meditative, Pointillism)
 
 ## Logic & Analysis
 - [x] Fix quint correction logic
@@ -35,17 +36,18 @@
 - [x] Refine Frequency Logic: Calculate true average of measured frequencies for the dominant tone
 - [ ] Debug: Why F# displays 183.58Hz (F) and 0 cent? Ensure precise calculation.
 
-## Interactive Story (Connection Principle) - REFINEMENT
-- [ ] **Slow Down & Meditative Pacing**: Significantly increase the duration of each act (e.g., 8-10s instead of 4s) for a slower, more contemplative experience.
-- [ ] **Text Positioning**: Move all text overlays to the bottom of the screen to avoid obstructing the central visualization.
-- [ ] **Persistent Background Field**:
-  - [ ] Separate particles into "Background Field" (eternal, sparse white noise) and "Form Particles" (dynamic, condensing).
-  - [ ] Ensure the background field remains visible throughout the entire animation.
-- [ ] **Refined Formation**: Animate the "Form Particles" condensing from the background into a denser, vibrating rounded rectangle in the center.
-- [ ] **Geometric Puzzle Split**:
-  - [ ] Implement a precise sine-wave split logic for the particles.
-  - [ ] Ensure the two halves (Blue/Top-Left and Red/Bottom-Right) look like interlocking puzzle pieces that perfectly form the whole when combined.
-- [ ] **Smoother Fusion**: Enhance the final merging animation to be a slow, fluid blending of the two halves into a glowing Magenta whole.
+## Live Spectral Scanner (NEW)
+- [x] **Create `SpectralScanner.tsx` Component**:
+  - [x] Implement a canvas-based real-time spectrogram (waterfall plot).
+  - [x] Use `useAudioAnalyzer` hook to get raw FFT data.
+  - [x] Map frequencies to Y-axis logarithmically (musical scale: C2 to C6).
+  - [x] Map amplitude to brightness/opacity.
+  - [x] Map frequency to COLOR using the MDI Cosmic Octave palette (C=Green, G=Orange, etc.).
+  - [x] Implement scrolling logic (new data pushes old data to the left/up).
+- [x] **Integrate into `Home.tsx`**:
+  - [x] Add a "Live Spektrum" button to the main menu.
+  - [x] Create a modal or dedicated view for the scanner.
+  - [x] Ensure microphone permissions are handled correctly.
 
 ## General
 - [x] Fix audio playback

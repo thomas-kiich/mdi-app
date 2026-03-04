@@ -12,6 +12,7 @@ import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { useLongitudinalStudy } from "@/hooks/useLongitudinalStudy";
 import { InterpretationView } from "@/components/InterpretationView";
 import { ConnectionStory } from "@/components/ConnectionStory";
+import { SpectralScanner } from "@/components/SpectralScanner";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -96,6 +97,7 @@ export default function Home() {
   const [finalResult, setFinalResult] = useState<any | null>(null);
   const [showInterpretation, setShowInterpretation] = useState(false);
   const [showStory, setShowStory] = useState(false);
+  const [showSpectralScanner, setShowSpectralScanner] = useState(false);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -359,14 +361,24 @@ export default function Home() {
               {isStudyComplete ? "Neue Messung starten" : "Analyse starten"} <ChevronRight className="ml-2 h-5 w-5" />
             </Button>
 
-            <Button 
-              variant="ghost"
-              className="mt-4 text-zinc-400 hover:text-white block mx-auto"
-              onClick={() => setShowStory(true)}
-            >
-              <Play className="mr-2 h-4 w-4 inline" />
-              Das Prinzip entdecken
-            </Button>
+            <div className="flex flex-col gap-2 mt-4 items-center">
+              <Button 
+                variant="ghost"
+                className="text-zinc-400 hover:text-white"
+                onClick={() => setShowStory(true)}
+              >
+                <Play className="mr-2 h-4 w-4 inline" />
+                Das Prinzip entdecken
+              </Button>
+              <Button 
+                variant="ghost"
+                className="text-zinc-400 hover:text-white"
+                onClick={() => setShowSpectralScanner(true)}
+              >
+                <Activity className="mr-2 h-4 w-4 inline" />
+                Live Spektrum
+              </Button>
+            </div>
 
             {isStudyComplete && studyResult && (
                   <Button 
@@ -833,6 +845,8 @@ export default function Home() {
         <main>
           {showStory ? (
             <ConnectionStory onClose={() => setShowStory(false)} />
+          ) : showSpectralScanner ? (
+            <SpectralScanner onClose={() => setShowSpectralScanner(false)} />
           ) : (
             renderContent()
           )}
