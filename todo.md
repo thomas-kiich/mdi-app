@@ -68,10 +68,13 @@
   - [x] **Discard Shift Logic**: Remove `putImageData` based scrolling which may carry artifacts.
   - [x] **Explicit Buffer**: Implement a robust manual buffer or circular drawing.
   - [x] **Force Black**: Explicitly clear background to black before drawing.
-- [ ] **Overhaul: Radar Scanner Mode**:
-  - [ ] **Moving Scanline**: Draw a vertical line moving L->R instead of shifting image.
-  - [ ] **Additive Mixing**: Use `globalCompositeOperation = 'lighter'`.
-  - [ ] **Cache Busting**: Use dark blue background temporarily to verify update.
+- [x] **Overhaul: Radar Scanner Mode**:
+  - [x] **Moving Scanline**: Draw a vertical line moving L->R instead of shifting image.
+  - [x] **Additive Mixing**: Use `globalCompositeOperation = 'lighter'`.
+  - [x] **Cache Busting**: Use dark blue background temporarily to verify update.
+- [ ] **Red Alert Test**:
+  - [ ] **Force Red Background**: Set background to bright red to confirm update propagation.
+  - [ ] **Version Label**: Add 'VERSION TEST' label.
 
 ## General
 - [x] Fix audio playback
