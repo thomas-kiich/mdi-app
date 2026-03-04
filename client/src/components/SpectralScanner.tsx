@@ -11,11 +11,14 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const scanXRef = useRef(0); // Current X position of the scanner
+  
+  // History Buffer: Stores columns of frequency data
+  // Each column is an array of { y: number, color: string, alpha: number }
+  const historyRef = useRef<any[]>([]); 
   
   // Settings Refs (for access in loop)
   const sensitivityRef = useRef(5.0); // Default sensitivity
-  const speedRef = useRef(1); // Slow Motion Default (1px per frame)
+  const speedRef = useRef(1); // Scroll speed
   const [isZoomed, setIsZoomed] = useState(true); // Vocal Zoom Default
   const isZoomedRef = useRef(true);
 
@@ -55,12 +58,15 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       audioContextRef.current = audioCtx;
       
       const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 4096; // Higher resolution for better low-end detail
-      analyser.smoothingTimeConstant = 0.1; // Less smoothing for faster response
+      analyser.fftSize = 2048; // Standard resolution
+      analyser.smoothingTimeConstant = 0.0; // No smoothing for raw data
       analyserRef.current = analyser;
       
       const source = audioCtx.createMediaStreamSource(stream);
       source.connect(analyser);
+      
+      // Initialize History Buffer
+      historyRef.current = [];
       
       setIsListening(true);
       startVisualization();
@@ -97,20 +103,13 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     const canvas = canvasRef.current;
     if (!canvas || !analyserRef.current) return;
     
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const ctx = canvas.getContext('2d', { alpha: false }); // Optimize for no transparency
     if (!ctx) return;
     
     // Set internal resolution matches window
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // Initial Clear to Deep Black
-    ctx.fillStyle = '#000000'; 
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
-    // Reset scanner position
-    scanXRef.current = 0;
-
     const bufferLength = analyserRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
     
@@ -119,30 +118,30 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       
       analyserRef.current.getByteFrequencyData(dataArray);
       
-      const speed = speedRef.current;
+      const speed = speedRef.current; // Not used in this manual implementation yet, assuming 1 col per frame
       const sensitivity = sensitivityRef.current;
       const zoomed = isZoomedRef.current;
       const w = canvas.width;
       const h = canvas.height;
 
-      // Frequency Range Configuration
+      // 1. Process New Column
+      const newColumn: { y: number, color: string, alpha: number }[] = [];
+      
       const minFreq = 65.41; // C2
       const maxFreq = zoomed ? 600 : 1200; // C5 vs C6 approx
       const minLog = Math.log(minFreq);
       const maxLog = Math.log(maxFreq);
       
-      // Clear the column we are about to draw on (Eraser bar)
-      // This creates the "Radar Scanner" effect
-      ctx.globalCompositeOperation = 'source-over'; // Normal drawing for clearing
-      ctx.fillStyle = '#000000'; // DEEP BLACK Background
-      // Clear a slightly wider strip to remove old data
-      ctx.fillRect(scanXRef.current, 0, speed + 1, h);
+      // Sample height pixels to create the column
+      // Iterate Y from 0 (top) to h (bottom)
+      // We want low freq at bottom, high freq at top?
+      // Standard spectrogram: low at bottom.
+      // So y=h is minFreq, y=0 is maxFreq.
       
-      // Draw new frequency column at current scan position
-      // Using standard 'source-over' to ensure no weird mixing
-      for (let y = 0; y < h; y += 1) {
+      for (let y = 0; y < h; y += 4) { // Step 4 for performance optimization
         // Normalized Y (0 at top, 1 at bottom)
         const normY = y / h;
+        // Invert so 1 is at top (high freq)
         const invertedNormY = 1 - normY;
         
         const freq = Math.exp(minLog + invertedNormY * (maxLog - minLog));
@@ -155,40 +154,49 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         if (fftIndex < dataArray.length) {
             let amplitude = dataArray[fftIndex];
             
-            // REMOVED HIGH FREQUENCY BOOST - PURE SIGNAL ONLY
-            
-            // HARD CUT NOISE GATE
-            // Only draw if signal is significantly loud
-            if (amplitude > 80) { 
+            // Hard Cut Threshold
+            if (amplitude > 50) { 
                 const colorHex = getToneColor(freq);
-                
-                const r = parseInt(colorHex.slice(1, 3), 16);
-                const g = parseInt(colorHex.slice(3, 5), 16);
-                const b = parseInt(colorHex.slice(5, 7), 16);
-                
-                // Linear alpha mapping for sharpness
-                const normalizedAmp = (amplitude - 80) / (255 - 80);
+                const normalizedAmp = (amplitude - 50) / (255 - 50);
                 const alpha = Math.min(1, normalizedAmp * sensitivity);
                 
-                // Draw only if alpha is significant
                 if (alpha > 0.1) {
-                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                    ctx.fillRect(scanXRef.current, y, speed, 2); 
+                    newColumn.push({ y, color: colorHex, alpha });
                 }
             }
         }
       }
       
-      // Draw Scanner Line (Green indicator)
-      ctx.globalCompositeOperation = 'source-over';
-      ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
-      ctx.fillRect(scanXRef.current + speed, 0, 2, h);
-
-      // Move Scanner
-      scanXRef.current += speed;
-      if (scanXRef.current >= w) {
-          scanXRef.current = 0;
+      // Add to history (unshift adds to beginning)
+      historyRef.current.unshift(newColumn);
+      
+      // Trim history to screen width
+      if (historyRef.current.length > w) {
+          historyRef.current.length = w;
       }
+      
+      // 2. Redraw Full Canvas from History
+      // Clear with Black
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(0, 0, w, h);
+      
+      // Draw all columns
+      // We want history[0] (newest) at the RIGHT edge (x=w)
+      // history[1] at w-1, etc.
+      
+      for (let i = 0; i < historyRef.current.length; i++) {
+          const col = historyRef.current[i];
+          const x = w - 1 - i; // Newest at right edge
+          
+          if (x < 0) break;
+          
+          for (const pixel of col) {
+             ctx.fillStyle = pixel.color;
+             ctx.globalAlpha = pixel.alpha;
+             ctx.fillRect(x, pixel.y, 4, 4); // Draw larger pixels for performance (match step)
+          }
+      }
+      ctx.globalAlpha = 1.0;
       
       animationRef.current = requestAnimationFrame(draw);
     };
@@ -207,7 +215,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       {/* Canvas Layer */}
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 w-full h-full" // Removed blur for sharpness
+        className="absolute inset-0 w-full h-full" 
       />
       
       {/* Overlay UI */}
@@ -217,7 +225,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         <div className="flex justify-between items-start pointer-events-auto">
             <div>
                 <h2 className="text-2xl font-bold tracking-widest uppercase text-white/80 drop-shadow-md">Live Spektrum</h2>
-                <p className="text-sm text-white/50 drop-shadow-md">MDI Radar Scan (Hard Cut Mode)</p>
+                <p className="text-sm text-white/50 drop-shadow-md">MDI Safe Mode (Manual Buffer)</p>
             </div>
             <div className="flex gap-4">
                  <Button 
@@ -230,7 +238,10 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                     {isZoomed ? "Vocal Zoom" : "Full Range"}
                 </Button>
                  <Button 
-                    onClick={toggleAudio}
+                    onClick={() => {
+                        if (isListening) stopAudio();
+                        else startAudio();
+                    }}
                     variant={isListening ? "destructive" : "secondary"}
                     className="rounded-full px-6 shadow-lg backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white"
                 >
@@ -275,18 +286,6 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                     step="0.5" 
                     defaultValue="5.0"
                     onChange={(e) => sensitivityRef.current = parseFloat(e.target.value)}
-                    className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-white"
-                />
-             </div>
-             <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider">Fluss</span>
-                <input 
-                    type="range" 
-                    min="1" 
-                    max="5" 
-                    step="1" 
-                    defaultValue="1"
-                    onChange={(e) => speedRef.current = parseInt(e.target.value)}
                     className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-white"
                 />
              </div>

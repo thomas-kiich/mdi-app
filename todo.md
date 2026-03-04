@@ -82,10 +82,14 @@
   - [x] **Remove Compositing**: Switch from `lighter` to `source-over`.
   - [x] **Strict Drawing**: Only draw colored pixels where amplitude > threshold.
   - [x] **Clear Background**: Ensure canvas is cleared with black before each scan step.
-- [ ] **Implement Hard Cut Debug Mode**:
-  - [ ] **High Threshold**: Increase amplitude threshold to 100.
-  - [ ] **Disable Boost**: Remove high-frequency boost.
-  - [ ] **Linear Mapping**: Use linear amplitude mapping.
+- [x] **Implement Hard Cut Debug Mode**:
+  - [x] **High Threshold**: Increase amplitude threshold to 100.
+  - [x] **Disable Boost**: Remove high-frequency boost.
+  - [x] **Linear Mapping**: Use linear amplitude mapping.
+- [ ] **Implement Safe Mode Scanner**:
+  - [ ] **Manual Array**: Use a JS array to store history, redraw full canvas every frame.
+  - [ ] **Invert Amplitude**: Test if `255 - value` fixes the black cutout issue.
+  - [ ] **Remove Radar**: Go back to classic waterfall scrolling but implemented manually.
 
 ## General
 - [x] Fix audio playback
