@@ -57,10 +57,13 @@
   - [x] **High Noise Gate**: Increase amplitude threshold significantly (e.g., from 10 to 40) to filter background noise.
   - [x] **Contrast Boost**: Increase opacity curve for active frequencies.
   - [x] **Clear Background**: Ensure canvas fill is pure black (#000000) every frame.
-- [ ] **Invert Logic**:
-  - [ ] **Pure Black Background**: Remove any fill logic that creates "holes".
-  - [ ] **Additive Color**: Only draw pixels where FFT amplitude > threshold.
-  - [ ] **Result**: "Painting with light" on a black canvas.
+- [x] **Invert Logic**:
+  - [x] **Pure Black Background**: Remove any fill logic that creates "holes".
+  - [x] **Additive Color**: Only draw pixels where FFT amplitude > threshold.
+  - [x] **Result**: "Painting with light" on a black canvas.
+- [ ] **Debug**:
+  - [ ] **Fix Subtractive Logic**: Ensure no black pixels are drawn over active colors.
+  - [ ] **Ensure Additive Drawing**: Only draw colors where signal > threshold.
 
 ## General
 - [x] Fix audio playback
