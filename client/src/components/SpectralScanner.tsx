@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info } from "lucide-react";
+import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square } from "lucide-react";
 import { TONES } from "@/lib/tones";
 
 export function SpectralScanner({ onClose }: { onClose: () => void }) {
@@ -12,6 +12,12 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   
+  // Audio Synthesis Refs
+  const synthContextRef = useRef<AudioContext | null>(null);
+  const activeOscillatorsRef = useRef<OscillatorNode[]>([]);
+  const activeGainNodesRef = useRef<GainNode[]>([]);
+  const [isPlayingTone, setIsPlayingTone] = useState(false);
+
   // History Buffer: Stores columns of frequency data
   // Each column is an array of { y: number, color: string, alpha: number, freq: number, tone: string }
   const historyRef = useRef<any[]>([]); 
@@ -56,6 +62,109 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     return { color: closestColor, tone: closestTone };
   };
 
+  // --- AUDIO SYNTHESIS ---
+  const playHarmonicTone = (frequency: number) => {
+      // Initialize AudioContext if needed
+      if (!synthContextRef.current) {
+          synthContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = synthContextRef.current;
+      if (!ctx) return;
+
+      // Stop previous if any
+      stopHarmonicTone();
+      setIsPlayingTone(true);
+
+      const now = ctx.currentTime;
+      const duration = 12; // 12 seconds total
+      const attack = 2; // 2s fade in
+      const release = 8; // 8s fade out
+
+      // Create Master Gain for Envelope
+      const masterGain = ctx.createGain();
+      masterGain.connect(ctx.destination);
+      masterGain.gain.setValueAtTime(0, now);
+      masterGain.gain.linearRampToValueAtTime(0.3, now + attack); // Max volume 0.3 to avoid clipping
+      masterGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+      activeGainNodesRef.current.push(masterGain);
+
+      // Create Oscillators for Warm Drone
+      // 1. Fundamental (Sine) - The core
+      // 2. Octave Lower (Triangle) - Body/Warmth
+      // 3. Fifth Above (Sine) - Harmony/Shimmer
+      // 4. Detuned Fundamental (Sawtooth, low pass) - Texture
+
+      const oscs = [];
+
+      // Fundamental
+      const osc1 = ctx.createOscillator();
+      osc1.type = 'sine';
+      osc1.frequency.value = frequency;
+      const gain1 = ctx.createGain();
+      gain1.gain.value = 0.6;
+      osc1.connect(gain1).connect(masterGain);
+      oscs.push(osc1);
+
+      // Sub Octave (Triangle for warmth)
+      const osc2 = ctx.createOscillator();
+      osc2.type = 'triangle';
+      osc2.frequency.value = frequency / 2;
+      const gain2 = ctx.createGain();
+      gain2.gain.value = 0.3;
+      // Lowpass filter for the sub to make it deep
+      const filter2 = ctx.createBiquadFilter();
+      filter2.type = 'lowpass';
+      filter2.frequency.value = 200;
+      osc2.connect(filter2).connect(gain2).connect(masterGain);
+      oscs.push(osc2);
+
+      // Fifth Above (Sine for purity)
+      const osc3 = ctx.createOscillator();
+      osc3.type = 'sine';
+      osc3.frequency.value = frequency * 1.5;
+      const gain3 = ctx.createGain();
+      gain3.gain.value = 0.2;
+      osc3.connect(gain3).connect(masterGain);
+      oscs.push(osc3);
+
+      // Detuned Texture (Sawtooth with heavy filtering)
+      const osc4 = ctx.createOscillator();
+      osc4.type = 'sawtooth';
+      osc4.frequency.value = frequency * 1.01; // Slightly detuned
+      const gain4 = ctx.createGain();
+      gain4.gain.value = 0.05; // Very subtle
+      const filter4 = ctx.createBiquadFilter();
+      filter4.type = 'lowpass';
+      filter4.frequency.value = 400;
+      osc4.connect(filter4).connect(gain4).connect(masterGain);
+      oscs.push(osc4);
+
+      // Start all
+      oscs.forEach(osc => {
+          osc.start(now);
+          osc.stop(now + duration);
+          activeOscillatorsRef.current.push(osc);
+      });
+
+      // Auto cleanup state
+      setTimeout(() => {
+          setIsPlayingTone(false);
+      }, duration * 1000);
+  };
+
+  const stopHarmonicTone = () => {
+      activeOscillatorsRef.current.forEach(osc => {
+          try { osc.stop(); } catch (e) {}
+      });
+      activeOscillatorsRef.current = [];
+      activeGainNodesRef.current.forEach(gain => {
+          try { gain.disconnect(); } catch (e) {}
+      });
+      activeGainNodesRef.current = [];
+      setIsPlayingTone(false);
+  };
+
   const startAudio = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -95,6 +204,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       cancelAnimationFrame(animationRef.current);
     }
     setIsListening(false);
+    stopHarmonicTone(); // Also stop any playing tone
   };
 
   const toggleAudio = () => {
@@ -156,8 +266,9 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
           note: tone // Simplified
       });
       
-      // Auto-hide after 3 seconds
-      setTimeout(() => setHoverInfo(null), 3000);
+      // Auto-hide after 5 seconds (longer to allow clicking Play)
+      // Or remove auto-hide if user interacts?
+      // For now, let's keep it simple.
   };
 
   // Visualization Loop
@@ -269,28 +380,12 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
               const col = historyRef.current[i];
               
               // Progress 0 (newest) to 1 (oldest)
-              // But we want Newest at CENTER (far) and Oldest at EDGE (close) ?
-              // Actually "Tunnel" usually means we fly INTO it. 
-              // So newest data appears at CENTER and expands OUTWARDS.
-              // So i=0 (newest) -> scale=0 (center)
-              // i=maxDepth -> scale=1 (edge)
-              
               const progress = i / maxDepth; // 0 to 1
               
               // Exponential scale for speed sensation
               const scale = Math.pow(progress, 2) * 5; // *5 to go beyond screen
               
               if (scale < 0.01) continue;
-              
-              // Calculate opacity fade for distance
-              // Center (newest) should be dim? Or bright?
-              // Usually things fade into distance.
-              // So i=0 (center) -> alpha=0
-              // i=maxDepth (close) -> alpha=1
-              // Wait, that means newest data is invisible.
-              // Let's do: Bright at center, fade at edges?
-              // Or just uniform brightness?
-              // Let's try: Fade in at center (0->0.1), Bright mid (0.5), Fade out edge (1.0)
               
               const depthAlpha = 1.0; // Keep full brightness for now
               
@@ -350,7 +445,10 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   
   // Cleanup
   useEffect(() => {
-    return () => stopAudio();
+    return () => {
+        stopAudio();
+        stopHarmonicTone();
+    };
   }, []);
 
   return (
@@ -473,26 +571,56 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         </div>
       )}
 
-      {/* Hover Info Tooltip */}
+      {/* Hover Info Tooltip with Audio Playback */}
       <AnimatePresence>
         {hoverInfo && (
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="absolute z-50 pointer-events-none bg-black/80 backdrop-blur border border-white/20 rounded-lg p-3 text-white shadow-xl"
+                className="absolute z-50 pointer-events-auto bg-black/90 backdrop-blur-xl border border-white/20 rounded-xl p-4 text-white shadow-2xl flex flex-col gap-3 min-w-[200px]"
                 style={{ 
-                    left: hoverInfo.x + 20, 
-                    top: hoverInfo.y - 20 
+                    left: Math.min(window.innerWidth - 220, hoverInfo.x + 20), 
+                    top: Math.min(window.innerHeight - 150, hoverInfo.y - 20) 
                 }}
             >
-                <div className="flex items-center gap-2 mb-1">
-                    <Info className="h-4 w-4 text-orange-500" />
-                    <span className="font-bold text-lg">{hoverInfo.tone}</span>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Info className="h-4 w-4 text-orange-500" />
+                        <span className="font-bold text-lg">{hoverInfo.tone}</span>
+                    </div>
+                    <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-6 w-6 rounded-full hover:bg-white/10"
+                        onClick={() => setHoverInfo(null)}
+                    >
+                        <X className="h-3 w-3" />
+                    </Button>
                 </div>
-                <div className="text-xs text-gray-300 font-mono">
+                
+                <div className="text-xs text-gray-300 font-mono border-b border-white/10 pb-2 mb-1">
                     {hoverInfo.freq.toFixed(2)} Hz
                 </div>
+
+                <Button 
+                    className={`w-full transition-all duration-500 ${isPlayingTone ? "bg-orange-500/20 text-orange-500 border-orange-500/50" : "bg-white/10 hover:bg-white/20"}`}
+                    variant="outline"
+                    onClick={() => {
+                        if (isPlayingTone) stopHarmonicTone();
+                        else playHarmonicTone(hoverInfo.freq);
+                    }}
+                >
+                    {isPlayingTone ? (
+                        <>
+                            <Square className="mr-2 h-4 w-4 fill-current animate-pulse" /> Stop
+                        </>
+                    ) : (
+                        <>
+                            <Play className="mr-2 h-4 w-4 fill-current" /> Tönen (12s)
+                        </>
+                    )}
+                </Button>
             </motion.div>
         )}
       </AnimatePresence>

@@ -112,3 +112,10 @@
   - [ ] Create a new visualization mode toggle (2D / 3D).
   - [ ] Implement a perspective projection where new frequency lines appear at the center/far distance and move towards the viewer (or vice versa).
   - [ ] Use the same color/frequency logic but map Y-axis to radial distance or tunnel walls.
+
+- [ ] **Harmonic Resonance Audio Synthesis**:
+  - [ ] Implement a Web Audio API synthesizer function.
+  - [ ] Create a "Warm Drone" sound using multiple oscillators (Fundamental + Octave + Fifth).
+  - [ ] Apply a Low-Pass Filter to soften the sound.
+  - [ ] Implement an Envelope (ADSR) with slow Attack (2s) and long Release (8s) for a total of ~12s.
+  - [ ] Add a "Play Tone" button to the interactive tooltip in the Spectral Scanner.
