@@ -58,7 +58,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       audioContextRef.current = audioCtx;
       
       const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 2048; // Standard resolution
+      analyser.fftSize = 4096; // Higher resolution for better peak detection
       analyser.smoothingTimeConstant = 0.0; // No smoothing for raw data
       analyserRef.current = analyser;
       
@@ -84,7 +84,9 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
-    cancelAnimationFrame(animationRef.current);
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
     setIsListening(false);
   };
 
@@ -118,7 +120,6 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       
       analyserRef.current.getByteFrequencyData(dataArray);
       
-      const speed = speedRef.current; // Not used in this manual implementation yet, assuming 1 col per frame
       const sensitivity = sensitivityRef.current;
       const zoomed = isZoomedRef.current;
       const w = canvas.width;
@@ -133,12 +134,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       const maxLog = Math.log(maxFreq);
       
       // Sample height pixels to create the column
-      // Iterate Y from 0 (top) to h (bottom)
-      // We want low freq at bottom, high freq at top?
-      // Standard spectrogram: low at bottom.
-      // So y=h is minFreq, y=0 is maxFreq.
-      
-      for (let y = 0; y < h; y += 4) { // Step 4 for performance optimization
+      for (let y = 0; y < h; y += 2) { // Step 2 for higher resolution
         // Normalized Y (0 at top, 1 at bottom)
         const normY = y / h;
         // Invert so 1 is at top (high freq)
@@ -151,16 +147,35 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         const nyquist = sampleRate / 2;
         const fftIndex = Math.floor((freq / nyquist) * bufferLength);
         
-        if (fftIndex < dataArray.length) {
+        if (fftIndex > 1 && fftIndex < dataArray.length - 2) {
             let amplitude = dataArray[fftIndex];
             
+            // Peak Detection: Check neighbors
+            const prev = dataArray[fftIndex - 1];
+            const next = dataArray[fftIndex + 1];
+            const isPeak = amplitude > prev && amplitude > next;
+
             // Hard Cut Threshold
-            if (amplitude > 50) { 
-                const colorHex = getToneColor(freq);
-                const normalizedAmp = (amplitude - 50) / (255 - 50);
-                const alpha = Math.min(1, normalizedAmp * sensitivity);
+            if (amplitude > 40) { 
                 
-                if (alpha > 0.1) {
+                // Exponential Contrast: Sharpen the difference between loud and quiet
+                // Map 0-255 to 0-1
+                let normAmp = amplitude / 255;
+                
+                // Apply Power Curve (Contrast)
+                // pow(x, 3) makes 0.5 -> 0.125, but 0.9 -> 0.729
+                // This suppresses noise heavily
+                let sharpenedAmp = Math.pow(normAmp, 3);
+                
+                // Additional suppression for non-peaks (make them dimmer)
+                if (!isPeak) {
+                    sharpenedAmp *= 0.3; 
+                }
+
+                const colorHex = getToneColor(freq);
+                const alpha = Math.min(1, sharpenedAmp * sensitivity);
+                
+                if (alpha > 0.05) { // Only draw if visible
                     newColumn.push({ y, color: colorHex, alpha });
                 }
             }
@@ -193,7 +208,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
           for (const pixel of col) {
              ctx.fillStyle = pixel.color;
              ctx.globalAlpha = pixel.alpha;
-             ctx.fillRect(x, pixel.y, 4, 4); // Draw larger pixels for performance (match step)
+             // Draw smaller pixels for sharper look
+             ctx.fillRect(x, pixel.y, 2, 2); 
           }
       }
       ctx.globalAlpha = 1.0;
@@ -225,7 +241,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         <div className="flex justify-between items-start pointer-events-auto">
             <div>
                 <h2 className="text-2xl font-bold tracking-widest uppercase text-white/80 drop-shadow-md">Live Spektrum</h2>
-                <p className="text-sm text-white/50 drop-shadow-md">MDI Safe Mode (Manual Buffer)</p>
+                <p className="text-sm text-white/50 drop-shadow-md">MDI Sharpened Mode (Peaks Only)</p>
             </div>
             <div className="flex gap-4">
                  <Button 

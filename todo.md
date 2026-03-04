@@ -86,10 +86,13 @@
   - [x] **High Threshold**: Increase amplitude threshold to 100.
   - [x] **Disable Boost**: Remove high-frequency boost.
   - [x] **Linear Mapping**: Use linear amplitude mapping.
-- [ ] **Implement Safe Mode Scanner**:
-  - [ ] **Manual Array**: Use a JS array to store history, redraw full canvas every frame.
-  - [ ] **Invert Amplitude**: Test if `255 - value` fixes the black cutout issue.
-  - [ ] **Remove Radar**: Go back to classic waterfall scrolling but implemented manually.
+- [x] **Implement Safe Mode Scanner**:
+  - [x] **Manual Array**: Use a JS array to store history, redraw full canvas every frame.
+  - [x] **Invert Amplitude**: Test if `255 - value` fixes the black cutout issue.
+  - [x] **Remove Radar**: Go back to classic waterfall scrolling but implemented manually.
+- [x] **Sharpen Visualization**:
+  - [x] **Exponential Contrast**: Apply `pow(value, 3)` to darken noise and highlight peaks.
+  - [x] **Peak Detection**: Only draw local maxima to create thin lines instead of broad bands.
 
 ## General
 - [x] Fix audio playback
