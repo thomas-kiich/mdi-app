@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff } from "lucide-react";
+import { X, Mic, MicOff, Maximize, Minimize } from "lucide-react";
 import { TONES } from "@/lib/tones";
 
 export function SpectralScanner({ onClose }: { onClose: () => void }) {
@@ -13,8 +13,10 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const streamRef = useRef<MediaStream | null>(null);
   
   // Settings Refs (for access in loop)
-  const sensitivityRef = useRef(1.5);
-  const speedRef = useRef(2);
+  const sensitivityRef = useRef(2.5); // Higher default sensitivity
+  const speedRef = useRef(1); // Slow Motion Default (1px per frame)
+  const [isZoomed, setIsZoomed] = useState(true); // Vocal Zoom Default
+  const isZoomedRef = useRef(true);
 
   // Helper to get tone color
   const getToneColor = (freq: number) => {
@@ -30,7 +32,6 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     let closestColor = "#ffffff";
     
     for (const t of TONES) {
-        // TONES are defined for specific octave, let's normalize them too
         let tFreq = t.frequency;
         while (tFreq < 261.63) tFreq *= 2;
         while (tFreq > 523.25) tFreq /= 2;
@@ -53,8 +54,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       audioContextRef.current = audioCtx;
       
       const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 2048; 
-      analyser.smoothingTimeConstant = 0.1;
+      analyser.fftSize = 4096; // Higher resolution for better low-end detail
+      analyser.smoothingTimeConstant = 0.15; // Slightly smoother
       analyserRef.current = analyser;
       
       const source = audioCtx.createMediaStreamSource(stream);
@@ -85,6 +86,11 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     else startAudio();
   };
 
+  const toggleZoom = () => {
+      setIsZoomed(!isZoomed);
+      isZoomedRef.current = !isZoomed;
+  };
+
   // Visualization Loop
   const startVisualization = () => {
     const canvas = canvasRef.current;
@@ -104,12 +110,6 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     const bufferLength = analyserRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
     
-    // Logarithmic Scale Config (Musical Range C2 to C6)
-    const minFreq = 65.41; // C2
-    const maxFreq = 1046.50; // C6
-    const minLog = Math.log(minFreq);
-    const maxLog = Math.log(maxFreq);
-
     const draw = () => {
       if (!analyserRef.current) return;
       
@@ -117,6 +117,15 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       
       const speed = speedRef.current;
       const sensitivity = sensitivityRef.current;
+      const zoomed = isZoomedRef.current;
+
+      // Frequency Range Configuration
+      // Zoomed: C2 (65Hz) to C5 (523Hz) - Focus on fundamental vocal range
+      // Full: C2 (65Hz) to C6 (1046Hz) - Wider range
+      const minFreq = 65.41; // C2
+      const maxFreq = zoomed ? 600 : 1200; // C5 vs C6 approx
+      const minLog = Math.log(minFreq);
+      const maxLog = Math.log(maxFreq);
       
       // 1. Shift existing image to the left
       try {
@@ -134,16 +143,11 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
           
           // 2. Draw new frequency column
           // Iterate Y-axis pixels (Bottom=Low, Top=High)
-          for (let y = 0; y < h; y++) {
+          // Optimization: Step by 2px to create organic blur and save perf
+          for (let y = 0; y < h; y += 1) {
             // Normalized Y (0 at top, 1 at bottom)
-            // Canvas Y=0 is top. We want high freq at top.
-            // So y=0 -> maxFreq, y=h -> minFreq
-            
-            // normY goes from 0 (top) to 1 (bottom)
+            // We want High Freq at Top (y=0)
             const normY = y / h;
-            
-            // Logarithmic mapping: High freq at top (small y)
-            // We invert the mapping so small y = high freq
             const invertedNormY = 1 - normY;
             
             const freq = Math.exp(minLog + invertedNormY * (maxLog - minLog));
@@ -151,14 +155,20 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
             // Get Amplitude from FFT
             const sampleRate = audioContextRef.current?.sampleRate || 44100;
             const nyquist = sampleRate / 2;
-            
-            // FFT Index = freq / (sampleRate/2) * bufferLength
             const fftIndex = Math.floor((freq / nyquist) * bufferLength);
             
             if (fftIndex < dataArray.length) {
-                const amplitude = dataArray[fftIndex];
+                let amplitude = dataArray[fftIndex];
                 
-                if (amplitude > 5) { // Noise gate
+                // HIGH FREQUENCY BOOST (Spectral Tilt Correction)
+                // Boost higher frequencies to make them visible
+                // Simple linear boost starting from 200Hz
+                if (freq > 200) {
+                    const boostFactor = 1 + (freq - 200) / 400; // Linear boost
+                    amplitude = Math.min(255, amplitude * boostFactor);
+                }
+
+                if (amplitude > 10) { // Noise gate
                     // Get Color
                     const colorHex = getToneColor(freq);
                     
@@ -168,10 +178,13 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                     const b = parseInt(colorHex.slice(5, 7), 16);
                     
                     // Alpha based on amplitude
-                    const alpha = Math.min(1, (amplitude / 255) * sensitivity);
+                    // Non-linear alpha for more contrast
+                    const normalizedAmp = amplitude / 255;
+                    const alpha = Math.min(1, Math.pow(normalizedAmp, 1.5) * sensitivity);
                     
                     ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                    ctx.fillRect(w - speed, y, speed, 1);
+                    // Draw slightly larger rect for blur effect
+                    ctx.fillRect(w - speed, y, speed, 2); 
                 }
             }
           }
@@ -196,7 +209,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       {/* Canvas Layer */}
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 w-full h-full"
+        className="absolute inset-0 w-full h-full filter blur-[1px]" // CSS Blur for organic feel
       />
       
       {/* Overlay UI */}
@@ -209,6 +222,15 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                 <p className="text-sm text-gray-400 drop-shadow-md">Echtzeit-Visualisierung der energetischen Signatur</p>
             </div>
             <div className="flex gap-4">
+                 <Button 
+                    onClick={toggleZoom}
+                    variant="outline"
+                    className="rounded-full px-4 border-white/20 text-white hover:bg-white/10"
+                    title={isZoomed ? "Zoom Out (Full Range)" : "Zoom In (Vocal Range)"}
+                >
+                    {isZoomed ? <Minimize className="h-4 w-4 mr-2" /> : <Maximize className="h-4 w-4 mr-2" />}
+                    {isZoomed ? "Vocal Zoom" : "Full Range"}
+                </Button>
                  <Button 
                     onClick={toggleAudio}
                     variant={isListening ? "destructive" : "secondary"}
@@ -224,11 +246,24 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         
         {/* Frequency Labels (Left) */}
         <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col justify-between h-3/4 text-xs text-white/40 font-mono select-none pointer-events-none">
-            <span>C6 (1046Hz)</span>
-            <span>C5 (523Hz)</span>
-            <span>C4 (261Hz)</span>
-            <span>C3 (130Hz)</span>
-            <span>C2 (65Hz)</span>
+            {isZoomed ? (
+                <>
+                    <span>C5 (High)</span>
+                    <span>G4</span>
+                    <span>C4 (Mid)</span>
+                    <span>G3</span>
+                    <span>C3 (Low)</span>
+                    <span>C2 (Deep)</span>
+                </>
+            ) : (
+                <>
+                    <span>C6 (High)</span>
+                    <span>C5</span>
+                    <span>C4 (Mid)</span>
+                    <span>C3</span>
+                    <span>C2 (Deep)</span>
+                </>
+            )}
         </div>
 
         {/* Controls (Bottom Center) */}
@@ -237,10 +272,10 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                 <span className="text-[10px] text-gray-400 uppercase tracking-wider">Helligkeit</span>
                 <input 
                     type="range" 
-                    min="0.5" 
-                    max="5" 
-                    step="0.1" 
-                    defaultValue="1.5"
+                    min="1" 
+                    max="10" 
+                    step="0.5" 
+                    defaultValue="2.5"
                     onChange={(e) => sensitivityRef.current = parseFloat(e.target.value)}
                     className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-white"
                 />
@@ -250,9 +285,9 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                 <input 
                     type="range" 
                     min="1" 
-                    max="10" 
+                    max="5" 
                     step="1" 
-                    defaultValue="2"
+                    defaultValue="1"
                     onChange={(e) => speedRef.current = parseInt(e.target.value)}
                     className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-white"
                 />

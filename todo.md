@@ -36,7 +36,7 @@
 - [x] Refine Frequency Logic: Calculate true average of measured frequencies for the dominant tone
 - [ ] Debug: Why F# displays 183.58Hz (F) and 0 cent? Ensure precise calculation.
 
-## Live Spectral Scanner (NEW)
+## Live Spectral Scanner (Refinement)
 - [x] **Create `SpectralScanner.tsx` Component**:
   - [x] Implement a canvas-based real-time spectrogram (waterfall plot).
   - [x] Use `useAudioAnalyzer` hook to get raw FFT data.
@@ -48,6 +48,11 @@
   - [x] Add a "Live Spektrum" button to the main menu.
   - [x] Create a modal or dedicated view for the scanner.
   - [x] Ensure microphone permissions are handled correctly.
+- [ ] **Refine `SpectralScanner.tsx`**:
+  - [ ] **Vocal Zoom**: Change default frequency range to C2 (65Hz) - C5 (523Hz) to focus on human voice.
+  - [ ] **Slow Motion**: Set default scroll speed to 1px/frame.
+  - [ ] **High-Frequency Boost**: Implement spectral tilt correction (+3dB/octave) to make high notes visible.
+  - [ ] **Organic Blur**: Add vertical blur to smooth out frequency bins.
 
 ## General
 - [x] Fix audio playback
