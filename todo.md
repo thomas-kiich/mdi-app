@@ -98,3 +98,17 @@
 - [x] Fix audio playback
 - [x] Verify color mappings
 - [ ] Final user verification
+
+## Live Spectral Scanner (Enhancements)
+- [ ] **Snapshot Export**:
+  - [ ] Add a "Camera" button to the UI.
+  - [ ] Implement canvas-to-blob conversion and download as PNG.
+  - [ ] Ensure the filename includes a timestamp (e.g., `MDI-Spektrum-2026-03-04.png`).
+- [ ] **Interactive Frequency Analysis**:
+  - [ ] Add click handler to the canvas.
+  - [ ] On click, find the nearest frequency bin and display its Hz value and musical note (e.g., "440Hz - A4").
+  - [ ] Show a tooltip or overlay with this information.
+- [ ] **3D Tunnel Mode**:
+  - [ ] Create a new visualization mode toggle (2D / 3D).
+  - [ ] Implement a perspective projection where new frequency lines appear at the center/far distance and move towards the viewer (or vice versa).
+  - [ ] Use the same color/frequency logic but map Y-axis to radial distance or tunnel walls.

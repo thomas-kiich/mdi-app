@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff, Maximize, Minimize } from "lucide-react";
+import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info } from "lucide-react";
 import { TONES } from "@/lib/tones";
 
 export function SpectralScanner({ onClose }: { onClose: () => void }) {
@@ -13,7 +13,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const streamRef = useRef<MediaStream | null>(null);
   
   // History Buffer: Stores columns of frequency data
-  // Each column is an array of { y: number, color: string, alpha: number }
+  // Each column is an array of { y: number, color: string, alpha: number, freq: number, tone: string }
   const historyRef = useRef<any[]>([]); 
   
   // Settings Refs (for access in loop)
@@ -21,19 +21,25 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const speedRef = useRef(1); // Scroll speed
   const [isZoomed, setIsZoomed] = useState(true); // Vocal Zoom Default
   const isZoomedRef = useRef(true);
+  const [is3DMode, setIs3DMode] = useState(false);
+  const is3DModeRef = useRef(false);
+
+  // Interaction State
+  const [hoverInfo, setHoverInfo] = useState<{ x: number, y: number, freq: number, tone: string, note: string } | null>(null);
 
   // Helper to get tone color
   const getToneColor = (freq: number) => {
     // Normalize to one octave range (approx C4-B4: 261-523Hz) for comparison
     let normFreq = freq;
     // Avoid infinite loop for very low freqs
-    if (normFreq < 10) return "#000000";
+    if (normFreq < 10) return { color: "#000000", tone: "" };
     
     while (normFreq < 261.63) normFreq *= 2;
     while (normFreq > 523.25) normFreq /= 2;
     
     let minDiff = Infinity;
     let closestColor = "#ffffff";
+    let closestTone = "";
     
     for (const t of TONES) {
         let tFreq = t.frequency;
@@ -44,9 +50,10 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         if (diff < minDiff) {
             minDiff = diff;
             closestColor = t.color;
+            closestTone = t.name;
         }
     }
-    return closestColor;
+    return { color: closestColor, tone: closestTone };
   };
 
   const startAudio = async () => {
@@ -100,6 +107,59 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       isZoomedRef.current = !isZoomed;
   };
 
+  const toggle3D = () => {
+      setIs3DMode(!is3DMode);
+      is3DModeRef.current = !is3DMode;
+  };
+
+  const takeSnapshot = () => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      // Create a temporary link
+      const link = document.createElement('a');
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      link.download = `MDI-Spektrum-${timestamp}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+  };
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      // Allow inspection even while running
+      
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const y = e.clientY - rect.top;
+      const h = canvas.height;
+      
+      // Calculate Frequency from Y
+      const zoomed = isZoomed; // Use state, as click is in React cycle
+      const minFreq = 65.41; 
+      const maxFreq = zoomed ? 600 : 1200;
+      const minLog = Math.log(minFreq);
+      const maxLog = Math.log(maxFreq);
+      
+      // Invert Y logic from draw loop
+      const normY = y / h;
+      const invertedNormY = 1 - normY;
+      const freq = Math.exp(minLog + invertedNormY * (maxLog - minLog));
+      
+      const { tone } = getToneColor(freq);
+      
+      setHoverInfo({
+          x: e.clientX,
+          y: e.clientY,
+          freq: freq,
+          tone: tone,
+          note: tone // Simplified
+      });
+      
+      // Auto-hide after 3 seconds
+      setTimeout(() => setHoverInfo(null), 3000);
+  };
+
   // Visualization Loop
   const startVisualization = () => {
     const canvas = canvasRef.current;
@@ -122,11 +182,12 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       
       const sensitivity = sensitivityRef.current;
       const zoomed = isZoomedRef.current;
+      const is3D = is3DModeRef.current;
       const w = canvas.width;
       const h = canvas.height;
 
       // 1. Process New Column
-      const newColumn: { y: number, color: string, alpha: number }[] = [];
+      const newColumn: { y: number, color: string, alpha: number, freq: number }[] = [];
       
       const minFreq = 65.41; // C2
       const maxFreq = zoomed ? 600 : 1200; // C5 vs C6 approx
@@ -172,11 +233,11 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                     sharpenedAmp *= 0.3; 
                 }
 
-                const colorHex = getToneColor(freq);
+                const { color } = getToneColor(freq);
                 const alpha = Math.min(1, sharpenedAmp * sensitivity);
                 
                 if (alpha > 0.05) { // Only draw if visible
-                    newColumn.push({ y, color: colorHex, alpha });
+                    newColumn.push({ y, color, alpha, freq });
                 }
             }
         }
@@ -185,7 +246,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       // Add to history (unshift adds to beginning)
       historyRef.current.unshift(newColumn);
       
-      // Trim history to screen width
+      // Trim history to screen width (or depth for 3D)
       if (historyRef.current.length > w) {
           historyRef.current.length = w;
       }
@@ -195,23 +256,90 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, w, h);
       
-      // Draw all columns
-      // We want history[0] (newest) at the RIGHT edge (x=w)
-      // history[1] at w-1, etc.
-      
-      for (let i = 0; i < historyRef.current.length; i++) {
-          const col = historyRef.current[i];
-          const x = w - 1 - i; // Newest at right edge
+      if (is3D) {
+          // 3D TUNNEL MODE
+          const cx = w / 2;
+          const cy = h / 2;
           
-          if (x < 0) break;
+          // Draw from back (oldest) to front (newest)
+          // Limit depth to avoid infinite density at center
+          const maxDepth = Math.min(historyRef.current.length, 200); 
           
-          for (const pixel of col) {
-             ctx.fillStyle = pixel.color;
-             ctx.globalAlpha = pixel.alpha;
-             // Draw smaller pixels for sharper look
-             ctx.fillRect(x, pixel.y, 2, 2); 
+          for (let i = maxDepth - 1; i >= 0; i--) {
+              const col = historyRef.current[i];
+              
+              // Progress 0 (newest) to 1 (oldest)
+              // But we want Newest at CENTER (far) and Oldest at EDGE (close) ?
+              // Actually "Tunnel" usually means we fly INTO it. 
+              // So newest data appears at CENTER and expands OUTWARDS.
+              // So i=0 (newest) -> scale=0 (center)
+              // i=maxDepth -> scale=1 (edge)
+              
+              const progress = i / maxDepth; // 0 to 1
+              
+              // Exponential scale for speed sensation
+              const scale = Math.pow(progress, 2) * 5; // *5 to go beyond screen
+              
+              if (scale < 0.01) continue;
+              
+              // Calculate opacity fade for distance
+              // Center (newest) should be dim? Or bright?
+              // Usually things fade into distance.
+              // So i=0 (center) -> alpha=0
+              // i=maxDepth (close) -> alpha=1
+              // Wait, that means newest data is invisible.
+              // Let's do: Bright at center, fade at edges?
+              // Or just uniform brightness?
+              // Let's try: Fade in at center (0->0.1), Bright mid (0.5), Fade out edge (1.0)
+              
+              const depthAlpha = 1.0; // Keep full brightness for now
+              
+              for (const pixel of col) {
+                  // Map Frequency Y (0-1) to Angle (0-2PI)
+                  // Star Wars Hyperspace style
+                  
+                  // Map freq range to 0-360 degrees
+                  const minF = 65.41;
+                  const maxF = zoomed ? 600 : 1200;
+                  const logF = Math.log(pixel.freq);
+                  const logMin = Math.log(minF);
+                  const logMax = Math.log(maxF);
+                  const normF = (logF - logMin) / (logMax - logMin); // 0 to 1
+                  
+                  const angle = normF * Math.PI * 2 - Math.PI / 2; // Start at top
+                  
+                  const r = scale * (Math.min(w, h) / 2);
+                  
+                  const px = cx + Math.cos(angle) * r;
+                  const py = cy + Math.sin(angle) * r;
+                  
+                  // Size grows with proximity
+                  const size = Math.max(2, scale * 10);
+                  
+                  ctx.fillStyle = pixel.color;
+                  ctx.globalAlpha = pixel.alpha * depthAlpha;
+                  ctx.beginPath();
+                  ctx.arc(px, py, size / 2, 0, Math.PI * 2);
+                  ctx.fill();
+              }
+          }
+      } else {
+          // 2D CLASSIC MODE
+          for (let i = 0; i < historyRef.current.length; i++) {
+              const col = historyRef.current[i];
+              const x = w - 1 - i; // Newest at right edge
+              
+              if (x < 0) break;
+              
+              for (const pixel of col) {
+                 ctx.fillStyle = pixel.color;
+                 ctx.globalAlpha = pixel.alpha;
+                 // Draw smaller pixels for sharper look
+                 ctx.fillRect(x, pixel.y, 2, 2); 
+              }
           }
       }
+      
       ctx.globalAlpha = 1.0;
       
       animationRef.current = requestAnimationFrame(draw);
@@ -231,7 +359,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       {/* Canvas Layer */}
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 w-full h-full" 
+        onClick={handleCanvasClick}
+        className="absolute inset-0 w-full h-full cursor-crosshair" 
       />
       
       {/* Overlay UI */}
@@ -241,9 +370,20 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         <div className="flex justify-between items-start pointer-events-auto">
             <div>
                 <h2 className="text-2xl font-bold tracking-widest uppercase text-white/80 drop-shadow-md">Live Spektrum</h2>
-                <p className="text-sm text-white/50 drop-shadow-md">MDI Sharpened Mode (Peaks Only)</p>
+                <p className="text-sm text-white/50 drop-shadow-md">
+                    {is3DMode ? "MDI Hyper-Tunnel Mode" : "MDI Sharpened Mode (Peaks Only)"}
+                </p>
             </div>
             <div className="flex gap-4">
+                 <Button 
+                    onClick={toggle3D}
+                    variant="outline"
+                    className="rounded-full px-4 border-white/20 text-white hover:bg-white/10"
+                    title={is3DMode ? "Switch to 2D View" : "Switch to 3D Tunnel"}
+                >
+                    {is3DMode ? <Layers className="h-4 w-4 mr-2" /> : <Box className="h-4 w-4 mr-2" />}
+                    {is3DMode ? "2D View" : "3D Tunnel"}
+                </Button>
                  <Button 
                     onClick={toggleZoom}
                     variant="outline"
@@ -252,6 +392,15 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                 >
                     {isZoomed ? <Minimize className="h-4 w-4 mr-2" /> : <Maximize className="h-4 w-4 mr-2" />}
                     {isZoomed ? "Vocal Zoom" : "Full Range"}
+                </Button>
+                <Button 
+                    onClick={takeSnapshot}
+                    variant="outline"
+                    className="rounded-full px-4 border-white/20 text-white hover:bg-white/10"
+                    title="Take Snapshot"
+                >
+                    <Camera className="h-4 w-4 mr-2" />
+                    Snapshot
                 </Button>
                  <Button 
                     onClick={() => {
@@ -269,27 +418,29 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
             </div>
         </div>
         
-        {/* Frequency Labels (Left) */}
-        <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col justify-between h-3/4 text-xs text-white/40 font-mono select-none pointer-events-none">
-            {isZoomed ? (
-                <>
-                    <span>C5 (High)</span>
-                    <span>G4</span>
-                    <span>C4 (Mid)</span>
-                    <span>G3</span>
-                    <span>C3 (Low)</span>
-                    <span>C2 (Deep)</span>
-                </>
-            ) : (
-                <>
-                    <span>C6 (High)</span>
-                    <span>C5</span>
-                    <span>C4 (Mid)</span>
-                    <span>C3</span>
-                    <span>C2 (Deep)</span>
-                </>
-            )}
-        </div>
+        {/* Frequency Labels (Left) - Only in 2D */}
+        {!is3DMode && (
+            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col justify-between h-3/4 text-xs text-white/40 font-mono select-none pointer-events-none">
+                {isZoomed ? (
+                    <>
+                        <span>C5 (High)</span>
+                        <span>G4</span>
+                        <span>C4 (Mid)</span>
+                        <span>G3</span>
+                        <span>C3 (Low)</span>
+                        <span>C2 (Deep)</span>
+                    </>
+                ) : (
+                    <>
+                        <span>C6 (High)</span>
+                        <span>C5</span>
+                        <span>C4 (Mid)</span>
+                        <span>C3</span>
+                        <span>C2 (Deep)</span>
+                    </>
+                )}
+            </div>
+        )}
 
         {/* Controls (Bottom Center) */}
         <div className="pointer-events-auto self-center bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-white/10 flex gap-8 transition-opacity duration-300 hover:opacity-100 opacity-50 mb-8">
@@ -321,6 +472,30 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
             </motion.div>
         </div>
       )}
+
+      {/* Hover Info Tooltip */}
+      <AnimatePresence>
+        {hoverInfo && (
+            <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="absolute z-50 pointer-events-none bg-black/80 backdrop-blur border border-white/20 rounded-lg p-3 text-white shadow-xl"
+                style={{ 
+                    left: hoverInfo.x + 20, 
+                    top: hoverInfo.y - 20 
+                }}
+            >
+                <div className="flex items-center gap-2 mb-1">
+                    <Info className="h-4 w-4 text-orange-500" />
+                    <span className="font-bold text-lg">{hoverInfo.tone}</span>
+                </div>
+                <div className="text-xs text-gray-300 font-mono">
+                    {hoverInfo.freq.toFixed(2)} Hz
+                </div>
+            </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
