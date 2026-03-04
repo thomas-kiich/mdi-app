@@ -11,6 +11,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const scanXRef = useRef(0); // Current X position of the scanner
   
   // Settings Refs (for access in loop)
   const sensitivityRef = useRef(3.0); // High Contrast
@@ -103,9 +104,12 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
-    // Fill pure black initially
-    ctx.fillStyle = 'black';
+    // Initial Clear - Dark Blue for Cache Busting/Verification
+    ctx.fillStyle = '#000011'; // Very dark blue, almost black
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Reset scanner position
+    scanXRef.current = 0;
 
     const bufferLength = analyserRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
@@ -118,6 +122,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       const speed = speedRef.current;
       const sensitivity = sensitivityRef.current;
       const zoomed = isZoomedRef.current;
+      const w = canvas.width;
+      const h = canvas.height;
 
       // Frequency Range Configuration
       const minFreq = 65.41; // C2
@@ -125,68 +131,64 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       const minLog = Math.log(minFreq);
       const maxLog = Math.log(maxFreq);
       
-      // 1. Shift existing image to the left
-      try {
-          const w = canvas.width;
-          const h = canvas.height;
-          
-          if (w > speed) {
-            const imageData = ctx.getImageData(speed, 0, w - speed, h);
-            ctx.putImageData(imageData, 0, 0);
-          }
-          
-          // Clear the new strip on the right with PURE BLACK
-          ctx.fillStyle = 'black';
-          ctx.fillRect(w - speed, 0, speed, h);
-          
-          // 2. Draw new frequency column (Light on Black)
-          // Iterate Y-axis pixels (Bottom=Low, Top=High)
-          for (let y = 0; y < h; y += 1) {
-            // Normalized Y (0 at top, 1 at bottom)
-            // We want High Freq at Top (y=0)
-            const normY = y / h;
-            const invertedNormY = 1 - normY;
-            
-            const freq = Math.exp(minLog + invertedNormY * (maxLog - minLog));
-            
-            // Get Amplitude from FFT
-            const sampleRate = audioContextRef.current?.sampleRate || 44100;
-            const nyquist = sampleRate / 2;
-            const fftIndex = Math.floor((freq / nyquist) * bufferLength);
-            
-            if (fftIndex < dataArray.length) {
-                let amplitude = dataArray[fftIndex];
-                
-                // HIGH FREQUENCY BOOST (Spectral Tilt Correction)
-                if (freq > 200) {
-                    const boostFactor = 1 + (freq - 200) / 400; // Linear boost
-                    amplitude = Math.min(255, amplitude * boostFactor);
-                }
+      // Clear the column we are about to draw on (Eraser bar)
+      // This creates the "Radar Scanner" effect
+      ctx.globalCompositeOperation = 'source-over'; // Normal drawing for clearing
+      ctx.fillStyle = '#000000'; // Pure Black
+      // Clear a slightly wider strip to remove old data
+      ctx.fillRect(scanXRef.current, 0, speed + 1, h);
+      
+      // Set Additive Mixing for Light Painting
+      ctx.globalCompositeOperation = 'lighter';
 
-                // HIGH NOISE GATE (Deep Black Mode)
-                // Threshold increased to 40 to cut background noise completely
-                if (amplitude > 40) { 
-                    // Get Color
-                    const colorHex = getToneColor(freq);
-                    
-                    // Parse Hex
-                    const r = parseInt(colorHex.slice(1, 3), 16);
-                    const g = parseInt(colorHex.slice(3, 5), 16);
-                    const b = parseInt(colorHex.slice(5, 7), 16);
-                    
-                    // Alpha based on amplitude
-                    // Strong exponential curve for high contrast
-                    const normalizedAmp = (amplitude - 40) / (255 - 40); // Normalize active range
-                    const alpha = Math.min(1, Math.pow(normalizedAmp, 2) * sensitivity);
-                    
-                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                    // Draw slightly larger rect for blur effect
-                    ctx.fillRect(w - speed, y, speed, 2); 
-                }
+      // Draw new frequency column at current scan position
+      for (let y = 0; y < h; y += 1) {
+        // Normalized Y (0 at top, 1 at bottom)
+        const normY = y / h;
+        const invertedNormY = 1 - normY;
+        
+        const freq = Math.exp(minLog + invertedNormY * (maxLog - minLog));
+        
+        // Get Amplitude from FFT
+        const sampleRate = audioContextRef.current?.sampleRate || 44100;
+        const nyquist = sampleRate / 2;
+        const fftIndex = Math.floor((freq / nyquist) * bufferLength);
+        
+        if (fftIndex < dataArray.length) {
+            let amplitude = dataArray[fftIndex];
+            
+            // HIGH FREQUENCY BOOST
+            if (freq > 200) {
+                const boostFactor = 1 + (freq - 200) / 400; 
+                amplitude = Math.min(255, amplitude * boostFactor);
             }
-          }
-      } catch (e) {
-          console.error("Canvas error:", e);
+
+            // HIGH NOISE GATE
+            if (amplitude > 40) { 
+                const colorHex = getToneColor(freq);
+                
+                const r = parseInt(colorHex.slice(1, 3), 16);
+                const g = parseInt(colorHex.slice(3, 5), 16);
+                const b = parseInt(colorHex.slice(5, 7), 16);
+                
+                const normalizedAmp = (amplitude - 40) / (255 - 40);
+                const alpha = Math.min(1, Math.pow(normalizedAmp, 2) * sensitivity);
+                
+                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                ctx.fillRect(scanXRef.current, y, speed, 2); 
+            }
+        }
+      }
+      
+      // Draw Scanner Line (Green indicator)
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = 'rgba(0, 255, 0, 0.5)';
+      ctx.fillRect(scanXRef.current + speed, 0, 2, h);
+
+      // Move Scanner
+      scanXRef.current += speed;
+      if (scanXRef.current >= w) {
+          scanXRef.current = 0;
       }
       
       animationRef.current = requestAnimationFrame(draw);
@@ -216,7 +218,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         <div className="flex justify-between items-start pointer-events-auto">
             <div>
                 <h2 className="text-2xl font-light tracking-widest uppercase text-white drop-shadow-md">Spektral-Scanner</h2>
-                <p className="text-sm text-gray-400 drop-shadow-md">Deep Black Mode</p>
+                <p className="text-sm text-gray-400 drop-shadow-md">Radar Mode (Additive)</p>
             </div>
             <div className="flex gap-4">
                  <Button 

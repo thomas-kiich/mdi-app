@@ -64,10 +64,14 @@
 - [x] **Debug**:
   - [x] **Fix Subtractive Logic**: Ensure no black pixels are drawn over active colors.
   - [x] **Ensure Additive Drawing**: Only draw colors where signal > threshold.
-- [ ] **Rewrite Rendering**:
-  - [ ] **Discard Shift Logic**: Remove `putImageData` based scrolling which may carry artifacts.
-  - [ ] **Explicit Buffer**: Implement a robust manual buffer or circular drawing.
-  - [ ] **Force Black**: Explicitly clear background to black before drawing.
+- [x] **Rewrite Rendering**:
+  - [x] **Discard Shift Logic**: Remove `putImageData` based scrolling which may carry artifacts.
+  - [x] **Explicit Buffer**: Implement a robust manual buffer or circular drawing.
+  - [x] **Force Black**: Explicitly clear background to black before drawing.
+- [ ] **Overhaul: Radar Scanner Mode**:
+  - [ ] **Moving Scanline**: Draw a vertical line moving L->R instead of shifting image.
+  - [ ] **Additive Mixing**: Use `globalCompositeOperation = 'lighter'`.
+  - [ ] **Cache Busting**: Use dark blue background temporarily to verify update.
 
 ## General
 - [x] Fix audio playback
