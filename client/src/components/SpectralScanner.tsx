@@ -138,10 +138,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       // Clear a slightly wider strip to remove old data
       ctx.fillRect(scanXRef.current, 0, speed + 1, h);
       
-      // Set Additive Mixing for Light Painting
-      ctx.globalCompositeOperation = 'lighter';
-
       // Draw new frequency column at current scan position
+      // Using standard 'source-over' to ensure no weird mixing
       for (let y = 0; y < h; y += 1) {
         // Normalized Y (0 at top, 1 at bottom)
         const normY = y / h;
@@ -174,8 +172,11 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                 const normalizedAmp = (amplitude - 40) / (255 - 40);
                 const alpha = Math.min(1, Math.pow(normalizedAmp, 2) * sensitivity);
                 
-                ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
-                ctx.fillRect(scanXRef.current, y, speed, 2); 
+                // Draw only if alpha is significant
+                if (alpha > 0.05) {
+                    ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                    ctx.fillRect(scanXRef.current, y, speed, 2); 
+                }
             }
         }
       }

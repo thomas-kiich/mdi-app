@@ -75,9 +75,13 @@
 - [x] **Red Alert Test**:
   - [x] **Force Red Background**: Set background to bright red to confirm update propagation.
   - [x] **Version Label**: Add 'VERSION TEST' label.
-- [ ] **Finalize**:
-  - [ ] **Revert Red Alert**: Set background back to Deep Black (#000000).
-  - [ ] **Remove Test Label**: Clean up UI.
+- [x] **Finalize**:
+  - [x] **Revert Red Alert**: Set background back to Deep Black (#000000).
+  - [x] **Remove Test Label**: Clean up UI.
+- [ ] **Fix Inverted Visualization**:
+  - [ ] **Remove Compositing**: Switch from `lighter` to `source-over`.
+  - [ ] **Strict Drawing**: Only draw colored pixels where amplitude > threshold.
+  - [ ] **Clear Background**: Ensure canvas is cleared with black before each scan step.
 
 ## General
 - [x] Fix audio playback
