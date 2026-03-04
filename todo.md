@@ -48,11 +48,15 @@
   - [x] Add a "Live Spektrum" button to the main menu.
   - [x] Create a modal or dedicated view for the scanner.
   - [x] Ensure microphone permissions are handled correctly.
-- [ ] **Refine `SpectralScanner.tsx`**:
-  - [ ] **Vocal Zoom**: Change default frequency range to C2 (65Hz) - C5 (523Hz) to focus on human voice.
-  - [ ] **Slow Motion**: Set default scroll speed to 1px/frame.
-  - [ ] **High-Frequency Boost**: Implement spectral tilt correction (+3dB/octave) to make high notes visible.
-  - [ ] **Organic Blur**: Add vertical blur to smooth out frequency bins.
+- [x] **Refine `SpectralScanner.tsx`**:
+  - [x] **Vocal Zoom**: Change default frequency range to C2 (65Hz) - C5 (523Hz) to focus on human voice.
+  - [x] **Slow Motion**: Set default scroll speed to 1px/frame.
+  - [x] **High-Frequency Boost**: Implement spectral tilt correction (+3dB/octave) to make high notes visible.
+  - [x] **Organic Blur**: Add vertical blur to smooth out frequency bins.
+- [ ] **Implement 'Deep Black' Mode**:
+  - [ ] **High Noise Gate**: Increase amplitude threshold significantly (e.g., from 10 to 40) to filter background noise.
+  - [ ] **Contrast Boost**: Increase opacity curve for active frequencies.
+  - [ ] **Clear Background**: Ensure canvas fill is pure black (#000000) every frame.
 
 ## General
 - [x] Fix audio playback
