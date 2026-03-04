@@ -61,9 +61,13 @@
   - [x] **Pure Black Background**: Remove any fill logic that creates "holes".
   - [x] **Additive Color**: Only draw pixels where FFT amplitude > threshold.
   - [x] **Result**: "Painting with light" on a black canvas.
-- [ ] **Debug**:
-  - [ ] **Fix Subtractive Logic**: Ensure no black pixels are drawn over active colors.
-  - [ ] **Ensure Additive Drawing**: Only draw colors where signal > threshold.
+- [x] **Debug**:
+  - [x] **Fix Subtractive Logic**: Ensure no black pixels are drawn over active colors.
+  - [x] **Ensure Additive Drawing**: Only draw colors where signal > threshold.
+- [ ] **Rewrite Rendering**:
+  - [ ] **Discard Shift Logic**: Remove `putImageData` based scrolling which may carry artifacts.
+  - [ ] **Explicit Buffer**: Implement a robust manual buffer or circular drawing.
+  - [ ] **Force Black**: Explicitly clear background to black before drawing.
 
 ## General
 - [x] Fix audio playback
