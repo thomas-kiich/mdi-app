@@ -24,7 +24,7 @@
 - [x] Implement "Ganzheit" (Wholeness) view mode
 - [x] Implement "Art Mode" (Seelenbild) visualization
 - [x] Implement Vision Mode interface
-- [x] Implement 7-day longitudinal study logic
+- [x] Implement 7-Day Longitudinal Measurement Logic
 - [x] Implement Interpretation Framework (Deutung)
 - [x] Implement Interactive Connection Story (Initial Version)
 - [x] Refine Connection Story (Slower, Meditative, Pointillism)
@@ -78,10 +78,14 @@
 - [x] **Finalize**:
   - [x] **Revert Red Alert**: Set background back to Deep Black (#000000).
   - [x] **Remove Test Label**: Clean up UI.
-- [ ] **Fix Inverted Visualization**:
-  - [ ] **Remove Compositing**: Switch from `lighter` to `source-over`.
-  - [ ] **Strict Drawing**: Only draw colored pixels where amplitude > threshold.
-  - [ ] **Clear Background**: Ensure canvas is cleared with black before each scan step.
+- [x] **Fix Inverted Visualization**:
+  - [x] **Remove Compositing**: Switch from `lighter` to `source-over`.
+  - [x] **Strict Drawing**: Only draw colored pixels where amplitude > threshold.
+  - [x] **Clear Background**: Ensure canvas is cleared with black before each scan step.
+- [ ] **Implement Hard Cut Debug Mode**:
+  - [ ] **High Threshold**: Increase amplitude threshold to 100.
+  - [ ] **Disable Boost**: Remove high-frequency boost.
+  - [ ] **Linear Mapping**: Use linear amplitude mapping.
 
 ## General
 - [x] Fix audio playback

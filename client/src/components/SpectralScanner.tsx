@@ -14,7 +14,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const scanXRef = useRef(0); // Current X position of the scanner
   
   // Settings Refs (for access in loop)
-  const sensitivityRef = useRef(3.0); // High Contrast
+  const sensitivityRef = useRef(5.0); // Default sensitivity
   const speedRef = useRef(1); // Slow Motion Default (1px per frame)
   const [isZoomed, setIsZoomed] = useState(true); // Vocal Zoom Default
   const isZoomedRef = useRef(true);
@@ -56,7 +56,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       
       const analyser = audioCtx.createAnalyser();
       analyser.fftSize = 4096; // Higher resolution for better low-end detail
-      analyser.smoothingTimeConstant = 0.2; // Smooth out jitter
+      analyser.smoothingTimeConstant = 0.1; // Less smoothing for faster response
       analyserRef.current = analyser;
       
       const source = audioCtx.createMediaStreamSource(stream);
@@ -155,25 +155,23 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         if (fftIndex < dataArray.length) {
             let amplitude = dataArray[fftIndex];
             
-            // HIGH FREQUENCY BOOST
-            if (freq > 200) {
-                const boostFactor = 1 + (freq - 200) / 400; 
-                amplitude = Math.min(255, amplitude * boostFactor);
-            }
-
-            // HIGH NOISE GATE
-            if (amplitude > 40) { 
+            // REMOVED HIGH FREQUENCY BOOST - PURE SIGNAL ONLY
+            
+            // HARD CUT NOISE GATE
+            // Only draw if signal is significantly loud
+            if (amplitude > 80) { 
                 const colorHex = getToneColor(freq);
                 
                 const r = parseInt(colorHex.slice(1, 3), 16);
                 const g = parseInt(colorHex.slice(3, 5), 16);
                 const b = parseInt(colorHex.slice(5, 7), 16);
                 
-                const normalizedAmp = (amplitude - 40) / (255 - 40);
-                const alpha = Math.min(1, Math.pow(normalizedAmp, 2) * sensitivity);
+                // Linear alpha mapping for sharpness
+                const normalizedAmp = (amplitude - 80) / (255 - 80);
+                const alpha = Math.min(1, normalizedAmp * sensitivity);
                 
                 // Draw only if alpha is significant
-                if (alpha > 0.05) {
+                if (alpha > 0.1) {
                     ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
                     ctx.fillRect(scanXRef.current, y, speed, 2); 
                 }
@@ -209,7 +207,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       {/* Canvas Layer */}
       <canvas 
         ref={canvasRef} 
-        className="absolute inset-0 w-full h-full filter blur-[1px]" // CSS Blur for organic feel
+        className="absolute inset-0 w-full h-full" // Removed blur for sharpness
       />
       
       {/* Overlay UI */}
@@ -219,7 +217,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
         <div className="flex justify-between items-start pointer-events-auto">
             <div>
                 <h2 className="text-2xl font-bold tracking-widest uppercase text-white/80 drop-shadow-md">Live Spektrum</h2>
-                <p className="text-sm text-white/50 drop-shadow-md">MDI Radar Scan</p>
+                <p className="text-sm text-white/50 drop-shadow-md">MDI Radar Scan (Hard Cut Mode)</p>
             </div>
             <div className="flex gap-4">
                  <Button 
@@ -275,7 +273,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                     min="1" 
                     max="10" 
                     step="0.5" 
-                    defaultValue="3.0"
+                    defaultValue="5.0"
                     onChange={(e) => sensitivityRef.current = parseFloat(e.target.value)}
                     className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-white"
                 />
