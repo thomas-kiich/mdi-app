@@ -53,10 +53,14 @@
   - [x] **Slow Motion**: Set default scroll speed to 1px/frame.
   - [x] **High-Frequency Boost**: Implement spectral tilt correction (+3dB/octave) to make high notes visible.
   - [x] **Organic Blur**: Add vertical blur to smooth out frequency bins.
-- [ ] **Implement 'Deep Black' Mode**:
-  - [ ] **High Noise Gate**: Increase amplitude threshold significantly (e.g., from 10 to 40) to filter background noise.
-  - [ ] **Contrast Boost**: Increase opacity curve for active frequencies.
-  - [ ] **Clear Background**: Ensure canvas fill is pure black (#000000) every frame.
+- [x] **Implement 'Deep Black' Mode**:
+  - [x] **High Noise Gate**: Increase amplitude threshold significantly (e.g., from 10 to 40) to filter background noise.
+  - [x] **Contrast Boost**: Increase opacity curve for active frequencies.
+  - [x] **Clear Background**: Ensure canvas fill is pure black (#000000) every frame.
+- [ ] **Invert Logic**:
+  - [ ] **Pure Black Background**: Remove any fill logic that creates "holes".
+  - [ ] **Additive Color**: Only draw pixels where FFT amplitude > threshold.
+  - [ ] **Result**: "Painting with light" on a black canvas.
 
 ## General
 - [x] Fix audio playback

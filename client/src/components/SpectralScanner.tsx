@@ -139,7 +139,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
           ctx.fillStyle = 'black';
           ctx.fillRect(w - speed, 0, speed, h);
           
-          // 2. Draw new frequency column
+          // 2. Draw new frequency column (Light on Black)
           // Iterate Y-axis pixels (Bottom=Low, Top=High)
           for (let y = 0; y < h; y += 1) {
             // Normalized Y (0 at top, 1 at bottom)
