@@ -808,6 +808,15 @@ export default function Home() {
 
                 <Button 
                   size="lg"
+                  className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+                  onClick={() => setShowSpectralScanner(true)}
+                >
+                  <Activity className="mr-2 h-4 w-4" />
+                  Live-Scanner & Training
+                </Button>
+
+                <Button 
+                  size="lg"
                   className="rounded-full bg-orange-500 hover:bg-orange-600 text-white"
                 >
                   <Download className="mr-2 h-4 w-4" />

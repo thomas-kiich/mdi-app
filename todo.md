@@ -132,3 +132,8 @@
   - [ ] Implement audio synthesis for the specific fundamental tone during the "Shrink" phase (3 beats).
   - [ ] Add a subtle "heartbeat" sound on every beat.
   - [ ] Integrate "Start Training" button in `SpectralScanner.tsx` that passes the detected frequency to the trainer.
+
+- [ ] **Link Analysis Result to Live Scanner**:
+  - [ ] Locate the Analysis Result component/page.
+  - [ ] Add a "Weiter zum Live-Scanner & Training" button.
+  - [ ] Ensure the button opens the `SpectralScanner` component.
