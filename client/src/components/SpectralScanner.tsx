@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square, Sparkles, Heart } from "lucide-react";
+import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square, Sparkles, Heart, Activity } from "lucide-react";
 import { TONES } from "@/lib/tones";
 import { useLocation } from 'wouter';
 import { Method36Trainer } from "@/components/Method36Trainer";
@@ -69,11 +69,17 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   // --- AUDIO SYNTHESIS ---
   const playHarmonicTone = (frequency: number) => {
       // Initialize AudioContext if needed
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!synthContextRef.current) {
-          synthContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+          synthContextRef.current = new AudioContextClass();
       }
       const ctx = synthContextRef.current;
       if (!ctx) return;
+      
+      // Resume if suspended
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
 
       // Stop previous if any
       stopHarmonicTone();
@@ -174,7 +180,14 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const audioCtx = new AudioContextClass();
+      
+      // Resume context if suspended (common browser policy issue)
+      if (audioCtx.state === 'suspended') {
+        await audioCtx.resume();
+      }
+      
       audioContextRef.current = audioCtx;
       
       const analyser = audioCtx.createAnalyser();
@@ -262,13 +275,16 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       
       const { tone, color } = getToneColor(freq);
       
+      // Ensure color is valid hex
+      const safeColor = color && color.startsWith('#') ? color : '#ffffff';
+      
       setHoverInfo({
           x: e.clientX,
           y: e.clientY,
           freq: freq,
           tone: tone,
           note: tone, // Simplified
-          color: color
+          color: safeColor
       });
       
       // Auto-hide after 5 seconds (longer to allow clicking Play)
@@ -288,6 +304,10 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     
+    // FORCE BLACK BACKGROUND INITIALIZATION
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
     const bufferLength = analyserRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
     
@@ -302,8 +322,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       const w = canvas.width;
       const h = canvas.height;
 
-      // 1. Process New Column
-      const newColumn: { y: number, color: string, alpha: number, freq: number }[] = [];
+      // 1. Process New Column (or Slice for 3D)
+      const newColumn: { y: number, color: string, alpha: number, freq: number, x?: number, yPos?: number, size?: number }[] = [];
       
       const minFreq = 65.41; // C2
       const maxFreq = zoomed ? 600 : 1200; // C5 vs C6 approx
@@ -363,12 +383,14 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       historyRef.current.unshift(newColumn);
       
       // Trim history to screen width (or depth for 3D)
-      if (historyRef.current.length > w) {
-          historyRef.current.length = w;
+      // For 3D we need more depth
+      const maxHistory = is3D ? 300 : w;
+      if (historyRef.current.length > maxHistory) {
+          historyRef.current.length = maxHistory;
       }
       
       // 2. Redraw Full Canvas from History
-      // Clear with Black
+      // Clear with Black - FORCE CLEAR
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, w, h);
       
@@ -383,16 +405,25 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
           
           for (let i = maxDepth - 1; i >= 0; i--) {
               const col = historyRef.current[i];
-              
+              if (!col) continue;
+
               // Progress 0 (newest) to 1 (oldest)
               const progress = i / maxDepth; // 0 to 1
               
               // Exponential scale for speed sensation
-              const scale = Math.pow(progress, 2) * 5; // *5 to go beyond screen
+              // Newest is at progress 0 -> scale 1 (full screen)
+              // Oldest is at progress 1 -> scale 0 (center)
+              // Wait, tunnel moves towards us? Or we move into it?
+              // Standard: Newest is far away, coming towards us?
+              // Or Newest is ring around us, moving away?
+              // Let's make newest = outer ring (scale 1), moving to center (scale 0)
+              // So progress 0 = scale 1. Progress 1 = scale 0.
+              
+              const scale = 1 - Math.pow(progress, 0.5); // Sqrt curve for speed
               
               if (scale < 0.01) continue;
               
-              const depthAlpha = 1.0; // Keep full brightness for now
+              const depthAlpha = scale; // Fade out at center
               
               for (const pixel of col) {
                   // Map Frequency Y (0-1) to Angle (0-2PI)
@@ -408,13 +439,16 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                   
                   const angle = normF * Math.PI * 2 - Math.PI / 2; // Start at top
                   
-                  const r = scale * (Math.min(w, h) / 2);
+                  // Radius based on scale
+                  // Scale 1 = fills screen
+                  const maxR = Math.min(w, h) / 2;
+                  const r = scale * maxR * 1.5; // *1.5 to go off screen
                   
                   const px = cx + Math.cos(angle) * r;
                   const py = cy + Math.sin(angle) * r;
                   
-                  // Size grows with proximity
-                  const size = Math.max(2, scale * 10);
+                  // Size shrinks with distance (scale)
+                  const size = Math.max(2, scale * 8);
                   
                   ctx.fillStyle = pixel.color;
                   ctx.globalAlpha = pixel.alpha * depthAlpha;
@@ -425,8 +459,12 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
           }
       } else {
           // 2D CLASSIC MODE
+          // Optimized: Draw image shift? No, history redraw is safer for clean black bg
+          
           for (let i = 0; i < historyRef.current.length; i++) {
               const col = historyRef.current[i];
+              if (!col) continue;
+              
               const x = w - 1 - i; // Newest at right edge
               
               if (x < 0) break;
@@ -447,199 +485,140 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     
     draw();
   };
-  
-  // Cleanup
+
   useEffect(() => {
+    // Auto-start if permitted? No, wait for user.
     return () => {
-        stopAudio();
-        stopHarmonicTone();
+      stopAudio();
     };
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-black text-white font-sans overflow-hidden">
-      
+    <div className="fixed inset-0 z-50 bg-black text-white font-sans overflow-hidden">
       {/* Canvas Layer */}
       <canvas 
-        ref={canvasRef} 
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full cursor-crosshair touch-none"
         onClick={handleCanvasClick}
-        className="absolute inset-0 w-full h-full cursor-crosshair" 
       />
       
-      {/* Overlay UI */}
-      <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-6">
-        
-        {/* Header */}
-        <div className="flex justify-between items-start pointer-events-auto">
-            <div>
-                <h2 className="text-2xl font-bold tracking-widest uppercase text-white/80 drop-shadow-md">Live Spektrum</h2>
-                <p className="text-sm text-white/50 drop-shadow-md">
-                    {is3DMode ? "MDI Hyper-Tunnel Mode" : "MDI Sharpened Mode (Peaks Only)"}
-                </p>
-            </div>
-            <div className="flex gap-4">
-                 <Button 
-                    onClick={toggle3D}
-                    variant="outline"
-                    className="rounded-full px-4 border-white/20 text-white hover:bg-white/10"
-                    title={is3DMode ? "Switch to 2D View" : "Switch to 3D Tunnel"}
-                >
-                    {is3DMode ? <Layers className="h-4 w-4 mr-2" /> : <Box className="h-4 w-4 mr-2" />}
-                    {is3DMode ? "2D View" : "3D Tunnel"}
-                </Button>
-                 <Button 
-                    onClick={toggleZoom}
-                    variant="outline"
-                    className="rounded-full px-4 border-white/20 text-white hover:bg-white/10"
-                    title={isZoomed ? "Zoom Out (Full Range)" : "Zoom In (Vocal Range)"}
-                >
-                    {isZoomed ? <Minimize className="h-4 w-4 mr-2" /> : <Maximize className="h-4 w-4 mr-2" />}
-                    {isZoomed ? "Vocal Zoom" : "Full Range"}
-                </Button>
-                <Button 
-                    onClick={takeSnapshot}
-                    variant="outline"
-                    className="rounded-full px-4 border-white/20 text-white hover:bg-white/10"
-                    title="Take Snapshot"
-                >
-                    <Camera className="h-4 w-4 mr-2" />
-                    Snapshot
-                </Button>
-                 <Button 
-                    onClick={() => {
-                        if (isListening) stopAudio();
-                        else startAudio();
-                    }}
-                    variant={isListening ? "destructive" : "secondary"}
-                    className="rounded-full px-6 shadow-lg backdrop-blur-md bg-white/10 hover:bg-white/20 border border-white/20 text-white"
-                >
-                    {isListening ? <><MicOff className="mr-2 h-4 w-4" /> Stop</> : <><Mic className="mr-2 h-4 w-4" /> Start</>}
-                </Button>
-                <Button variant="ghost" size="icon" onClick={onClose} className="text-white/70 hover:text-white hover:bg-white/10 rounded-full">
-                    <X className="h-8 w-8" />
-                </Button>
+      {/* UI Overlay */}
+      <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start pointer-events-none">
+        <div className="pointer-events-auto flex gap-2">
+            <Button variant="outline" size="icon" onClick={onClose} className="rounded-full bg-black/50 border-white/20 hover:bg-white/10 text-white">
+                <X className="h-4 w-4" />
+            </Button>
+            <div className="bg-black/50 backdrop-blur px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
+                <div className={`w-2 h-2 rounded-full ${isListening ? 'bg-red-500 animate-pulse' : 'bg-zinc-500'}`} />
+                <span className="text-xs font-mono uppercase tracking-widest">
+                    {isListening ? 'LIVE SPEKTRUM' : 'BEREIT'}
+                </span>
             </div>
         </div>
-        
-        {/* Frequency Labels (Left) - Only in 2D */}
-        {!is3DMode && (
-            <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col justify-between h-3/4 text-xs text-white/40 font-mono select-none pointer-events-none">
-                {isZoomed ? (
-                    <>
-                        <span>C5 (High)</span>
-                        <span>G4</span>
-                        <span>C4 (Mid)</span>
-                        <span>G3</span>
-                        <span>C3 (Low)</span>
-                        <span>C2 (Deep)</span>
-                    </>
-                ) : (
-                    <>
-                        <span>C6 (High)</span>
-                        <span>C5</span>
-                        <span>C4 (Mid)</span>
-                        <span>C3</span>
-                        <span>C2 (Deep)</span>
-                    </>
-                )}
-            </div>
-        )}
 
-        {/* Controls (Bottom Center) */}
-        <div className="pointer-events-auto self-center bg-black/40 backdrop-blur-md px-8 py-4 rounded-full border border-white/10 flex gap-8 transition-opacity duration-300 hover:opacity-100 opacity-50 mb-8">
-             <div className="flex flex-col items-center gap-1">
-                <span className="text-[10px] text-gray-400 uppercase tracking-wider">Kontrast</span>
-                <input 
-                    type="range" 
-                    min="1" 
-                    max="10" 
-                    step="0.5" 
-                    defaultValue="5.0"
-                    onChange={(e) => sensitivityRef.current = parseFloat(e.target.value)}
-                    className="w-32 h-1 bg-gray-600 rounded-lg appearance-none cursor-pointer accent-white"
-                />
-             </div>
+        <div className="pointer-events-auto flex gap-2">
+            <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggle3D}
+                className={`rounded-full border-white/20 text-white ${is3DMode ? 'bg-orange-500 hover:bg-orange-600 border-orange-500' : 'bg-black/50 hover:bg-white/10'}`}
+            >
+                <Box className="mr-2 h-3 w-3" />
+                {is3DMode ? '3D Tunnel' : '2D Scan'}
+            </Button>
+            
+            <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleZoom}
+                className={`rounded-full border-white/20 text-white ${isZoomed ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' : 'bg-black/50 hover:bg-white/10'}`}
+            >
+                {isZoomed ? <Minimize className="mr-2 h-3 w-3" /> : <Maximize className="mr-2 h-3 w-3" />}
+                {isZoomed ? 'Vokal-Zoom' : 'Full Range'}
+            </Button>
+            
+            <Button 
+                variant="outline" 
+                size="icon" 
+                onClick={takeSnapshot}
+                className="rounded-full bg-black/50 border-white/20 hover:bg-white/10 text-white"
+                title="Snapshot speichern"
+            >
+                <Camera className="h-4 w-4" />
+            </Button>
         </div>
       </div>
-      
-      {/* Start Prompt */}
+
+      {/* Center Action Button */}
       {!isListening && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <motion.div 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }}
-                className="text-center text-white/30"
+            <Button 
+                size="lg" 
+                onClick={startAudio}
+                className="pointer-events-auto rounded-full w-24 h-24 bg-white text-black hover:bg-zinc-200 hover:scale-105 transition-all shadow-[0_0_50px_rgba(255,255,255,0.3)]"
             >
-                <Mic className="h-24 w-24 mx-auto mb-6 opacity-50" />
-                <p className="text-2xl font-light tracking-wide">Drücken Sie Start</p>
-            </motion.div>
+                <Mic className="h-8 w-8" />
+            </Button>
         </div>
       )}
 
-      {/* Hover Info Tooltip with Audio Playback */}
+      {/* Interactive Tooltip */}
       <AnimatePresence>
         {hoverInfo && (
             <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="absolute z-50 pointer-events-auto bg-black/90 backdrop-blur-xl border border-white/20 rounded-xl p-4 text-white shadow-2xl flex flex-col gap-3 min-w-[200px]"
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                className="absolute pointer-events-auto z-50 bg-black/80 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl w-64"
                 style={{ 
-                    left: Math.min(window.innerWidth - 220, hoverInfo.x + 20), 
-                    top: Math.min(window.innerHeight - 150, hoverInfo.y - 20) 
+                    left: Math.min(window.innerWidth - 270, Math.max(20, hoverInfo.x)), 
+                    top: Math.min(window.innerHeight - 300, Math.max(20, hoverInfo.y)) 
                 }}
             >
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Info className="h-4 w-4 text-orange-500" />
-                        <span className="font-bold text-lg">{hoverInfo.tone}</span>
+                <div className="flex justify-between items-start mb-4">
+                    <div>
+                        <div className="text-4xl font-bold text-white mb-1" style={{ color: hoverInfo.color }}>
+                            {hoverInfo.tone}
+                        </div>
+                        <div className="text-xs font-mono text-zinc-400">
+                            {hoverInfo.freq.toFixed(2)} Hz
+                        </div>
                     </div>
-                    <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-6 w-6 rounded-full hover:bg-white/10"
-                        onClick={() => setHoverInfo(null)}
-                    >
+                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-white/10" onClick={() => setHoverInfo(null)}>
                         <X className="h-3 w-3" />
                     </Button>
                 </div>
                 
-                <div className="text-xs text-gray-300 font-mono border-b border-white/10 pb-2 mb-1">
-                    {hoverInfo.freq.toFixed(2)} Hz
+                <div className="space-y-2">
+                    <Button 
+                        className="w-full bg-white/10 hover:bg-white/20 text-white border-0 justify-start"
+                        onClick={() => isPlayingTone ? stopHarmonicTone() : playHarmonicTone(hoverInfo.freq)}
+                    >
+                        {isPlayingTone ? (
+                            <>
+                                <Square className="mr-2 h-4 w-4 fill-current text-red-500" /> Stop
+                            </>
+                        ) : (
+                            <>
+                                <Play className="mr-2 h-4 w-4 fill-current" /> Tönen (12s)
+                            </>
+                        )}
+                    </Button>
+                    
+                    <Button 
+                        className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 justify-start"
+                        onClick={() => setTrainingMode({ freq: hoverInfo.freq, tone: hoverInfo.tone, color: hoverInfo.color })}
+                    >
+                        <Heart className="mr-2 h-4 w-4" /> Methode 36 Training
+                    </Button>
+                    
+                    <Button 
+                        className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 justify-start"
+                        onClick={() => setLocation('/animation')}
+                    >
+                        <Sparkles className="mr-2 h-4 w-4" /> Zur Animation
+                    </Button>
                 </div>
-
-                <Button 
-                    className={`w-full transition-all duration-500 ${isPlayingTone ? "bg-orange-500/20 text-orange-500 border-orange-500/50" : "bg-white/10 hover:bg-white/20"}`}
-                    variant="outline"
-                    onClick={() => {
-                        if (isPlayingTone) stopHarmonicTone();
-                        else playHarmonicTone(hoverInfo.freq);
-                    }}
-                >
-                    {isPlayingTone ? (
-                        <>
-                            <Square className="mr-2 h-4 w-4 fill-current animate-pulse" /> Stop
-                        </>
-                    ) : (
-                        <>
-                            <Play className="mr-2 h-4 w-4 fill-current" /> Tönen (12s)
-                        </>
-                    )}
-                </Button>
-                
-                <Button 
-                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0"
-                    onClick={() => setTrainingMode({ freq: hoverInfo.freq, tone: hoverInfo.tone, color: hoverInfo.color })}
-                >
-                    <Heart className="mr-2 h-4 w-4" /> Methode 36 Training
-                </Button>
-                
-                <Button 
-                    className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0"
-                    onClick={() => setLocation('/animation')}
-                >
-                    <Sparkles className="mr-2 h-4 w-4" /> Zur Animation
-                </Button>
             </motion.div>
         )}
       </AnimatePresence>

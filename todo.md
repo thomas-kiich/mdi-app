@@ -137,3 +137,9 @@
   - [ ] Locate the Analysis Result component/page.
   - [ ] Add a "Weiter zum Live-Scanner & Training" button.
   - [ ] Ensure the button opens the `SpectralScanner` component.
+
+- [ ] **Fix Audio Context and Scanner Visualization Errors**:
+  - [ ] Debug and fix AudioContext initialization issues (3 red errors).
+  - [ ] Hard-code black background and colored lines for scanner visualization to prevent inversion.
+  - [ ] Ensure "Method 36" button visibility even on minor errors.
+  - [ ] Verify `SpectralScanner.tsx` logic for error handling and cleanup.
