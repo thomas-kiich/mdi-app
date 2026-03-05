@@ -2,11 +2,16 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square, Sparkles, Heart, Activity } from "lucide-react";
-import { TONES } from "@/lib/tones";
+import { TONES, getToneFromFrequency } from "@/lib/tones";
 import { useLocation } from 'wouter';
 import { Method36Trainer } from "@/components/Method36Trainer";
 
-export function SpectralScanner({ onClose }: { onClose: () => void }) {
+interface SpectralScannerProps {
+    onClose: () => void;
+    forcedFrequency?: number; // Optional prop to force a specific frequency for training
+}
+
+export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerProps) {
   const [isListening, setIsListening] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
@@ -39,31 +44,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
 
   // Helper to get tone color
   const getToneColor = (freq: number) => {
-    // Normalize to one octave range (approx C4-B4: 261-523Hz) for comparison
-    let normFreq = freq;
-    // Avoid infinite loop for very low freqs
-    if (normFreq < 10) return { color: "#000000", tone: "" };
-    
-    while (normFreq < 261.63) normFreq *= 2;
-    while (normFreq > 523.25) normFreq /= 2;
-    
-    let minDiff = Infinity;
-    let closestColor = "#ffffff";
-    let closestTone = "";
-    
-    for (const t of TONES) {
-        let tFreq = t.frequency;
-        while (tFreq < 261.63) tFreq *= 2;
-        while (tFreq > 523.25) tFreq /= 2;
-        
-        const diff = Math.abs(normFreq - tFreq);
-        if (diff < minDiff) {
-            minDiff = diff;
-            closestColor = t.color;
-            closestTone = t.name;
-        }
-    }
-    return { color: closestColor, tone: closestTone };
+    const { tone } = getToneFromFrequency(freq);
+    return { color: tone.color, tone: tone.name };
   };
 
   // --- AUDIO SYNTHESIS ---
@@ -286,10 +268,6 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
           note: tone, // Simplified
           color: safeColor
       });
-      
-      // Auto-hide after 5 seconds (longer to allow clicking Play)
-      // Or remove auto-hide if user interacts?
-      // For now, let's keep it simple.
   };
 
   // Visualization Loop
@@ -297,341 +275,346 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
     const canvas = canvasRef.current;
     if (!canvas || !analyserRef.current) return;
     
-    const ctx = canvas.getContext('2d', { alpha: false }); // Optimize for no transparency
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     if (!ctx) return;
-    
-    // Set internal resolution matches window
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    
-    // FORCE BLACK BACKGROUND INITIALIZATION
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     const bufferLength = analyserRef.current.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
+    const sampleRate = audioContextRef.current?.sampleRate || 44100;
     
-    const draw = () => {
+    // Config
+    const width = canvas.width;
+    const height = canvas.height;
+    
+    // Logarithmic Scale Config
+    const minFreq = 65.41; // C2
+    const maxFreq = isZoomedRef.current ? 600 : 1200; // Zoomed: D5, Full: D6
+    const minLog = Math.log(minFreq);
+    const maxLog = Math.log(maxFreq);
+    const logRange = maxLog - minLog;
+
+    const render = () => {
       if (!analyserRef.current) return;
-      
       analyserRef.current.getByteFrequencyData(dataArray);
       
-      const sensitivity = sensitivityRef.current;
-      const zoomed = isZoomedRef.current;
-      const is3D = is3DModeRef.current;
-      const w = canvas.width;
-      const h = canvas.height;
+      // Clear with solid black (Crucial for fixing artifacts)
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, width, height);
 
-      // 1. Process New Column (or Slice for 3D)
-      const newColumn: { y: number, color: string, alpha: number, freq: number, x?: number, yPos?: number, size?: number }[] = [];
-      
-      const minFreq = 65.41; // C2
-      const maxFreq = zoomed ? 600 : 1200; // C5 vs C6 approx
-      const minLog = Math.log(minFreq);
-      const maxLog = Math.log(maxFreq);
-      
-      // Sample height pixels to create the column
-      for (let y = 0; y < h; y += 2) { // Step 2 for higher resolution
-        // Normalized Y (0 at top, 1 at bottom)
-        const normY = y / h;
-        // Invert so 1 is at top (high freq)
-        const invertedNormY = 1 - normY;
-        
-        const freq = Math.exp(minLog + invertedNormY * (maxLog - minLog));
-        
-        // Get Amplitude from FFT
-        const sampleRate = audioContextRef.current?.sampleRate || 44100;
-        const nyquist = sampleRate / 2;
-        const fftIndex = Math.floor((freq / nyquist) * bufferLength);
-        
-        if (fftIndex > 1 && fftIndex < dataArray.length - 2) {
-            let amplitude = dataArray[fftIndex];
-            
-            // Peak Detection: Check neighbors
-            const prev = dataArray[fftIndex - 1];
-            const next = dataArray[fftIndex + 1];
-            const isPeak = amplitude > prev && amplitude > next;
-
-            // Hard Cut Threshold
-            if (amplitude > 40) { 
-                
-                // Exponential Contrast: Sharpen the difference between loud and quiet
-                // Map 0-255 to 0-1
-                let normAmp = amplitude / 255;
-                
-                // Apply Power Curve (Contrast)
-                // pow(x, 3) makes 0.5 -> 0.125, but 0.9 -> 0.729
-                // This suppresses noise heavily
-                let sharpenedAmp = Math.pow(normAmp, 3);
-                
-                // Additional suppression for non-peaks (make them dimmer)
-                if (!isPeak) {
-                    sharpenedAmp *= 0.3; 
-                }
-
-                const { color } = getToneColor(freq);
-                const alpha = Math.min(1, sharpenedAmp * sensitivity);
-                
-                if (alpha > 0.05) { // Only draw if visible
-                    newColumn.push({ y, color, alpha, freq });
-                }
-            }
-        }
-      }
-      
-      // Add to history (unshift adds to beginning)
-      historyRef.current.unshift(newColumn);
-      
-      // Trim history to screen width (or depth for 3D)
-      // For 3D we need more depth
-      const maxHistory = is3D ? 300 : w;
-      if (historyRef.current.length > maxHistory) {
-          historyRef.current.length = maxHistory;
-      }
-      
-      // 2. Redraw Full Canvas from History
-      // Clear with Black - FORCE CLEAR
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, w, h);
-      
-      if (is3D) {
-          // 3D TUNNEL MODE
-          const cx = w / 2;
-          const cy = h / 2;
+      // --- 3D Tunnel Mode ---
+      if (is3DModeRef.current) {
+          // Tunnel Logic
+          const centerX = width / 2;
+          const centerY = height / 2;
+          const maxRadius = Math.min(width, height) * 0.8;
           
-          // Draw from back (oldest) to front (newest)
-          // Limit depth to avoid infinite density at center
-          const maxDepth = Math.min(historyRef.current.length, 200); 
+          // Add current frame data to history for depth
+          // We only store peaks to save performance
+          const peaks = [];
+          const threshold = 255 - (sensitivityRef.current * 40); // Dynamic threshold
           
-          for (let i = maxDepth - 1; i >= 0; i--) {
-              const col = historyRef.current[i];
-              if (!col) continue;
+          for (let i = 0; i < bufferLength; i++) {
+              const value = dataArray[i];
+              if (value > threshold) {
+                  const freq = i * sampleRate / (bufferLength * 2);
+                  if (freq >= minFreq && freq <= maxFreq) {
+                      const logPos = (Math.log(freq) - minLog) / logRange;
+                      // Map frequency to angle (0 to 2PI)
+                      const angle = logPos * Math.PI * 2;
+                      const { color } = getToneColor(freq);
+                      peaks.push({ angle, color, alpha: value / 255 });
+                  }
+              }
+          }
+          historyRef.current.unshift(peaks);
+          if (historyRef.current.length > 50) historyRef.current.pop(); // Depth limit
 
-              // Progress 0 (newest) to 1 (oldest)
-              const progress = i / maxDepth; // 0 to 1
+          // Draw Tunnel
+          historyRef.current.forEach((framePeaks, depthIndex) => {
+              const depthFactor = 1 - (depthIndex / 50); // 1 (near) to 0 (far)
+              const radius = maxRadius * Math.pow(depthFactor, 2); // Exponential depth
+              const nextRadius = maxRadius * Math.pow(1 - ((depthIndex + 1) / 50), 2);
               
-              // Exponential scale for speed sensation
-              // Newest is at progress 0 -> scale 1 (full screen)
-              // Oldest is at progress 1 -> scale 0 (center)
-              // Wait, tunnel moves towards us? Or we move into it?
-              // Standard: Newest is far away, coming towards us?
-              // Or Newest is ring around us, moving away?
-              // Let's make newest = outer ring (scale 1), moving to center (scale 0)
-              // So progress 0 = scale 1. Progress 1 = scale 0.
-              
-              const scale = 1 - Math.pow(progress, 0.5); // Sqrt curve for speed
-              
-              if (scale < 0.01) continue;
-              
-              const depthAlpha = scale; // Fade out at center
-              
-              for (const pixel of col) {
-                  // Map Frequency Y (0-1) to Angle (0-2PI)
-                  // Star Wars Hyperspace style
+              framePeaks.forEach((peak: any) => {
+                  const x = centerX + Math.cos(peak.angle) * radius;
+                  const y = centerY + Math.sin(peak.angle) * radius;
+                  const size = (peak.alpha * 10 * depthFactor) + 1;
                   
-                  // Map freq range to 0-360 degrees
-                  const minF = 65.41;
-                  const maxF = zoomed ? 600 : 1200;
-                  const logF = Math.log(pixel.freq);
-                  const logMin = Math.log(minF);
-                  const logMax = Math.log(maxF);
-                  const normF = (logF - logMin) / (logMax - logMin); // 0 to 1
-                  
-                  const angle = normF * Math.PI * 2 - Math.PI / 2; // Start at top
-                  
-                  // Radius based on scale
-                  // Scale 1 = fills screen
-                  const maxR = Math.min(w, h) / 2;
-                  const r = scale * maxR * 1.5; // *1.5 to go off screen
-                  
-                  const px = cx + Math.cos(angle) * r;
-                  const py = cy + Math.sin(angle) * r;
-                  
-                  // Size shrinks with distance (scale)
-                  const size = Math.max(2, scale * 8);
-                  
-                  ctx.fillStyle = pixel.color;
-                  ctx.globalAlpha = pixel.alpha * depthAlpha;
                   ctx.beginPath();
-                  ctx.arc(px, py, size / 2, 0, Math.PI * 2);
+                  ctx.arc(x, y, size, 0, Math.PI * 2);
+                  ctx.fillStyle = peak.color;
+                  ctx.globalAlpha = peak.alpha * depthFactor;
                   ctx.fill();
-              }
-          }
+                  ctx.globalAlpha = 1.0;
+              });
+          });
+
       } else {
-          // 2D CLASSIC MODE
-          // Optimized: Draw image shift? No, history redraw is safer for clean black bg
+          // --- 2D Spectral Scroll Mode (Standard) ---
           
-          for (let i = 0; i < historyRef.current.length; i++) {
-              const col = historyRef.current[i];
-              if (!col) continue;
+          // 1. Shift existing image to the left
+          // We use drawImage to move the canvas content
+          ctx.drawImage(canvas, -speedRef.current, 0);
+          
+          // 2. Draw new column on the right edge
+          const x = width - speedRef.current;
+          
+          // Clear the new strip to be black first
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(x, 0, speedRef.current, height);
+          
+          // Peak Detection & Sharpening
+          const threshold = 255 - (sensitivityRef.current * 40); // Sensitivity slider
+          
+          for (let i = 0; i < bufferLength; i++) {
+              const value = dataArray[i];
               
-              const x = w - 1 - i; // Newest at right edge
-              
-              if (x < 0) break;
-              
-              for (const pixel of col) {
-                 ctx.fillStyle = pixel.color;
-                 ctx.globalAlpha = pixel.alpha;
-                 // Draw smaller pixels for sharper look
-                 ctx.fillRect(x, pixel.y, 2, 2); 
+              if (value > threshold) { // Only draw if loud enough
+                  const freq = i * sampleRate / (bufferLength * 2);
+                  
+                  if (freq >= minFreq && freq <= maxFreq) {
+                      // Map Freq to Y Position (Logarithmic)
+                      // High freq = Top (y=0), Low freq = Bottom (y=height)
+                      const logPos = (Math.log(freq) - minLog) / logRange;
+                      const y = height - (logPos * height);
+                      
+                      const { color } = getToneColor(freq);
+                      const alpha = (value - threshold) / (255 - threshold); // Normalize alpha
+                      
+                      ctx.fillStyle = color;
+                      ctx.globalAlpha = alpha;
+                      // Draw a sharp line/rect
+                      ctx.fillRect(x, y, speedRef.current, 2); 
+                      ctx.globalAlpha = 1.0;
+                  }
               }
           }
       }
-      
-      ctx.globalAlpha = 1.0;
-      
-      animationRef.current = requestAnimationFrame(draw);
+
+      animationRef.current = requestAnimationFrame(render);
     };
     
-    draw();
+    render();
   };
 
   useEffect(() => {
-    // Auto-start if permitted? No, wait for user.
+    // Auto-start on mount
+    startAudio();
     return () => {
       stopAudio();
     };
   }, []);
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black text-white font-sans overflow-hidden">
-      {/* Canvas Layer */}
-      <canvas 
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full cursor-crosshair touch-none"
-        onClick={handleCanvasClick}
-      />
-      
-      {/* UI Overlay */}
-      <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start pointer-events-none">
-        <div className="pointer-events-auto flex gap-2">
-            <Button variant="outline" size="icon" onClick={onClose} className="rounded-full bg-black/50 border-white/20 hover:bg-white/10 text-white">
-                <X className="h-4 w-4" />
-            </Button>
-            <div className="bg-black/50 backdrop-blur px-4 py-2 rounded-full border border-white/10 flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${isListening ? 'bg-red-500 animate-pulse' : 'bg-zinc-500'}`} />
-                <span className="text-xs font-mono uppercase tracking-widest">
-                    {isListening ? 'LIVE SPEKTRUM' : 'BEREIT'}
-                </span>
-            </div>
-        </div>
+  // Handle Training Start
+  const handleStartTraining = () => {
+      if (forcedFrequency) {
+          // PRIORITY 1: Use Forced Frequency from Analysis
+          const { tone } = getToneFromFrequency(forcedFrequency);
+          setTrainingMode({
+              freq: forcedFrequency,
+              tone: tone.name,
+              color: tone.color
+          });
+      } else if (hoverInfo) {
+          // PRIORITY 2: Use Clicked Frequency from Scanner
+          setTrainingMode({
+              freq: hoverInfo.freq,
+              tone: hoverInfo.tone,
+              color: hoverInfo.color
+          });
+      }
+      // If neither, button should be disabled or handle error
+  };
 
-        <div className="pointer-events-auto flex gap-2">
-            <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggle3D}
-                className={`rounded-full border-white/20 text-white ${is3DMode ? 'bg-orange-500 hover:bg-orange-600 border-orange-500' : 'bg-black/50 hover:bg-white/10'}`}
-            >
-                <Box className="mr-2 h-3 w-3" />
-                {is3DMode ? '3D Tunnel' : '2D Scan'}
-            </Button>
-            
-            <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={toggleZoom}
-                className={`rounded-full border-white/20 text-white ${isZoomed ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' : 'bg-black/50 hover:bg-white/10'}`}
-            >
-                {isZoomed ? <Minimize className="mr-2 h-3 w-3" /> : <Maximize className="mr-2 h-3 w-3" />}
-                {isZoomed ? 'Vokal-Zoom' : 'Full Range'}
-            </Button>
-            
-            <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={takeSnapshot}
-                className="rounded-full bg-black/50 border-white/20 hover:bg-white/10 text-white"
-                title="Snapshot speichern"
-            >
-                <Camera className="h-4 w-4" />
-            </Button>
-        </div>
+  return (
+    <div className="fixed inset-0 z-50 bg-black text-white font-sans flex flex-col">
+      {/* Header */}
+      <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center bg-gradient-to-b from-black/80 to-transparent z-10 pointer-events-none">
+          <div className="flex items-center gap-4 pointer-events-auto">
+              <div className="bg-orange-500/20 p-2 rounded-full backdrop-blur-md border border-orange-500/30">
+                <Activity className="h-5 w-5 text-orange-500 animate-pulse" />
+              </div>
+              <div>
+                  <h2 className="text-lg font-bold tracking-tight">LIVE SPEKTRAL-SCANNER</h2>
+                  <p className="text-xs text-zinc-400 font-mono">
+                      {isListening ? "MESSUNG AKTIV" : "PAUSIERT"} • {isZoomed ? "VOCAL ZOOM" : "FULL RANGE"} • {is3DMode ? "3D TUNNEL" : "2D SCROLL"}
+                  </p>
+              </div>
+          </div>
+          <div className="flex items-center gap-2 pointer-events-auto">
+              <Button variant="ghost" size="icon" onClick={toggle3D} className="text-zinc-400 hover:text-white" title="3D Tunnel Mode">
+                 {is3DMode ? <Layers className="h-5 w-5 text-orange-500" /> : <Box className="h-5 w-5" />}
+              </Button>
+              <Button variant="ghost" size="icon" onClick={toggleZoom} className="text-zinc-400 hover:text-white" title="Toggle Zoom">
+                 {isZoomed ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+              </Button>
+              <Button variant="ghost" size="icon" onClick={takeSnapshot} className="text-zinc-400 hover:text-white" title="Snapshot">
+                 <Camera className="h-5 w-5" />
+              </Button>
+              <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-white/10 rounded-full">
+                  <X className="h-6 w-6" />
+              </Button>
+          </div>
       </div>
 
-      {/* Center Action Button */}
-      {!isListening && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <Button 
-                size="lg" 
-                onClick={startAudio}
-                className="pointer-events-auto rounded-full w-24 h-24 bg-white text-black hover:bg-zinc-200 hover:scale-105 transition-all shadow-[0_0_50px_rgba(255,255,255,0.3)]"
-            >
-                <Mic className="h-8 w-8" />
-            </Button>
-        </div>
-      )}
+      {/* Main Canvas Area */}
+      <div className="flex-1 relative bg-black cursor-crosshair overflow-hidden">
+          <canvas 
+            ref={canvasRef} 
+            width={window.innerWidth} 
+            height={window.innerHeight}
+            className="absolute inset-0 w-full h-full block"
+            onClick={handleCanvasClick}
+          />
+          
+          {/* Overlay Grid/Labels */}
+          <div className="absolute left-4 top-20 bottom-20 flex flex-col justify-between text-xs font-mono text-zinc-600 pointer-events-none select-none">
+              <span>{isZoomed ? "600 Hz" : "1200 Hz"}</span>
+              <span>{isZoomed ? "300 Hz" : "600 Hz"}</span>
+              <span>{isZoomed ? "150 Hz" : "300 Hz"}</span>
+              <span>65 Hz</span>
+          </div>
 
-      {/* Interactive Tooltip */}
-      <AnimatePresence>
-        {hoverInfo && (
-            <motion.div
-                initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                className="absolute pointer-events-auto z-50 bg-black/80 backdrop-blur-xl border border-white/20 p-4 rounded-2xl shadow-2xl w-64"
-                style={{ 
-                    left: Math.min(window.innerWidth - 270, Math.max(20, hoverInfo.x)), 
-                    top: Math.min(window.innerHeight - 300, Math.max(20, hoverInfo.y)) 
-                }}
-            >
-                <div className="flex justify-between items-start mb-4">
-                    <div>
-                        <div className="text-4xl font-bold text-white mb-1" style={{ color: hoverInfo.color }}>
-                            {hoverInfo.tone}
-                        </div>
-                        <div className="text-xs font-mono text-zinc-400">
-                            {hoverInfo.freq.toFixed(2)} Hz
-                        </div>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-6 w-6 rounded-full hover:bg-white/10" onClick={() => setHoverInfo(null)}>
-                        <X className="h-3 w-3" />
-                    </Button>
-                </div>
-                
-                <div className="space-y-2">
-                    <Button 
-                        className="w-full bg-white/10 hover:bg-white/20 text-white border-0 justify-start"
-                        onClick={() => isPlayingTone ? stopHarmonicTone() : playHarmonicTone(hoverInfo.freq)}
-                    >
-                        {isPlayingTone ? (
-                            <>
-                                <Square className="mr-2 h-4 w-4 fill-current text-red-500" /> Stop
-                            </>
-                        ) : (
-                            <>
-                                <Play className="mr-2 h-4 w-4 fill-current" /> Tönen (12s)
-                            </>
-                        )}
-                    </Button>
-                    
-                    <Button 
-                        className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0 justify-start"
-                        onClick={() => setTrainingMode({ freq: hoverInfo.freq, tone: hoverInfo.tone, color: hoverInfo.color })}
-                    >
-                        <Heart className="mr-2 h-4 w-4" /> Methode 36 Training
-                    </Button>
-                    
-                    <Button 
-                        className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 justify-start"
-                        onClick={() => setLocation('/animation')}
-                    >
-                        <Sparkles className="mr-2 h-4 w-4" /> Zur Animation
-                    </Button>
-                </div>
-            </motion.div>
-        )}
-      </AnimatePresence>
+          {/* Hover/Click Info Popover */}
+          <AnimatePresence>
+              {hoverInfo && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="absolute z-20 bg-black/80 backdrop-blur-xl border border-zinc-700 rounded-xl p-4 shadow-2xl min-w-[280px]"
+                    style={{ 
+                        left: Math.min(hoverInfo.x + 20, window.innerWidth - 300), 
+                        top: Math.min(hoverInfo.y - 50, window.innerHeight - 200) 
+                    }}
+                  >
+                      <div className="flex items-start justify-between mb-2">
+                          <div>
+                              <div className="text-xs text-zinc-400 uppercase tracking-wider font-bold mb-1">Frequenz-Analyse</div>
+                              <div className="text-3xl font-bold text-white flex items-baseline gap-2">
+                                  {hoverInfo.note} 
+                                  <span className="text-sm font-mono font-normal text-zinc-500">{hoverInfo.freq.toFixed(2)} Hz</span>
+                              </div>
+                          </div>
+                          <div 
+                            className="w-8 h-8 rounded-full shadow-inner" 
+                            style={{ backgroundColor: hoverInfo.color, boxShadow: `0 0 20px ${hoverInfo.color}40` }} 
+                          />
+                      </div>
+                      
+                      <div className="h-px bg-zinc-800 my-3" />
+                      
+                      <div className="grid grid-cols-1 gap-2">
+                          <Button 
+                            size="sm" 
+                            className="w-full justify-start bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+                            onClick={() => isPlayingTone ? stopHarmonicTone() : playHarmonicTone(hoverInfo.freq)}
+                          >
+                              {isPlayingTone ? <Square className="mr-2 h-4 w-4 fill-current text-red-500" /> : <Play className="mr-2 h-4 w-4 fill-current text-green-500" />}
+                              {isPlayingTone ? "Stop" : "Tönen (12s)"}
+                          </Button>
+
+                          <Button 
+                            size="sm" 
+                            className="w-full justify-start bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white border-none shadow-lg shadow-orange-900/20"
+                            onClick={handleStartTraining}
+                          >
+                              <Heart className="mr-2 h-4 w-4 fill-current animate-pulse" />
+                              Methode 36 Training
+                          </Button>
+                          
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="w-full justify-start text-zinc-400 hover:text-white"
+                            onClick={() => {
+                                setLocation("/story"); // Or trigger animation overlay
+                            }}
+                          >
+                             <Sparkles className="mr-2 h-4 w-4" />
+                             Zur Animation
+                          </Button>
+                      </div>
+                      
+                      <button 
+                        className="absolute top-2 right-2 text-zinc-500 hover:text-white"
+                        onClick={() => setHoverInfo(null)}
+                      >
+                          <X className="h-4 w-4" />
+                      </button>
+                  </motion.div>
+              )}
+          </AnimatePresence>
+          
+          {/* Persistent Training Button if Forced Frequency is present */}
+          {forcedFrequency && !hoverInfo && (
+              <div className="absolute bottom-8 right-8 z-20">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1 }}
+                  >
+                      <Button 
+                        size="lg" 
+                        className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white border-none shadow-lg shadow-orange-900/20 h-16 px-8 rounded-full text-lg font-bold tracking-wide"
+                        onClick={handleStartTraining}
+                      >
+                          <Heart className="mr-3 h-6 w-6 fill-current animate-pulse" />
+                          Training Starten ({getToneFromFrequency(forcedFrequency).tone.name})
+                      </Button>
+                  </motion.div>
+              </div>
+          )}
+
+          {/* Training Overlay */}
+          <AnimatePresence>
+              {trainingMode && (
+                  <Method36Trainer 
+                    frequency={trainingMode.freq}
+                    toneName={trainingMode.tone}
+                    color={trainingMode.color}
+                    onClose={() => setTrainingMode(null)}
+                  />
+              )}
+          </AnimatePresence>
+      </div>
       
-      {/* Method 36 Trainer Modal */}
-      {trainingMode && (
-        <Method36Trainer
-          frequency={trainingMode.freq}
-          toneName={trainingMode.tone}
-          color={trainingMode.color}
-          onClose={() => setTrainingMode(null)}
-        />
-      )}
+      {/* Controls Footer */}
+      <div className="h-16 bg-zinc-950 border-t border-zinc-900 flex items-center px-6 justify-between z-10">
+          <div className="flex items-center gap-4 w-1/3">
+             <span className="text-xs font-mono text-zinc-500">SENSITIVITÄT</span>
+             <input 
+                type="range" 
+                min="1" max="10" step="0.1" 
+                defaultValue="5"
+                className="w-32 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                onChange={(e) => sensitivityRef.current = parseFloat(e.target.value)}
+             />
+          </div>
+          
+          <div className="flex items-center justify-center gap-2 w-1/3">
+             <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={toggleAudio}
+                className={`rounded-full border-zinc-800 ${isListening ? 'bg-red-500/10 text-red-500 hover:bg-red-500/20' : 'bg-zinc-900 text-zinc-400'}`}
+             >
+                 {isListening ? <Mic className="mr-2 h-4 w-4" /> : <MicOff className="mr-2 h-4 w-4" />}
+                 {isListening ? "Stop" : "Start"}
+             </Button>
+          </div>
+
+          <div className="flex items-center justify-end gap-4 w-1/3">
+             <span className="text-xs font-mono text-zinc-500">GESCHWINDIGKEIT</span>
+             <input 
+                type="range" 
+                min="0.5" max="5" step="0.5" 
+                defaultValue="1"
+                className="w-32 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                onChange={(e) => speedRef.current = parseFloat(e.target.value)}
+             />
+          </div>
+      </div>
     </div>
   );
 }

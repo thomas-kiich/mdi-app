@@ -153,3 +153,8 @@
   - [ ] Recalculate all frequencies in `tones.ts` based on A4 = 432 Hz.
   - [ ] Update `getToneFromFrequency` logic to use 432 Hz reference.
   - [ ] Ensure displayed note names match the new frequency map.
+
+- [ ] **Fix Data Transfer from Analysis to Trainer**:
+  - [ ] Update `Home.tsx` to pass the analyzed frequency to `SpectralScanner`.
+  - [ ] Modify `SpectralScanner.tsx` to accept an `initialFrequency` or `forcedFrequency` prop.
+  - [ ] Ensure `Method36Trainer` uses this forced frequency if available, instead of live detection.

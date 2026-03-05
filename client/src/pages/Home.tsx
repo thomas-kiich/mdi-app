@@ -855,7 +855,10 @@ export default function Home() {
           {showStory ? (
             <ConnectionStory onClose={() => setShowStory(false)} />
           ) : showSpectralScanner ? (
-            <SpectralScanner onClose={() => setShowSpectralScanner(false)} />
+            <SpectralScanner 
+              onClose={() => setShowSpectralScanner(false)} 
+              forcedFrequency={finalResult?.fundamentalFreq}
+            />
           ) : (
             renderContent()
           )}
