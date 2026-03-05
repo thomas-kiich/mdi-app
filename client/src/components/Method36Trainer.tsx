@@ -234,9 +234,15 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                     <Heart className="text-red-500 animate-pulse" />
                     <h2 className="text-xl font-bold tracking-widest">METHODE 36 TRAINER</h2>
                 </div>
-                <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full hover:bg-white/10">
-                    <X className="h-6 w-6" />
-                </Button>
+                <div className="flex gap-4">
+                    <Button 
+                        variant="outline" 
+                        onClick={() => window.location.reload()} // Quick way to reset to main menu
+                        className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
+                    >
+                        <X className="mr-2 h-4 w-4" /> Zur Übersicht
+                    </Button>
+                </div>
             </div>
 
             {/* Central Visual */}
