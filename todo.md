@@ -173,3 +173,8 @@
 - [ ] **Fix Analysis Visualization and Audio Distortion**:
   - [ ] **Method 36 Audio**: Reduce harmonic complexity and lower gain to 10% to prevent distortion.
   - [ ] **Analysis Visualization**: Fix AudioContext initialization in Home.tsx to restore live waveform during recording.
+
+- [ ] **Refine Audio Quality and Add Octave Toggle**
+    - [ ] Implement Low-Pass Filter for softer sound
+    - [ ] Add Octave Toggle (Male/Female)
+    - [ ] Further reduce audio gain to prevent clipping
