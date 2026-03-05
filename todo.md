@@ -167,3 +167,6 @@
   - [ ] **Raise Octave**: Double the base frequency (x2) to raise the tone by one octave.
   - [ ] **Shorten Gong**: Reduce the gong release time significantly for a short "ping".
   - [ ] **Hard Sync Ring**: Bind the ring progress directly to the internal loop timer (elapsed time) instead of CSS animation.
+- [ ] **Final Polish: Audio Level and Ring Sync**:
+  - [ ] **Lower Audio Gain**: Reduce master gain to 0.2 to prevent clipping/distortion.
+  - [ ] **Force Ring Sync**: Use CSS transition with exact 10s duration triggered by React state for perfect sync.

@@ -26,7 +26,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     const [currentBeat, setCurrentBeat] = useState(0); // 1 to 6
     const [phase, setPhase] = useState<Phase>('HOLD_EMPTY');
     const [cycleCount, setCycleCount] = useState(0);
-    const [ringProgress, setRingProgress] = useState(0); // 0 to 1, hard synced
+    // Remove ringProgress state - use CSS keyframes for perfect sync
     
     const audioCtxRef = useRef<AudioContext | null>(null);
     const masterGainRef = useRef<GainNode | null>(null);
@@ -44,7 +44,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         audioCtxRef.current = ctx;
         const master = ctx.createGain();
         master.connect(ctx.destination);
-        master.gain.value = 0.5;
+        // REDUCED GAIN TO PREVENT CLIPPING
+        master.gain.value = 0.2; 
         masterGainRef.current = master;
 
         return () => {
@@ -154,10 +155,6 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         const totalCycleTime = BEAT_DURATION * 6; // 10 seconds
         const cycleTime = elapsed % totalCycleTime;
         
-        // Hard Sync Ring Progress (0 to 1)
-        // Ensure it loops perfectly from 0 to 1 every 10 seconds
-        setRingProgress(cycleTime / totalCycleTime);
-
         // Determine Beat (1-6)
         const beatIndex = Math.floor(cycleTime / BEAT_DURATION); // 0 to 5
         const beat = beatIndex + 1; // 1 to 6
@@ -197,14 +194,12 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
             
             startTimeRef.current = Date.now();
             setCurrentBeat(0);
-            setRingProgress(0);
             requestRef.current = requestAnimationFrame(updateLoop);
         } else {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
             stopTone();
             setPhase('HOLD_EMPTY');
             setCurrentBeat(0);
-            setRingProgress(0);
         }
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
@@ -268,7 +263,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                         strokeOpacity="0.1"
                     />
                     
-                    {/* Progress Segment - Hard Synced via React State */}
+                    {/* Progress Segment - Hard Synced via CSS Animation */}
                     {isPlaying && (
                         <circle
                             cx="250" cy="250" r="260"
@@ -277,14 +272,25 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                             strokeWidth="6"
                             strokeLinecap="round"
                             strokeDasharray={2 * Math.PI * 260}
-                            strokeDashoffset={2 * Math.PI * 260 * (1 - ringProgress)} // Direct mapping
-                            className="origin-center transition-all duration-75 ease-linear" // Smooth micro-steps
+                            strokeDashoffset={2 * Math.PI * 260} // Start hidden
+                            className="origin-center"
+                            style={{
+                                animation: `progressRing 10s linear infinite` // Exact 10s cycle
+                            }}
                         />
                     )}
                     
                     {/* 12 o'clock marker */}
                     <circle cx="250" cy="-10" r="4" fill="white" fillOpacity="0.5" />
                 </svg>
+                
+                {/* Keyframes for Progress Ring */}
+                <style>{`
+                    @keyframes progressRing {
+                        0% { stroke-dashoffset: ${2 * Math.PI * 260}; }
+                        100% { stroke-dashoffset: 0; }
+                    }
+                `}</style>
             </div>
 
             {/* Controls */}
