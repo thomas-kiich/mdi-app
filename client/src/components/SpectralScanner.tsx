@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square } from "lucide-react";
+import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square, Sparkles } from "lucide-react";
 import { TONES } from "@/lib/tones";
+import { useLocation } from 'wouter';
 
 export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const [isListening, setIsListening] = useState(false);
@@ -11,6 +12,7 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const [location, setLocation] = useLocation();
   
   // Audio Synthesis Refs
   const synthContextRef = useRef<AudioContext | null>(null);
@@ -620,6 +622,13 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                             <Play className="mr-2 h-4 w-4 fill-current" /> Tönen (12s)
                         </>
                     )}
+                </Button>
+                
+                <Button 
+                    className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0"
+                    onClick={() => setLocation('/animation')}
+                >
+                    <Sparkles className="mr-2 h-4 w-4" /> Zur Animation
                 </Button>
             </motion.div>
         )}

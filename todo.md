@@ -119,3 +119,8 @@
   - [ ] Apply a Low-Pass Filter to soften the sound.
   - [ ] Implement an Envelope (ADSR) with slow Attack (2s) and long Release (8s) for a total of ~12s.
   - [ ] Add a "Play Tone" button to the interactive tooltip in the Spectral Scanner.
+
+- [ ] **Fix Tone-Color Mapping and Navigation**:
+  - [ ] Verify `tones.ts` against user requirements (E=Blauviolett, C=Grün, etc.).
+  - [ ] Ensure `SpectralScanner.tsx` uses the correct color from `tones.ts`.
+  - [ ] Add a "Zur Animation" (To Animation) button in `SpectralScanner.tsx` that navigates to `/animation`.
