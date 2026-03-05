@@ -143,3 +143,13 @@
   - [ ] Hard-code black background and colored lines for scanner visualization to prevent inversion.
   - [ ] Ensure "Method 36" button visibility even on minor errors.
   - [ ] Verify `SpectralScanner.tsx` logic for error handling and cleanup.
+
+- [ ] **Refine Method 36 Trainer**:
+  - [ ] Extend tone duration to full 3 beats (approx. 5 seconds) in `Method36Trainer.tsx`.
+  - [ ] Update text from "TÖNEN" to "MANTRA YOHN TÖNEN".
+  - [ ] Verify and fix pitch calculation/display logic in `SpectralScanner.tsx` to ensure correct note names.
+
+- [ ] **Refine Method 36 Trainer (A=432Hz)**:
+  - [ ] Recalculate all frequencies in `tones.ts` based on A4 = 432 Hz.
+  - [ ] Update `getToneFromFrequency` logic to use 432 Hz reference.
+  - [ ] Ensure displayed note names match the new frequency map.

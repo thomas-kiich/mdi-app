@@ -38,7 +38,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
 
     // Initialize Audio
     useEffect(() => {
-        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        const ctx = new AudioContextClass();
         audioCtxRef.current = ctx;
         const master = ctx.createGain();
         master.connect(ctx.destination);
@@ -74,11 +75,17 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         const ctx = audioCtxRef.current;
         if (!ctx || !masterGainRef.current) return;
         
+        // Resume context if suspended
+        if (ctx.state === 'suspended') {
+            ctx.resume();
+        }
+        
         stopTone(); // Clear previous
 
         const toneGain = ctx.createGain();
         toneGain.gain.setValueAtTime(0, ctx.currentTime);
-        toneGain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 1.0); // Slow fade in
+        // Fast attack for immediate response, sustain for full 3 beats
+        toneGain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.5); 
         toneGain.connect(masterGainRef.current);
         toneGainRef.current = toneGain;
 
@@ -105,8 +112,10 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     const stopTone = () => {
         const ctx = audioCtxRef.current;
         if (toneGainRef.current && ctx) {
-            toneGainRef.current.gain.setTargetAtTime(0, ctx.currentTime, 0.5); // Fade out
+            // Fade out over 1 beat (approx 1.6s) to be smooth
+            toneGainRef.current.gain.setTargetAtTime(0, ctx.currentTime, 0.3); 
         }
+        // Cleanup oscillators after fade
         setTimeout(() => {
             toneOscillatorsRef.current.forEach(osc => {
                 try { osc.stop(); } catch(e) {}
@@ -138,20 +147,25 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                 setPhase('HOLD_FULL');
             } else if (beat === 3) {
                 setPhase('TONE');
-                startTone(); // Start Drone
+                startTone(); // Start Drone - will run for beats 3, 4, 5
             } else if (beat === 6) {
                 setPhase('HOLD_EMPTY');
-                stopTone(); // Stop Drone
+                stopTone(); // Stop Drone at start of beat 6
             }
         }
         
         // Animation Frame Request
-        timerRef.current = setTimeout(runLoop, 50); // Check every 50ms is enough for logic, CSS handles smooth animation
+        timerRef.current = setTimeout(runLoop, 50); 
     };
 
     // Effect to start/stop loop
     useEffect(() => {
         if (isPlaying) {
+            // Resume Audio Context on user interaction (Start button)
+            if (audioCtxRef.current?.state === 'suspended') {
+                audioCtxRef.current.resume();
+            }
+            
             startTimeRef.current = Date.now();
             setCurrentBeat(0);
             runLoop();
@@ -166,62 +180,6 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         };
     }, [isPlaying]);
 
-    // Re-trigger loop on state change (beat update) is handled by the timeout recursion
-    // But we need to keep the recursion alive.
-    // Actually, `runLoop` closes over `isPlaying`. 
-    // Better use a `requestAnimationFrame` or `setInterval` approach for robustness.
-    
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (isPlaying) {
-            startTimeRef.current = Date.now();
-            interval = setInterval(() => {
-                const now = Date.now();
-                const elapsed = (now - startTimeRef.current) / 1000;
-                const totalCycleTime = BEAT_DURATION * 6;
-                const cycleTime = elapsed % totalCycleTime;
-                const beat = Math.floor(cycleTime / BEAT_DURATION) + 1;
-
-                setCurrentBeat(prev => {
-                    if (prev !== beat) {
-                        playClick();
-                        
-                        if (beat === 1) {
-                            setPhase('IN');
-                            // Only increment cycle if we wrapped around (beat 1 from 6)
-                            // But here we just detect change. 
-                            // Simple logic: if beat 1, new cycle.
-                        } else if (beat === 2) {
-                            setPhase('HOLD_FULL');
-                        } else if (beat === 3) {
-                            setPhase('TONE');
-                            startTone();
-                        } else if (beat === 6) {
-                            setPhase('HOLD_EMPTY');
-                            stopTone();
-                        }
-                        return beat;
-                    }
-                    return prev;
-                });
-            }, 50);
-        }
-        return () => clearInterval(interval);
-    }, [isPlaying]);
-
-
-    // Animation Variants
-    const circleVariants = {
-        IN: { scale: 1.0, transition: { duration: BEAT_DURATION, ease: "easeInOut" } }, // Grow to full
-        HOLD_FULL: { scale: 1.05, transition: { duration: BEAT_DURATION, ease: "linear" } }, // Slight pulse? No, hold.
-        TONE: { scale: 0.3, transition: { duration: BEAT_DURATION * 3, ease: "easeInOut" } }, // Shrink over 3 beats
-        HOLD_EMPTY: { scale: 0.3, transition: { duration: BEAT_DURATION, ease: "linear" } } // Stay small
-    };
-    
-    // We need to manage the "from" state. 
-    // IN: goes from 0.3 to 1.0
-    // TONE: goes from 1.0 to 0.3
-    
     return (
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/95 text-white font-sans backdrop-blur-xl">
             
@@ -256,12 +214,14 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                         duration: phase === 'TONE' ? BEAT_DURATION * 3 : BEAT_DURATION, 
                         ease: "easeInOut" 
                     }}
-                    className="w-full h-full rounded-full shadow-[0_0_100px_rgba(255,255,255,0.1)]"
+                    className="w-full h-full rounded-full shadow-[0_0_100px_rgba(255,255,255,0.1)] flex items-center justify-center text-center p-8"
                     style={{ backgroundColor: color }} // Fallback
                 >
                     {/* Inner Text */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-black font-bold">
-                        <span className="text-4xl tracking-tighter">{phase === 'IN' ? 'EIN' : phase === 'TONE' ? 'TÖNEN' : 'HALTEN'}</span>
+                    <div className="flex flex-col items-center justify-center text-black font-bold pointer-events-none select-none">
+                        <span className="text-4xl tracking-tighter leading-tight">
+                            {phase === 'IN' ? 'EIN' : phase === 'TONE' ? 'MANTRA YOHN TÖNEN' : 'HALTEN'}
+                        </span>
                         <span className="text-sm font-mono opacity-50 mt-2">{toneName} • {frequency.toFixed(1)} Hz</span>
                     </div>
                 </motion.div>
@@ -293,7 +253,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                 <div className="flex items-center gap-8 text-white/50 font-mono text-sm">
                     <div className={currentBeat === 1 ? "text-white font-bold scale-110 transition-all" : ""}>1 • EIN</div>
                     <div className={currentBeat === 2 ? "text-white font-bold scale-110 transition-all" : ""}>2 • HALTEN</div>
-                    <div className={currentBeat >= 3 && currentBeat <= 5 ? "text-white font-bold scale-110 transition-all" : ""}>3-5 • TÖNEN</div>
+                    <div className={currentBeat >= 3 && currentBeat <= 5 ? "text-white font-bold scale-110 transition-all" : ""}>3-5 • MANTRA YOHN TÖNEN</div>
                     <div className={currentBeat === 6 ? "text-white font-bold scale-110 transition-all" : ""}>6 • HALTEN</div>
                 </div>
 
