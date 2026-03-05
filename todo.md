@@ -100,81 +100,85 @@
 - [ ] Final user verification
 
 ## Live Spectral Scanner (Enhancements)
-- [ ] **Snapshot Export**:
-  - [ ] Add a "Camera" button to the UI.
-  - [ ] Implement canvas-to-blob conversion and download as PNG.
-  - [ ] Ensure the filename includes a timestamp (e.g., `MDI-Spektrum-2026-03-04.png`).
-- [ ] **Interactive Frequency Analysis**:
-  - [ ] Add click handler to the canvas.
-  - [ ] On click, find the nearest frequency bin and display its Hz value and musical note (e.g., "440Hz - A4").
-  - [ ] Show a tooltip or overlay with this information.
-- [ ] **3D Tunnel Mode**:
-  - [ ] Create a new visualization mode toggle (2D / 3D).
-  - [ ] Implement a perspective projection where new frequency lines appear at the center/far distance and move towards the viewer (or vice versa).
-  - [ ] Use the same color/frequency logic but map Y-axis to radial distance or tunnel walls.
+- [x] **Snapshot Export**:
+  - [x] Add a "Camera" button to the UI.
+  - [x] Implement canvas-to-blob conversion and download as PNG.
+  - [x] Ensure the filename includes a timestamp (e.g., `MDI-Spektrum-2026-03-04.png`).
+- [x] **Interactive Frequency Analysis**:
+  - [x] Add click handler to the canvas.
+  - [x] On click, find the nearest frequency bin and display its Hz value and musical note (e.g., "440Hz - A4").
+  - [x] Show a tooltip or overlay with this information.
+- [x] **3D Tunnel Mode**:
+  - [x] Create a new visualization mode toggle (2D / 3D).
+  - [x] Implement a perspective projection where new frequency lines appear at the center/far distance and move towards the viewer (or vice versa).
+  - [x] Use the same color/frequency logic but map Y-axis to radial distance or tunnel walls.
 
-- [ ] **Harmonic Resonance Audio Synthesis**:
-  - [ ] Implement a Web Audio API synthesizer function.
-  - [ ] Create a "Warm Drone" sound using multiple oscillators (Fundamental + Octave + Fifth).
-  - [ ] Apply a Low-Pass Filter to soften the sound.
-  - [ ] Implement an Envelope (ADSR) with slow Attack (2s) and long Release (8s) for a total of ~12s.
-  - [ ] Add a "Play Tone" button to the interactive tooltip in the Spectral Scanner.
+- [x] **Harmonic Resonance Audio Synthesis**:
+  - [x] Implement a Web Audio API synthesizer function.
+  - [x] Create a "Warm Drone" sound using multiple oscillators (Fundamental + Octave + Fifth).
+  - [x] Apply a Low-Pass Filter to soften the sound.
+  - [x] Implement an Envelope (ADSR) with slow Attack (2s) and long Release (8s) for a total of ~12s.
+  - [x] Add a "Play Tone" button to the interactive tooltip in the Spectral Scanner.
 
-- [ ] **Fix Tone-Color Mapping and Navigation**:
-  - [ ] Verify `tones.ts` against user requirements (E=Blauviolett, C=Grün, etc.).
-  - [ ] Ensure `SpectralScanner.tsx` uses the correct color from `tones.ts`.
-  - [ ] Add a "Zur Animation" (To Animation) button in `SpectralScanner.tsx` that navigates to `/animation`.
+- [x] **Fix Tone-Color Mapping and Navigation**:
+  - [x] Verify `tones.ts` against user requirements (E=Blauviolett, C=Grün, etc.).
+  - [x] Ensure `SpectralScanner.tsx` uses the correct color from `tones.ts`.
+  - [x] Add a "Zur Animation" (To Animation) button in `SpectralScanner.tsx` that navigates to `/animation`.
 
-- [ ] **Method 36 Training Module**:
-  - [ ] Create `Method36Trainer.tsx` component.
-  - [ ] Implement 36 BPM timer logic (1 beat = 1.666s).
-  - [ ] Create visual circle animation (Grow 1 beat, Hold 1 beat, Shrink 3 beats, Hold 1 beat).
-  - [ ] Implement audio synthesis for the specific fundamental tone during the "Shrink" phase (3 beats).
-  - [ ] Add a subtle "heartbeat" sound on every beat.
-  - [ ] Integrate "Start Training" button in `SpectralScanner.tsx` that passes the detected frequency to the trainer.
+- [x] **Method 36 Training Module**:
+  - [x] Create `Method36Trainer.tsx` component.
+  - [x] Implement 36 BPM timer logic (1 beat = 1.666s).
+  - [x] Create visual circle animation (Grow 1 beat, Hold 1 beat, Shrink 3 beats, Hold 1 beat).
+  - [x] Implement audio synthesis for the specific fundamental tone during the "Shrink" phase (3 beats).
+  - [x] Add a subtle "heartbeat" sound on every beat.
+  - [x] Integrate "Start Training" button in `SpectralScanner.tsx` that passes the detected frequency to the trainer.
 
-- [ ] **Link Analysis Result to Live Scanner**:
-  - [ ] Locate the Analysis Result component/page.
-  - [ ] Add a "Weiter zum Live-Scanner & Training" button.
-  - [ ] Ensure the button opens the `SpectralScanner` component.
+- [x] **Link Analysis Result to Live Scanner**:
+  - [x] Locate the Analysis Result component/page.
+  - [x] Add a "Weiter zum Live-Scanner & Training" button.
+  - [x] Ensure the button opens the `SpectralScanner` component.
 
-- [ ] **Fix Audio Context and Scanner Visualization Errors**:
-  - [ ] Debug and fix AudioContext initialization issues (3 red errors).
-  - [ ] Hard-code black background and colored lines for scanner visualization to prevent inversion.
-  - [ ] Ensure "Method 36" button visibility even on minor errors.
-  - [ ] Verify `SpectralScanner.tsx` logic for error handling and cleanup.
+- [x] **Fix Audio Context and Scanner Visualization Errors**:
+  - [x] Debug and fix AudioContext initialization issues (3 red errors).
+  - [x] Hard-code black background and colored lines for scanner visualization to prevent inversion.
+  - [x] Ensure "Method 36" button visibility even on minor errors.
+  - [x] Verify `SpectralScanner.tsx` logic for error handling and cleanup.
 
-- [ ] **Refine Method 36 Trainer**:
-  - [ ] Extend tone duration to full 3 beats (approx. 5 seconds) in `Method36Trainer.tsx`.
-  - [ ] Update text from "TÖNEN" to "MANTRA YOHN TÖNEN".
-  - [ ] Verify and fix pitch calculation/display logic in `SpectralScanner.tsx` to ensure correct note names.
+- [x] **Refine Method 36 Trainer**:
+  - [x] Extend tone duration to full 3 beats (approx. 5 seconds) in `Method36Trainer.tsx`.
+  - [x] Update text from "TÖNEN" to "MANTRA YOHN TÖNEN".
+  - [x] Verify and fix pitch calculation/display logic in `SpectralScanner.tsx` to ensure correct note names.
 
-- [ ] **Refine Method 36 Trainer (A=432Hz)**:
-  - [ ] Recalculate all frequencies in `tones.ts` based on A4 = 432 Hz.
-  - [ ] Update `getToneFromFrequency` logic to use 432 Hz reference.
-  - [ ] Ensure displayed note names match the new frequency map.
+- [x] **Refine Method 36 Trainer (A=432Hz)**:
+  - [x] Recalculate all frequencies in `tones.ts` based on A4 = 432 Hz.
+  - [x] Update `getToneFromFrequency` logic to use 432 Hz reference.
+  - [x] Ensure displayed note names match the new frequency map.
 
-- [ ] **Fix Data Transfer from Analysis to Trainer**:
-  - [ ] Update `Home.tsx` to pass the analyzed frequency to `SpectralScanner`.
-  - [ ] Modify `SpectralScanner.tsx` to accept an `initialFrequency` or `forcedFrequency` prop.
-  - [ ] Ensure `Method36Trainer` uses this forced frequency if available, instead of live detection.
-- [ ] **Fix Frequency Deviation Logic in Analysis**: Ensure the calculated frequency matches the identified tone (e.g., F) and that deviation (cents) is capped or corrected so it doesn't shift the tone to another note (like A).
-- [ ] **Refine Method 36 Trainer (Sync, Duration, Gong)**:
-  - [ ] **Progress Ring**: Ensure the ring starts at 12 o'clock and completes a full circle in exactly 10 seconds (6 beats) without jumping.
-  - [ ] **Tone Duration**: Extend the mantra tone to last the full 3 beats (approx. 5 seconds) with a smooth release.
-  - [ ] **Gong Signals**: Replace heartbeat with a synthetic gong sound to mark the "Inhale" and "Hold" phase transitions.
-- [ ] **Refine Method 36 Trainer (Sync, Octave, Gong)**:
-  - [ ] **Raise Octave**: Double the base frequency (x2) to raise the tone by one octave.
-  - [ ] **Shorten Gong**: Reduce the gong release time significantly for a short "ping".
-  - [ ] **Hard Sync Ring**: Bind the ring progress directly to the internal loop timer (elapsed time) instead of CSS animation.
-- [ ] **Final Polish: Audio Level and Ring Sync**:
-  - [ ] **Lower Audio Gain**: Reduce master gain to 0.2 to prevent clipping/distortion.
-  - [ ] **Force Ring Sync**: Use CSS transition with exact 10s duration triggered by React state for perfect sync.
-- [ ] **Fix Analysis Visualization and Audio Distortion**:
-  - [ ] **Method 36 Audio**: Reduce harmonic complexity and lower gain to 10% to prevent distortion.
-  - [ ] **Analysis Visualization**: Fix AudioContext initialization in Home.tsx to restore live waveform during recording.
+- [x] **Fix Data Transfer from Analysis to Trainer**:
+  - [x] Update `Home.tsx` to pass the analyzed frequency to `SpectralScanner`.
+  - [x] Modify `SpectralScanner.tsx` to accept an `initialFrequency` or `forcedFrequency` prop.
+  - [x] Ensure `Method36Trainer` uses this forced frequency if available, instead of live detection.
+- [x] **Fix Frequency Deviation Logic in Analysis**: Ensure the calculated frequency matches the identified tone (e.g., F) and that deviation (cents) is capped or corrected so it doesn't shift the tone to another note (like A).
+- [x] **Refine Method 36 Trainer (Sync, Duration, Gong)**:
+  - [x] **Progress Ring**: Ensure the ring starts at 12 o'clock and completes a full circle in exactly 10 seconds (6 beats) without jumping.
+  - [x] **Tone Duration**: Extend the mantra tone to last the full 3 beats (approx. 5 seconds) with a smooth release.
+  - [x] **Gong Signals**: Replace heartbeat with a synthetic gong sound to mark the "Inhale" and "Hold" phase transitions.
+- [x] **Refine Method 36 Trainer (Sync, Octave, Gong)**:
+  - [x] **Raise Octave**: Double the base frequency (x2) to raise the tone by one octave.
+  - [x] **Shorten Gong**: Reduce the gong release time significantly for a short "ping".
+  - [x] **Hard Sync Ring**: Bind the ring progress directly to the internal loop timer (elapsed time) instead of CSS animation.
+- [x] **Final Polish: Audio Level and Ring Sync**:
+  - [x] **Lower Audio Gain**: Reduce master gain to 0.2 to prevent clipping/distortion.
+  - [x] **Force Ring Sync**: Use CSS transition with exact 10s duration triggered by React state for perfect sync.
+- [x] **Fix Analysis Visualization and Audio Distortion**:
+  - [x] **Method 36 Audio**: Reduce harmonic complexity and lower gain to 10% to prevent distortion.
+  - [x] **Analysis Visualization**: Fix AudioContext initialization in Home.tsx to restore live waveform during recording.
 
-- [ ] **Refine Audio Quality and Add Octave Toggle**
-    - [ ] Implement Low-Pass Filter for softer sound
-    - [ ] Add Octave Toggle (Male/Female)
-    - [ ] Further reduce audio gain to prevent clipping
+- [x] **Refine Audio Quality and Add Octave Toggle**
+    - [x] Implement Low-Pass Filter for softer sound
+    - [x] Add Octave Toggle (Male/Female)
+    - [x] Further reduce audio gain to prevent clipping
+
+- [ ] **Final Fixes: Audio Detune and Cycle Counter**
+    - [ ] Adjust oscillator detune and release envelope to eliminate beating and clipping at the end of the tone.
+    - [ ] Rewrite cycle counter logic to increment exactly once per 10-second cycle, ensuring stability.

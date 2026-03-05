@@ -30,6 +30,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
+    const lastBeatRef = useRef<number>(0); // Track last processed beat to prevent double counting
 
     // Initialize Audio
     useEffect(() => {
@@ -110,25 +111,27 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         toneGainRef.current = toneGain;
 
         // Frequency Selection: Base or Octave Up
-        // If High Octave toggle is ON: Frequency * 2
-        // If Low Octave toggle is OFF: Frequency (Base)
         const baseFreq = isHighOctave ? frequency * 2 : frequency;
 
         const osc1 = ctx.createOscillator();
-        osc1.type = 'triangle'; // Triangle has softer harmonics than Sawtooth but more body than Sine
+        osc1.type = 'triangle'; 
         osc1.frequency.value = baseFreq;
+        // Detune slightly to create warmth but avoid fast beating
+        osc1.detune.value = -2; 
         
         const osc2 = ctx.createOscillator();
-        osc2.type = 'sine'; // Sine for pure fundamental
+        osc2.type = 'sine'; 
         osc2.frequency.value = baseFreq; 
         
         const osc3 = ctx.createOscillator();
         osc3.type = 'sine';
         osc3.frequency.value = baseFreq * 1.5; // Fifth (Dominant)
+        // Detune fifth slightly for richness
+        osc3.detune.value = 2;
 
-        const g1 = ctx.createGain(); g1.gain.value = 0.4; // Triangle Body
-        const g2 = ctx.createGain(); g2.gain.value = 0.5; // Sine Fundamental
-        const g3 = ctx.createGain(); g3.gain.value = 0.1; // Fifth (Very subtle)
+        const g1 = ctx.createGain(); g1.gain.value = 0.3; // Reduced Triangle Body
+        const g2 = ctx.createGain(); g2.gain.value = 0.6; // Increased Sine Fundamental
+        const g3 = ctx.createGain(); g3.gain.value = 0.08; // Very subtle Fifth
 
         osc1.connect(g1).connect(toneGain);
         osc2.connect(g2).connect(toneGain);
@@ -141,7 +144,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     const stopTone = () => {
         const ctx = audioCtxRef.current;
         if (toneGainRef.current && ctx) {
-            toneGainRef.current.gain.setTargetAtTime(0, ctx.currentTime, 0.5); 
+            // Longer release to avoid clicking
+            toneGainRef.current.gain.setTargetAtTime(0, ctx.currentTime, 0.8); 
         }
         const oldOscillators = [...toneOscillatorsRef.current];
         toneOscillatorsRef.current = []; 
@@ -149,7 +153,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
             oldOscillators.forEach(osc => {
                 try { osc.stop(); } catch(e) {}
             });
-        }, 3000); 
+        }, 4000); 
     };
 
     const updateLoop = () => {
@@ -163,11 +167,14 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         const beatIndex = Math.floor(cycleTime / BEAT_DURATION); 
         const beat = beatIndex + 1; 
         
-        if (beat !== currentBeat) {
+        // Only trigger updates when the beat actually changes
+        if (beat !== lastBeatRef.current) {
+            lastBeatRef.current = beat;
             setCurrentBeat(beat);
             
             if (beat === 1) {
                 setPhase('IN');
+                // Increment cycle count ONLY on beat 1
                 setCycleCount(c => c + 1);
                 playGong('high'); 
             } else if (beat === 2) {
@@ -188,6 +195,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         requestRef.current = requestAnimationFrame(updateLoop);
     };
 
+    // Fix: Explicitly restart the loop when isPlaying changes
     useEffect(() => {
         if (isPlaying) {
             if (audioCtxRef.current?.state === 'suspended') {
@@ -195,7 +203,9 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
             }
             
             startTimeRef.current = Date.now();
+            lastBeatRef.current = 0; // Reset beat tracker
             setCurrentBeat(0);
+            setCycleCount(0); // Reset cycles on start
             requestRef.current = requestAnimationFrame(updateLoop);
         } else {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
