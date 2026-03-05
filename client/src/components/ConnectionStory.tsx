@@ -392,16 +392,25 @@ export function ConnectionStory({ onClose }: { onClose: () => void }) {
         </AnimatePresence>
       </div>
 
-      {/* Skip Button */}
-      {act < 5 && (
+      {/* Navigation Buttons */}
+      <div className="absolute top-8 right-8 flex gap-3 z-50">
+        {act < 5 && (
+          <Button 
+            variant="ghost" 
+            className="text-white/20 hover:text-white hover:bg-white/10 uppercase tracking-widest text-xs"
+            onClick={() => setAct(5)}
+          >
+            Überspringen <SkipForward className="ml-2 h-4 w-4" />
+          </Button>
+        )}
         <Button 
-          variant="ghost" 
-          className="absolute top-8 right-8 text-white/20 hover:text-white hover:bg-white/10 z-50 uppercase tracking-widest text-xs"
-          onClick={() => setAct(5)}
+          variant="outline" 
+          onClick={onClose} 
+          className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
         >
-          Überspringen <SkipForward className="ml-2 h-4 w-4" />
+          Zur Übersicht
         </Button>
-      )}
+      </div>
       
       {/* Progress Indicator */}
       <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-3 z-50 opacity-30">

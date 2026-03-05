@@ -451,8 +451,12 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
               <Button variant="ghost" size="icon" onClick={takeSnapshot} className="text-zinc-400 hover:text-white" title="Snapshot">
                  <Camera className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-white/10 rounded-full">
-                  <X className="h-6 w-6" />
+              <Button 
+                variant="outline" 
+                onClick={onClose} 
+                className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white ml-2"
+              >
+                  <X className="mr-2 h-4 w-4" /> Zur Übersicht
               </Button>
           </div>
       </div>

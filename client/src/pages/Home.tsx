@@ -14,7 +14,7 @@ import { InterpretationView } from "@/components/InterpretationView";
 import { ConnectionStory } from "@/components/ConnectionStory";
 import { SpectralScanner } from "@/components/SpectralScanner";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -524,6 +524,17 @@ export default function Home() {
 
         return (
           <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 pb-20">
+            {/* Top Navigation for Result View */}
+            <div className="absolute top-4 right-4 md:top-8 md:right-8">
+                <Button 
+                    variant="ghost" 
+                    onClick={() => window.location.reload()}
+                    className="text-zinc-500 hover:text-white"
+                >
+                    <X className="mr-2 h-4 w-4" /> Zur Übersicht
+                </Button>
+            </div>
+
             <div className="text-center mb-12">
               <h2 className="text-sm font-mono text-orange-500 mb-2 tracking-widest uppercase">Deine MDI Signatur</h2>
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tighter">
