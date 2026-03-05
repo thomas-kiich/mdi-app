@@ -13,6 +13,7 @@ interface SpectralScannerProps {
 
 export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerProps) {
   const [isListening, setIsListening] = useState(false);
+  const isListeningRef = useRef(false); // Ref for sync access in loop
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -159,34 +160,43 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
 
   const startAudio = async () => {
     try {
+      // 1. Get Stream
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       
+      // 2. Create Context
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       const audioCtx = new AudioContextClass();
+      audioContextRef.current = audioCtx;
+
+      // 3. Create Analyser
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 4096;
+      analyser.smoothingTimeConstant = 0.1; // Slight smoothing for stability
+      analyserRef.current = analyser;
       
-      // Resume context if suspended (common browser policy issue)
+      // 4. Connect Source
+      const source = audioCtx.createMediaStreamSource(stream);
+      source.connect(analyser);
+      
+      // 5. Resume if suspended (must be after creation)
       if (audioCtx.state === 'suspended') {
         await audioCtx.resume();
       }
       
-      audioContextRef.current = audioCtx;
-      
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 4096; // Higher resolution for better peak detection
-      analyser.smoothingTimeConstant = 0.0; // No smoothing for raw data
-      analyserRef.current = analyser;
-      
-      const source = audioCtx.createMediaStreamSource(stream);
-      source.connect(analyser);
-      
-      // Initialize History Buffer
+      // 6. Reset History & Start
       historyRef.current = [];
-      
       setIsListening(true);
-      startVisualization();
+      isListeningRef.current = true;
+      
+      // Ensure canvas is ready before starting loop
+      requestAnimationFrame(() => {
+          startVisualization();
+      });
+      
     } catch (err) {
       console.error("Error accessing microphone:", err);
+      setIsListening(false);
     }
   };
 
@@ -203,6 +213,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
       cancelAnimationFrame(animationRef.current);
     }
     setIsListening(false);
+    isListeningRef.current = false;
     stopHarmonicTone(); // Also stop any playing tone
   };
 
@@ -294,7 +305,14 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
     const logRange = maxLog - minLog;
 
     const render = () => {
-      if (!analyserRef.current) return;
+      // Safety check: if audio stopped, exit loop
+      if (!analyserRef.current || !isListeningRef.current) {
+          // One last clear
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(0, 0, width, height);
+          return;
+      }
+
       analyserRef.current.getByteFrequencyData(dataArray);
       
       // Clear with solid black (Crucial for fixing artifacts)
