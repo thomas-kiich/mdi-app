@@ -124,3 +124,11 @@
   - [ ] Verify `tones.ts` against user requirements (E=Blauviolett, C=Grün, etc.).
   - [ ] Ensure `SpectralScanner.tsx` uses the correct color from `tones.ts`.
   - [ ] Add a "Zur Animation" (To Animation) button in `SpectralScanner.tsx` that navigates to `/animation`.
+
+- [ ] **Method 36 Training Module**:
+  - [ ] Create `Method36Trainer.tsx` component.
+  - [ ] Implement 36 BPM timer logic (1 beat = 1.666s).
+  - [ ] Create visual circle animation (Grow 1 beat, Hold 1 beat, Shrink 3 beats, Hold 1 beat).
+  - [ ] Implement audio synthesis for the specific fundamental tone during the "Shrink" phase (3 beats).
+  - [ ] Add a subtle "heartbeat" sound on every beat.
+  - [ ] Integrate "Start Training" button in `SpectralScanner.tsx` that passes the detected frequency to the trainer.

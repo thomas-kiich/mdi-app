@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square, Sparkles } from "lucide-react";
+import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square, Sparkles, Heart } from "lucide-react";
 import { TONES } from "@/lib/tones";
 import { useLocation } from 'wouter';
+import { Method36Trainer } from "@/components/Method36Trainer";
 
 export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const [isListening, setIsListening] = useState(false);
@@ -33,7 +34,8 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
   const is3DModeRef = useRef(false);
 
   // Interaction State
-  const [hoverInfo, setHoverInfo] = useState<{ x: number, y: number, freq: number, tone: string, note: string } | null>(null);
+  const [hoverInfo, setHoverInfo] = useState<{ x: number, y: number, freq: number, tone: string, note: string, color: string } | null>(null);
+  const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string } | null>(null);
 
   // Helper to get tone color
   const getToneColor = (freq: number) => {
@@ -258,14 +260,15 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
       const invertedNormY = 1 - normY;
       const freq = Math.exp(minLog + invertedNormY * (maxLog - minLog));
       
-      const { tone } = getToneColor(freq);
+      const { tone, color } = getToneColor(freq);
       
       setHoverInfo({
           x: e.clientX,
           y: e.clientY,
           freq: freq,
           tone: tone,
-          note: tone // Simplified
+          note: tone, // Simplified
+          color: color
       });
       
       // Auto-hide after 5 seconds (longer to allow clicking Play)
@@ -625,6 +628,13 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
                 </Button>
                 
                 <Button 
+                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white border-0"
+                    onClick={() => setTrainingMode({ freq: hoverInfo.freq, tone: hoverInfo.tone, color: hoverInfo.color })}
+                >
+                    <Heart className="mr-2 h-4 w-4" /> Methode 36 Training
+                </Button>
+                
+                <Button 
                     className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0"
                     onClick={() => setLocation('/animation')}
                 >
@@ -633,6 +643,16 @@ export function SpectralScanner({ onClose }: { onClose: () => void }) {
             </motion.div>
         )}
       </AnimatePresence>
+      
+      {/* Method 36 Trainer Modal */}
+      {trainingMode && (
+        <Method36Trainer
+          frequency={trainingMode.freq}
+          toneName={trainingMode.tone}
+          color={trainingMode.color}
+          onClose={() => setTrainingMode(null)}
+        />
+      )}
     </div>
   );
 }
