@@ -25,7 +25,6 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentBeat, setCurrentBeat] = useState(0); // 1 to 6
     const [phase, setPhase] = useState<Phase>('HOLD_EMPTY');
-    const [progress, setProgress] = useState(0); // 0 to 1 for circle size
     const [cycleCount, setCycleCount] = useState(0);
     
     const audioCtxRef = useRef<AudioContext | null>(null);
@@ -33,13 +32,13 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     const toneOscillatorsRef = useRef<OscillatorNode[]>([]);
     const toneGainRef = useRef<GainNode | null>(null);
     
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
     const startTimeRef = useRef<number>(0);
+    const requestRef = useRef<number>();
 
     // Initialize Audio
     useEffect(() => {
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-        const ctx = new AudioContextClass();
+        const ctx = new AudioContextClass() as AudioContext;
         audioCtxRef.current = ctx;
         const master = ctx.createGain();
         master.connect(ctx.destination);
@@ -48,48 +47,66 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
 
         return () => {
             stopTone();
+            if (requestRef.current) cancelAnimationFrame(requestRef.current);
             ctx.close();
         };
     }, []);
+
+    const playGong = (pitch: 'low' | 'high') => {
+        const ctx = audioCtxRef.current;
+        if (!ctx || !masterGainRef.current) return;
+        
+        // Synthetic Gong/Bell
+        const osc = ctx.createOscillator();
+        osc.type = 'sine';
+        // Low gong for "Hold", High gong for "Inhale"
+        osc.frequency.value = pitch === 'low' ? 220 : 440; 
+        
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0, ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.05); // Attack
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.0); // Long decay
+        
+        osc.connect(gain).connect(masterGainRef.current);
+        osc.start();
+        osc.stop(ctx.currentTime + 2.5);
+    };
 
     const playClick = () => {
         const ctx = audioCtxRef.current;
         if (!ctx || !masterGainRef.current) return;
         
-        // Soft Heartbeat Sound
+        // Soft metronome click
         const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = 60; // Low thump
+        osc.type = 'triangle';
+        osc.frequency.value = 800;
         
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.05);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
         
         osc.connect(gain).connect(masterGainRef.current);
         osc.start();
-        osc.stop(ctx.currentTime + 0.5);
+        osc.stop(ctx.currentTime + 0.1);
     };
 
     const startTone = () => {
         const ctx = audioCtxRef.current;
         if (!ctx || !masterGainRef.current) return;
         
-        // Resume context if suspended
-        if (ctx.state === 'suspended') {
-            ctx.resume();
-        }
+        if (ctx.state === 'suspended') ctx.resume();
         
         stopTone(); // Clear previous
 
         const toneGain = ctx.createGain();
         toneGain.gain.setValueAtTime(0, ctx.currentTime);
-        // Fast attack for immediate response, sustain for full 3 beats
-        toneGain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.5); 
+        // Fade in over 0.5s
+        toneGain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.5); 
         toneGain.connect(masterGainRef.current);
         toneGainRef.current = toneGain;
 
-        // Drone Synthesis (Same as Scanner)
+        // Rich Drone Synthesis
         const osc1 = ctx.createOscillator();
         osc1.type = 'sine';
         osc1.frequency.value = frequency;
@@ -112,74 +129,91 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     const stopTone = () => {
         const ctx = audioCtxRef.current;
         if (toneGainRef.current && ctx) {
-            // Fade out over 1 beat (approx 1.6s) to be smooth
-            toneGainRef.current.gain.setTargetAtTime(0, ctx.currentTime, 0.3); 
+            // Long release: Fade out over 2 seconds (spilling into the next beat)
+            toneGainRef.current.gain.setTargetAtTime(0, ctx.currentTime, 0.5); 
         }
-        // Cleanup oscillators after fade
+        // Cleanup oscillators later
+        const oldOscillators = [...toneOscillatorsRef.current];
+        toneOscillatorsRef.current = []; // Clear ref immediately
         setTimeout(() => {
-            toneOscillatorsRef.current.forEach(osc => {
+            oldOscillators.forEach(osc => {
                 try { osc.stop(); } catch(e) {}
             });
-            toneOscillatorsRef.current = [];
-        }, 1000);
+        }, 3000); // Wait for fade out
     };
 
-    const runLoop = () => {
+    const updateLoop = () => {
         if (!isPlaying) return;
 
         const now = Date.now();
         const elapsed = (now - startTimeRef.current) / 1000; // Seconds
-        const totalCycleTime = BEAT_DURATION * 6;
+        const totalCycleTime = BEAT_DURATION * 6; // 10 seconds
         const cycleTime = elapsed % totalCycleTime;
         
         // Determine Beat (1-6)
-        const beat = Math.floor(cycleTime / BEAT_DURATION) + 1;
+        // beat 1: 0.0 - 1.666
+        // beat 2: 1.666 - 3.333
+        // ...
+        const beatIndex = Math.floor(cycleTime / BEAT_DURATION); // 0 to 5
+        const beat = beatIndex + 1; // 1 to 6
         
         if (beat !== currentBeat) {
             setCurrentBeat(beat);
-            playClick(); // Heartbeat on every beat
             
-            // Logic for Phases
+            // Logic for Phases & Sounds
             if (beat === 1) {
                 setPhase('IN');
                 setCycleCount(c => c + 1);
+                playGong('high'); // Signal IN
             } else if (beat === 2) {
                 setPhase('HOLD_FULL');
+                playGong('low'); // Signal HOLD
             } else if (beat === 3) {
                 setPhase('TONE');
-                startTone(); // Start Drone - will run for beats 3, 4, 5
+                startTone(); // Start Drone (lasts 3,4,5)
             } else if (beat === 6) {
                 setPhase('HOLD_EMPTY');
-                stopTone(); // Stop Drone at start of beat 6
+                stopTone(); // Start release
+                playGong('low'); // Signal HOLD
+            } else {
+                playClick(); // Just a click for intermediate beats (4, 5)
             }
         }
         
-        // Animation Frame Request
-        timerRef.current = setTimeout(runLoop, 50); 
+        requestRef.current = requestAnimationFrame(updateLoop);
     };
 
     // Effect to start/stop loop
     useEffect(() => {
         if (isPlaying) {
-            // Resume Audio Context on user interaction (Start button)
             if (audioCtxRef.current?.state === 'suspended') {
                 audioCtxRef.current.resume();
             }
             
             startTimeRef.current = Date.now();
             setCurrentBeat(0);
-            runLoop();
+            requestRef.current = requestAnimationFrame(updateLoop);
         } else {
-            if (timerRef.current) clearTimeout(timerRef.current);
+            if (requestRef.current) cancelAnimationFrame(requestRef.current);
             stopTone();
             setPhase('HOLD_EMPTY');
             setCurrentBeat(0);
         }
         return () => {
-            if (timerRef.current) clearTimeout(timerRef.current);
+            if (requestRef.current) cancelAnimationFrame(requestRef.current);
         };
     }, [isPlaying]);
 
+    // Calculate progress for the ring (0 to 1 over 10 seconds)
+    // We use a separate state or just derive it in render? 
+    // Deriving in render using a hook or just CSS animation is smoother.
+    // But here we need to sync with the logic. 
+    // Let's use CSS animation keyframes triggered by isPlaying? 
+    // No, manual SVG path manipulation is best for precision.
+    
+    // We'll use a local animated value for the ring driven by the loop wouldn't be smooth enough (60fps vs logic).
+    // Better: CSS animation that lasts exactly 10s and repeats.
+    
     return (
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/95 text-white font-sans backdrop-blur-xl">
             
@@ -207,8 +241,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                     variants={{
                         IN: { scale: 1.0, opacity: 1, backgroundColor: color },
                         HOLD_FULL: { scale: 1.0, opacity: 0.9, backgroundColor: color },
-                        TONE: { scale: 0.3, opacity: 0.8, backgroundColor: color }, // Shrink
-                        HOLD_EMPTY: { scale: 0.3, opacity: 0.5, backgroundColor: color }
+                        TONE: { scale: 0.35, opacity: 0.8, backgroundColor: color }, // Shrink
+                        HOLD_EMPTY: { scale: 0.35, opacity: 0.5, backgroundColor: color }
                     }}
                     transition={{ 
                         duration: phase === 'TONE' ? BEAT_DURATION * 3 : BEAT_DURATION, 
@@ -227,25 +261,44 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                 </motion.div>
 
                 {/* Beat Indicator Ring */}
-                <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
+                <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none overflow-visible">
+                    {/* Background track */}
                     <circle
-                        cx="250" cy="250" r="240"
+                        cx="250" cy="250" r="260"
                         fill="none"
                         stroke="white"
                         strokeWidth="2"
-                        strokeOpacity="0.2"
+                        strokeOpacity="0.1"
                     />
-                    {/* Progress Segment */}
-                    <motion.circle
-                        cx="250" cy="250" r="240"
-                        fill="none"
-                        stroke={color}
-                        strokeWidth="4"
-                        strokeDasharray={2 * Math.PI * 240}
-                        animate={{ strokeDashoffset: 2 * Math.PI * 240 * (1 - ((currentBeat - 1) / 6)) }}
-                        transition={{ duration: BEAT_DURATION, ease: "linear" }}
-                    />
+                    
+                    {/* Progress Segment - Pure CSS Animation for perfect sync */}
+                    {isPlaying && (
+                        <circle
+                            cx="250" cy="250" r="260"
+                            fill="none"
+                            stroke={color}
+                            strokeWidth="6"
+                            strokeLinecap="round"
+                            strokeDasharray={2 * Math.PI * 260}
+                            strokeDashoffset={2 * Math.PI * 260} // Start hidden
+                            className="origin-center"
+                            style={{
+                                animation: `progressRing 10s linear infinite`
+                            }}
+                        />
+                    )}
+                    
+                    {/* 12 o'clock marker */}
+                    <circle cx="250" cy="-10" r="4" fill="white" fillOpacity="0.5" />
                 </svg>
+                
+                {/* Global Styles for Keyframes */}
+                <style>{`
+                    @keyframes progressRing {
+                        0% { stroke-dashoffset: ${2 * Math.PI * 260}; }
+                        100% { stroke-dashoffset: 0; }
+                    }
+                `}</style>
             </div>
 
             {/* Controls */}

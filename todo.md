@@ -159,3 +159,7 @@
   - [ ] Modify `SpectralScanner.tsx` to accept an `initialFrequency` or `forcedFrequency` prop.
   - [ ] Ensure `Method36Trainer` uses this forced frequency if available, instead of live detection.
 - [ ] **Fix Frequency Deviation Logic in Analysis**: Ensure the calculated frequency matches the identified tone (e.g., F) and that deviation (cents) is capped or corrected so it doesn't shift the tone to another note (like A).
+- [ ] **Refine Method 36 Trainer (Sync, Duration, Gong)**:
+  - [ ] **Progress Ring**: Ensure the ring starts at 12 o'clock and completes a full circle in exactly 10 seconds (6 beats) without jumping.
+  - [ ] **Tone Duration**: Extend the mantra tone to last the full 3 beats (approx. 5 seconds) with a smooth release.
+  - [ ] **Gong Signals**: Replace heartbeat with a synthetic gong sound to mark the "Inhale" and "Hold" phase transitions.
