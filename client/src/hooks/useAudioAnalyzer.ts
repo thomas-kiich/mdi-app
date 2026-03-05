@@ -11,7 +11,7 @@ export interface AnalysisResult {
   spectrum: Uint8Array;
   volume: number;
   toneDistribution?: Record<string, number>;
-  correctionNote?: string; // New field to indicate if a correction was applied
+  correctionNote?: string;
 }
 
 export function useAudioAnalyzer() {
@@ -26,7 +26,7 @@ export function useAudioAnalyzer() {
   const rafIdRef = useRef<number | null>(null);
   
   const accumulatedTonesRef = useRef<Record<string, number>>({});
-  const accumulatedFreqsRef = useRef<Record<string, number[]>>({}); // Store all measured freqs per tone
+  const accumulatedFreqsRef = useRef<Record<string, number[]>>({});
   const totalFramesRef = useRef(0);
   const lastValidResultRef = useRef<AnalysisResult | null>(null);
 
@@ -43,9 +43,10 @@ export function useAudioAnalyzer() {
     }
     const volume = sum / bufferLength;
     
+    // Find peak frequency
     let maxVal = -1;
     let maxIndex = -1;
-    const searchLimit = Math.min(bufferLength, 50);
+    const searchLimit = Math.min(bufferLength, 50); // Limit search range for voice fundamental
 
     for (let i = 2; i < searchLimit; i++) {
       if (dataArray[i] > maxVal) {
@@ -54,31 +55,14 @@ export function useAudioAnalyzer() {
       }
     }
     
-    if (maxIndex > 4) { 
-        const halfIndex = Math.round(maxIndex / 2);
-        let halfVal = 0;
-        let bestHalfIndex = halfIndex;
-        
-        for (let j = halfIndex - 1; j <= halfIndex + 1; j++) {
-            if (dataArray[j] > halfVal) {
-                halfVal = dataArray[j];
-                bestHalfIndex = j;
-            }
-        }
-        
-        const threshold = maxVal * 0.5;
-        
-        if (halfVal > threshold) {
-            maxIndex = bestHalfIndex;
-        }
-    }
-    
+    // Simple interpolation for better frequency resolution
     const sampleRate = audioContextRef.current.sampleRate;
     let fundamentalFreq = 0;
     
     if (maxIndex > 0 && maxIndex < bufferLength - 1) {
         const prev = dataArray[maxIndex - 1];
         const next = dataArray[maxIndex + 1];
+        // Parabolic interpolation
         const pixel = maxIndex + (next - prev) / (2 * (2 * dataArray[maxIndex] - next - prev));
         fundamentalFreq = pixel * sampleRate / analyserRef.current.fftSize;
     } else {
@@ -101,7 +85,6 @@ export function useAudioAnalyzer() {
         volume
       };
       
-      // Force update state to trigger re-render of visualizer
       setResult(newResult);
       lastValidResultRef.current = newResult;
       
@@ -114,7 +97,7 @@ export function useAudioAnalyzer() {
       }
       totalFramesRef.current++;
     } else {
-         // Even if not speaking, update spectrum for visualizer
+         // Update visualizer even if not speaking
          setResult(prev => prev ? { ...prev, isSpeaking: false, spectrum: dataArray, volume } : { 
              fundamentalFreq: 0, 
              tone: TONES[0], 
@@ -160,7 +143,7 @@ export function useAudioAnalyzer() {
     
     setIsRecording(false);
     
-    // Process final result logic...
+    // Process final result logic
     if (totalFramesRef.current > 0) {
         let maxCount = 0;
         let dominantToneName = "";
@@ -178,7 +161,6 @@ export function useAudioAnalyzer() {
                 distribution[name] = (count / totalFramesRef.current) * 100;
             }
             
-            // Calculate average measured frequency for the dominant tone
             const measuredFreqs = accumulatedFreqsRef.current[dominantToneName] || [];
             const avgMeasuredFreq = measuredFreqs.length > 0 
                 ? measuredFreqs.reduce((a, b) => a + b, 0) / measuredFreqs.length 
@@ -188,32 +170,17 @@ export function useAudioAnalyzer() {
             let finalTone = TONES.find(t => t.name === dominantToneName) || lastValidResultRef.current.tone;
             let correctionNote = undefined;
 
-            // QUINT CORRECTION LOGIC
-            if (dominantToneName === 'C' && finalFreq > 130) {
-                 const check = getToneFromFrequency(finalFreq / 1.5);
-                 if (check.tone.name === 'F') {
-                     finalTone = check.tone;
-                     finalFreq = finalFreq / 1.5;
-                     correctionNote = `Quint-Korrektur: C (${avgMeasuredFreq.toFixed(2)}Hz) -> F`;
-                 }
-            }
-            else if (dominantToneName === 'G' && finalFreq > 190) {
-                 const check = getToneFromFrequency(finalFreq / 1.5);
-                 if (check.tone.name === 'C') {
-                     finalTone = check.tone;
-                     finalFreq = finalFreq / 1.5;
-                     correctionNote = `Quint-Korrektur: G (${avgMeasuredFreq.toFixed(2)}Hz) -> C`;
-                 }
-            }
+            // Simple correction logic (e.g. quint check) can be added here if needed
+            // For now, trust the distribution
 
-            // Recalculate cents for the final (potentially corrected) frequency
             const idealFreq = finalTone.frequency; 
+            // Calculate cents based on average measured frequency vs ideal frequency
             const finalCents = 1200 * Math.log2(finalFreq / idealFreq);
 
             const finalResult = {
                 ...lastValidResultRef.current,
                 tone: finalTone,
-                fundamentalFreq: finalFreq, // Precise frequency
+                fundamentalFreq: finalFreq,
                 cents: finalCents,
                 noteName: finalTone.name,
                 toneDistribution: distribution,
@@ -222,24 +189,17 @@ export function useAudioAnalyzer() {
             setResult(finalResult);
         } else if (lastValidResultRef.current) {
             setResult(lastValidResultRef.current);
-        } else {
-             setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
         }
     } else if (lastValidResultRef.current) {
         setResult(lastValidResultRef.current);
-    } else {
-        if (!result) {
-            // setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
-        }
     }
-  }, [analyze]); // Removed result from dependency array to prevent loop
+  }, []);
 
   const startRecording = useCallback(async () => {
     try {
-      // If already recording, stop first
       if (isRecording) {
         stopRecording();
-        return; // Don't restart immediately
+        return;
       }
       
       setError(null);
@@ -258,6 +218,7 @@ export function useAudioAnalyzer() {
       
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 2048;
+      analyser.smoothingTimeConstant = 0.8; // Smoother visualization
       analyserRef.current = analyser;
       
       const source = audioContext.createMediaStreamSource(stream);

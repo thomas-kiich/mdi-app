@@ -448,7 +448,7 @@ export default function Home() {
                   {/* Real-time Visualizer */}
                   <div className="w-48 h-16">
                     <SpectrumVisualizer 
-                        frequencyData={isRecording ? new Uint8Array(32).fill(128) : new Uint8Array(0)} 
+                        frequencyData={analysisResult?.spectrum || new Uint8Array(0)} 
                         isActive={isRecording}
                     />
                   </div>

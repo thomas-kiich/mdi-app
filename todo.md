@@ -179,6 +179,10 @@
     - [x] Add Octave Toggle (Male/Female)
     - [x] Further reduce audio gain to prevent clipping
 
-- [ ] **Final Fixes: Audio Detune and Cycle Counter**
-    - [ ] Adjust oscillator detune and release envelope to eliminate beating and clipping at the end of the tone.
-    - [ ] Rewrite cycle counter logic to increment exactly once per 10-second cycle, ensuring stability.
+- [x] **Final Fixes: Audio Detune and Cycle Counter**
+    - [x] Adjust oscillator detune and release envelope to eliminate beating and clipping at the end of the tone.
+    - [x] Rewrite cycle counter logic to increment exactly once per 10-second cycle, ensuring stability.
+
+- [ ] **Restore Voice Visualization in Analysis:** Ensure live frequency visualization during recording.
+- [ ] **Research: Voice Vibration & Cellular Health:** Gather scientific data on the effects of sound on cells.
+- [ ] **Draft Content: 'Maschinen atmen nicht':** Write chapters on Voice vs. AI and cellular resonance.
