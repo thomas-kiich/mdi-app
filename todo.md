@@ -158,3 +158,4 @@
   - [ ] Update `Home.tsx` to pass the analyzed frequency to `SpectralScanner`.
   - [ ] Modify `SpectralScanner.tsx` to accept an `initialFrequency` or `forcedFrequency` prop.
   - [ ] Ensure `Method36Trainer` uses this forced frequency if available, instead of live detection.
+- [ ] **Fix Frequency Deviation Logic in Analysis**: Ensure the calculated frequency matches the identified tone (e.g., F) and that deviation (cents) is capped or corrected so it doesn't shift the tone to another note (like A).

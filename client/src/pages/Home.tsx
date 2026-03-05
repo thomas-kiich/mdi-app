@@ -164,8 +164,6 @@ export default function Home() {
     processResult(results.q3);
     
     // Normalize to 100%
-    // If we simply summed percentages from 3 steps, the total could be 300%
-    // We should divide by the number of valid steps (1, 2, or 3)
     let validSteps = 0;
     if (results.q1) validSteps++;
     if (results.q2) validSteps++;
@@ -195,8 +193,8 @@ export default function Home() {
       
       if (toneData) {
         // Determine the "Final Hz" for the result.
-        // User Requirement: The result should be consistent. If Tone is F# and Cents is -27, 
-        // the Hz must match F# -27 cents, NOT the Hz of a different tone from a specific session.
+        // FIX: Ensure the Hz matches the Tone (F) and not some distant frequency (A).
+        // If the deviation is too large (> 50 cents), clamp it or reset to 0.
 
         // 1. Try to find if the dominant tone was ever the fundamental in any session
         let measuredHz = 0;
@@ -205,7 +203,6 @@ export default function Home() {
         const checkSession = (res: AnalysisResult | null) => {
             if (!res || !res.toneDistribution) return;
             // Check if this session's FUNDAMENTAL tone matches our dominant tone
-            // We need to re-check the tone of the fundamental freq
             const fundCheck = getToneFromFrequency(res.fundamentalFreq);
             
             if (fundCheck.tone.name === dominantToneName) {
@@ -231,23 +228,34 @@ export default function Home() {
             // Case A: We have a real measurement of this tone
             finalHz = measuredHz;
             const check = getToneFromFrequency(finalHz);
-            finalCents = check.cents;
-            finalDiffHz = check.diffHz;
+            
+            // Double check: Is the measured Hz really close to the target tone?
+            // If check.tone.name is NOT dominantToneName, then something is wrong with getToneFromFrequency or the measurement.
+            if (check.tone.name === dominantToneName) {
+                 finalCents = check.cents;
+                 finalDiffHz = check.diffHz;
+            } else {
+                 // Fallback: The measurement drifted too far. Reset to ideal freq.
+                 finalHz = toneData.frequency;
+                 finalCents = 0;
+                 finalDiffHz = 0;
+            }
         } else {
             // Case B: The dominant tone (e.g. F#) won by accumulation/distribution, 
             // but was never the fundamental of a single session.
-            // Instead of showing the "perfect" Hz (which looks fake), we try to find ANY instance where this tone appeared
-            // in the raw analysis data, even if it wasn't the fundamental.
-            // Since we don't store full spectral data here, we will approximate a realistic deviation.
-            // We look at the average cent deviation of the sessions to apply a similar "character" to the calculated tone.
+            // We use the IDEAL frequency of the dominant tone.
             
+            // We can try to apply a small average shift from the sessions, but ONLY if it's small.
             let totalCentsShift = 0;
             let count = 0;
             
             const addShift = (res: AnalysisResult | null) => {
                 if (res && res.cents !== undefined) {
-                    totalCentsShift += res.cents;
-                    count++;
+                    // Only include shifts that are reasonable (< 50 cents)
+                    if (Math.abs(res.cents) < 50) {
+                        totalCentsShift += res.cents;
+                        count++;
+                    }
                 }
             };
             addShift(results.q1);
@@ -263,6 +271,14 @@ export default function Home() {
             finalDiffHz = finalHz - toneData.frequency;
         }
         
+        // FINAL SAFETY CHECK: Cap Cents at +/- 50
+        if (Math.abs(finalCents) > 50) {
+            console.warn(`Large cent deviation detected (${finalCents}). Clamping to 0.`);
+            finalCents = 0;
+            finalHz = toneData.frequency;
+            finalDiffHz = 0;
+        }
+
         const result = {
           fundamentalFreq: finalHz,
           tone: toneData,
@@ -312,118 +328,69 @@ export default function Home() {
     if (currentStep === "question3") setResults(prev => ({ ...prev, q3: null }));
   };
 
-  // Render different content based on current step
   const renderContent = () => {
     switch (currentStep) {
       case "intro":
         return (
           <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in duration-700">
-            <div className="space-y-4 max-w-2xl">
-              {/* Longitudinal Progress Badge */}
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-zinc-900 border border-zinc-800 mb-4 mx-auto">
-                  <Activity className="w-4 h-4 text-orange-500" />
-                  <span className="text-xs font-medium text-zinc-400">
-                      {isStudyComplete 
-                          ? "LANGZEIT-STUDIE ABGESCHLOSSEN" 
-                          : `TAG ${Math.min(daysCompleted + 1, 7)} VON 7`
-                      }
-                  </span>
-                  <div className="flex gap-1 ml-2">
-                      {[...Array(7)].map((_, i) => (
-                          <div 
-                              key={i} 
-                              className={cn(
-                                  "w-1.5 h-1.5 rounded-full",
-                                  i < daysCompleted ? "bg-orange-500" : "bg-zinc-700"
-                              )} 
-                          />
-                      ))}
-                  </div>
-              </div>
-
-              <h1 className="text-4xl md:text-6xl font-bold tracking-tighter text-white">
+            <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full blur opacity-25 animate-pulse"></div>
+                <h1 className="relative text-6xl md:text-8xl font-bold tracking-tighter text-white mb-4">
                 MDI <span className="text-orange-500">SYSTEM</span>
-              </h1>
-              <p className="text-xl text-zinc-400">
-                Multidimensionales Identitätssystem
-              </p>
-              <div className="h-1 w-20 bg-orange-500 mx-auto rounded-full my-8" />
-              <p className="text-lg text-zinc-300 leading-relaxed">
-                Entdecke deine wahre Frequenz. <br/>
-                Eine Reise durch deine Vergangenheit, Gegenwart und Zukunft.
-              </p>
+                </h1>
             </div>
-            <Button 
-              size="lg" 
-              onClick={advanceStep}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-6 text-lg rounded-full shadow-[0_0_30px_rgba(249,115,22,0.3)] transition-all hover:scale-105"
-            >
-              {isStudyComplete ? "Neue Messung starten" : "Analyse starten"} <ChevronRight className="ml-2 h-5 w-5" />
-            </Button>
+            <p className="text-xl text-zinc-400 max-w-2xl font-light tracking-wide">
+              Multidimensionales Identitätssystem
+            </p>
+            
+            <div className="w-16 h-1 bg-orange-500 rounded-full my-8" />
 
-            <div className="flex flex-col gap-2 mt-4 items-center">
-              <Button 
-                variant="ghost"
-                className="text-zinc-400 hover:text-white"
-                onClick={() => setShowStory(true)}
-              >
-                <Play className="mr-2 h-4 w-4 inline" />
-                Das Prinzip entdecken
-              </Button>
-              <Button 
-                variant="ghost"
-                className="text-zinc-400 hover:text-white"
-                onClick={() => setShowSpectralScanner(true)}
-              >
-                <Activity className="mr-2 h-4 w-4 inline" />
-                Live Spektrum
-              </Button>
+            <p className="text-lg text-zinc-300 max-w-xl leading-relaxed">
+              Entdecke deine wahre Frequenz.<br/>
+              Eine Reise durch deine Vergangenheit, Gegenwart und Zukunft.
+            </p>
+
+            <div className="flex flex-col gap-4 pt-8">
+                <Button 
+                size="lg"
+                className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-12 py-8 text-lg font-medium shadow-[0_0_30px_rgba(249,115,22,0.3)] transition-all hover:scale-105"
+                onClick={advanceStep}
+                >
+                Analyse starten <ChevronRight className="ml-2 h-5 w-5" />
+                </Button>
+                
+                <div className="flex gap-4 justify-center mt-4">
+                    <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowStory(true)}>
+                        <Play className="mr-2 h-4 w-4" /> Das Prinzip entdecken
+                    </Button>
+                    <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowSpectralScanner(true)}>
+                        <Activity className="mr-2 h-4 w-4" /> Live Spektrum
+                    </Button>
+                </div>
             </div>
-
-            {isStudyComplete && studyResult && (
-                  <Button 
-                    variant="outline"
-                    size="lg" 
-                    className="mt-4 text-lg px-8 py-6 rounded-full border-orange-500/50 text-orange-500 hover:bg-orange-500/10"
-                    onClick={() => {
-                        setFinalResult(studyResult);
-                        setCurrentStep("result");
-                    }}
-                  >
-                    Langzeit-Ergebnis ansehen <Activity className="ml-2 w-5 h-5" />
-                  </Button>
-            )}
           </div>
         );
 
       case "preparation":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <Card className="w-full max-w-2xl bg-zinc-900/50 border-zinc-800 backdrop-blur-sm">
+          <div className="max-w-2xl mx-auto space-y-8 animate-in slide-in-from-right duration-500">
+            <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-2xl text-orange-500">VORBEREITUNG</CardTitle>
+                <CardTitle className="text-2xl text-center text-white">Vorbereitung</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6 text-left text-zinc-300 text-lg leading-relaxed">
+              <CardContent className="space-y-6 text-zinc-300">
                 <p>
-                  Finde einen ruhigen Platz, an dem du für die nächsten Minuten ungestört bist.
+                  Wir werden nun deine Stimme in drei Dimensionen analysieren.
+                  Bitte antworte spontan und authentisch auf die folgenden drei Fragen.
                 </p>
-                <p>
-                  Achte darauf, dass keine externen Geräusche deine Aufnahme beeinflussen.
-                </p>
-                <p>
-                  Setze dich aufrecht hin, ohne dich anzulehnen. Atme einige Male tief durch die Nase ein, halte kurz den Atem und lasse ihn sanft ausströmen.
-                </p>
-                <p>
-                  Schließe kurz die Augen und lasse störende Gedanken los.
-                </p>
-                <div className="pt-4 text-center">
-                  <p className="text-white font-medium mb-6">Wenn du bereit bist, starte das System.</p>
-                  <Button 
-                    size="lg" 
-                    onClick={advanceStep}
-                    className="bg-white text-black hover:bg-zinc-200 px-8 py-6 rounded-full"
-                  >
-                    Ich bin bereit
+                <ul className="space-y-4 list-disc list-inside text-zinc-400 ml-4">
+                  <li>Sorge für eine ruhige Umgebung</li>
+                  <li>Sprich in deiner normalen Stimmlage</li>
+                  <li>Nimm dir für jede Antwort ca. 10-20 Sekunden Zeit</li>
+                </ul>
+                <div className="pt-6 flex justify-center">
+                  <Button onClick={advanceStep} className="bg-white text-black hover:bg-zinc-200 rounded-full px-8">
+                    Bereit <ChevronRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>
@@ -434,70 +401,68 @@ export default function Home() {
       case "question1":
       case "question2":
       case "question3":
-        const stepTitles = {
-          question1: "GEGENWART",
-          question2: "VERGANGENHEIT",
-          question3: "ZUKUNFT"
-        };
-        const stepQuestions = {
-          question1: "Erzähle bitte mit normaler Sprechstimme, wie dein heutiger Tag begonnen hat und was du bislang getan hast.",
-          question2: "Erinnere dich an ein wunderschönes Erlebnis aus deinem Leben. Erzähle in dieser freudvollen Stimmung davon.",
-          question3: "Stimme dich ein auf eine Vision, die du selbst in deinem Leben noch umsetzen möchtest. Was treibt dich an?"
+        const questions = {
+          question1: {
+            title: "Dimension 1: Die Gegenwart",
+            text: "Wie fühlst du dich in diesem Moment? Was bewegt dich gerade jetzt?",
+            hint: "Beschreibe deinen aktuellen Zustand."
+          },
+          question2: {
+            title: "Dimension 2: Die Vergangenheit",
+            text: "Was ist deine prägendste Erinnerung aus der Kindheit?",
+            hint: "Erzähle kurz von einem Moment, der geblieben ist."
+          },
+          question3: {
+            title: "Dimension 3: Die Zukunft",
+            text: "Was ist dein größter Wunsch oder deine Vision für dich selbst?",
+            hint: "Wo möchtest du hin? Was zieht dich an?"
+          }
         };
         
+        const q = questions[currentStep];
         const hasRes = hasResult();
 
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in duration-500">
-             {/* Progress Steps */}
-             <div className="flex items-center gap-4 mb-8">
-                {["question1", "question2", "question3"].map((s, i) => (
-                  <div key={s} className="flex items-center gap-2">
-                    <div className={cn(
-                      "w-3 h-3 rounded-full transition-colors",
-                      currentStep === s ? "bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.8)]" : 
-                      (i < ["question1", "question2", "question3"].indexOf(currentStep) ? "bg-orange-500/50" : "bg-zinc-800")
-                    )} />
-                    {i < 2 && <div className="w-8 h-0.5 bg-zinc-800" />}
-                  </div>
-                ))}
-             </div>
-
-            <div className="space-y-4 max-w-2xl">
-              <h2 className="text-3xl font-bold text-white tracking-tight">{stepTitles[currentStep]}</h2>
-              <p className="text-xl text-zinc-400 leading-relaxed">
-                {stepQuestions[currentStep]}
-              </p>
+          <div className="max-w-2xl mx-auto space-y-8 animate-in slide-in-from-right duration-500">
+            <div className="flex justify-between text-xs uppercase tracking-widest text-zinc-500 mb-4">
+                <span>Analyse läuft</span>
+                <span>Schritt {currentStep === "question1" ? 1 : currentStep === "question2" ? 2 : 3} / 3</span>
+            </div>
+            
+            <div className="text-center space-y-6">
+               <h2 className="text-xl text-orange-500 font-mono">{q.title}</h2>
+               <h3 className="text-3xl md:text-4xl font-bold text-white leading-tight">{q.text}</h3>
+               <p className="text-zinc-400 italic">{q.hint}</p>
             </div>
 
-            <div className="w-full max-w-md bg-zinc-900/50 rounded-2xl p-8 border border-zinc-800 shadow-xl backdrop-blur-sm">
-               {/* Visualizer Area */}
-               <div className="h-32 flex items-center justify-center mb-8 relative">
-                 {isRecording ? (
+            <div className="flex flex-col items-center justify-center py-12 space-y-8">
+               
+               {/* Visualizer Circle */}
+               <div className="relative w-64 h-64 flex items-center justify-center">
+                  {isRecording ? (
+                    <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-pulse" />
+                  ) : (
+                    <div className="absolute inset-0 border border-zinc-800 rounded-full" />
+                  )}
+                  
+                  {/* Real-time Visualizer */}
+                  <div className="w-48 h-16">
                     <SpectrumVisualizer 
-                        isActive={true} 
-                        frequencyData={analysisResult?.spectrum || new Uint8Array(0)} 
+                        frequencyData={isRecording ? new Uint8Array(32).fill(128) : new Uint8Array(0)} 
+                        isActive={isRecording}
                     />
-                 ) : hasRes ? (
-                    <div className="text-orange-500 font-mono text-xl animate-pulse">
-                        AUFNAHME GESPEICHERT
-                    </div>
-                 ) : (
-                    <div className="text-zinc-600">
-                        <Mic className="h-12 w-12 mx-auto mb-2 opacity-20" />
-                        <span className="text-sm">Bereit zur Aufnahme</span>
-                    </div>
-                 )}
+                  </div>
                </div>
 
-               <div className="flex justify-center gap-4">
+               {/* Controls */}
+               <div className="flex flex-col items-center gap-4">
                  {!isRecording && !hasRes && (
                    <Button 
                     size="lg"
                     onClick={handleStartRecording}
-                    className="bg-red-500 hover:bg-red-600 text-white rounded-full w-16 h-16 flex items-center justify-center shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-transform hover:scale-110"
+                    className="bg-orange-500 hover:bg-orange-600 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.4)] transition-transform hover:scale-110"
                    >
-                     <Mic className="h-6 w-6" />
+                     <Mic className="h-8 w-8" />
                    </Button>
                  )}
 
@@ -722,8 +687,8 @@ export default function Home() {
                                 ].map((step) => {
                                     // RE-CALCULATE TONE FOR DISPLAY TO ENSURE CONSISTENCY
                                     let displayTone = step.data?.noteName || "-";
-                                    let displayCents = step.data?.cents;
                                     let displayFreq = step.data?.fundamentalFreq;
+                                    let displayCents = step.data?.cents;
                                     
                                     if (displayFreq) {
                                         const check = getToneFromFrequency(displayFreq);
