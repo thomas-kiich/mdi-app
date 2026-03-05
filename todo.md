@@ -170,3 +170,6 @@
 - [ ] **Final Polish: Audio Level and Ring Sync**:
   - [ ] **Lower Audio Gain**: Reduce master gain to 0.2 to prevent clipping/distortion.
   - [ ] **Force Ring Sync**: Use CSS transition with exact 10s duration triggered by React state for perfect sync.
+- [ ] **Fix Analysis Visualization and Audio Distortion**:
+  - [ ] **Method 36 Audio**: Reduce harmonic complexity and lower gain to 10% to prevent distortion.
+  - [ ] **Analysis Visualization**: Fix AudioContext initialization in Home.tsx to restore live waveform during recording.

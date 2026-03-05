@@ -101,6 +101,7 @@ export function useAudioAnalyzer() {
         volume
       };
       
+      // Force update state to trigger re-render of visualizer
       setResult(newResult);
       lastValidResultRef.current = newResult;
       
@@ -113,7 +114,17 @@ export function useAudioAnalyzer() {
       }
       totalFramesRef.current++;
     } else {
-         setResult(prev => prev ? { ...prev, isSpeaking: false, spectrum: dataArray, volume } : null);
+         // Even if not speaking, update spectrum for visualizer
+         setResult(prev => prev ? { ...prev, isSpeaking: false, spectrum: dataArray, volume } : { 
+             fundamentalFreq: 0, 
+             tone: TONES[0], 
+             cents: 0, 
+             diffHz: 0, 
+             noteName: "-", 
+             isSpeaking: false, 
+             spectrum: dataArray, 
+             volume 
+         });
     }
     
     rafIdRef.current = requestAnimationFrame(analyze);
@@ -149,6 +160,7 @@ export function useAudioAnalyzer() {
     
     setIsRecording(false);
     
+    // Process final result logic...
     if (totalFramesRef.current > 0) {
         let maxCount = 0;
         let dominantToneName = "";
@@ -176,10 +188,7 @@ export function useAudioAnalyzer() {
             let finalTone = TONES.find(t => t.name === dominantToneName) || lastValidResultRef.current.tone;
             let correctionNote = undefined;
 
-            // QUINT CORRECTION LOGIC (REVISED)
-            // Only apply specific corrections for known problematic overtone pairs (C -> F, G -> C)
-            // Avoid generic "freq > 130" check which caused false positives for valid high tones (e.g. Ais)
-            
+            // QUINT CORRECTION LOGIC
             if (dominantToneName === 'C' && finalFreq > 130) {
                  const check = getToneFromFrequency(finalFreq / 1.5);
                  if (check.tone.name === 'F') {
@@ -220,15 +229,17 @@ export function useAudioAnalyzer() {
         setResult(lastValidResultRef.current);
     } else {
         if (!result) {
-            setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
+            // setError("Keine Stimme erkannt. Bitte versuchen Sie es erneut und sprechen Sie deutlich.");
         }
     }
-  }, [result]); 
+  }, [analyze]); // Removed result from dependency array to prevent loop
 
   const startRecording = useCallback(async () => {
     try {
+      // If already recording, stop first
       if (isRecording) {
         stopRecording();
+        return; // Don't restart immediately
       }
       
       setError(null);

@@ -44,8 +44,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         audioCtxRef.current = ctx;
         const master = ctx.createGain();
         master.connect(ctx.destination);
-        // REDUCED GAIN TO PREVENT CLIPPING
-        master.gain.value = 0.2; 
+        // DRASTICALLY REDUCED GAIN TO 10% TO PREVENT DISTORTION
+        master.gain.value = 0.1; 
         masterGainRef.current = master;
 
         return () => {
@@ -110,25 +110,35 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         toneGainRef.current = toneGain;
 
         // Rich Drone Synthesis - ONE OCTAVE HIGHER
+        // SIMPLIFIED HARMONICS TO PREVENT DISTORTION
         const baseFreq = frequency * 2; // Octave Shift Up
 
         const osc1 = ctx.createOscillator();
         osc1.type = 'sine';
         osc1.frequency.value = baseFreq;
         
+        // Removed Triangle Sub to reduce low-end mud
+        // Replaced with a very subtle detuned sine for chorus effect
         const osc2 = ctx.createOscillator();
-        osc2.type = 'triangle';
-        osc2.frequency.value = baseFreq / 2; // Sub (now original freq)
+        osc2.type = 'sine';
+        osc2.frequency.value = baseFreq * 1.002; // Slight detune
         
+        // Reduced volume of the Fifth
         const osc3 = ctx.createOscillator();
         osc3.type = 'sine';
         osc3.frequency.value = baseFreq * 1.5; // Fifth
 
-        [osc1, osc2, osc3].forEach(osc => {
-            osc.connect(toneGain);
-            osc.start();
-            toneOscillatorsRef.current.push(osc);
-        });
+        // Create individual gains to balance the mix
+        const g1 = ctx.createGain(); g1.gain.value = 0.6; // Main
+        const g2 = ctx.createGain(); g2.gain.value = 0.3; // Detune
+        const g3 = ctx.createGain(); g3.gain.value = 0.2; // Fifth (Lower volume)
+
+        osc1.connect(g1).connect(toneGain);
+        osc2.connect(g2).connect(toneGain);
+        osc3.connect(g3).connect(toneGain);
+
+        [osc1, osc2, osc3].forEach(osc => osc.start());
+        toneOscillatorsRef.current.push(osc1, osc2, osc3);
     };
 
     const stopTone = () => {
