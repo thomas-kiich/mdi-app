@@ -302,21 +302,23 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                 `}</style>
             </div>
 
-            {/* Controls */}
-            <div className="absolute bottom-12 flex flex-col items-center gap-6">
-                
-                {/* Octave Toggle */}
-                <div className="flex items-center gap-4 bg-white/5 px-6 py-3 rounded-full backdrop-blur-md border border-white/10">
-                    <span className={`text-sm font-medium ${!isHighOctave ? 'text-white' : 'text-white/50'}`}>Tief (M)</span>
+            {/* Octave Toggle (Bottom Left) */}
+            <div className="absolute bottom-8 left-8 flex flex-col items-start gap-2 z-50">
+                <span className="text-xs uppercase tracking-widest text-white/40 ml-1">Oktave</span>
+                <div className="flex items-center gap-3 bg-black/40 px-4 py-2 rounded-lg backdrop-blur-md border border-white/10 hover:border-white/30 transition-colors">
+                    <span className={`text-xs font-medium ${!isHighOctave ? 'text-white' : 'text-white/40'}`}>Tief (M)</span>
                     <button 
                         onClick={() => setIsHighOctave(!isHighOctave)}
-                        className="text-white hover:text-orange-400 transition-colors"
+                        className="text-orange-500 hover:text-orange-400 transition-colors focus:outline-none"
                     >
-                        {isHighOctave ? <ToggleRight className="w-10 h-10" /> : <ToggleLeft className="w-10 h-10" />}
+                        {isHighOctave ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8" />}
                     </button>
-                    <span className={`text-sm font-medium ${isHighOctave ? 'text-white' : 'text-white/50'}`}>Hoch (W)</span>
+                    <span className={`text-xs font-medium ${isHighOctave ? 'text-white' : 'text-white/40'}`}>Hoch (W)</span>
                 </div>
+            </div>
 
+            {/* Controls (Center Bottom) */}
+            <div className="absolute bottom-12 flex flex-col items-center gap-6">
                 <div className="flex items-center gap-8">
                     <div className="text-center">
                         <div className="text-4xl font-mono font-bold tabular-nums">{cycleCount}</div>
