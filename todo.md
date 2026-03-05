@@ -163,3 +163,7 @@
   - [ ] **Progress Ring**: Ensure the ring starts at 12 o'clock and completes a full circle in exactly 10 seconds (6 beats) without jumping.
   - [ ] **Tone Duration**: Extend the mantra tone to last the full 3 beats (approx. 5 seconds) with a smooth release.
   - [ ] **Gong Signals**: Replace heartbeat with a synthetic gong sound to mark the "Inhale" and "Hold" phase transitions.
+- [ ] **Refine Method 36 Trainer (Sync, Octave, Gong)**:
+  - [ ] **Raise Octave**: Double the base frequency (x2) to raise the tone by one octave.
+  - [ ] **Shorten Gong**: Reduce the gong release time significantly for a short "ping".
+  - [ ] **Hard Sync Ring**: Bind the ring progress directly to the internal loop timer (elapsed time) instead of CSS animation.

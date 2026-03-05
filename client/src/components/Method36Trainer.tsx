@@ -26,6 +26,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     const [currentBeat, setCurrentBeat] = useState(0); // 1 to 6
     const [phase, setPhase] = useState<Phase>('HOLD_EMPTY');
     const [cycleCount, setCycleCount] = useState(0);
+    const [ringProgress, setRingProgress] = useState(0); // 0 to 1, hard synced
     
     const audioCtxRef = useRef<AudioContext | null>(null);
     const masterGainRef = useRef<GainNode | null>(null);
@@ -38,6 +39,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     // Initialize Audio
     useEffect(() => {
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+        // Fix TS error by casting or passing undefined if constructor allows, but casting is safer here
         const ctx = new AudioContextClass() as AudioContext;
         audioCtxRef.current = ctx;
         const master = ctx.createGain();
@@ -56,20 +58,20 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         const ctx = audioCtxRef.current;
         if (!ctx || !masterGainRef.current) return;
         
-        // Synthetic Gong/Bell
+        // Short, crisp Gong/Ping
         const osc = ctx.createOscillator();
         osc.type = 'sine';
         // Low gong for "Hold", High gong for "Inhale"
-        osc.frequency.value = pitch === 'low' ? 220 : 440; 
+        osc.frequency.value = pitch === 'low' ? 440 : 880; // Higher pitch for clarity
         
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.05); // Attack
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.0); // Long decay
+        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.01); // Fast Attack
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5); // Short Decay (0.5s)
         
         osc.connect(gain).connect(masterGainRef.current);
         osc.start();
-        osc.stop(ctx.currentTime + 2.5);
+        osc.stop(ctx.currentTime + 0.6);
     };
 
     const playClick = () => {
@@ -106,18 +108,20 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         toneGain.connect(masterGainRef.current);
         toneGainRef.current = toneGain;
 
-        // Rich Drone Synthesis
+        // Rich Drone Synthesis - ONE OCTAVE HIGHER
+        const baseFreq = frequency * 2; // Octave Shift Up
+
         const osc1 = ctx.createOscillator();
         osc1.type = 'sine';
-        osc1.frequency.value = frequency;
+        osc1.frequency.value = baseFreq;
         
         const osc2 = ctx.createOscillator();
         osc2.type = 'triangle';
-        osc2.frequency.value = frequency / 2; // Sub
+        osc2.frequency.value = baseFreq / 2; // Sub (now original freq)
         
         const osc3 = ctx.createOscillator();
         osc3.type = 'sine';
-        osc3.frequency.value = frequency * 1.5; // Fifth
+        osc3.frequency.value = baseFreq * 1.5; // Fifth
 
         [osc1, osc2, osc3].forEach(osc => {
             osc.connect(toneGain);
@@ -150,10 +154,11 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         const totalCycleTime = BEAT_DURATION * 6; // 10 seconds
         const cycleTime = elapsed % totalCycleTime;
         
+        // Hard Sync Ring Progress (0 to 1)
+        // Ensure it loops perfectly from 0 to 1 every 10 seconds
+        setRingProgress(cycleTime / totalCycleTime);
+
         // Determine Beat (1-6)
-        // beat 1: 0.0 - 1.666
-        // beat 2: 1.666 - 3.333
-        // ...
         const beatIndex = Math.floor(cycleTime / BEAT_DURATION); // 0 to 5
         const beat = beatIndex + 1; // 1 to 6
         
@@ -192,28 +197,20 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
             
             startTimeRef.current = Date.now();
             setCurrentBeat(0);
+            setRingProgress(0);
             requestRef.current = requestAnimationFrame(updateLoop);
         } else {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
             stopTone();
             setPhase('HOLD_EMPTY');
             setCurrentBeat(0);
+            setRingProgress(0);
         }
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
         };
     }, [isPlaying]);
 
-    // Calculate progress for the ring (0 to 1 over 10 seconds)
-    // We use a separate state or just derive it in render? 
-    // Deriving in render using a hook or just CSS animation is smoother.
-    // But here we need to sync with the logic. 
-    // Let's use CSS animation keyframes triggered by isPlaying? 
-    // No, manual SVG path manipulation is best for precision.
-    
-    // We'll use a local animated value for the ring driven by the loop wouldn't be smooth enough (60fps vs logic).
-    // Better: CSS animation that lasts exactly 10s and repeats.
-    
     return (
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/95 text-white font-sans backdrop-blur-xl">
             
@@ -256,7 +253,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                         <span className="text-4xl tracking-tighter leading-tight">
                             {phase === 'IN' ? 'EIN' : phase === 'TONE' ? 'MANTRA YOHN TÖNEN' : 'HALTEN'}
                         </span>
-                        <span className="text-sm font-mono opacity-50 mt-2">{toneName} • {frequency.toFixed(1)} Hz</span>
+                        <span className="text-sm font-mono opacity-50 mt-2">{toneName} • {(frequency * 2).toFixed(1)} Hz</span>
                     </div>
                 </motion.div>
 
@@ -271,7 +268,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                         strokeOpacity="0.1"
                     />
                     
-                    {/* Progress Segment - Pure CSS Animation for perfect sync */}
+                    {/* Progress Segment - Hard Synced via React State */}
                     {isPlaying && (
                         <circle
                             cx="250" cy="250" r="260"
@@ -280,25 +277,14 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                             strokeWidth="6"
                             strokeLinecap="round"
                             strokeDasharray={2 * Math.PI * 260}
-                            strokeDashoffset={2 * Math.PI * 260} // Start hidden
-                            className="origin-center"
-                            style={{
-                                animation: `progressRing 10s linear infinite`
-                            }}
+                            strokeDashoffset={2 * Math.PI * 260 * (1 - ringProgress)} // Direct mapping
+                            className="origin-center transition-all duration-75 ease-linear" // Smooth micro-steps
                         />
                     )}
                     
                     {/* 12 o'clock marker */}
                     <circle cx="250" cy="-10" r="4" fill="white" fillOpacity="0.5" />
                 </svg>
-                
-                {/* Global Styles for Keyframes */}
-                <style>{`
-                    @keyframes progressRing {
-                        0% { stroke-dashoffset: ${2 * Math.PI * 260}; }
-                        100% { stroke-dashoffset: 0; }
-                    }
-                `}</style>
             </div>
 
             {/* Controls */}
