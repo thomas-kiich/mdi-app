@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Play, Pause, X, Music2, Info, User, Mic } from "lucide-react";
+import { Play, Pause, X, Music2, Info, User, Mic, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TONES, ToneData } from "@/lib/tones";
 import { useAudioAnalyzer } from "@/hooks/useAudioAnalyzer";
@@ -190,7 +190,21 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
   return (
     <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-white shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
-        {/* Close Button */}
+        
+        {/* Navigation Header */}
+        <div className="absolute top-4 left-4 z-20">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onClose}
+            className="text-zinc-400 hover:text-white p-0 hover:bg-transparent"
+          >
+            <ArrowLeft className="mr-1 h-5 w-5" />
+            Zurück
+          </Button>
+        </div>
+
+        {/* Close Button (Redundant but good for UX) */}
         <button 
           onClick={onClose}
           className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors z-10"
@@ -208,17 +222,17 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           }}
         />
 
-        <CardHeader className="relative z-10 text-center pb-2 shrink-0">
-          <div className="mx-auto w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center mb-4 text-orange-500">
-            <Music2 size={24} />
+        <CardHeader className="relative z-10 text-center pb-2 shrink-0 pt-12">
+          <div className="mx-auto w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center mb-2 text-orange-500">
+            <Music2 size={20} />
           </div>
-          <CardTitle className="text-2xl font-bold text-white">Intervall-Trainer</CardTitle>
-          <CardDescription className="text-zinc-400">
+          <CardTitle className="text-xl font-bold text-white">Intervall-Trainer</CardTitle>
+          <CardDescription className="text-zinc-400 text-xs">
             Gleite von deinem Grundton ({baseTone.name}) zur Harmonie.
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-6 relative z-10 overflow-y-auto">
+        <CardContent className="space-y-4 relative z-10 overflow-y-auto pb-6">
           
           {/* Body Visualization Area */}
           <div className="relative h-48 w-full bg-zinc-950/50 rounded-xl border border-zinc-800 flex items-center justify-center overflow-hidden">
@@ -316,35 +330,60 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
              )}
           </div>
 
-          {/* Octave Selection */}
-          <div className="flex justify-center gap-2">
-            <Button
-              variant={octaveShift === -1 ? "default" : "outline"}
-              onClick={() => setOctaveShift(-1)}
-              className={octaveShift === -1 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}
-              disabled={isPlaying}
-              size="sm"
+          {/* Controls Row: Play Button + Octave Selection */}
+          <div className="flex items-center justify-between gap-4 px-2">
+             {/* Play Button */}
+             <Button
+              size="lg"
+              onClick={togglePlay}
+              className={`w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center transition-all shadow-lg ${
+                isPlaying 
+                  ? 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700' 
+                  : 'bg-orange-500 hover:bg-orange-600 text-white hover:scale-105 shadow-orange-500/20'
+              }`}
             >
-              Tief (M)
+              {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-1" />}
             </Button>
-            <Button
-              variant={octaveShift === 0 ? "default" : "outline"}
-              onClick={() => setOctaveShift(0)}
-              className={octaveShift === 0 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}
-              disabled={isPlaying}
-              size="sm"
-            >
-              Normal
-            </Button>
-            <Button
-              variant={octaveShift === 1 ? "default" : "outline"}
-              onClick={() => setOctaveShift(1)}
-              className={octaveShift === 1 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}
-              disabled={isPlaying}
-              size="sm"
-            >
-              Hoch (W)
-            </Button>
+
+            {/* Octave Selection */}
+            <div className="flex gap-1">
+              <Button
+                variant={octaveShift === -1 ? "default" : "outline"}
+                onClick={() => setOctaveShift(-1)}
+                className={`h-10 px-3 text-xs ${octaveShift === -1 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}`}
+                disabled={isPlaying}
+              >
+                Tief (M)
+              </Button>
+              <Button
+                variant={octaveShift === 0 ? "default" : "outline"}
+                onClick={() => setOctaveShift(0)}
+                className={`h-10 px-3 text-xs ${octaveShift === 0 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}`}
+                disabled={isPlaying}
+              >
+                Normal
+              </Button>
+              <Button
+                variant={octaveShift === 1 ? "default" : "outline"}
+                onClick={() => setOctaveShift(1)}
+                className={`h-10 px-3 text-xs ${octaveShift === 1 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}`}
+                disabled={isPlaying}
+              >
+                Hoch (W)
+              </Button>
+            </div>
+          </div>
+
+          {/* Progress Bar (Small) */}
+          <div className="relative w-full h-1 bg-zinc-800 rounded-full overflow-hidden mx-2">
+              <motion.div 
+                className={`h-full ${
+                  phase === 'pre-hold' ? 'bg-orange-500' :
+                  phase === 'glissando' ? 'bg-white' :
+                  phase === 'sustain' ? 'bg-green-500' : 'bg-zinc-600'
+                }`}
+                style={{ width: `${progress}%` }}
+              />
           </div>
 
           {/* Interval Selection */}
@@ -380,7 +419,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           </div>
 
           {/* Duration Slider */}
-          <div className="space-y-2">
+          <div className="space-y-2 pt-2 border-t border-zinc-800">
             <div className="flex justify-between text-xs">
               <span className="text-zinc-400">Dauer des Glissando</span>
               <span className="text-white font-mono">{duration[0]} Sek.</span>
@@ -394,37 +433,6 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
               disabled={isPlaying}
               className="cursor-pointer"
             />
-          </div>
-
-          {/* Play Button & Visualization */}
-          <div className="flex flex-col items-center gap-4">
-            <div className="relative w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-              <motion.div 
-                className={`h-full ${
-                  phase === 'pre-hold' ? 'bg-orange-500' :
-                  phase === 'glissando' ? 'bg-white' :
-                  phase === 'sustain' ? 'bg-green-500' : 'bg-zinc-600'
-                }`}
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-
-            <Button
-              size="lg"
-              onClick={togglePlay}
-              className={`w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-lg ${
-                isPlaying 
-                  ? 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700' 
-                  : 'bg-orange-500 hover:bg-orange-600 text-white hover:scale-105 shadow-orange-500/20'
-              }`}
-            >
-              {isPlaying ? <Pause size={28} /> : <Play size={28} className="ml-1" />}
-            </Button>
-            
-            <p className="text-xs text-zinc-500 text-center flex items-center justify-center gap-2">
-               {isRecording && <Mic size={12} className="text-red-500 animate-pulse" />}
-               {isPlaying ? "Atmen & Tönen..." : "Bereit zum Starten"}
-            </p>
           </div>
 
         </CardContent>
