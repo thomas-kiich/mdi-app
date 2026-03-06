@@ -13,6 +13,7 @@ import { useLongitudinalStudy } from "@/hooks/useLongitudinalStudy";
 import { InterpretationView } from "@/components/InterpretationView";
 import { ConnectionStory } from "@/components/ConnectionStory";
 import { SpectralScanner } from "@/components/SpectralScanner";
+import { VitalDashboard } from "@/components/VitalDashboard";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -100,6 +101,7 @@ export default function Home() {
   const [showInterpretation, setShowInterpretation] = useState(false);
   const [showStory, setShowStory] = useState(false);
   const [showSpectralScanner, setShowSpectralScanner] = useState(false);
+  const [showVitalDashboard, setShowVitalDashboard] = useState(false);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -370,6 +372,9 @@ export default function Home() {
                     </Button>
                     <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowSpectralScanner(true)}>
                         <Activity className="mr-2 h-4 w-4" /> Live Spektrum
+                    </Button>
+                    <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowVitalDashboard(true)}>
+                        <Activity className="mr-2 h-4 w-4" /> Vital Monitor
                     </Button>
                 </div>
             </div>
@@ -840,6 +845,8 @@ export default function Home() {
               onClose={() => setShowSpectralScanner(false)} 
               forcedFrequency={finalResult?.fundamentalFreq}
             />
+          ) : showVitalDashboard ? (
+            <VitalDashboard onClose={() => setShowVitalDashboard(false)} />
           ) : (
             renderContent()
           )}
