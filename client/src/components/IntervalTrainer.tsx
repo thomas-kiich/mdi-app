@@ -200,7 +200,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
             className="text-zinc-400 hover:text-white p-0 hover:bg-transparent"
           >
             <ArrowLeft className="mr-1 h-5 w-5" />
-            Zurück
+            Zurück zum Menü
           </Button>
         </div>
 

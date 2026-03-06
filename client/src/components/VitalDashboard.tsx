@@ -74,7 +74,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
             className="text-zinc-400 hover:text-white p-0 hover:bg-transparent mr-2"
           >
             <ArrowLeft className="mr-1 h-5 w-5" />
-            Zurück
+            Zurück zum Menü
           </Button>
           <h2 className="text-2xl font-light tracking-wider flex items-center gap-3">
             <Activity className="w-6 h-6 text-orange-500" />

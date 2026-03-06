@@ -782,7 +782,7 @@ export default function Home() {
                   className="rounded-full border-zinc-700 hover:bg-zinc-800 text-zinc-300"
                 >
                   <RotateCcw className="mr-2 h-4 w-4" />
-                  Neue Analyse
+                  Startseite
                 </Button>
                 
                 <Button 
