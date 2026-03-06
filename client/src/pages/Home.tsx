@@ -357,7 +357,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="pt-1 text-center">
+            <div className="pt-0 text-center">
               <Button 
                 size="lg" 
                 onClick={advanceStep}
