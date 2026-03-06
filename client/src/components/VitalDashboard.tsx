@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { getVitals, saveVital, deleteVital, VitalEntry } from '@/lib/vitals';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { Trash2, Activity, Thermometer, Wind, HeartPulse, X } from 'lucide-react';
+import { Trash2, Activity, Thermometer, Wind, HeartPulse, X, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface VitalDashboardProps {
@@ -66,10 +66,21 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
     <div className="fixed inset-0 z-50 bg-black/95 flex flex-col overflow-hidden text-white">
       {/* Header */}
       <div className="flex items-center justify-between p-6 border-b border-white/10">
-        <h2 className="text-2xl font-light tracking-wider flex items-center gap-3">
-          <Activity className="w-6 h-6 text-orange-500" />
-          VITAL MONITOR
-        </h2>
+        <div className="flex items-center gap-4">
+           <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={onClose}
+            className="text-zinc-400 hover:text-white p-0 hover:bg-transparent mr-2"
+          >
+            <ArrowLeft className="mr-1 h-5 w-5" />
+            Zurück
+          </Button>
+          <h2 className="text-2xl font-light tracking-wider flex items-center gap-3">
+            <Activity className="w-6 h-6 text-orange-500" />
+            VITAL MONITOR
+          </h2>
+        </div>
         <Button variant="ghost" size="icon" onClick={onClose} className="hover:bg-white/10">
           <X className="w-6 h-6" />
         </Button>
