@@ -31,7 +31,7 @@ export function GuidePendulum() {
 
         <div className="relative w-full aspect-video bg-white/5 rounded-xl overflow-hidden border border-white/10 shadow-2xl">
           <img 
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/method36-pendulum-sketch-v3_30576ff4.webp"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/method36-pendulum-motion_b096035b.webp"
             alt="Grundpendeln Animation"
             className="w-full h-full object-contain"
           />
