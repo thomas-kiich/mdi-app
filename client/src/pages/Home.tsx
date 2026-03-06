@@ -337,13 +337,20 @@ export default function Home() {
                 />
               </div>
               
-              <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                 MDI SYSTEM
               </h1>
-              <p className="text-xl text-zinc-400 font-light tracking-wide">
-                Multidimensionales Identitätssystem
-              </p>
-              <div className="w-16 h-1 bg-orange-500 mx-auto rounded-full" />
+              
+              <div className="space-y-4">
+                  <p className="text-lg md:text-xl text-zinc-400 font-light tracking-wide uppercase">
+                    Multidimensionales Identitätssystem
+                  </p>
+                  <p className="text-sm md:text-base text-orange-500/80 font-medium tracking-widest uppercase animate-pulse">
+                    Deine einzigartige multidimensionale Identität aus Licht & Klang
+                  </p>
+              </div>
+
+              <div className="w-16 h-1 bg-orange-500 mx-auto rounded-full mt-8" />
             </div>
 
             <div className="space-y-8 text-center">
