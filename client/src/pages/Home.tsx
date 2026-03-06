@@ -327,7 +327,16 @@ export default function Home() {
       case "intro":
         return (
           <div className="flex flex-col items-center justify-center min-h-[70vh] space-y-12 animate-in fade-in duration-1000">
-            <div className="text-center space-y-6 max-w-2xl">
+            <div className="text-center space-y-8 max-w-3xl flex flex-col items-center">
+              <div className="relative w-64 h-64 md:w-80 md:h-80 mb-8 animate-in zoom-in duration-1000">
+                <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full animate-pulse" />
+                <img 
+                  src="/logo.png" 
+                  alt="MDI Logo" 
+                  className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.5)] relative z-10"
+                />
+              </div>
+              
               <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                 MDI SYSTEM
               </h1>
