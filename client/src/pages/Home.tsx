@@ -381,6 +381,16 @@ export default function Home() {
                     <Activity className="h-3 w-3" /> Vital Monitor
                 </button>
             </div>
+
+            <div className="absolute bottom-4 left-0 right-0 text-center">
+              <div className="flex justify-center gap-6 text-[10px] text-zinc-700 uppercase tracking-widest">
+                <a href="#" className="hover:text-zinc-500 transition-colors">Impressum</a>
+                <span className="text-zinc-800">•</span>
+                <a href="#" className="hover:text-zinc-500 transition-colors">Datenschutz</a>
+                <span className="text-zinc-800">•</span>
+                <a href="#" className="hover:text-zinc-500 transition-colors">Erklärung</a>
+              </div>
+            </div>
           </div>
         );
 
