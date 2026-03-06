@@ -212,7 +212,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           <X size={24} />
         </button>
 
-        {/* Background Gradient Animation */}
+          {/* Background Gradient Animation */}
         <div 
           className="absolute inset-0 opacity-10 pointer-events-none"
           style={{
@@ -223,12 +223,12 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
         />
 
         <CardHeader className="relative z-10 text-center pb-2 shrink-0 pt-12">
-          <div className="mx-auto w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center mb-2 text-orange-500">
+          <div className="mx-auto w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center mb-2" style={{ color: baseTone.color }}>
             <Music2 size={20} />
           </div>
           <CardTitle className="text-xl font-bold text-white">Intervall-Trainer</CardTitle>
           <CardDescription className="text-zinc-400 text-xs">
-            Gleite von deinem Grundton ({baseTone.name}) zur Harmonie.
+            Gleite von deinem Grundton (<span style={{ color: baseTone.color, textShadow: '0 0 10px rgba(0,0,0,0.5)' }} className="font-bold">{baseTone.name}</span>) zur Harmonie.
           </CardDescription>
         </CardHeader>
 
