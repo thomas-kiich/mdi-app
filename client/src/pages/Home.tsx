@@ -342,11 +342,14 @@ export default function Home() {
               </h1>
               
               <div className="space-y-4">
-                  <p className="text-lg md:text-xl text-zinc-400 font-light tracking-wide uppercase">
+                  <p className="text-sm md:text-base text-zinc-500 font-light tracking-wider uppercase">
                     Multidimensionales Identitätssystem
                   </p>
-                  <p className="text-sm md:text-base text-orange-500/80 font-medium tracking-widest uppercase animate-pulse">
-                    Erfahre und nütze deine einzigartige Identität aus Licht & Klang
+                  <p className="text-xs md:text-sm text-orange-500/90 font-medium tracking-widest uppercase animate-pulse">
+                    Erforsche deine einzigartige Identität aus Licht & Klang
+                  </p>
+                  <p className="text-xs md:text-sm text-zinc-400 font-light tracking-wide pt-2">
+                    Entdecke das Geheimnis deiner Stimme
                   </p>
               </div>
 
