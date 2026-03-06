@@ -88,12 +88,13 @@ export function useAudioAnalyzer() {
       setResult(newResult);
       lastValidResultRef.current = newResult;
       
-      if (!accumulatedTonesRef.current[toneData.tone.name]) {
-          accumulatedTonesRef.current[toneData.tone.name] = 0;
-          accumulatedFreqsRef.current[toneData.tone.name] = [];
+      if (accumulatedTonesRef.current[toneData.tone.name]) {
+          accumulatedTonesRef.current[toneData.tone.name]++;
+          accumulatedFreqsRef.current[toneData.tone.name].push(fundamentalFreq);
+      } else {
+          accumulatedTonesRef.current[toneData.tone.name] = 1;
+          accumulatedFreqsRef.current[toneData.tone.name] = [fundamentalFreq];
       }
-      accumulatedTonesRef.current[toneData.tone.name]++;
-      accumulatedFreqsRef.current[toneData.tone.name].push(fundamentalFreq);
       totalFramesRef.current++;
     } else {
          // Update visualizer even if not speaking
@@ -143,7 +144,6 @@ export function useAudioAnalyzer() {
     setIsRecording(false);
     
     // Process final result logic
-    let finalResult = null;
     if (totalFramesRef.current > 0) {
         let maxCount = 0;
         let dominantToneName = "";
@@ -170,10 +170,14 @@ export function useAudioAnalyzer() {
             let finalTone = TONES.find(t => t.name === dominantToneName) || lastValidResultRef.current.tone;
             let correctionNote = undefined;
 
+            // Simple correction logic (e.g. quint check) can be added here if needed
+            // For now, trust the distribution
+
             const idealFreq = finalTone.frequency; 
+            // Calculate cents based on average measured frequency vs ideal frequency
             const finalCents = 1200 * Math.log2(finalFreq / idealFreq);
 
-            finalResult = {
+            const finalResult = {
                 ...lastValidResultRef.current,
                 tone: finalTone,
                 fundamentalFreq: finalFreq,
@@ -182,26 +186,20 @@ export function useAudioAnalyzer() {
                 toneDistribution: distribution,
                 correctionNote
             };
+            setResult(finalResult);
+        } else if (lastValidResultRef.current) {
+            setResult(lastValidResultRef.current);
         }
-    } 
-    
-    // If no valid frames were captured, use the last valid result or null
-    if (!finalResult && lastValidResultRef.current) {
-        finalResult = lastValidResultRef.current;
+    } else if (lastValidResultRef.current) {
+        setResult(lastValidResultRef.current);
     }
-
-    setResult(finalResult);
-    return finalResult;
   }, []);
 
   const startRecording = useCallback(async () => {
     try {
-      // Clean up any existing context before starting
-      if (audioContextRef.current) {
-        await audioContextRef.current.close();
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach(track => track.stop());
+      if (isRecording) {
+        stopRecording();
+        return;
       }
       
       setError(null);
@@ -220,7 +218,7 @@ export function useAudioAnalyzer() {
       
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.8;
+      analyser.smoothingTimeConstant = 0.8; // Smoother visualization
       analyserRef.current = analyser;
       
       const source = audioContext.createMediaStreamSource(stream);
@@ -228,21 +226,12 @@ export function useAudioAnalyzer() {
       sourceRef.current = source;
       
       setIsRecording(true);
-      
-      // Start analysis loop
-      const loop = () => {
-          if (!audioContextRef.current) return;
-          analyze();
-          rafIdRef.current = requestAnimationFrame(loop);
-      };
-      analyze(); // Start immediately
-      
+      analyze();
     } catch (err) {
       console.error("Error accessing microphone:", err);
-      setError("Mikrofonzugriff verweigert oder nicht verfügbar. Bitte überprüfen Sie Ihre Browsereinstellungen.");
-      setIsRecording(false);
+      setError("Mikrofonzugriff verweigert oder nicht verfügbar.");
     }
-  }, [analyze]);
+  }, [isRecording, stopRecording, analyze]);
 
   return {
     isRecording,
