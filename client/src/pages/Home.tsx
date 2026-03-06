@@ -419,17 +419,17 @@ export default function Home() {
           question1: {
             title: "Gegenwart",
             text: "Wie fühlst du dich in diesem Moment? Beschreibe deine aktuelle Situation.",
-            subtext: "Sprich für ca. 10-15 Sekunden."
+            subtext: "Sprich für ca. 30 - 60 Sekunden."
           },
           question2: {
             title: "Vergangenheit",
             text: "Was hat dich hierher geführt? Welche Erfahrung hat dich geprägt?",
-            subtext: "Erzähle kurz davon."
+            subtext: "Sprich für ca. 30 - 60 Sekunden."
           },
           question3: {
             title: "Zukunft",
             text: "Wo möchtest du hin? Was ist dein tiefster Wunsch?",
-            subtext: "Formuliere deine Vision."
+            subtext: "Sprich für ca. 30 - 60 Sekunden."
           }
         };
         
@@ -444,7 +444,7 @@ export default function Home() {
               <div className="space-y-2">
                 <h2 className="text-sm font-mono text-orange-500 uppercase tracking-widest">{q.title}</h2>
                 <h3 className="text-3xl font-light text-white leading-tight">{q.text}</h3>
-                <p className="text-zinc-500">{q.subtext}</p>
+                <p className="text-zinc-300 text-lg font-medium tracking-wide">{q.subtext}</p>
               </div>
 
               <div className="flex justify-center py-12">
