@@ -16,7 +16,7 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2 } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
@@ -281,128 +281,130 @@ export default function Home() {
         if (Math.abs(finalCents) > 50) {
             console.warn(`Large cent deviation detected (${finalCents}). Clamping to 0.`);
             finalCents = 0;
-            finalHz = toneData.frequency;
-            finalDiffHz = 0;
+            finalHz = toneData.frequency; // Reset to perfect pitch
         }
 
-        const result = {
-          fundamentalFreq: finalHz,
+        setFinalResult({
           tone: toneData,
+          fundamentalFreq: finalHz,
           cents: finalCents,
           diffHz: finalDiffHz,
           noteName: toneData.name,
-          toneDistribution: combinedDistribution,
-          stepDistributions: {
-            q1: results.q1?.toneDistribution,
-            q2: results.q2?.toneDistribution,
-            q3: results.q3?.toneDistribution
-          },
-          isSpeaking: false,
-          spectrum: new Uint8Array(0),
-          volume: 0
-        };
-
-        setFinalResult(result);
-        
-        // Save to longitudinal study
-        saveDailyResult(result);
-        
-        return;
+          toneDistribution: combinedDistribution
+        });
       }
+    } else {
+        // Fallback if no dominant tone found (unlikely)
+        setFinalResult(analysisResult);
     }
+  };
+
+  const handleDownloadResult = () => {
+    if (!finalResult) return;
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
+        date: new Date().toISOString(),
+        tone: finalResult.noteName,
+        frequency: finalResult.fundamentalFreq,
+        cents: finalResult.cents,
+        details: {
+            q1: results.q1,
+            q2: results.q2,
+            q3: results.q3
+        }
+    }, null, 2));
     
-    // Fallback: If aggregation fails (shouldn't happen if we have data), use the last valid result
-    if (results.q3) {
-      setFinalResult(results.q3);
-    } else if (analysisResult) {
-      setFinalResult(analysisResult);
-    }
-  };
-
-  // Helper to check if current step has a result
-  const hasResult = () => {
-    if (currentStep === "question1") return !!results.q1;
-    if (currentStep === "question2") return !!results.q2;
-    if (currentStep === "question3") return !!results.q3;
-    return false;
-  };
-
-  // Helper to reset current step recording
-  const resetStep = () => {
-    if (currentStep === "question1") setResults(prev => ({ ...prev, q1: null }));
-    if (currentStep === "question2") setResults(prev => ({ ...prev, q2: null }));
-    if (currentStep === "question3") setResults(prev => ({ ...prev, q3: null }));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", `MDI_Analyse_${new Date().toISOString().split('T')[0]}.json`);
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
   };
 
   const renderContent = () => {
     switch (currentStep) {
       case "intro":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-8 animate-in fade-in duration-700">
-            <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full blur opacity-25 animate-pulse"></div>
-                <h1 className="relative text-6xl md:text-8xl font-bold tracking-tighter text-white mb-4">
-                MDI <span className="text-orange-500">SYSTEM</span>
-                </h1>
+          <div className="flex flex-col items-center justify-center min-h-[70vh] space-y-12 animate-in fade-in duration-1000">
+            <div className="text-center space-y-6 max-w-2xl">
+              <h1 className="text-6xl md:text-8xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                MDI SYSTEM
+              </h1>
+              <p className="text-xl text-zinc-400 font-light tracking-wide">
+                Multidimensionales Identitätssystem
+              </p>
+              <div className="w-16 h-1 bg-orange-500 mx-auto rounded-full" />
             </div>
-            <p className="text-xl text-zinc-400 max-w-2xl font-light tracking-wide">
-              Multidimensionales Identitätssystem
-            </p>
-            
-            <div className="w-16 h-1 bg-orange-500 rounded-full my-8" />
 
-            <p className="text-lg text-zinc-300 max-w-xl leading-relaxed">
-              Entdecke deine wahre Frequenz.<br/>
-              Eine Reise durch deine Vergangenheit, Gegenwart und Zukunft.
-            </p>
-
-            <div className="flex flex-col gap-4 pt-8">
-                <Button 
-                size="lg"
-                className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-12 py-8 text-lg font-medium shadow-[0_0_30px_rgba(249,115,22,0.3)] transition-all hover:scale-105"
+            <div className="space-y-8 text-center">
+              <p className="text-zinc-300 max-w-md mx-auto leading-relaxed">
+                Entdecke deine wahre Frequenz.<br/>
+                Eine Reise durch deine Vergangenheit, Gegenwart und Zukunft.
+              </p>
+              
+              <Button 
+                size="lg" 
                 onClick={advanceStep}
-                >
+                className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-12 py-8 text-lg shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-500"
+              >
                 Analyse starten <ChevronRight className="ml-2 h-5 w-5" />
-                </Button>
-                
-                <div className="flex gap-4 justify-center mt-4 flex-wrap">
-                    <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowStory(true)}>
-                        <Play className="mr-2 h-4 w-4" /> Das Prinzip entdecken
-                    </Button>
-                    <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setLocation("/guide/pendulum")}>
-                        <Sparkles className="mr-2 h-4 w-4" /> Anleitung
-                    </Button>
-                    <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowSpectralScanner(true)}>
-                        <Activity className="mr-2 h-4 w-4" /> Live Spektrum
-                    </Button>
-                    <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowVitalDashboard(true)}>
-                        <Activity className="mr-2 h-4 w-4" /> Vital Monitor
-                    </Button>
-                </div>
+              </Button>
+            </div>
+            
+            <div className="flex gap-8 text-xs text-zinc-600 uppercase tracking-widest pt-12">
+                <button onClick={() => setShowStory(true)} className="hover:text-orange-500 transition-colors flex items-center gap-2">
+                    <Play className="h-3 w-3" /> Das Prinzip entdecken
+                </button>
+                <button className="hover:text-white transition-colors flex items-center gap-2">
+                    <Sparkles className="h-3 w-3" /> Anleitung
+                </button>
+                <button onClick={() => setShowSpectralScanner(true)} className="hover:text-orange-500 transition-colors flex items-center gap-2">
+                    <Activity className="h-3 w-3" /> Live Spektrum
+                </button>
+                <button onClick={() => setShowVitalDashboard(true)} className="hover:text-orange-500 transition-colors flex items-center gap-2">
+                    <Activity className="h-3 w-3" /> Vital Monitor
+                </button>
             </div>
           </div>
         );
 
       case "preparation":
         return (
-          <div className="max-w-2xl mx-auto space-y-8 animate-in slide-in-from-right duration-500">
+          <div className="max-w-2xl mx-auto pt-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
             <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm">
               <CardHeader>
-                <CardTitle className="text-2xl text-center text-white">Vorbereitung</CardTitle>
+                <CardTitle className="text-2xl font-light text-center text-white">Vorbereitung</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-6 text-zinc-300">
-                <p>
-                  Wir werden nun deine Stimme in drei Dimensionen analysieren.
-                  Bitte antworte spontan und authentisch auf die folgenden drei Fragen.
-                </p>
-                <ul className="space-y-4 list-disc list-inside text-zinc-400 ml-4">
-                  <li>Sorge für eine ruhige Umgebung</li>
-                  <li>Sprich in deiner normalen Stimmlage</li>
-                  <li>Nimm dir für jede Antwort ca. 10-20 Sekunden Zeit</li>
-                </ul>
-                <div className="pt-6 flex justify-center">
-                  <Button onClick={advanceStep} className="bg-white text-black hover:bg-zinc-200 rounded-full px-8">
-                    Bereit <ChevronRight className="ml-2 h-4 w-4" />
+              <CardContent className="space-y-8 text-center">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="p-6 rounded-2xl bg-black/40 border border-zinc-800 flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500">
+                      <Mic className="h-6 w-6" />
+                    </div>
+                    <p className="text-sm text-zinc-300">Nutze ein gutes Mikrofon oder Headset</p>
+                  </div>
+                  <div className="p-6 rounded-2xl bg-black/40 border border-zinc-800 flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+                      <VolumeX className="h-6 w-6" />
+                    </div>
+                    <p className="text-sm text-zinc-300">Suche einen ruhigen Ort ohne Störgeräusche</p>
+                  </div>
+                  <div className="p-6 rounded-2xl bg-black/40 border border-zinc-800 flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+                      <User className="h-6 w-6" />
+                    </div>
+                    <p className="text-sm text-zinc-300">Sprich mit deiner natürlichen, entspannten Stimme</p>
+                  </div>
+                </div>
+
+                <div className="pt-8">
+                  <Button 
+                    size="lg" 
+                    onClick={advanceStep}
+                    className="bg-white text-black hover:bg-zinc-200 rounded-full px-8"
+                  >
+                    Ich bin bereit
                   </Button>
                 </div>
               </CardContent>
@@ -415,89 +417,64 @@ export default function Home() {
       case "question3":
         const questions = {
           question1: {
-            title: "Dimension 1: Die Gegenwart",
-            text: "Wie fühlst du dich in diesem Moment? Was bewegt dich gerade jetzt?",
-            hint: "Beschreibe deinen aktuellen Zustand."
+            title: "Gegenwart",
+            text: "Wie fühlst du dich in diesem Moment? Beschreibe deine aktuelle Situation.",
+            subtext: "Sprich für ca. 10-15 Sekunden."
           },
           question2: {
-            title: "Dimension 2: Die Vergangenheit",
-            text: "Was ist deine prägendste Erinnerung aus der Kindheit?",
-            hint: "Erzähle kurz von einem Moment, der geblieben ist."
+            title: "Vergangenheit",
+            text: "Was hat dich hierher geführt? Welche Erfahrung hat dich geprägt?",
+            subtext: "Erzähle kurz davon."
           },
           question3: {
-            title: "Dimension 3: Die Zukunft",
-            text: "Was ist dein größter Wunsch oder deine Vision für dich selbst?",
-            hint: "Wo möchtest du hin? Was zieht dich an?"
+            title: "Zukunft",
+            text: "Wo möchtest du hin? Was ist dein tiefster Wunsch?",
+            subtext: "Formuliere deine Vision."
           }
         };
         
         const q = questions[currentStep];
-        const hasRes = hasResult();
+        const hasResult = (currentStep === "question1" && results.q1) || 
+                          (currentStep === "question2" && results.q2) || 
+                          (currentStep === "question3" && results.q3);
 
         return (
-          <div className="max-w-2xl mx-auto space-y-8 animate-in slide-in-from-right duration-500">
-            <div className="flex justify-between text-xs uppercase tracking-widest text-zinc-500 mb-4">
-                <span>Analyse läuft</span>
-                <span>Schritt {currentStep === "question1" ? 1 : currentStep === "question2" ? 2 : 3} / 3</span>
-            </div>
-            
-            <div className="text-center space-y-6">
-               <h2 className="text-xl text-orange-500 font-mono">{q.title}</h2>
-               <h3 className="text-3xl md:text-4xl font-bold text-white leading-tight">{q.text}</h3>
-               <p className="text-zinc-400 italic">{q.hint}</p>
-            </div>
+          <div className="max-w-2xl mx-auto pt-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="text-center space-y-8">
+              <div className="space-y-2">
+                <h2 className="text-sm font-mono text-orange-500 uppercase tracking-widest">{q.title}</h2>
+                <h3 className="text-3xl font-light text-white leading-tight">{q.text}</h3>
+                <p className="text-zinc-500">{q.subtext}</p>
+              </div>
 
-            <div className="flex flex-col items-center justify-center py-12 space-y-8">
-               
-               {/* Visualizer Circle */}
-               <div className="relative w-64 h-64 flex items-center justify-center">
-                  {isRecording ? (
-                    <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-pulse" />
-                  ) : (
-                    <div className="absolute inset-0 border border-zinc-800 rounded-full" />
-                  )}
-                  
-                  {/* Real-time Visualizer */}
-                  <div className="w-48 h-16">
-                    <SpectrumVisualizer 
-                        frequencyData={analysisResult?.spectrum || new Uint8Array(0)} 
-                        isActive={isRecording}
-                    />
-                  </div>
-               </div>
-
-               {/* Controls */}
-               <div className="flex flex-col items-center gap-4">
-                 {!isRecording && !hasRes && (
-                   <Button 
-                    size="lg"
-                    onClick={handleStartRecording}
-                    className="bg-orange-500 hover:bg-orange-600 text-white rounded-full w-20 h-20 flex items-center justify-center shadow-[0_0_30px_rgba(249,115,22,0.4)] transition-transform hover:scale-110"
-                   >
-                     <Mic className="h-8 w-8" />
-                   </Button>
-                 )}
-
-                 {isRecording && (
-                   <Button 
-                    size="lg"
-                    onClick={handleStopRecording}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-white rounded-full w-16 h-16 flex items-center justify-center border border-zinc-700"
-                   >
-                     <Square className="h-6 w-6 fill-current" />
-                   </Button>
-                 )}
-
-                 {hasRes && (
-                    <div className="flex gap-4">
-                        <Button 
-                            variant="outline"
-                            onClick={resetStep}
-                            className="rounded-full border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+              <div className="flex justify-center py-12">
+                 {!hasResult ? (
+                    <div className="relative">
+                        {isRecording && (
+                            <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" />
+                        )}
+                        <Button
+                            size="lg"
+                            onClick={isRecording ? handleStopRecording : handleStartRecording}
+                            className={cn(
+                                "w-24 h-24 rounded-full transition-all duration-300 flex items-center justify-center border-4 relative z-10",
+                                isRecording 
+                                    ? "bg-red-500 border-red-600 hover:bg-red-600 scale-110" 
+                                    : "bg-zinc-900 border-zinc-800 hover:border-orange-500 hover:bg-zinc-800"
+                            )}
                         >
-                            <RotateCcw className="mr-2 h-4 w-4" /> Wiederholen
+                            {isRecording ? <Square className="h-8 w-8 fill-current" /> : <Mic className="h-8 w-8" />}
                         </Button>
+                    </div>
+                 ) : (
+                    <div className="space-y-6 animate-in zoom-in duration-300">
+                        <div className="w-24 h-24 rounded-full bg-green-500/10 border border-green-500/50 flex items-center justify-center mx-auto text-green-500">
+                            <Sparkles className="h-10 w-10" />
+                        </div>
+                        <p className="text-green-500 font-medium">Analyse abgeschlossen</p>
+                        
                         <Button 
+                            size="lg" 
                             onClick={advanceStep}
                             className="bg-white text-black hover:bg-zinc-200 rounded-full px-8"
                         >
@@ -815,6 +792,7 @@ export default function Home() {
                 <Button 
                   size="lg"
                   className="rounded-full bg-orange-500 hover:bg-orange-600 text-white"
+                  onClick={handleDownloadResult}
                 >
                   <Download className="mr-2 h-4 w-4" />
                   Ergebnis speichern
