@@ -449,7 +449,7 @@ export default function Home() {
 
               <div className="flex justify-center py-12">
                  {!hasResult ? (
-                    <div className="relative">
+                    <div className="relative flex justify-center items-center">
                         {isRecording && (
                             <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" />
                         )}
