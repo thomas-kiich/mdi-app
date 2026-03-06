@@ -491,8 +491,10 @@ export default function Home() {
                                 </Button>
                             </div>
                             
-                            {isRecording && (
+                            {isRecording ? (
                                 <p className="text-zinc-500 animate-pulse text-sm">Aufnahme läuft... Sprich jetzt.</p>
+                            ) : (
+                                <p className="text-zinc-500 text-sm font-medium">Hier Aufnahme starten</p>
                             )}
                         </div>
                     )}
@@ -503,7 +505,11 @@ export default function Home() {
                             <div className="w-24 h-24 rounded-full bg-green-500/10 border border-green-500/50 flex items-center justify-center text-green-500">
                                 <Sparkles className="h-10 w-10" />
                             </div>
-                            <p className="text-green-500 font-medium">Analyse abgeschlossen</p>
+                            <p className="text-green-500 font-medium">
+                                {currentStep === "question1" && "Aufnahme gespeichert. Bereit für die Gegenwart."}
+                                {currentStep === "question2" && "Aufnahme gespeichert. Bereit für die Zukunft."}
+                                {currentStep === "question3" && "Alle Aufnahmen komplett. Starte Analyse."}
+                            </p>
                             
                             <div className="flex gap-4">
                                 <Button 
