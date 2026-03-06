@@ -345,7 +345,7 @@ export default function Home() {
                 Multidimensionales Identitätssystem
               </p>
               
-              <div className="w-16 h-px bg-white/50 mx-auto mt-4 mb-4" />
+              <div className="w-16 h-px bg-white/50 mx-auto mt-2 mb-2" />
 
               <div className="space-y-1">
                   <p className="text-xs md:text-sm text-yellow-200/90 font-medium tracking-widest uppercase">
@@ -357,7 +357,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="pt-4 text-center">
+            <div className="pt-2 text-center">
               <Button 
                 size="lg" 
                 onClick={advanceStep}
