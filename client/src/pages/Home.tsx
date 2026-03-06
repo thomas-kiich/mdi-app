@@ -448,40 +448,60 @@ export default function Home() {
               </div>
 
               <div className="flex justify-center py-12">
-                 {!hasResult ? (
-                    <div className="relative">
-                        {isRecording && (
-                            <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" />
-                        )}
-                        <Button
-                            size="lg"
-                            onClick={isRecording ? handleStopRecording : handleStartRecording}
-                            className={cn(
-                                "w-24 h-24 rounded-full transition-all duration-300 flex items-center justify-center border-4 relative z-10",
-                                isRecording 
-                                    ? "bg-red-500 border-red-600 hover:bg-red-600 scale-110" 
-                                    : "bg-zinc-900 border-zinc-800 hover:border-orange-500 hover:bg-zinc-800"
+                 <div className="flex flex-col items-center gap-6">
+                    {/* Always show recording button unless we have a result AND are not recording */}
+                    {(!hasResult || isRecording) && (
+                        <div className="relative flex justify-center items-center">
+                            {isRecording && (
+                                <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" />
                             )}
-                        >
-                            {isRecording ? <Square className="h-8 w-8 fill-current" /> : <Mic className="h-8 w-8" />}
-                        </Button>
-                    </div>
-                 ) : (
-                    <div className="space-y-6 animate-in zoom-in duration-300">
-                        <div className="w-24 h-24 rounded-full bg-green-500/10 border border-green-500/50 flex items-center justify-center mx-auto text-green-500">
-                            <Sparkles className="h-10 w-10" />
+                            <Button
+                                size="lg"
+                                onClick={isRecording ? handleStopRecording : handleStartRecording}
+                                className={cn(
+                                    "w-24 h-24 rounded-full transition-all duration-300 flex items-center justify-center border-4 relative z-10",
+                                    isRecording 
+                                        ? "bg-red-500 border-red-600 hover:bg-red-600 scale-110" 
+                                        : "bg-zinc-900 border-zinc-800 hover:border-orange-500 hover:bg-zinc-800"
+                                )}
+                            >
+                                {isRecording ? <Square className="h-8 w-8 fill-current" /> : <Mic className="h-8 w-8" />}
+                            </Button>
                         </div>
-                        <p className="text-green-500 font-medium">Analyse abgeschlossen</p>
-                        
-                        <Button 
-                            size="lg" 
-                            onClick={advanceStep}
-                            className="bg-white text-black hover:bg-zinc-200 rounded-full px-8"
-                        >
-                            Weiter <ChevronRight className="ml-2 h-4 w-4" />
-                        </Button>
-                    </div>
-                 )}
+                    )}
+
+                    {/* Show Result & Next Steps */}
+                    {hasResult && !isRecording && (
+                        <div className="space-y-6 animate-in zoom-in duration-300 flex flex-col items-center">
+                            <div className="w-24 h-24 rounded-full bg-green-500/10 border border-green-500/50 flex items-center justify-center text-green-500">
+                                <Sparkles className="h-10 w-10" />
+                            </div>
+                            <p className="text-green-500 font-medium">Analyse abgeschlossen</p>
+                            
+                            <div className="flex gap-4">
+                                <Button 
+                                    variant="outline"
+                                    onClick={() => {
+                                        // Reset current step result to allow re-recording
+                                        if (currentStep === "question1") setResults(prev => ({ ...prev, q1: null }));
+                                        else if (currentStep === "question2") setResults(prev => ({ ...prev, q2: null }));
+                                        else if (currentStep === "question3") setResults(prev => ({ ...prev, q3: null }));
+                                    }}
+                                    className="rounded-full border-zinc-700 hover:bg-zinc-800 text-zinc-400"
+                                >
+                                    <RotateCcw className="mr-2 h-4 w-4" /> Wiederholen
+                                </Button>
+                                <Button 
+                                    size="lg" 
+                                    onClick={advanceStep}
+                                    className="bg-white text-black hover:bg-zinc-200 rounded-full px-8"
+                                >
+                                    Weiter <ChevronRight className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                 </div>
                </div>
             </div>
           </div>
