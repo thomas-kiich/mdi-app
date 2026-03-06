@@ -331,7 +331,7 @@ export default function Home() {
               <div className="relative w-64 h-64 md:w-80 md:h-80 mb-8 animate-in zoom-in duration-1000">
                 <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full animate-pulse" />
                 <img 
-                  src="/logo.png" 
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
                   alt="MDI Logo" 
                   className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.5)] relative z-10"
                 />
@@ -881,7 +881,7 @@ export default function Home() {
         <header className="flex justify-between items-center mb-12">
           <div className="flex items-center gap-3">
             <img 
-              src="/logo.png" 
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
               alt="MDI Logo" 
               className="h-12 w-auto object-contain" 
             />
