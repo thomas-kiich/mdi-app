@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Play, Pause, X, Music2, Info } from "lucide-react";
+import { Play, Pause, X, Music2, Info, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TONES, ToneData } from "@/lib/tones";
 
@@ -20,8 +20,10 @@ const INTERVALS = [
 export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedInterval, setSelectedInterval] = useState(INTERVALS[0]);
-  const [duration, setDuration] = useState<number[]>([10]); // Seconds
+  const [duration, setDuration] = useState<number[]>([10]); // Glissando duration
   const [octaveShift, setOctaveShift] = useState(0); // 0 = normal, -1 = lower octave (male), 1 = higher octave (female)
+  const [phase, setPhase] = useState<'idle' | 'pre-hold' | 'glissando' | 'sustain'>('idle');
+  
   const audioCtxRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -42,7 +44,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     };
   }, []);
 
-  const startGlissando = async () => {
+  const startSequence = async () => {
     if (!audioCtxRef.current) return;
     if (audioCtxRef.current.state === 'suspended') {
       await audioCtxRef.current.resume();
@@ -57,24 +59,28 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     const multiplier = Math.pow(2, octaveShift);
     const startFreq = baseTone.frequency * multiplier;
     const endFreq = (baseTone.frequency * selectedInterval.ratio) * multiplier;
-    const dur = duration[0];
-    const sustainTime = 3.0; // Sustain after glissando in seconds
-    const totalDuration = dur + sustainTime;
+    
+    const preHoldDur = 3.0; // 3 seconds pre-hold
+    const glissandoDur = duration[0];
+    const sustainDur = 3.0; // 3 seconds sustain
+    const totalDuration = preHoldDur + glissandoDur + sustainDur;
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
     
-    // Smooth Glissando
-    osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + dur);
-    // Sustain frequency
+    // Schedule Frequencies
+    // 0 -> preHoldDur: Hold start frequency
+    osc.frequency.setValueAtTime(startFreq, ctx.currentTime + preHoldDur);
+    // preHoldDur -> preHoldDur + glissandoDur: Glissando
+    osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + preHoldDur + glissandoDur);
+    // preHoldDur + glissandoDur -> totalDuration: Sustain end frequency
     osc.frequency.setValueAtTime(endFreq, ctx.currentTime + totalDuration);
 
-    // Envelope
+    // Schedule Volume Envelope
     gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1); // Fade in
-    gain.gain.setValueAtTime(0.3, ctx.currentTime + dur); // Hold volume during glissando
-    gain.gain.setValueAtTime(0.3, ctx.currentTime + dur + sustainTime - 1); // Sustain volume
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + totalDuration); // Fade out
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1); // Fade in start
+    gain.gain.setValueAtTime(0.3, ctx.currentTime + totalDuration - 1); // Sustain volume
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + totalDuration); // Fade out end
 
     osc.connect(gain);
     gain.connect(ctx.destination);
@@ -87,19 +93,28 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     setIsPlaying(true);
     startTimeRef.current = Date.now();
 
-    // Animation Loop for Progress Bar
+    // Animation Loop
     const animate = () => {
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      // Progress calculation now includes sustain time
-      const p = Math.min((elapsed / totalDuration) * 100, 100);
-      setProgress(p);
-
-      if (p < 100) {
-        animationFrameRef.current = requestAnimationFrame(animate);
+      
+      // Determine Phase
+      if (elapsed < preHoldDur) {
+        setPhase('pre-hold');
+        setProgress((elapsed / preHoldDur) * 100);
+      } else if (elapsed < preHoldDur + glissandoDur) {
+        setPhase('glissando');
+        setProgress(((elapsed - preHoldDur) / glissandoDur) * 100);
+      } else if (elapsed < totalDuration) {
+        setPhase('sustain');
+        setProgress(((elapsed - (preHoldDur + glissandoDur)) / sustainDur) * 100);
       } else {
+        setPhase('idle');
         setIsPlaying(false);
         setProgress(0);
+        return; // Stop animation
       }
+
+      animationFrameRef.current = requestAnimationFrame(animate);
     };
     animationFrameRef.current = requestAnimationFrame(animate);
   };
@@ -120,6 +135,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
       cancelAnimationFrame(animationFrameRef.current);
     }
     setIsPlaying(false);
+    setPhase('idle');
     setProgress(0);
   };
 
@@ -127,13 +143,13 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     if (isPlaying) {
       stopSound();
     } else {
-      startGlissando();
+      startSequence();
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-white shadow-2xl relative overflow-hidden">
+      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-white shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
         {/* Close Button */}
         <button 
           onClick={onClose}
@@ -152,7 +168,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           }}
         />
 
-        <CardHeader className="relative z-10 text-center pb-2">
+        <CardHeader className="relative z-10 text-center pb-2 shrink-0">
           <div className="mx-auto w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center mb-4 text-orange-500">
             <Music2 size={24} />
           </div>
@@ -162,10 +178,92 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-8 relative z-10">
+        <CardContent className="space-y-6 relative z-10 overflow-y-auto">
           
+          {/* Body Visualization Area */}
+          <div className="relative h-48 w-full bg-zinc-950/50 rounded-xl border border-zinc-800 flex items-center justify-center overflow-hidden">
+             {/* Simple Body Silhouette (Abstract) */}
+             <svg viewBox="0 0 100 200" className="h-full opacity-20">
+                <path d="M50 10 C 60 10 70 20 70 35 C 70 50 85 55 90 70 C 95 100 80 140 80 190 L 20 190 C 20 140 5 100 10 70 C 15 55 30 50 30 35 C 30 20 40 10 50 10" fill="currentColor" />
+             </svg>
+             
+             {/* Energy Nodes */}
+             {/* Nabel (Root/Start) */}
+             <motion.div 
+               className="absolute w-4 h-4 rounded-full"
+               style={{ 
+                 bottom: '40%', 
+                 backgroundColor: baseTone.color,
+                 boxShadow: phase === 'pre-hold' || phase === 'glissando' ? `0 0 20px ${baseTone.color}` : 'none'
+               }}
+               animate={{ scale: phase === 'pre-hold' ? [1, 1.5, 1] : 1 }}
+               transition={{ repeat: Infinity, duration: 1.5 }}
+             />
+             
+             {/* Herz (Heart/End) */}
+             <motion.div 
+               className="absolute w-4 h-4 rounded-full bg-white"
+               style={{ 
+                 bottom: '65%',
+                 opacity: phase === 'sustain' || phase === 'glissando' ? 1 : 0.3,
+                 boxShadow: phase === 'sustain' ? `0 0 30px white` : 'none'
+               }}
+               animate={{ scale: phase === 'sustain' ? [1, 1.3, 1] : 1 }}
+               transition={{ repeat: Infinity, duration: 1.5 }}
+             />
+
+             {/* Connection Line */}
+             {phase === 'glissando' && (
+                <motion.div 
+                  className="absolute w-1 bg-white/50"
+                  style={{ bottom: '40%', height: '0%' }}
+                  animate={{ height: '25%' }}
+                  transition={{ duration: duration[0], ease: "linear" }}
+                />
+             )}
+             
+             {/* Status Text Overlay */}
+             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <AnimatePresence mode="wait">
+                  {phase === 'pre-hold' && (
+                    <motion.div 
+                      key="pre-hold"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-zinc-700 text-orange-400 font-bold"
+                    >
+                      Einschwingen...
+                    </motion.div>
+                  )}
+                  {phase === 'glissando' && (
+                    <motion.div 
+                      key="glissando"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-zinc-700 text-white font-bold"
+                    >
+                      Gleiten...
+                    </motion.div>
+                  )}
+                  {phase === 'sustain' && (
+                    <motion.div 
+                      key="sustain"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-zinc-700 text-green-400 font-bold"
+                    >
+                      Halten & Spüren
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+             </div>
+          </div>
+
           {/* Octave Selection */}
-          <div className="flex justify-center gap-2 mb-4">
+          <div className="flex justify-center gap-2">
             <Button
               variant={octaveShift === -1 ? "default" : "outline"}
               onClick={() => setOctaveShift(-1)}
@@ -196,7 +294,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           </div>
 
           {/* Interval Selection */}
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-1 gap-2">
             {INTERVALS.map((interval) => {
                const multiplier = Math.pow(2, octaveShift);
                const startHz = Math.round(baseTone.frequency * multiplier);
@@ -206,7 +304,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                 <button
                   key={interval.name}
                   onClick={() => !isPlaying && setSelectedInterval(interval)}
-                  className={`p-4 rounded-xl border text-left transition-all ${
+                  className={`p-3 rounded-xl border text-left transition-all ${
                     selectedInterval.name === interval.name
                       ? 'bg-zinc-800 border-orange-500/50 ring-1 ring-orange-500/20'
                       : 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 opacity-70'
@@ -219,7 +317,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                       {startHz} Hz → {endHz} Hz
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-400 leading-relaxed">
+                  <p className="text-[10px] text-zinc-400 leading-relaxed">
                     {interval.description}
                   </p>
                 </button>
@@ -228,8 +326,8 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           </div>
 
           {/* Duration Slider */}
-          <div className="space-y-3">
-            <div className="flex justify-between text-sm">
+          <div className="space-y-2">
+            <div className="flex justify-between text-xs">
               <span className="text-zinc-400">Dauer des Glissando</span>
               <span className="text-white font-mono">{duration[0]} Sek.</span>
             </div>
@@ -245,10 +343,14 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           </div>
 
           {/* Play Button & Visualization */}
-          <div className="flex flex-col items-center gap-6 pt-4">
-            <div className="relative w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
               <motion.div 
-                className="h-full bg-orange-500"
+                className={`h-full ${
+                  phase === 'pre-hold' ? 'bg-orange-500' :
+                  phase === 'glissando' ? 'bg-white' :
+                  phase === 'sustain' ? 'bg-green-500' : 'bg-zinc-600'
+                }`}
                 style={{ width: `${progress}%` }}
               />
             </div>
@@ -256,17 +358,17 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
             <Button
               size="lg"
               onClick={togglePlay}
-              className={`w-20 h-20 rounded-full flex items-center justify-center transition-all shadow-lg ${
+              className={`w-16 h-16 rounded-full flex items-center justify-center transition-all shadow-lg ${
                 isPlaying 
                   ? 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700' 
                   : 'bg-orange-500 hover:bg-orange-600 text-white hover:scale-105 shadow-orange-500/20'
               }`}
             >
-              {isPlaying ? <Pause size={32} /> : <Play size={32} className="ml-1" />}
+              {isPlaying ? <Pause size={28} /> : <Play size={28} className="ml-1" />}
             </Button>
             
-            <p className="text-sm text-zinc-500 text-center animate-pulse">
-              {isPlaying ? "Töne mit dem Klang nach oben..." : "Bereit zum Starten"}
+            <p className="text-xs text-zinc-500 text-center">
+              {isPlaying ? "Atmen & Tönen..." : "Bereit zum Starten"}
             </p>
           </div>
 
