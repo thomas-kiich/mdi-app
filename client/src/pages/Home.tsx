@@ -337,15 +337,15 @@ export default function Home() {
                 />
               </div>
               
-              <h1 className="w-64 md:w-80 text-center text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] leading-none">
+              <h1 className="w-64 md:w-80 text-center text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] leading-none mb-2">
                 MDI SYSTEM
               </h1>
 
-              <p className="text-xs md:text-sm text-zinc-500 font-light tracking-wider uppercase">
+              <p className="text-sm md:text-base text-zinc-400 font-normal tracking-wider uppercase">
                 Multidimensionales Identitätssystem
               </p>
               
-              <div className="w-16 h-px bg-white/50 mx-auto mt-6 mb-6" />
+              <div className="w-16 h-px bg-white/50 mx-auto mt-4 mb-4" />
 
               <div className="space-y-1">
                   <p className="text-xs md:text-sm text-yellow-200/90 font-medium tracking-widest uppercase">
@@ -357,7 +357,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="pt-8 text-center">
+            <div className="pt-4 text-center">
               <Button 
                 size="lg" 
                 onClick={advanceStep}
