@@ -260,11 +260,34 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
       const maxFreq = zoomed ? 600 : 1200;
       const minLog = Math.log(minFreq);
       const maxLog = Math.log(maxFreq);
+      const logRange = maxLog - minLog;
       
-      // Invert Y logic from draw loop
-      const normY = y / h;
-      const invertedNormY = 1 - normY;
-      const freq = Math.exp(minLog + invertedNormY * (maxLog - minLog));
+      let freq = 0;
+
+      if (is3DMode) {
+          // 3D Mode: Angle = Frequency
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const dx = e.clientX - rect.left - centerX;
+          const dy = e.clientY - rect.top - centerY;
+          
+          // Calculate angle (0 to 2PI)
+          // Math.atan2 returns -PI to PI. We map it to 0 to 1 range.
+          let angle = Math.atan2(dy, dx); 
+          if (angle < 0) angle += Math.PI * 2; // Normalize to 0-2PI
+          
+          const angleNorm = angle / (Math.PI * 2);
+          
+          // Map angle back to frequency
+          // logPos = angleNorm
+          freq = Math.exp(minLog + angleNorm * logRange);
+
+      } else {
+          // 2D Mode: Y-Axis = Frequency
+          const normY = y / h;
+          const invertedNormY = 1 - normY;
+          freq = Math.exp(minLog + invertedNormY * logRange);
+      }
       
       const { tone, color } = getToneColor(freq);
       
@@ -338,6 +361,8 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                   if (freq >= minFreq && freq <= maxFreq) {
                       const logPos = (Math.log(freq) - minLog) / logRange;
                       // Map frequency to angle (0 to 2PI)
+                      // We need to match the atan2 logic: atan2(y, x) returns angle from X-axis
+                      // So 0 is East, PI/2 is South, PI is West, 3PI/2 is North (in canvas coords)
                       const angle = logPos * Math.PI * 2;
                       const { color } = getToneColor(freq);
                       peaks.push({ angle, color, alpha: value / 255 });
