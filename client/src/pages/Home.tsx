@@ -17,6 +17,7 @@ import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { useLocation } from "wouter";
 import {
   Collapsible,
   CollapsibleContent,
@@ -42,6 +43,7 @@ type WizardStep =
   | "result";
 
 export default function Home() {
+  const [, setLocation] = useLocation();
   const [currentStep, setCurrentStep] = useState<WizardStep>("intro");
   const { 
     isRecording, 
@@ -359,9 +361,12 @@ export default function Home() {
                 Analyse starten <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
                 
-                <div className="flex gap-4 justify-center mt-4">
+                <div className="flex gap-4 justify-center mt-4 flex-wrap">
                     <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowStory(true)}>
                         <Play className="mr-2 h-4 w-4" /> Das Prinzip entdecken
+                    </Button>
+                    <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setLocation("/guide/pendulum")}>
+                        <Sparkles className="mr-2 h-4 w-4" /> Anleitung
                     </Button>
                     <Button variant="ghost" className="text-zinc-500 hover:text-white" onClick={() => setShowSpectralScanner(true)}>
                         <Activity className="mr-2 h-4 w-4" /> Live Spektrum
