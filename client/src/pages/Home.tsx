@@ -18,6 +18,7 @@ import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
 import {
@@ -384,11 +385,11 @@ export default function Home() {
 
             <div className="absolute bottom-4 left-0 right-0 text-center">
               <div className="flex justify-center gap-6 text-[10px] text-zinc-700 uppercase tracking-widest">
-                <a href="#" className="hover:text-zinc-500 transition-colors">Impressum</a>
+                <Link href="/impressum" className="hover:text-zinc-500 transition-colors">Impressum</Link>
                 <span className="text-zinc-800">•</span>
-                <a href="#" className="hover:text-zinc-500 transition-colors">Datenschutz</a>
+                <Link href="/datenschutz" className="hover:text-zinc-500 transition-colors">Datenschutz</Link>
                 <span className="text-zinc-800">•</span>
-                <a href="#" className="hover:text-zinc-500 transition-colors">Erklärung</a>
+                <span className="text-zinc-800 cursor-not-allowed">Erklärung</span>
               </div>
             </div>
           </div>
