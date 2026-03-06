@@ -341,27 +341,19 @@ export default function Home() {
                 MDI SYSTEM
               </h1>
               
-              <div className="space-y-4">
-                  <p className="text-sm md:text-base text-zinc-500 font-light tracking-wider uppercase">
-                    Multidimensionales Identitätssystem
+              <div className="space-y-2">
+                  <p className="text-xs md:text-sm text-orange-500/90 font-medium tracking-widest uppercase animate-pulse">
+                    ERFORSCHE DEINE EINZIGARTIGE IDENTITÄT
                   </p>
                   <p className="text-xs md:text-sm text-orange-500/90 font-medium tracking-widest uppercase animate-pulse">
-                    Erforsche deine einzigartige Identität aus Licht & Klang
-                  </p>
-                  <p className="text-xs md:text-sm text-zinc-400 font-light tracking-wide pt-2">
-                    Entdecke das Geheimnis deiner Stimme
+                    AUS LICHT & KLANG
                   </p>
               </div>
 
-              <div className="w-16 h-1 bg-orange-500 mx-auto rounded-full mt-8" />
+              <div className="w-16 h-1 bg-white mx-auto rounded-full mt-8" />
             </div>
 
             <div className="space-y-8 text-center">
-              <p className="text-zinc-300 max-w-md mx-auto leading-relaxed">
-                Entdecke deine wahre Frequenz.<br/>
-                Eine Reise durch deine Vergangenheit, Gegenwart und Zukunft.
-              </p>
-              
               <Button 
                 size="lg" 
                 onClick={advanceStep}
