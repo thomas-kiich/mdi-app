@@ -109,21 +109,16 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     const animate = () => {
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
       
-      // Determine Phase and Progress
+      // Determine Phase
       if (elapsed < preHoldDur) {
         setPhase('pre-hold');
-        // Progress for pre-hold phase (0-33%)
-        setProgress((elapsed / preHoldDur) * 33);
+        setProgress((elapsed / preHoldDur) * 100);
       } else if (elapsed < preHoldDur + glissandoDur) {
         setPhase('glissando');
-        // Progress for glissando phase (33-66%)
-        const glissandoProgress = (elapsed - preHoldDur) / glissandoDur;
-        setProgress(33 + (glissandoProgress * 33));
+        setProgress(((elapsed - preHoldDur) / glissandoDur) * 100);
       } else if (elapsed < totalDuration) {
         setPhase('sustain');
-        // Progress for sustain phase (66-100%)
-        const sustainProgress = (elapsed - (preHoldDur + glissandoDur)) / sustainDur;
-        setProgress(66 + (sustainProgress * 34));
+        setProgress(((elapsed - (preHoldDur + glissandoDur)) / sustainDur) * 100);
       } else {
         setPhase('idle');
         setIsPlaying(false);
@@ -280,7 +275,8 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                   transition={{ duration: duration[0], ease: "linear" }}
                 />
              )}
-        
+             
+             {/* Status Text Overlay */}
              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <AnimatePresence mode="wait">
                   {phase === 'pre-hold' && (
@@ -334,30 +330,23 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
              )}
           </div>
 
-          {/* Rhythm Bar (Reintroduced and Improved) */}
-          <div className="w-full space-y-2">
-              <div className="relative w-full h-8 bg-zinc-800 rounded-full overflow-hidden border border-zinc-700">
-                  {/* Phase Markers */}
-                  <div className="absolute inset-0 flex pointer-events-none z-10">
-                      <div className="w-1/3 border-r border-zinc-700/50 flex items-center justify-center">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${phase === 'pre-hold' ? 'text-white' : 'text-zinc-500'}`}>1. Einschwingen</span>
-                      </div>
-                      <div className="w-1/3 border-r border-zinc-700/50 flex items-center justify-center">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${phase === 'glissando' ? 'text-white' : 'text-zinc-500'}`}>2. Gleiten</span>
-                      </div>
-                      <div className="w-1/3 flex items-center justify-center">
-                          <span className={`text-[10px] font-bold uppercase tracking-wider ${phase === 'sustain' ? 'text-white' : 'text-zinc-500'}`}>3. Halten</span>
-                      </div>
-                  </div>
-
-                  {/* Active Progress Bar */}
-                  <motion.div 
-                    className="h-full bg-gradient-to-r from-orange-500 to-red-500"
-                    style={{ width: `${progress}%` }}
-                    initial={{ width: '0%' }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.1, ease: "linear" }}
-                  />
+          {/* Rhythm Bar (Reintroduced) */}
+          <div className="relative w-full h-8 bg-zinc-800 rounded-lg overflow-hidden mx-auto flex items-center justify-center border border-zinc-700">
+              {/* Background Progress */}
+              <motion.div 
+                className={`absolute left-0 top-0 bottom-0 ${
+                  phase === 'pre-hold' ? 'bg-orange-500/50' :
+                  phase === 'glissando' ? 'bg-white/30' :
+                  phase === 'sustain' ? 'bg-green-500/50' : 'bg-transparent'
+                }`}
+                style={{ width: `${progress}%` }}
+              />
+              
+              {/* Phase Labels */}
+              <div className="relative z-10 flex w-full justify-between px-4 text-[10px] font-bold uppercase tracking-wider text-zinc-300">
+                  <span className={phase === 'pre-hold' ? 'text-white' : ''}>1. Einschwingen</span>
+                  <span className={phase === 'glissando' ? 'text-white' : ''}>2. Gleiten</span>
+                  <span className={phase === 'sustain' ? 'text-white' : ''}>3. Halten</span>
               </div>
           </div>
 
