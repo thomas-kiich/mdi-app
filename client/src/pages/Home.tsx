@@ -870,8 +870,12 @@ export default function Home() {
       <div className="container max-w-5xl mx-auto px-4 py-8">
         {/* Navbar */}
         <header className="flex justify-between items-center mb-12">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-orange-500 rounded-sm" />
+          <div className="flex items-center gap-3">
+            <img 
+              src="/logo.png" 
+              alt="MDI Logo" 
+              className="h-12 w-auto object-contain" 
+            />
             <span className="font-bold text-xl tracking-tight text-white">MDI</span>
           </div>
           <div className="text-xs font-mono text-zinc-600">
