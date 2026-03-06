@@ -365,9 +365,9 @@ export default function Home() {
               <Button 
                 size="lg" 
                 onClick={advanceStep}
-                className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-12 py-8 text-lg shadow-[0_0_40px_rgba(249,115,22,0.3)] hover:shadow-[0_0_60px_rgba(249,115,22,0.5)] transition-all duration-500"
+                className="bg-transparent hover:bg-white/10 text-white border border-white/30 hover:border-white rounded-full px-12 py-8 text-lg tracking-widest uppercase transition-all duration-500"
               >
-                Analyse starten <ChevronRight className="ml-2 h-5 w-5" />
+                ANALYSE STARTEN <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </div>
             
