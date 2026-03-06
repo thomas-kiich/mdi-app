@@ -337,27 +337,31 @@ export default function Home() {
                 />
               </div>
               
-              <h1 className="w-64 md:w-80 text-center text-4xl md:text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] leading-none">
+              <h1 className="w-64 md:w-80 text-center text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] leading-none">
                 MDI SYSTEM
               </h1>
+
+              <p className="text-xs md:text-sm text-zinc-500 font-light tracking-wider uppercase">
+                Multidimensionales Identitätssystem
+              </p>
               
-              <div className="space-y-2">
-                  <p className="text-xs md:text-sm text-orange-500/90 font-medium tracking-widest uppercase animate-pulse">
+              <div className="w-16 h-px bg-white/50 mx-auto mt-6 mb-6" />
+
+              <div className="space-y-1">
+                  <p className="text-xs md:text-sm text-yellow-200/90 font-medium tracking-widest uppercase">
                     ERFORSCHE DEINE EINZIGARTIGE IDENTITÄT
                   </p>
-                  <p className="text-xs md:text-sm text-orange-500/90 font-medium tracking-widest uppercase animate-pulse">
+                  <p className="text-xs md:text-sm text-yellow-200/90 font-medium tracking-widest uppercase">
                     AUS LICHT & KLANG
                   </p>
               </div>
-
-              <div className="w-16 h-1 bg-white mx-auto rounded-full mt-8" />
             </div>
 
-            <div className="space-y-8 text-center">
+            <div className="pt-8 text-center">
               <Button 
                 size="lg" 
                 onClick={advanceStep}
-                className="bg-transparent hover:bg-white/10 text-white border border-white/30 hover:border-white rounded-full px-12 py-8 text-lg tracking-widest uppercase transition-all duration-500"
+                className="bg-transparent hover:bg-white/10 text-white border border-white/30 hover:border-white rounded-full px-12 py-6 text-base tracking-widest uppercase transition-all duration-500"
               >
                 ANALYSE STARTEN <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
