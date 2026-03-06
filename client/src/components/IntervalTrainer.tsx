@@ -330,6 +330,26 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
              )}
           </div>
 
+          {/* Rhythm Bar (Reintroduced) */}
+          <div className="relative w-full h-8 bg-zinc-800 rounded-lg overflow-hidden mx-2 flex items-center justify-center">
+              {/* Background Progress */}
+              <motion.div 
+                className={`absolute left-0 top-0 bottom-0 ${
+                  phase === 'pre-hold' ? 'bg-orange-500/30' :
+                  phase === 'glissando' ? 'bg-white/20' :
+                  phase === 'sustain' ? 'bg-green-500/30' : 'bg-transparent'
+                }`}
+                style={{ width: `${progress}%` }}
+              />
+              
+              {/* Phase Labels */}
+              <div className="relative z-10 flex w-full justify-between px-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  <span className={phase === 'pre-hold' ? 'text-orange-400' : ''}>1. Einschwingen</span>
+                  <span className={phase === 'glissando' ? 'text-white' : ''}>2. Gleiten</span>
+                  <span className={phase === 'sustain' ? 'text-green-400' : ''}>3. Halten</span>
+              </div>
+          </div>
+
           {/* Controls Row: Play Button + Octave Selection */}
           <div className="flex items-center justify-between gap-4 px-2">
              {/* Play Button */}
@@ -372,18 +392,6 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                 Hoch (W)
               </Button>
             </div>
-          </div>
-
-          {/* Progress Bar (Small) */}
-          <div className="relative w-full h-1 bg-zinc-800 rounded-full overflow-hidden mx-2">
-              <motion.div 
-                className={`h-full ${
-                  phase === 'pre-hold' ? 'bg-orange-500' :
-                  phase === 'glissando' ? 'bg-white' :
-                  phase === 'sustain' ? 'bg-green-500' : 'bg-zinc-600'
-                }`}
-                style={{ width: `${progress}%` }}
-              />
           </div>
 
           {/* Interval Selection */}
