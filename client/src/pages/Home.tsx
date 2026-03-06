@@ -481,13 +481,13 @@ export default function Home() {
                                     size="lg"
                                     onClick={isRecording ? handleStopRecording : handleStartRecording}
                                     className={cn(
-                                        "w-24 h-24 rounded-full transition-all duration-300 flex items-center justify-center border-4 relative z-10",
+                                        "w-24 h-24 rounded-full transition-all duration-300 flex items-center justify-center border-4 relative z-10 shadow-[0_0_15px_rgba(0,0,0,0.5)]",
                                         isRecording 
-                                            ? "bg-red-500 border-red-600 hover:bg-red-600 scale-110" 
-                                            : "bg-zinc-900 border-zinc-800 hover:border-orange-500 hover:bg-zinc-800"
+                                            ? "bg-red-500 border-red-600 hover:bg-red-600 scale-110 shadow-[0_0_30px_rgba(239,68,68,0.4)]" 
+                                            : "bg-zinc-800 border-zinc-600 hover:border-orange-500 hover:bg-zinc-700 text-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
                                     )}
                                 >
-                                    {isRecording ? <Square className="h-8 w-8 fill-current" /> : <Mic className="h-8 w-8" />}
+                                    {isRecording ? <Square className="h-8 w-8 fill-current text-white" /> : <Mic className="h-8 w-8 text-white" />}
                                 </Button>
                             </div>
                             
