@@ -2,9 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Play, Pause, X, Music2, Info, User } from "lucide-react";
+import { Play, Pause, X, Music2, Info, User, Mic } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { TONES, ToneData } from "@/lib/tones";
+import { useAudioAnalyzer } from "@/hooks/useAudioAnalyzer";
 
 interface IntervalTrainerProps {
   baseTone: ToneData;
@@ -24,6 +25,9 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
   const [octaveShift, setOctaveShift] = useState(0); // 0 = normal, -1 = lower octave (male), 1 = higher octave (female)
   const [phase, setPhase] = useState<'idle' | 'pre-hold' | 'glissando' | 'sustain'>('idle');
   
+  // Microphone Analyzer Hook
+  const { startRecording, stopRecording, result, isRecording } = useAudioAnalyzer();
+
   const audioCtxRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -44,6 +48,13 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     };
   }, []);
 
+  // Stop microphone when component unmounts or training stops
+  useEffect(() => {
+    if (!isPlaying && isRecording) {
+      stopRecording();
+    }
+  }, [isPlaying, isRecording, stopRecording]);
+
   const startSequence = async () => {
     if (!audioCtxRef.current) return;
     if (audioCtxRef.current.state === 'suspended') {
@@ -51,6 +62,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     }
 
     stopSound(); // Ensure clean slate
+    startRecording(); // Start microphone
 
     const ctx = audioCtxRef.current;
     const osc = ctx.createOscillator();
@@ -110,6 +122,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
       } else {
         setPhase('idle');
         setIsPlaying(false);
+        stopRecording(); // Stop mic when finished
         setProgress(0);
         return; // Stop animation
       }
@@ -137,6 +150,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     setIsPlaying(false);
     setPhase('idle');
     setProgress(0);
+    stopRecording();
   };
 
   const togglePlay = () => {
@@ -146,6 +160,32 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
       startSequence();
     }
   };
+
+  // Intonation Check Logic
+  const getIntonationStatus = () => {
+    if (!result || !isPlaying) return null;
+
+    const multiplier = Math.pow(2, octaveShift);
+    let targetFreq = 0;
+
+    if (phase === 'pre-hold') {
+      targetFreq = baseTone.frequency * multiplier;
+    } else if (phase === 'sustain') {
+      targetFreq = (baseTone.frequency * selectedInterval.ratio) * multiplier;
+    } else {
+      return null; // Don't check during glissando
+    }
+
+    // Allow 5% deviation
+    const deviation = Math.abs(result.fundamentalFreq - targetFreq);
+    const tolerance = targetFreq * 0.05;
+
+    if (deviation < tolerance) return 'match';
+    if (result.fundamentalFreq < targetFreq) return 'low';
+    return 'high';
+  };
+
+  const intonation = getIntonationStatus();
 
   return (
     <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
@@ -260,6 +300,20 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                   )}
                 </AnimatePresence>
              </div>
+             
+             {/* Intonation Feedback Overlay */}
+             {intonation && (
+                <div className="absolute top-4 left-0 right-0 flex justify-center pointer-events-none">
+                   <div className={`px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md border ${
+                      intonation === 'match' ? 'bg-green-500/20 border-green-500 text-green-400' :
+                      intonation === 'low' ? 'bg-red-500/20 border-red-500 text-red-400' :
+                      'bg-red-500/20 border-red-500 text-red-400'
+                   }`}>
+                      {intonation === 'match' ? 'Perfekte Resonanz' :
+                       intonation === 'low' ? 'Zu tief ↑' : 'Zu hoch ↓'}
+                   </div>
+                </div>
+             )}
           </div>
 
           {/* Octave Selection */}
@@ -367,8 +421,9 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
               {isPlaying ? <Pause size={28} /> : <Play size={28} className="ml-1" />}
             </Button>
             
-            <p className="text-xs text-zinc-500 text-center">
-              {isPlaying ? "Atmen & Tönen..." : "Bereit zum Starten"}
+            <p className="text-xs text-zinc-500 text-center flex items-center justify-center gap-2">
+               {isRecording && <Mic size={12} className="text-red-500 animate-pulse" />}
+               {isPlaying ? "Atmen & Tönen..." : "Bereit zum Starten"}
             </p>
           </div>
 
