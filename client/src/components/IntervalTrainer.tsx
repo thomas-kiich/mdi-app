@@ -21,6 +21,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedInterval, setSelectedInterval] = useState(INTERVALS[0]);
   const [duration, setDuration] = useState<number[]>([10]); // Seconds
+  const [octaveShift, setOctaveShift] = useState(0); // 0 = normal, -1 = lower octave (male), 1 = higher octave (female)
   const audioCtxRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -53,27 +54,33 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
-    const startFreq = baseTone.frequency;
-    const endFreq = baseTone.frequency * selectedInterval.ratio;
+    const multiplier = Math.pow(2, octaveShift);
+    const startFreq = baseTone.frequency * multiplier;
+    const endFreq = (baseTone.frequency * selectedInterval.ratio) * multiplier;
     const dur = duration[0];
+    const sustainTime = 3.0; // Sustain after glissando in seconds
+    const totalDuration = dur + sustainTime;
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
     
     // Smooth Glissando
     osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + dur);
+    // Sustain frequency
+    osc.frequency.setValueAtTime(endFreq, ctx.currentTime + totalDuration);
 
     // Envelope
     gain.gain.setValueAtTime(0, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1); // Fade in
-    gain.gain.setValueAtTime(0.3, ctx.currentTime + dur - 1); // Sustain
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + dur); // Fade out
+    gain.gain.setValueAtTime(0.3, ctx.currentTime + dur); // Hold volume during glissando
+    gain.gain.setValueAtTime(0.3, ctx.currentTime + dur + sustainTime - 1); // Sustain volume
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + totalDuration); // Fade out
 
     osc.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start();
-    osc.stop(ctx.currentTime + dur);
+    osc.stop(ctx.currentTime + totalDuration);
 
     oscillatorRef.current = osc;
     gainNodeRef.current = gain;
@@ -83,7 +90,8 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     // Animation Loop for Progress Bar
     const animate = () => {
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      const p = Math.min((elapsed / dur) * 100, 100);
+      // Progress calculation now includes sustain time
+      const p = Math.min((elapsed / totalDuration) * 100, 100);
       setProgress(p);
 
       if (p < 100) {
@@ -156,30 +164,67 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
 
         <CardContent className="space-y-8 relative z-10">
           
+          {/* Octave Selection */}
+          <div className="flex justify-center gap-2 mb-4">
+            <Button
+              variant={octaveShift === -1 ? "default" : "outline"}
+              onClick={() => setOctaveShift(-1)}
+              className={octaveShift === -1 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}
+              disabled={isPlaying}
+              size="sm"
+            >
+              Tief (M)
+            </Button>
+            <Button
+              variant={octaveShift === 0 ? "default" : "outline"}
+              onClick={() => setOctaveShift(0)}
+              className={octaveShift === 0 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}
+              disabled={isPlaying}
+              size="sm"
+            >
+              Normal
+            </Button>
+            <Button
+              variant={octaveShift === 1 ? "default" : "outline"}
+              onClick={() => setOctaveShift(1)}
+              className={octaveShift === 1 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}
+              disabled={isPlaying}
+              size="sm"
+            >
+              Hoch (W)
+            </Button>
+          </div>
+
           {/* Interval Selection */}
           <div className="grid grid-cols-1 gap-3">
-            {INTERVALS.map((interval) => (
-              <button
-                key={interval.name}
-                onClick={() => !isPlaying && setSelectedInterval(interval)}
-                className={`p-4 rounded-xl border text-left transition-all ${
-                  selectedInterval.name === interval.name
-                    ? 'bg-zinc-800 border-orange-500/50 ring-1 ring-orange-500/20'
-                    : 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 opacity-70'
-                } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
-                disabled={isPlaying}
-              >
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-semibold text-white">{interval.name}</span>
-                  <span className="text-xs font-mono text-zinc-500">
-                    {Math.round(baseTone.frequency)} Hz → {Math.round(baseTone.frequency * interval.ratio)} Hz
-                  </span>
-                </div>
-                <p className="text-xs text-zinc-400 leading-relaxed">
-                  {interval.description}
-                </p>
-              </button>
-            ))}
+            {INTERVALS.map((interval) => {
+               const multiplier = Math.pow(2, octaveShift);
+               const startHz = Math.round(baseTone.frequency * multiplier);
+               const endHz = Math.round((baseTone.frequency * interval.ratio) * multiplier);
+               
+               return (
+                <button
+                  key={interval.name}
+                  onClick={() => !isPlaying && setSelectedInterval(interval)}
+                  className={`p-4 rounded-xl border text-left transition-all ${
+                    selectedInterval.name === interval.name
+                      ? 'bg-zinc-800 border-orange-500/50 ring-1 ring-orange-500/20'
+                      : 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 opacity-70'
+                  } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={isPlaying}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-semibold text-white">{interval.name}</span>
+                    <span className="text-xs font-mono text-zinc-500">
+                      {startHz} Hz → {endHz} Hz
+                    </span>
+                  </div>
+                  <p className="text-xs text-zinc-400 leading-relaxed">
+                    {interval.description}
+                  </p>
+                </button>
+              );
+            })}
           </div>
 
           {/* Duration Slider */}
