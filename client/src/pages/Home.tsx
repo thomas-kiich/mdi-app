@@ -110,8 +110,16 @@ export default function Home() {
   };
 
   const handleStopRecording = () => {
-    stopRecording();
-    // The result capture is handled by the useEffect below
+    const finalRes = stopRecording();
+    if (finalRes) {
+        if (currentStep === "question1") {
+            setResults(prev => ({ ...prev, q1: finalRes }));
+        } else if (currentStep === "question2") {
+            setResults(prev => ({ ...prev, q2: finalRes }));
+        } else if (currentStep === "question3") {
+            setResults(prev => ({ ...prev, q3: finalRes }));
+        }
+    }
   };
 
   // Effect to capture result when recording stops
@@ -119,18 +127,9 @@ export default function Home() {
   const wasRecordingRef = useRef(false);
 
   useEffect(() => {
-    if (wasRecordingRef.current && !isRecording && analysisResult) {
-      // Just finished recording
-      if (currentStep === "question1") {
-        setResults(prev => ({ ...prev, q1: analysisResult }));
-      } else if (currentStep === "question2") {
-        setResults(prev => ({ ...prev, q2: analysisResult }));
-      } else if (currentStep === "question3") {
-        setResults(prev => ({ ...prev, q3: analysisResult }));
-      }
-    }
+    // This effect is mainly for UI updates or side effects when recording state changes
     wasRecordingRef.current = isRecording;
-  }, [isRecording, analysisResult, currentStep]);
+  }, [isRecording]);
 
   // CORRECT NAVIGATION LOGIC
   const advanceStep = () => {

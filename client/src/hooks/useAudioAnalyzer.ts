@@ -88,13 +88,12 @@ export function useAudioAnalyzer() {
       setResult(newResult);
       lastValidResultRef.current = newResult;
       
-      if (accumulatedTonesRef.current[toneData.tone.name]) {
-          accumulatedTonesRef.current[toneData.tone.name]++;
-          accumulatedFreqsRef.current[toneData.tone.name].push(fundamentalFreq);
-      } else {
-          accumulatedTonesRef.current[toneData.tone.name] = 1;
-          accumulatedFreqsRef.current[toneData.tone.name] = [fundamentalFreq];
+      if (!accumulatedTonesRef.current[toneData.tone.name]) {
+          accumulatedTonesRef.current[toneData.tone.name] = 0;
+          accumulatedFreqsRef.current[toneData.tone.name] = [];
       }
+      accumulatedTonesRef.current[toneData.tone.name]++;
+      accumulatedFreqsRef.current[toneData.tone.name].push(fundamentalFreq);
       totalFramesRef.current++;
     } else {
          // Update visualizer even if not speaking
@@ -144,6 +143,7 @@ export function useAudioAnalyzer() {
     setIsRecording(false);
     
     // Process final result logic
+    let finalResult = null;
     if (totalFramesRef.current > 0) {
         let maxCount = 0;
         let dominantToneName = "";
@@ -170,14 +170,10 @@ export function useAudioAnalyzer() {
             let finalTone = TONES.find(t => t.name === dominantToneName) || lastValidResultRef.current.tone;
             let correctionNote = undefined;
 
-            // Simple correction logic (e.g. quint check) can be added here if needed
-            // For now, trust the distribution
-
             const idealFreq = finalTone.frequency; 
-            // Calculate cents based on average measured frequency vs ideal frequency
             const finalCents = 1200 * Math.log2(finalFreq / idealFreq);
 
-            const finalResult = {
+            finalResult = {
                 ...lastValidResultRef.current,
                 tone: finalTone,
                 fundamentalFreq: finalFreq,
@@ -186,20 +182,26 @@ export function useAudioAnalyzer() {
                 toneDistribution: distribution,
                 correctionNote
             };
-            setResult(finalResult);
-        } else if (lastValidResultRef.current) {
-            setResult(lastValidResultRef.current);
         }
-    } else if (lastValidResultRef.current) {
-        setResult(lastValidResultRef.current);
+    } 
+    
+    // If no valid frames were captured, use the last valid result or null
+    if (!finalResult && lastValidResultRef.current) {
+        finalResult = lastValidResultRef.current;
     }
+
+    setResult(finalResult);
+    return finalResult;
   }, []);
 
   const startRecording = useCallback(async () => {
     try {
-      if (isRecording) {
-        stopRecording();
-        return;
+      // Clean up any existing context before starting
+      if (audioContextRef.current) {
+        await audioContextRef.current.close();
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
       }
       
       setError(null);
@@ -218,7 +220,7 @@ export function useAudioAnalyzer() {
       
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 2048;
-      analyser.smoothingTimeConstant = 0.8; // Smoother visualization
+      analyser.smoothingTimeConstant = 0.8;
       analyserRef.current = analyser;
       
       const source = audioContext.createMediaStreamSource(stream);
@@ -226,12 +228,21 @@ export function useAudioAnalyzer() {
       sourceRef.current = source;
       
       setIsRecording(true);
-      analyze();
+      
+      // Start analysis loop
+      const loop = () => {
+          if (!audioContextRef.current) return;
+          analyze();
+          rafIdRef.current = requestAnimationFrame(loop);
+      };
+      analyze(); // Start immediately
+      
     } catch (err) {
       console.error("Error accessing microphone:", err);
-      setError("Mikrofonzugriff verweigert oder nicht verfügbar.");
+      setError("Mikrofonzugriff verweigert oder nicht verfügbar. Bitte überprüfen Sie Ihre Browsereinstellungen.");
+      setIsRecording(false);
     }
-  }, [isRecording, stopRecording, analyze]);
+  }, [analyze]);
 
   return {
     isRecording,
