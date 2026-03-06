@@ -331,22 +331,22 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           </div>
 
           {/* Rhythm Bar (Reintroduced) */}
-          <div className="relative w-full h-8 bg-zinc-800 rounded-lg overflow-hidden mx-2 flex items-center justify-center">
+          <div className="relative w-full h-8 bg-zinc-800 rounded-lg overflow-hidden mx-auto flex items-center justify-center border border-zinc-700">
               {/* Background Progress */}
               <motion.div 
                 className={`absolute left-0 top-0 bottom-0 ${
-                  phase === 'pre-hold' ? 'bg-orange-500/30' :
-                  phase === 'glissando' ? 'bg-white/20' :
-                  phase === 'sustain' ? 'bg-green-500/30' : 'bg-transparent'
+                  phase === 'pre-hold' ? 'bg-orange-500/50' :
+                  phase === 'glissando' ? 'bg-white/30' :
+                  phase === 'sustain' ? 'bg-green-500/50' : 'bg-transparent'
                 }`}
                 style={{ width: `${progress}%` }}
               />
               
               {/* Phase Labels */}
-              <div className="relative z-10 flex w-full justify-between px-4 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-                  <span className={phase === 'pre-hold' ? 'text-orange-400' : ''}>1. Einschwingen</span>
+              <div className="relative z-10 flex w-full justify-between px-4 text-[10px] font-bold uppercase tracking-wider text-zinc-300">
+                  <span className={phase === 'pre-hold' ? 'text-white' : ''}>1. Einschwingen</span>
                   <span className={phase === 'glissando' ? 'text-white' : ''}>2. Gleiten</span>
-                  <span className={phase === 'sustain' ? 'text-green-400' : ''}>3. Halten</span>
+                  <span className={phase === 'sustain' ? 'text-white' : ''}>3. Halten</span>
               </div>
           </div>
 
