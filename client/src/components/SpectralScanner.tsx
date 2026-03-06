@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Info, Play, Square, Sparkles, Heart, Activity } from "lucide-react";
-import { TONES, getToneFromFrequency } from "@/lib/tones";
+import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Play, Square, Sparkles, Heart, Activity } from "lucide-react";
+import { getToneFromFrequency } from "@/lib/tones";
 import { useLocation } from 'wouter';
 import { Method36Trainer } from "@/components/Method36Trainer";
 
@@ -19,7 +19,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   
   // Audio Synthesis Refs
   const synthContextRef = useRef<AudioContext | null>(null);
@@ -28,12 +28,11 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
   const [isPlayingTone, setIsPlayingTone] = useState(false);
 
   // History Buffer: Stores columns of frequency data
-  // Each column is an array of { y: number, color: string, alpha: number, freq: number, tone: string }
   const historyRef = useRef<any[]>([]); 
   
   // Settings Refs (for access in loop)
   const sensitivityRef = useRef(5.0); // Default sensitivity
-  const speedRef = useRef(1); // Scroll speed
+  const speedRef = useRef(2); // Scroll speed increased for better flow
   const [isZoomed, setIsZoomed] = useState(true); // Vocal Zoom Default
   const isZoomedRef = useRef(true);
   const [is3DMode, setIs3DMode] = useState(false);
@@ -71,7 +70,6 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
       const now = ctx.currentTime;
       const duration = 12; // 12 seconds total
       const attack = 2; // 2s fade in
-      const release = 8; // 8s fade out
 
       // Create Master Gain for Envelope
       const masterGain = ctx.createGain();
@@ -83,11 +81,6 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
       activeGainNodesRef.current.push(masterGain);
 
       // Create Oscillators for Warm Drone
-      // 1. Fundamental (Sine) - The core
-      // 2. Octave Lower (Triangle) - Body/Warmth
-      // 3. Fifth Above (Sine) - Harmony/Shimmer
-      // 4. Detuned Fundamental (Sawtooth, low pass) - Texture
-
       const oscs = [];
 
       // Fundamental
@@ -171,8 +164,8 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
 
       // 3. Create Analyser
       const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 4096;
-      analyser.smoothingTimeConstant = 0.1; // Slight smoothing for stability
+      analyser.fftSize = 2048; // Reduced from 4096 for better performance
+      analyser.smoothingTimeConstant = 0.8; // Increased smoothing for smoother visuals
       analyserRef.current = analyser;
       
       // 4. Connect Source
@@ -338,12 +331,12 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
 
       analyserRef.current.getByteFrequencyData(dataArray);
       
-      // Clear with solid black (Crucial for fixing artifacts)
-      ctx.fillStyle = "#000000";
-      ctx.fillRect(0, 0, width, height);
-
       // --- 3D Tunnel Mode ---
       if (is3DModeRef.current) {
+          // Clear with fade effect for trails
+          ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+          ctx.fillRect(0, 0, width, height);
+
           // Tunnel Logic
           const centerX = width / 2;
           const centerY = height / 2;
@@ -352,7 +345,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
           // Add current frame data to history for depth
           // We only store peaks to save performance
           const peaks = [];
-          const threshold = 255 - (sensitivityRef.current * 40); // Dynamic threshold
+          const threshold = 255 - (sensitivityRef.current * 25); // Adjusted threshold
           
           for (let i = 0; i < bufferLength; i++) {
               const value = dataArray[i];
@@ -361,8 +354,6 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                   if (freq >= minFreq && freq <= maxFreq) {
                       const logPos = (Math.log(freq) - minLog) / logRange;
                       // Map frequency to angle (0 to 2PI)
-                      // We need to match the atan2 logic: atan2(y, x) returns angle from X-axis
-                      // So 0 is East, PI/2 is South, PI is West, 3PI/2 is North (in canvas coords)
                       const angle = logPos * Math.PI * 2;
                       const { color } = getToneColor(freq);
                       peaks.push({ angle, color, alpha: value / 255 });
@@ -376,7 +367,6 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
           historyRef.current.forEach((framePeaks, depthIndex) => {
               const depthFactor = 1 - (depthIndex / 50); // 1 (near) to 0 (far)
               const radius = maxRadius * Math.pow(depthFactor, 2); // Exponential depth
-              const nextRadius = maxRadius * Math.pow(1 - ((depthIndex + 1) / 50), 2);
               
               framePeaks.forEach((peak: any) => {
                   const x = centerX + Math.cos(peak.angle) * radius;
@@ -397,17 +387,29 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
           
           // 1. Shift existing image to the left
           // We use drawImage to move the canvas content
-          ctx.drawImage(canvas, -speedRef.current, 0);
+          // IMPORTANT: Capture current state before clearing
+          const tempCanvas = document.createElement('canvas');
+          tempCanvas.width = width;
+          tempCanvas.height = height;
+          const tempCtx = tempCanvas.getContext('2d');
+          if (tempCtx) {
+             tempCtx.drawImage(canvas, 0, 0);
+          }
+
+          // Clear the canvas
+          ctx.fillStyle = "#000000";
+          ctx.fillRect(0, 0, width, height);
+
+          // Draw shifted image
+          if (tempCtx) {
+             ctx.drawImage(tempCanvas, -speedRef.current, 0);
+          }
           
           // 2. Draw new column on the right edge
           const x = width - speedRef.current;
           
-          // Clear the new strip to be black first
-          ctx.fillStyle = "#000000";
-          ctx.fillRect(x, 0, speedRef.current, height);
-          
           // Peak Detection & Sharpening
-          const threshold = 255 - (sensitivityRef.current * 40); // Sensitivity slider
+          const threshold = 255 - (sensitivityRef.current * 25); // Adjusted threshold logic
           
           for (let i = 0; i < bufferLength; i++) {
               const value = dataArray[i];
@@ -427,7 +429,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                       ctx.fillStyle = color;
                       ctx.globalAlpha = alpha;
                       // Draw a sharp line/rect
-                      ctx.fillRect(x, y, speedRef.current, 2); 
+                      ctx.fillRect(x, y, speedRef.current, 4); // Thicker lines for visibility
                       ctx.globalAlpha = 1.0;
                   }
               }
@@ -656,7 +658,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
              <input 
                 type="range" 
                 min="0.5" max="5" step="0.5" 
-                defaultValue="1"
+                defaultValue="2"
                 className="w-32 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
                 onChange={(e) => speedRef.current = parseFloat(e.target.value)}
              />
