@@ -30,14 +30,10 @@ export function GuidePendulum() {
         </div>
 
         <div className="relative w-full aspect-video bg-white/5 rounded-xl overflow-hidden border border-white/10 shadow-2xl">
-          <video 
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/method36-pendulum-sketch_78a0553b.mp4"
+          <img 
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/method36-pendulum-sketch_d1085bb8.webp"
+            alt="Grundpendeln Animation"
             className="w-full h-full object-contain"
-            autoPlay
-            loop
-            muted
-            playsInline
-            controls
           />
           <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/20 to-transparent" />
         </div>
