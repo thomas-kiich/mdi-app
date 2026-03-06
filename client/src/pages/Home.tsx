@@ -451,22 +451,49 @@ export default function Home() {
                  <div className="flex flex-col items-center gap-6">
                     {/* Always show recording button unless we have a result AND are not recording */}
                     {(!hasResult || isRecording) && (
-                        <div className="relative flex justify-center items-center">
-                            {isRecording && (
-                                <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" />
+                        <div className="flex flex-col items-center gap-8">
+                            {/* Live Visualizer */}
+                            {isRecording && analysisResult && (
+                                <div className="h-16 flex items-end justify-center gap-1 w-64">
+                                    {Array.from({ length: 20 }).map((_, i) => {
+                                        // Create a simple mirrored visualization
+                                        const index = i < 10 ? i : 19 - i;
+                                        // Use a subset of the spectrum for better visuals
+                                        const value = analysisResult.spectrum[index * 2] || 0;
+                                        const height = Math.max(4, (value / 255) * 64);
+                                        
+                                        return (
+                                            <div 
+                                                key={i} 
+                                                className="w-2 bg-orange-500/80 rounded-t-sm transition-all duration-75"
+                                                style={{ height: `${height}px` }}
+                                            />
+                                        );
+                                    })}
+                                </div>
                             )}
-                            <Button
-                                size="lg"
-                                onClick={isRecording ? handleStopRecording : handleStartRecording}
-                                className={cn(
-                                    "w-24 h-24 rounded-full transition-all duration-300 flex items-center justify-center border-4 relative z-10",
-                                    isRecording 
-                                        ? "bg-red-500 border-red-600 hover:bg-red-600 scale-110" 
-                                        : "bg-zinc-900 border-zinc-800 hover:border-orange-500 hover:bg-zinc-800"
+
+                            <div className="relative flex justify-center items-center">
+                                {isRecording && (
+                                    <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" />
                                 )}
-                            >
-                                {isRecording ? <Square className="h-8 w-8 fill-current" /> : <Mic className="h-8 w-8" />}
-                            </Button>
+                                <Button
+                                    size="lg"
+                                    onClick={isRecording ? handleStopRecording : handleStartRecording}
+                                    className={cn(
+                                        "w-24 h-24 rounded-full transition-all duration-300 flex items-center justify-center border-4 relative z-10",
+                                        isRecording 
+                                            ? "bg-red-500 border-red-600 hover:bg-red-600 scale-110" 
+                                            : "bg-zinc-900 border-zinc-800 hover:border-orange-500 hover:bg-zinc-800"
+                                    )}
+                                >
+                                    {isRecording ? <Square className="h-8 w-8 fill-current" /> : <Mic className="h-8 w-8" />}
+                                </Button>
+                            </div>
+                            
+                            {isRecording && (
+                                <p className="text-zinc-500 animate-pulse text-sm">Aufnahme läuft... Sprich jetzt.</p>
+                            )}
                         </div>
                     )}
 

@@ -71,10 +71,15 @@ export function useAudioAnalyzer() {
 
     const isSpeaking = volume > 10 && fundamentalFreq > 50 && fundamentalFreq < 800;
     
+    // Always update visualizer state, regardless of speaking
+    // This ensures the UI gets live feedback (volume/spectrum)
+    
+    let currentResult = null;
+
     if (isSpeaking) {
       const toneData = getToneFromFrequency(fundamentalFreq);
       
-      const newResult: AnalysisResult = {
+      currentResult = {
         fundamentalFreq,
         tone: toneData.tone,
         cents: toneData.cents,
@@ -85,20 +90,21 @@ export function useAudioAnalyzer() {
         volume
       };
       
-      setResult(newResult);
-      lastValidResultRef.current = newResult;
+      lastValidResultRef.current = currentResult;
       
-      if (accumulatedTonesRef.current[toneData.tone.name]) {
-          accumulatedTonesRef.current[toneData.tone.name]++;
-          accumulatedFreqsRef.current[toneData.tone.name].push(fundamentalFreq);
-      } else {
-          accumulatedTonesRef.current[toneData.tone.name] = 1;
-          accumulatedFreqsRef.current[toneData.tone.name] = [fundamentalFreq];
+      // Accumulate data for final result
+      const toneName = toneData.tone.name;
+      if (!accumulatedTonesRef.current[toneName]) {
+          accumulatedTonesRef.current[toneName] = 0;
+          accumulatedFreqsRef.current[toneName] = [];
       }
+      accumulatedTonesRef.current[toneName]++;
+      accumulatedFreqsRef.current[toneName].push(fundamentalFreq);
+      
       totalFramesRef.current++;
     } else {
-         // Update visualizer even if not speaking
-         setResult(prev => prev ? { ...prev, isSpeaking: false, spectrum: dataArray, volume } : { 
+         // Not speaking, but still need to pass visual data
+         currentResult = { 
              fundamentalFreq: 0, 
              tone: TONES[0], 
              cents: 0, 
@@ -107,18 +113,22 @@ export function useAudioAnalyzer() {
              isSpeaking: false, 
              spectrum: dataArray, 
              volume 
-         });
+         };
     }
+
+    setResult(currentResult);
     
     rafIdRef.current = requestAnimationFrame(analyze);
   }, []);
 
   const stopRecording = useCallback(() => {
+    // 1. Cancel animation frame first to stop the loop
     if (rafIdRef.current) {
       cancelAnimationFrame(rafIdRef.current);
       rafIdRef.current = null;
     }
     
+    // 2. Disconnect audio nodes
     if (sourceRef.current) {
       sourceRef.current.disconnect();
       sourceRef.current = null;
@@ -129,11 +139,13 @@ export function useAudioAnalyzer() {
       analyserRef.current = null;
     }
     
+    // 3. Stop all tracks in the stream
     if (streamRef.current) {
       streamRef.current.getTracks().forEach(track => track.stop());
       streamRef.current = null;
     }
     
+    // 4. Close context
     if (audioContextRef.current) {
       if (audioContextRef.current.state !== 'closed') {
         audioContextRef.current.close();
@@ -143,8 +155,11 @@ export function useAudioAnalyzer() {
     
     setIsRecording(false);
     
-    // Process final result logic
+    // 5. Calculate Final Result
+    let calculatedResult = null;
+
     if (totalFramesRef.current > 0) {
+        // Find dominant tone
         let maxCount = 0;
         let dominantToneName = "";
         
@@ -155,43 +170,49 @@ export function useAudioAnalyzer() {
             }
         }
         
-        if (dominantToneName && lastValidResultRef.current) {
+        if (dominantToneName) {
+            // Calculate distribution
             const distribution: Record<string, number> = {};
             for (const [name, count] of Object.entries(accumulatedTonesRef.current)) {
                 distribution[name] = (count / totalFramesRef.current) * 100;
             }
             
+            // Calculate average frequency for dominant tone
             const measuredFreqs = accumulatedFreqsRef.current[dominantToneName] || [];
             const avgMeasuredFreq = measuredFreqs.length > 0 
                 ? measuredFreqs.reduce((a, b) => a + b, 0) / measuredFreqs.length 
-                : (lastValidResultRef.current.fundamentalFreq);
+                : 0;
 
-            let finalFreq = avgMeasuredFreq;
-            let finalTone = TONES.find(t => t.name === dominantToneName) || lastValidResultRef.current.tone;
-            let correctionNote = undefined;
-
-            // Simple correction logic (e.g. quint check) can be added here if needed
-            // For now, trust the distribution
-
+            const finalTone = TONES.find(t => t.name === dominantToneName) || TONES[0];
             const idealFreq = finalTone.frequency; 
-            // Calculate cents based on average measured frequency vs ideal frequency
-            const finalCents = 1200 * Math.log2(finalFreq / idealFreq);
+            const finalCents = idealFreq > 0 ? 1200 * Math.log2(avgMeasuredFreq / idealFreq) : 0;
 
-            const finalResult = {
-                ...lastValidResultRef.current,
+            // Construct result object
+            // We use the last valid result for spectrum/volume, but override the analysis data
+            const base = lastValidResultRef.current || { spectrum: new Uint8Array(0), volume: 0, isSpeaking: false };
+            
+            calculatedResult = {
+                ...base,
                 tone: finalTone,
-                fundamentalFreq: finalFreq,
+                fundamentalFreq: avgMeasuredFreq,
                 cents: finalCents,
+                diffHz: avgMeasuredFreq - idealFreq,
                 noteName: finalTone.name,
                 toneDistribution: distribution,
-                correctionNote
+                correctionNote: undefined
             };
-            setResult(finalResult);
-        } else if (lastValidResultRef.current) {
-            setResult(lastValidResultRef.current);
         }
-    } else if (lastValidResultRef.current) {
-        setResult(lastValidResultRef.current);
+    } 
+    
+    // Fallback if no frames were valid but we have a last result
+    if (!calculatedResult && lastValidResultRef.current) {
+        calculatedResult = lastValidResultRef.current;
+    }
+
+    setResult(calculatedResult);
+    // Important: lastValidResultRef will be used by the consumer to get the final state
+    if (calculatedResult) {
+        lastValidResultRef.current = calculatedResult;
     }
   }, []);
 
