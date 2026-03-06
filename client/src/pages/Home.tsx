@@ -419,17 +419,17 @@ export default function Home() {
           question1: {
             title: "Gegenwart",
             text: "Wie fühlst du dich in diesem Moment? Beschreibe deine aktuelle Situation.",
-            subtext: "Sprich für ca. 30 - 60 Sekunden."
+            subtext: "Sprich bitte für ca. 30 - 60 Sekunden."
           },
           question2: {
             title: "Vergangenheit",
             text: "Was hat dich hierher geführt? Welche Erfahrung hat dich geprägt?",
-            subtext: "Sprich für ca. 30 - 60 Sekunden."
+            subtext: "Sprich bitte für ca. 30 - 60 Sekunden."
           },
           question3: {
             title: "Zukunft",
             text: "Wo möchtest du hin? Was ist dein tiefster Wunsch?",
-            subtext: "Sprich für ca. 30 - 60 Sekunden."
+            subtext: "Sprich bitte für ca. 30 - 60 Sekunden."
           }
         };
         
