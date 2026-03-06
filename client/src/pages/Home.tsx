@@ -14,8 +14,9 @@ import { InterpretationView } from "@/components/InterpretationView";
 import { ConnectionStory } from "@/components/ConnectionStory";
 import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
+import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
@@ -102,6 +103,7 @@ export default function Home() {
   const [showStory, setShowStory] = useState(false);
   const [showSpectralScanner, setShowSpectralScanner] = useState(false);
   const [showVitalDashboard, setShowVitalDashboard] = useState(false);
+  const [showIntervalTrainer, setShowIntervalTrainer] = useState(false);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -803,6 +805,15 @@ export default function Home() {
 
                 <Button 
                   size="lg"
+                  className="rounded-full bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
+                  onClick={() => setShowIntervalTrainer(true)}
+                >
+                  <Music2 className="mr-2 h-4 w-4" />
+                  Intervall-Training
+                </Button>
+
+                <Button 
+                  size="lg"
                   className="rounded-full bg-orange-500 hover:bg-orange-600 text-white"
                 >
                   <Download className="mr-2 h-4 w-4" />
@@ -847,6 +858,11 @@ export default function Home() {
             />
           ) : showVitalDashboard ? (
             <VitalDashboard onClose={() => setShowVitalDashboard(false)} />
+          ) : showIntervalTrainer && finalResult ? (
+            <IntervalTrainer 
+              baseTone={finalResult.tone} 
+              onClose={() => setShowIntervalTrainer(false)} 
+            />
           ) : (
             renderContent()
           )}
