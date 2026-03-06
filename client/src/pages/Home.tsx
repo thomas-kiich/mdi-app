@@ -346,7 +346,7 @@ export default function Home() {
                     Multidimensionales Identitätssystem
                   </p>
                   <p className="text-sm md:text-base text-orange-500/80 font-medium tracking-widest uppercase animate-pulse">
-                    Deine einzigartige multidimensionale Identität aus Licht & Klang
+                    Erfahre und nütze deine einzigartige Identität aus Licht & Klang
                   </p>
               </div>
 
