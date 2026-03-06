@@ -326,9 +326,9 @@ export default function Home() {
     switch (currentStep) {
       case "intro":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[70vh] space-y-12 animate-in fade-in duration-1000">
+          <div className="flex flex-col items-center justify-center min-h-[50vh] pt-4 md:pt-12 space-y-12 animate-in fade-in duration-1000">
             <div className="text-center space-y-8 max-w-3xl flex flex-col items-center">
-              <div className="relative w-64 h-64 md:w-80 md:h-80 mb-8 animate-in zoom-in duration-1000">
+              <div className="relative w-64 h-64 md:w-80 md:h-80 mb-4 animate-in zoom-in duration-1000">
                 <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full animate-pulse" />
                 <img 
                   src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
@@ -337,7 +337,7 @@ export default function Home() {
                 />
               </div>
               
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+              <h1 className="w-64 md:w-80 text-center text-4xl md:text-5xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] leading-none">
                 MDI SYSTEM
               </h1>
               
@@ -884,16 +884,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-black text-foreground font-sans selection:bg-orange-500/30">
       <div className="container max-w-5xl mx-auto px-4 py-8">
-        {/* Navbar */}
-        <header className="flex justify-between items-center mb-12">
-          <div className="flex items-center gap-3">
-            <img 
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
-              alt="MDI Logo" 
-              className="h-12 w-auto object-contain" 
-            />
-            <span className="font-bold text-xl tracking-tight text-white">MDI</span>
-          </div>
+        {/* Navbar - Logo removed, content shifted up */}
+        <header className="flex justify-end items-center mb-4 md:mb-8">
           <div className="text-xs font-mono text-zinc-600">
             BETA 1.1
           </div>
