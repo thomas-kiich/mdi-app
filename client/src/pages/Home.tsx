@@ -495,19 +495,6 @@ export default function Home() {
                       height={192}
                       isActive={isRecording}
                   />
-                  <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
-                      <div className="text-xs font-mono text-zinc-500 uppercase">Frequenz</div>
-                      <div className="text-xl font-bold text-white tabular-nums">
-                          {analysisResult.fundamentalFreq > 0 
-                              ? `${analysisResult.fundamentalFreq.toFixed(1)} Hz` 
-                              : "..."}
-                      </div>
-                      {analysisResult.noteName && analysisResult.noteName !== "-" && (
-                          <div className="text-orange-500 font-bold text-sm">
-                              {analysisResult.noteName}
-                          </div>
-                      )}
-                  </div>
                </div>
             )}
 

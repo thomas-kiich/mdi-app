@@ -87,13 +87,18 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
     // At 44.1kHz SampleRate, Nyquist is 22kHz
     // bufferLength = 1024 (at FFT 2048) -> each bin approx 21.5 Hz
     // We want to see approx first 200 bins (up to ~4300 Hz)
-    const displayBins = Math.min(bufferLength, 200); 
+    // REDUCED to 48 bins to make bars wider as requested
+    const displayBins = Math.min(bufferLength, 48); 
     
     const barWidth = canvas.width / displayBins;
+    const gap = 2; // Gap between bars
+    const drawWidth = Math.max(1, barWidth - gap);
+    
     let x = 0;
 
     // Determine color based on 24-step MDI system ONCE per frame
     let colorHex = "#FF6B00"; // Default orange
+    let mdiType = "";
     
     if (freq > 0) {
         // Find closest MDI frequency
@@ -108,6 +113,7 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
             }
         }
         colorHex = closest.hex;
+        mdiType = closest.id;
     }
 
     if (active) {
@@ -128,7 +134,7 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
       ctx.fillStyle = colorHex;
       ctx.globalAlpha = 0.5 + (percent * 0.5); // Min 50% opacity, max 100%
       
-      ctx.fillRect(x, canvas.height - barHeight, barWidth + 0.5, barHeight);
+      ctx.fillRect(x, canvas.height - barHeight, drawWidth, barHeight);
 
       x += barWidth;
     }
@@ -143,8 +149,34 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
             className="w-full h-full block" 
         />
         {active && freq > 0 && (
-            <div className="absolute top-2 right-2 text-xs font-mono text-orange-500 animate-pulse bg-black/80 px-2 py-1 rounded border border-orange-500/30 shadow-[0_0_10px_rgba(255,107,0,0.3)]">
-                {freq.toFixed(2)} Hz
+            <div className="absolute top-2 right-2 flex flex-col items-end gap-1 animate-pulse">
+                <div 
+                    className="text-lg font-bold px-3 py-1 rounded border shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                    style={{ 
+                        color: '#fff',
+                        borderColor: '#fff',
+                        backgroundColor: 'rgba(0,0,0,0.8)'
+                    }}
+                >
+                    TYPE {
+                        (() => {
+                            if (freq <= 0) return "-";
+                            let closest = frequencyData[0];
+                            let minDiff = Math.abs(freq - closest.frequency);
+                            for (const item of frequencyData) {
+                                const diff = Math.abs(freq - item.frequency);
+                                if (diff < minDiff) {
+                                    minDiff = diff;
+                                    closest = item;
+                                }
+                            }
+                            return closest.id;
+                        })()
+                    }
+                </div>
+                <div className="text-[10px] font-mono text-zinc-500 bg-black/80 px-1 rounded">
+                    {freq.toFixed(1)} Hz
+                </div>
             </div>
         )}
     </div>
