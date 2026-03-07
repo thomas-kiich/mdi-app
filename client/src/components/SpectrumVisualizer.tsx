@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import frequencyData from "@/lib/frequencyData.json";
 
 // Define a simplified AnalysisResult interface locally to avoid circular dependencies or import issues
 interface AnalysisResult {
@@ -77,6 +78,31 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
     const barWidth = canvas.width / displayBins;
     let x = 0;
 
+    // Determine color based on 24-step MDI system ONCE per frame
+    let colorHex = "#FF6B00"; // Default orange
+    
+    if (freq > 0) {
+        // Find closest MDI frequency
+        let closest = frequencyData[0];
+        let minDiff = Math.abs(freq - closest.frequency);
+        
+        for (const item of frequencyData) {
+            const diff = Math.abs(freq - item.frequency);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closest = item;
+            }
+        }
+        colorHex = closest.hex;
+    }
+
+    if (active) {
+         ctx.shadowBlur = 15;
+         ctx.shadowColor = colorHex;
+    } else {
+         ctx.shadowBlur = 0;
+    }
+
     for (let i = 0; i < displayBins; i++) {
       const value = data[i]; // 0-255
       
@@ -84,22 +110,9 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
       const percent = value / 255;
       const barHeight = percent * canvas.height;
 
-      // KIICH Orange: #FF6B00 -> rgb(255, 107, 0)
-      // Dynamic color based on intensity
-      const r = 255;
-      const g = Math.floor(107 + (148 * (1 - percent))); // Shift towards yellow/white for louder sounds
-      const b = Math.floor(255 * (1 - percent)); // Add blue for whiteness at high intensity
-      
-      // Simple orange gradient
-      ctx.fillStyle = `rgb(255, ${Math.floor(107 * percent)}, 0)`;
-      
-      if (active) {
-         // Add some glow effect
-         ctx.shadowBlur = 10;
-         ctx.shadowColor = "rgba(255, 107, 0, 0.5)";
-      } else {
-         ctx.shadowBlur = 0;
-      }
+      // Use the MDI color with opacity based on intensity
+      ctx.fillStyle = colorHex;
+      ctx.globalAlpha = 0.5 + (percent * 0.5); // Min 50% opacity, max 100%
       
       ctx.fillRect(x, canvas.height - barHeight, barWidth + 0.5, barHeight);
 
@@ -107,7 +120,7 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
     }
     
     return () => window.removeEventListener('resize', updateCanvasSize);
-  }, [data, active, width, height]);
+  }, [data, active, width, height, freq]); // Added freq to dependency array
 
   return (
     <div ref={containerRef} className="relative border border-orange-500/20 bg-black rounded-lg overflow-hidden shadow-[0_0_15px_rgba(255,107,0,0.1)] w-full h-full">

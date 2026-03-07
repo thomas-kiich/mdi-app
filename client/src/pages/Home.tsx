@@ -487,13 +487,26 @@ export default function Home() {
             </div>
 
             {/* Visual Feedback during recording */}
-            {isRecording && (
-               <div className="h-24 w-full max-w-md mx-auto mt-8 bg-black/50 rounded-xl overflow-hidden border border-zinc-800 relative">
-                  <div className="absolute inset-0 flex items-center justify-center text-zinc-500 text-sm">
-                    <Activity className="w-4 h-4 mr-2 animate-bounce" />
-                    Analyse läuft...
+            {isRecording && analysisResult && (
+               <div className="h-48 w-full max-w-md mx-auto mt-8 bg-black/50 rounded-xl overflow-hidden border border-zinc-800 relative shadow-[0_0_30px_rgba(249,115,22,0.1)]">
+                  <SpectrumVisualizer 
+                      spectrum={analysisResult.spectrum} 
+                      width={400} 
+                      height={192} 
+                  />
+                  <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
+                      <div className="text-xs font-mono text-zinc-500 uppercase">Frequenz</div>
+                      <div className="text-xl font-bold text-white tabular-nums">
+                          {analysisResult.fundamentalFreq > 0 
+                              ? `${analysisResult.fundamentalFreq.toFixed(1)} Hz` 
+                              : "..."}
+                      </div>
+                      {analysisResult.noteName && analysisResult.noteName !== "-" && (
+                          <div className="text-orange-500 font-bold text-sm">
+                              {analysisResult.noteName}
+                          </div>
+                      )}
                   </div>
-                  {/* We could add a mini visualizer here if we expose the analyzer node */}
                </div>
             )}
 
