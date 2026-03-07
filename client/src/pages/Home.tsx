@@ -372,7 +372,7 @@ export default function Home() {
             </div>
             
             {/* Footer Links */}
-            <div className="absolute bottom-8 flex gap-6 text-xs text-zinc-500 tracking-widest uppercase">
+            <div className="mt-24 mb-8 flex gap-6 text-xs text-zinc-500 tracking-widest uppercase relative z-20">
                 <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
                 <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
                 <a href="#" className="hover:text-white transition-colors opacity-50 cursor-not-allowed">Erklärung</a>
