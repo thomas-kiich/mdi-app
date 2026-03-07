@@ -23,13 +23,9 @@ interface AnalysisResult {
 }
 
 interface SpectrumVisualizerProps {
-  // New props used in Home.tsx
   spectrum?: Uint8Array;
   isActive?: boolean;
-  
-  // Legacy props support
   result?: AnalysisResult | null;
-  
   width?: number;
   height?: number;
 }
@@ -74,10 +70,12 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // --- LOGARITHMIC SCALE SETUP ---
-    // Visible Range: 80Hz to 800Hz (approx 3.3 octaves)
-    const minFreq = 80;
-    const maxFreq = 800;
+    // --- SINGLE OCTAVE SETUP (88Hz - 175Hz) ---
+    // We display exactly one octave containing all 24 types.
+    // Lowest Type: 24 (88Hz). Highest Type: 1 (170Hz).
+    // We add a bit of padding for the bands.
+    const minFreq = 86; // Slightly below 88
+    const maxFreq = 174; // Slightly above 170
     const minLog = Math.log(minFreq);
     const maxLog = Math.log(maxFreq);
     const logRange = maxLog - minLog;
@@ -93,74 +91,118 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
     const sampleRate = 44100; 
     const binSize = sampleRate / (data.length * 2);
 
-    const getAmplitude = (f: number) => {
-        if (data.length === 0) return 0;
-        const binIndex = Math.floor(f / binSize);
-        if (binIndex < 0 || binIndex >= data.length) return 0;
-        return data[binIndex];
+    // Helper to fold frequency into our single octave range
+    const normalizeToOctave = (f: number) => {
+        let norm = f;
+        if (norm <= 0) return 0;
+        // Fold into 87-173 range (approx)
+        while (norm < 87 && norm > 0) norm *= 2;
+        while (norm > 173) norm /= 2;
+        return norm;
     };
 
-    // --- DRAW BANDS ---
-    // We iterate through octaves: 1 (Base), 2, 4
-    const octaves = [1, 2, 4]; // Multipliers: 1x, 2x, 4x
+    // Map MDI ID -> Energy
+    // We sum energy for each MDI type across all octaves
+    const mdiEnergy = new Map<number, number>();
+    
+    if (active && data.length > 0) {
+        for (let i = 0; i < data.length; i++) {
+            const binFreq = i * binSize;
+            if (binFreq < 50 || binFreq > 1000) continue;
+            
+            const amplitude = data[i];
+            if (amplitude < 10) continue;
 
-    // Sort MDI types by frequency (Low to High)
+            // Fold binFreq to our octave
+            const normFreq = normalizeToOctave(binFreq);
+            if (normFreq === 0) continue;
+
+            // Find closest MDI type
+            let bestId = frequencyData[0].id;
+            let minDiff = Math.abs(normFreq - frequencyData[0].frequency);
+
+            for (let j = 1; j < frequencyData.length; j++) {
+                const diff = Math.abs(normFreq - frequencyData[j].frequency);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestId = frequencyData[j].id;
+                }
+            }
+            
+            const current = mdiEnergy.get(bestId) || 0;
+            // Use Max amplitude to represent the type strength
+            mdiEnergy.set(bestId, Math.max(current, amplitude)); 
+        }
+    }
+
+    // --- DRAW CONTIGUOUS BANDS ---
+    // Sort MDI types by frequency (Low to High): 88, 91, ... 170
     const sortedMdi = [...frequencyData].sort((a, b) => a.frequency - b.frequency);
 
-    octaves.forEach((multiplier, octaveIndex) => {
-        sortedMdi.forEach((item) => {
-            const baseFreq = item.frequency; // e.g. 88 (Type 24)
-            const f = baseFreq * multiplier; // e.g. 88, 176, 352...
+    // First pass: Draw all bands
+    sortedMdi.forEach((item, index) => {
+        // Determine Band Boundaries
+        // Start: Midpoint between prev and current (or minFreq)
+        // End: Midpoint between current and next (or maxFreq)
+        
+        const startFreq = index === 0 
+            ? minFreq 
+            : (sortedMdi[index - 1].frequency + item.frequency) / 2;
 
-            if (f < minFreq || f > maxFreq) return;
+        const endFreq = index === sortedMdi.length - 1 
+            ? maxFreq 
+            : (item.frequency + sortedMdi[index + 1].frequency) / 2;
 
-            const x = getX(f);
-            
-            // Calculate Variable Width based on Frequency (Inverse Relationship)
-            // Low Freq (80Hz) -> Wide. High Freq (800Hz) -> Narrow.
-            // This creates the "denser at top" visual effect.
-            
-            // Base width at minFreq
-            const baseWidth = 40; 
-            // Scaling factor: width scales with 1 / sqrt(f) to be less aggressive than 1/f
-            const widthScale = Math.sqrt(minFreq / f);
-            const w = Math.max(2, baseWidth * widthScale);
+        const x1 = getX(startFreq);
+        const x2 = getX(endFreq);
+        const w = Math.max(1, x2 - x1);
 
-            // Get Amplitude
-            const amp = getAmplitude(f);
-            const isActive = amp > 20; // Threshold
-            
-            // Highlight if this is the detected fundamental
-            const isFundamental = Math.abs(freq - f) < 5; // within 5Hz
-            
-            // Draw Band
-            ctx.fillStyle = item.hex;
-            
-            // Opacity
-            let opacity = 0.3; // Base visibility
-            if (isActive) opacity = 0.6 + (amp / 255) * 0.4;
-            if (isFundamental) {
-                opacity = 1.0;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = item.hex;
-            } else {
-                ctx.shadowBlur = 0;
-            }
-            
-            ctx.globalAlpha = opacity;
-            
-            // Draw full height band
-            ctx.fillRect(x - w/2, 0, w, canvas.height);
-            
-            // Draw Label (Number) at bottom
-            if (octaveIndex === 0) { // Only label base octave
-                ctx.fillStyle = "#ffffff";
-                ctx.font = "10px monospace";
-                ctx.textAlign = "center";
-                ctx.globalAlpha = 0.8;
-                ctx.fillText(item.id.toString(), x, canvas.height - 5);
-            }
-        });
+        // Get Energy
+        const amp = mdiEnergy.get(item.id) || 0;
+        const isActive = amp > 20;
+
+        // Check if this is the fundamental type
+        const normFund = normalizeToOctave(freq);
+        const isFundamental = freq > 0 && Math.abs(normFund - item.frequency) < 2; // Tight tolerance
+
+        // Draw Rect
+        ctx.fillStyle = item.hex;
+        
+        // Opacity Logic
+        // Always visible but dim (0.2)
+        // Light up on sound (up to 0.8)
+        let opacity = 0.2; 
+        if (isActive) {
+            opacity = 0.4 + (amp / 255) * 0.6;
+        }
+        
+        if (isFundamental) {
+            opacity = 1.0;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = item.hex;
+        } else {
+            ctx.shadowBlur = 0;
+        }
+
+        ctx.globalAlpha = opacity;
+        ctx.fillRect(x1, 0, w, canvas.height);
+        
+        // If fundamental, add a white overlay flash
+        if (isFundamental) {
+             ctx.fillStyle = '#ffffff';
+             ctx.globalAlpha = 0.3;
+             ctx.fillRect(x1, 0, w, canvas.height);
+        }
+
+        // Draw Label (Number)
+        // Only if width is sufficient
+        if (w > 12) {
+            ctx.fillStyle = "rgba(255,255,255,0.9)";
+            ctx.font = "bold 10px monospace";
+            ctx.textAlign = "center";
+            ctx.globalAlpha = 1.0;
+            ctx.fillText(item.id.toString(), x1 + w/2, canvas.height - 10);
+        }
     });
     
     return () => window.removeEventListener('resize', updateCanvasSize);
@@ -186,8 +228,8 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
                         (() => {
                             // Find closest MDI type (handling octaves)
                             let norm = freq;
-                            while (norm < 85) norm *= 2;
-                            while (norm > 180) norm /= 2;
+                            while (norm < 87) norm *= 2;
+                            while (norm > 173) norm /= 2;
 
                             let closest = frequencyData[0];
                             let minDiff = Math.abs(norm - closest.frequency);
@@ -204,7 +246,26 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
                     }
                 </div>
                 <div className="text-[10px] font-mono text-zinc-500 bg-black/80 px-1 rounded">
-                    {freq.toFixed(1)} Hz
+                    {
+                        (() => {
+                            // Find closest MDI type again to show ITS frequency
+                            let norm = freq;
+                            while (norm < 87) norm *= 2;
+                            while (norm > 173) norm /= 2;
+
+                            let closest = frequencyData[0];
+                            let minDiff = Math.abs(norm - closest.frequency);
+                            
+                            for (const item of frequencyData) {
+                                const diff = Math.abs(norm - item.frequency);
+                                if (diff < minDiff) {
+                                    minDiff = diff;
+                                    closest = item;
+                                }
+                            }
+                            return closest.frequency; // Display MDI Frequency
+                        })()
+                    } Hz
                 </div>
             </div>
         )}
