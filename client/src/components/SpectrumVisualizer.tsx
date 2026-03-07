@@ -159,8 +159,7 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
 
         // Get Energy
         const amp = mdiEnergy.get(item.id) || 0;
-        const isActive = amp > 20;
-
+        
         // Check if this is the fundamental type
         const normFund = normalizeToOctave(freq);
         const isFundamental = freq > 0 && Math.abs(normFund - item.frequency) < 2; // Tight tolerance
@@ -168,29 +167,31 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
         // Draw Rect
         ctx.fillStyle = item.hex;
         
-        // Opacity Logic
-        // Always visible but dim (0.2)
-        // Light up on sound (up to 0.8)
-        let opacity = 0.2; 
-        if (isActive) {
-            opacity = 0.4 + (amp / 255) * 0.6;
-        }
+        // HIGH CONTRAST OPACITY LOGIC
+        // Base: Very dim (0.1) so you see the structure but it doesn't distract
+        // Active (Fundamental): 1.0 (Full Brightness)
+        // Noise/Harmonics: Low opacity
         
+        let opacity = 0.15; // Dim background
         if (isFundamental) {
-            opacity = 1.0;
-            ctx.shadowBlur = 20;
+            opacity = 1.0; // Spotlight
+            ctx.shadowBlur = 40; // Strong Glow
             ctx.shadowColor = item.hex;
+        } else if (amp > 50) {
+             // Slight bleed for harmonics, but kept low
+             opacity = 0.15 + (amp / 255) * 0.2; 
+             ctx.shadowBlur = 0;
         } else {
-            ctx.shadowBlur = 0;
+             ctx.shadowBlur = 0;
         }
 
         ctx.globalAlpha = opacity;
         ctx.fillRect(x1, 0, w, canvas.height);
         
-        // If fundamental, add a white overlay flash
+        // If fundamental, add a white overlay flash for extra "hit" effect
         if (isFundamental) {
              ctx.fillStyle = '#ffffff';
-             ctx.globalAlpha = 0.3;
+             ctx.globalAlpha = 0.4;
              ctx.fillRect(x1, 0, w, canvas.height);
         }
 
@@ -200,7 +201,7 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
             ctx.fillStyle = "rgba(255,255,255,0.9)";
             ctx.font = "bold 10px monospace";
             ctx.textAlign = "center";
-            ctx.globalAlpha = 1.0;
+            ctx.globalAlpha = isFundamental ? 1.0 : 0.5; // Dim labels for inactive
             ctx.fillText(item.id.toString(), x1 + w/2, canvas.height - 10);
         }
     });
@@ -217,11 +218,11 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
         {active && freq > 0 && (
             <div className="absolute top-2 right-2 flex flex-col items-end gap-1 animate-pulse z-10">
                 <div 
-                    className="text-lg font-bold px-3 py-1 rounded border shadow-[0_0_15px_rgba(255,255,255,0.2)]"
+                    className="text-lg font-bold px-3 py-1 rounded border shadow-[0_0_20px_rgba(255,255,255,0.4)]"
                     style={{ 
                         color: '#fff',
                         borderColor: '#fff',
-                        backgroundColor: 'rgba(0,0,0,0.8)'
+                        backgroundColor: 'rgba(0,0,0,0.9)'
                     }}
                 >
                     TYPE {
@@ -245,7 +246,7 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
                         })()
                     }
                 </div>
-                <div className="text-[10px] font-mono text-zinc-500 bg-black/80 px-1 rounded">
+                <div className="text-[10px] font-mono text-zinc-400 bg-black/90 px-1 rounded border border-zinc-800">
                     {
                         (() => {
                             // Find closest MDI type again to show ITS frequency

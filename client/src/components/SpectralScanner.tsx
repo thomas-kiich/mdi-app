@@ -43,9 +43,6 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
   const activeGainNodesRef = useRef<GainNode[]>([]);
   const [isPlayingTone, setIsPlayingTone] = useState(false);
 
-  // Settings
-  const sensitivityRef = useRef(5.0); 
-
   // Interaction State
   const [hoverInfo, setHoverInfo] = useState<{ x: number, y: number, freq: number, tone: string, note: string, color: string } | null>(null);
   const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string } | null>(null);
@@ -166,10 +163,6 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
           setHoverInfo(null);
       } else if (forcedFrequency) {
            const { tone, color, mdiFreq } = getToneColor(forcedFrequency);
-           // getToneColor returns MDI tone string ID, but we need tone name?
-           // Actually Method36Trainer expects toneName.
-           // getToneColor returns { tone: string(id), color: hex, mdiFreq: number }
-           // So tone is ID.
            setTrainingMode({
               freq: mdiFreq,
               tone: tone,
@@ -286,34 +279,34 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
               const w = Math.max(1, x2 - x1);
 
               const amp = mdiEnergy.get(item.id) || 0;
-              const isActive = amp > 20;
-
-              // Opacity logic
-              let opacity = 0.2; // Base visibility
-              if (isActive) {
-                  opacity = 0.4 + (amp / 255) * 0.6;
-              }
-
+              
               // Highlight if fundamental
               const normFund = normalizeToOctave(domFreq);
               const isFundamental = domFreq > 0 && Math.abs(normFund - item.frequency) < 2;
               
+              ctx.fillStyle = item.hex;
+              
+              // HIGH CONTRAST LOGIC
+              let opacity = 0.15; // Dim background
               if (isFundamental) {
-                  opacity = 1.0;
-                  ctx.shadowBlur = 30;
+                  opacity = 1.0; // Spotlight
+                  ctx.shadowBlur = 40;
                   ctx.shadowColor = item.hex;
+              } else if (amp > 50) {
+                  // Slight bleed
+                  opacity = 0.15 + (amp / 255) * 0.2;
+                  ctx.shadowBlur = 0;
               } else {
                   ctx.shadowBlur = 0;
               }
 
-              ctx.fillStyle = item.hex;
               ctx.globalAlpha = opacity;
               ctx.fillRect(x1, 0, w, canvas.height);
 
               // Flash white overlay
               if (isFundamental) {
                   ctx.fillStyle = '#ffffff';
-                  ctx.globalAlpha = 0.2;
+                  ctx.globalAlpha = 0.4;
                   ctx.fillRect(x1, 0, w, canvas.height);
               }
 
@@ -322,7 +315,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                   ctx.fillStyle = "rgba(255,255,255,0.9)";
                   ctx.font = "bold 14px monospace";
                   ctx.textAlign = "center";
-                  ctx.globalAlpha = 1.0;
+                  ctx.globalAlpha = isFundamental ? 1.0 : 0.5;
                   ctx.fillText(item.id.toString(), x1 + w/2, canvas.height - 30);
                   
                   // Freq Label

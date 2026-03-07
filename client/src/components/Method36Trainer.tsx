@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Heart, ToggleLeft, ToggleRight, Play, Square } from "lucide-react";
+import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 
 interface Method36TrainerProps {
     frequency: number;
@@ -40,14 +40,14 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         
         const master = ctx.createGain();
         master.connect(ctx.destination);
-        // REDUCED GAIN TO 5% TO PREVENT CLIPPING AND ENSURE SOFTNESS
-        master.gain.value = 0.05; 
+        // INCREASED MASTER VOLUME TO 30% (was 5%)
+        master.gain.value = 0.3; 
         masterGainRef.current = master;
 
         // Create Low-Pass Filter for "Softness"
         const filter = ctx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.value = 800; // Cutoff at 800Hz to remove harsh digital highs
+        filter.frequency.value = 1200; // Increased slightly to 1200Hz for clarity
         filter.Q.value = 0.5; // Smooth rolloff
         filter.connect(master);
         filterRef.current = filter;
@@ -69,7 +69,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 0.01); 
+        // INCREASED GONG VOLUME
+        gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01); 
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5); 
         
         osc.connect(gain).connect(masterGainRef.current);
@@ -87,7 +88,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.05, ctx.currentTime + 0.01);
+        // INCREASED CLICK VOLUME
+        gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
         
         osc.connect(gain).connect(masterGainRef.current);
@@ -105,7 +107,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
 
         const toneGain = ctx.createGain();
         toneGain.gain.setValueAtTime(0, ctx.currentTime);
-        toneGain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.5); 
+        // INCREASED TONE VOLUME
+        toneGain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5); 
         // Connect to Filter instead of Master directly
         toneGain.connect(filterRef.current); 
         toneGainRef.current = toneGain;
@@ -162,8 +165,10 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         const now = Date.now();
         const elapsed = (now - startTimeRef.current) / 1000; 
         const totalCycleTime = BEAT_DURATION * 6; 
-        const cycleTime = elapsed % totalCycleTime;
         
+        // Calculate which beat we are in (1-6)
+        // Cycle starts at 0. Beat 1 is 0-BEAT_DURATION.
+        const cycleTime = elapsed % totalCycleTime;
         const beatIndex = Math.floor(cycleTime / BEAT_DURATION); 
         const beat = beatIndex + 1; 
         
@@ -172,9 +177,14 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
             lastBeatRef.current = beat;
             setCurrentBeat(beat);
             
+            // Phase Logic
+            // Beat 1: EIN (Inhale)
+            // Beat 2: HALTEN (Hold Full)
+            // Beat 3-5: TÖNEN (Tone - 3 beats)
+            // Beat 6: HALTEN (Hold Empty)
+            
             if (beat === 1) {
                 setPhase('IN');
-                // Increment cycle count ONLY on beat 1
                 setCycleCount(c => c + 1);
                 playGong('high'); 
             } else if (beat === 2) {
@@ -188,6 +198,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                 stopTone(); 
                 playGong('low'); 
             } else {
+                // Beats 4 and 5 (during TONE)
                 playClick(); 
             }
         }
@@ -195,7 +206,6 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         requestRef.current = requestAnimationFrame(updateLoop);
     };
 
-    // Fix: Explicitly restart the loop when isPlaying changes
     useEffect(() => {
         if (isPlaying) {
             if (audioCtxRef.current?.state === 'suspended') {
@@ -203,9 +213,9 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
             }
             
             startTimeRef.current = Date.now();
-            lastBeatRef.current = 0; // Reset beat tracker
+            lastBeatRef.current = 0; 
             setCurrentBeat(0);
-            setCycleCount(0); // Reset cycles on start
+            setCycleCount(0); 
             requestRef.current = requestAnimationFrame(updateLoop);
         } else {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
@@ -237,16 +247,16 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                 <div className="flex gap-4">
                     <Button 
                         variant="outline" 
-                        onClick={() => window.location.reload()} // Quick way to reset to main menu
+                        onClick={onClose} 
                         className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
                     >
-                        <X className="mr-2 h-4 w-4" /> Zur Übersicht
+                        <X className="mr-2 h-4 w-4" /> Schließen
                     </Button>
                 </div>
             </div>
 
             {/* Central Visual */}
-            <div className="relative w-[500px] h-[500px] flex items-center justify-center">
+            <div className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px] flex items-center justify-center">
                 
                 {/* Guide Circle (Static Outline) */}
                 <div className="absolute inset-0 border border-white/10 rounded-full" />
@@ -270,10 +280,10 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                 >
                     {/* Inner Text */}
                     <div className="flex flex-col items-center justify-center text-black font-bold pointer-events-none select-none">
-                        <span className="text-4xl tracking-tighter leading-tight">
+                        <span className="text-2xl md:text-4xl tracking-tighter leading-tight">
                             {phase === 'IN' ? 'EIN' : phase === 'TONE' ? 'MANTRA YOHN TÖNEN' : 'HALTEN'}
                         </span>
-                        <span className="text-sm font-mono opacity-50 mt-2">
+                        <span className="text-xs md:text-sm font-mono opacity-50 mt-2">
                             {toneName} • {(isHighOctave ? frequency * 2 : frequency).toFixed(1)} Hz
                         </span>
                     </div>
@@ -281,67 +291,73 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
 
                 {/* Beat Indicator Ring */}
                 <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none overflow-visible">
-                    <circle cx="250" cy="250" r="260" fill="none" stroke="white" strokeWidth="2" strokeOpacity="0.1" />
-                    {isPlaying && (
-                        <circle
-                            cx="250" cy="250" r="260"
-                            fill="none"
-                            stroke={color}
-                            strokeWidth="6"
-                            strokeLinecap="round"
-                            strokeDasharray="1633.6" // 2 * PI * 260
-                            strokeDashoffset="1633.6"
-                            className="transition-all ease-linear"
-                            style={{ 
-                                animation: `ringProgress 10s linear infinite`,
-                            }}
-                        />
-                    )}
+                    {/* Render 6 segments for beats */}
+                    {[...Array(6)].map((_, i) => {
+                        const angle = (i * 60) * (Math.PI / 180);
+                        const r = 260; // Radius slightly outside
+                        const x = 250 + r * Math.cos(angle);
+                        const y = 250 + r * Math.sin(angle);
+                        
+                        // Active state logic
+                        const isActive = currentBeat === i + 1;
+                        
+                        return (
+                             <circle 
+                                key={i}
+                                cx={x} cy={y} 
+                                r={isActive ? 8 : 4}
+                                fill={isActive ? "#fff" : "#333"}
+                                className="transition-all duration-300"
+                             />
+                        );
+                    })}
                 </svg>
+            </div>
+
+            {/* Controls */}
+            <div className="absolute bottom-12 flex flex-col items-center gap-6 w-full max-w-md px-6">
                 
-                {/* CSS Keyframes for Hard Sync */}
-                <style>{`
-                    @keyframes ringProgress {
-                        from { stroke-dashoffset: 1633.6; }
-                        to { stroke-dashoffset: 0; }
-                    }
-                `}</style>
-            </div>
-
-            {/* Octave Toggle (Bottom Left) */}
-            <div className="absolute bottom-8 left-8 flex flex-col items-start gap-2 z-50">
-                <span className="text-xs uppercase tracking-widest text-white/40 ml-1">Oktave</span>
-                <div className="flex items-center gap-3 bg-black/40 px-4 py-2 rounded-lg backdrop-blur-md border border-white/10 hover:border-white/30 transition-colors">
-                    <span className={`text-xs font-medium ${!isHighOctave ? 'text-white' : 'text-white/40'}`}>Tief (M)</span>
-                    <button 
-                        onClick={() => setIsHighOctave(!isHighOctave)}
-                        className="text-orange-500 hover:text-orange-400 transition-colors focus:outline-none"
-                    >
-                        {isHighOctave ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8" />}
-                    </button>
-                    <span className={`text-xs font-medium ${isHighOctave ? 'text-white' : 'text-white/40'}`}>Hoch (W)</span>
-                </div>
-            </div>
-
-            {/* Controls (Center Bottom) */}
-            <div className="absolute bottom-12 flex flex-col items-center gap-6">
-                <div className="flex items-center gap-8">
-                    <div className="text-center">
-                        <div className="text-4xl font-mono font-bold tabular-nums">{cycleCount}</div>
-                        <div className="text-xs uppercase tracking-widest opacity-50">Zyklen</div>
+                {/* Octave Toggle */}
+                <div className="flex items-center gap-4 bg-zinc-900/50 p-2 rounded-full border border-white/10">
+                    <span className="text-xs text-zinc-500 pl-3 font-mono uppercase">Oktave</span>
+                    <div className="flex gap-1">
+                        <Button 
+                            size="sm" 
+                            variant={!isHighOctave ? "default" : "ghost"}
+                            onClick={() => setIsHighOctave(false)}
+                            className={!isHighOctave ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
+                        >
+                            <ArrowDownCircle className="mr-2 h-4 w-4" /> Tief
+                        </Button>
+                        <Button 
+                            size="sm" 
+                            variant={isHighOctave ? "default" : "ghost"}
+                            onClick={() => setIsHighOctave(true)}
+                            className={isHighOctave ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
+                        >
+                            <ArrowUpCircle className="mr-2 h-4 w-4" /> Hoch
+                        </Button>
                     </div>
+                </div>
 
-                    <Button 
-                        size="lg" 
-                        className="h-20 w-20 rounded-full text-xl shadow-[0_0_50px_rgba(255,165,0,0.3)] hover:scale-105 transition-transform"
-                        style={{ backgroundColor: isPlaying ? '#333' : '#ff6b00' }}
-                        onClick={() => setIsPlaying(!isPlaying)}
-                    >
-                        {isPlaying ? <Square className="fill-current" /> : <Play className="fill-current ml-1" />}
-                    </Button>
+                {/* Main Play Button */}
+                <Button 
+                    size="lg"
+                    onClick={() => setIsPlaying(!isPlaying)}
+                    className={`rounded-full px-12 py-8 text-xl font-bold transition-all shadow-xl ${
+                        isPlaying 
+                        ? 'bg-zinc-800 text-white hover:bg-zinc-700 border border-white/20' 
+                        : 'bg-white text-black hover:bg-zinc-200 hover:scale-105'
+                    }`}
+                >
+                    {isPlaying ? <Square className="mr-3 h-6 w-6 fill-current" /> : <Play className="mr-3 h-6 w-6 fill-current" />}
+                    {isPlaying ? "STOP" : "START TRAINING"}
+                </Button>
+                
+                <div className="text-zinc-500 text-xs font-mono">
+                    {cycleCount > 0 ? `ZYKLUS: ${cycleCount}` : "36 BPM RHYTHMUS"}
                 </div>
             </div>
-
         </div>
     );
 }
