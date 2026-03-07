@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import frequencyData from "@/lib/frequencyData.json";
-import { X, ArrowRight, Sparkles, Lock, Download } from "lucide-react";
+import { X, ArrowRight, ArrowLeft, Sparkles, Lock, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
@@ -132,6 +132,17 @@ export function InterpretationView({ mdiResult, onClose }: InterpretationViewPro
                     </div>
                 </div>
 
+            </div>
+            
+            <div className="mt-12 flex justify-center w-full">
+                <Button 
+                    size="lg" 
+                    onClick={onClose}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 px-8"
+                >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Zurück zur Übersicht
+                </Button>
             </div>
             
             <div className="mt-auto pt-16 text-center text-zinc-600 text-xs font-mono w-full">
