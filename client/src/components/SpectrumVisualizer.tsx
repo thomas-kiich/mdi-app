@@ -3,7 +3,7 @@ import frequencyDataRaw from "@/lib/frequencyData.json";
 
 // Define the type for frequency data items
 interface FrequencyDataItem {
-  id: string;
+  id: number;
   frequency: number;
   colorName: string;
   hex: string;
@@ -13,7 +13,7 @@ interface FrequencyDataItem {
   talent: string;
 }
 
-const frequencyData = frequencyDataRaw as FrequencyDataItem[];
+const frequencyData = frequencyDataRaw as unknown as FrequencyDataItem[];
 
 // Define a simplified AnalysisResult interface locally to avoid circular dependencies or import issues
 interface AnalysisResult {
@@ -74,93 +74,93 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Map Spectrum to 24 MDI Bars
-    const numBars = 24;
-    const gap = 2; // Small gap for wider bars
-    const totalGap = gap * (numBars - 1);
-    const barWidth = (canvas.width - totalGap) / numBars;
+    // --- LOGARITHMIC SCALE SETUP ---
+    // Visible Range: 80Hz to 800Hz (approx 3.3 octaves)
+    const minFreq = 80;
+    const maxFreq = 800;
+    const minLog = Math.log(minFreq);
+    const maxLog = Math.log(maxFreq);
+    const logRange = maxLog - minLog;
 
-    // We need to map the FFT data (0-Nyquist) to our 24 MDI types.
-    // MDI types are roughly 88Hz to 170Hz (plus octaves).
-    // We will sum energy around each MDI frequency (including octaves).
-    
-    const energies = new Array(24).fill(0);
-    const sampleRate = 44100; // Assumed, but good enough for visual
-    const binSize = sampleRate / (data.length * 2); // approx resolution
+    // Helper to map Hz to X pixel
+    const getX = (f: number) => {
+        const logF = Math.log(Math.max(f, minFreq));
+        const norm = (logF - minLog) / logRange;
+        return norm * canvas.width;
+    };
 
-    if (active && data.length > 0) {
-        // For each FFT bin
-        for (let i = 0; i < data.length; i++) {
-            const binFreq = i * binSize;
-            if (binFreq < 50 || binFreq > 1000) continue; // Voice range only
+    // --- FFT ANALYSIS ---
+    const sampleRate = 44100; 
+    const binSize = sampleRate / (data.length * 2);
+
+    const getAmplitude = (f: number) => {
+        if (data.length === 0) return 0;
+        const binIndex = Math.floor(f / binSize);
+        if (binIndex < 0 || binIndex >= data.length) return 0;
+        return data[binIndex];
+    };
+
+    // --- DRAW BANDS ---
+    // We iterate through octaves: 1 (Base), 2, 4
+    const octaves = [1, 2, 4]; // Multipliers: 1x, 2x, 4x
+
+    // Sort MDI types by frequency (Low to High)
+    const sortedMdi = [...frequencyData].sort((a, b) => a.frequency - b.frequency);
+
+    octaves.forEach((multiplier, octaveIndex) => {
+        sortedMdi.forEach((item) => {
+            const baseFreq = item.frequency; // e.g. 88 (Type 24)
+            const f = baseFreq * multiplier; // e.g. 88, 176, 352...
+
+            if (f < minFreq || f > maxFreq) return;
+
+            const x = getX(f);
             
-            const amplitude = data[i];
-            if (amplitude < 10) continue; // Noise gate
-
-            // Find which MDI type this freq belongs to (handling octaves)
-            // We use the same logic as getMdiTypeFromFrequency but optimized for loop
+            // Calculate Variable Width based on Frequency (Inverse Relationship)
+            // Low Freq (80Hz) -> Wide. High Freq (800Hz) -> Narrow.
+            // This creates the "denser at top" visual effect.
             
-            let normFreq = binFreq;
-            while (normFreq < 85) normFreq *= 2;
-            while (normFreq > 180) normFreq /= 2;
+            // Base width at minFreq
+            const baseWidth = 40; 
+            // Scaling factor: width scales with 1 / sqrt(f) to be less aggressive than 1/f
+            const widthScale = Math.sqrt(minFreq / f);
+            const w = Math.max(2, baseWidth * widthScale);
 
-            let bestIdx = 0;
-            let minDiff = Math.abs(normFreq - frequencyData[0].frequency);
-
-            for (let j = 1; j < frequencyData.length; j++) {
-                const diff = Math.abs(normFreq - frequencyData[j].frequency);
-                if (diff < minDiff) {
-                    minDiff = diff;
-                    bestIdx = j;
-                }
+            // Get Amplitude
+            const amp = getAmplitude(f);
+            const isActive = amp > 20; // Threshold
+            
+            // Highlight if this is the detected fundamental
+            const isFundamental = Math.abs(freq - f) < 5; // within 5Hz
+            
+            // Draw Band
+            ctx.fillStyle = item.hex;
+            
+            // Opacity
+            let opacity = 0.3; // Base visibility
+            if (isActive) opacity = 0.6 + (amp / 255) * 0.4;
+            if (isFundamental) {
+                opacity = 1.0;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = item.hex;
+            } else {
+                ctx.shadowBlur = 0;
             }
             
-            // Add energy
-            energies[bestIdx] += amplitude;
-        }
-    }
-
-    // Normalize energies
-    const maxEnergy = Math.max(...energies, 1);
-    
-    // Draw Bars
-    let x = 0;
-    frequencyData.forEach((item, index) => {
-        const energy = energies[index];
-        const normalizedHeight = (energy / maxEnergy);
-        
-        // Base height 5%, max height 95%
-        let barHeight = canvas.height * (0.05 + normalizedHeight * 0.9);
-        
-        // Opacity based on energy
-        let opacity = 0.4 + (normalizedHeight * 0.6);
-        
-        // Highlight dominant
-        const isDominant = energy === maxEnergy && energy > 0;
-        if (isDominant) {
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = item.hex;
-            opacity = 1.0;
-        } else {
-            ctx.shadowBlur = 0;
-        }
-
-        ctx.fillStyle = item.hex;
-        ctx.globalAlpha = opacity;
-        
-        // Draw bar
-        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-        
-        // Draw Number Label
-        if (barWidth > 15) { // Only if wide enough
-            ctx.fillStyle = "#ffffff";
-            ctx.font = "10px monospace";
-            ctx.textAlign = "center";
-            ctx.globalAlpha = 0.8;
-            ctx.fillText(item.id, x + barWidth/2, canvas.height - 5);
-        }
-
-        x += barWidth + gap;
+            ctx.globalAlpha = opacity;
+            
+            // Draw full height band
+            ctx.fillRect(x - w/2, 0, w, canvas.height);
+            
+            // Draw Label (Number) at bottom
+            if (octaveIndex === 0) { // Only label base octave
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "10px monospace";
+                ctx.textAlign = "center";
+                ctx.globalAlpha = 0.8;
+                ctx.fillText(item.id.toString(), x, canvas.height - 5);
+            }
+        });
     });
     
     return () => window.removeEventListener('resize', updateCanvasSize);
@@ -184,11 +184,16 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
                 >
                     TYPE {
                         (() => {
-                            if (freq <= 0) return "-";
+                            // Find closest MDI type (handling octaves)
+                            let norm = freq;
+                            while (norm < 85) norm *= 2;
+                            while (norm > 180) norm /= 2;
+
                             let closest = frequencyData[0];
-                            let minDiff = Math.abs(freq - closest.frequency);
+                            let minDiff = Math.abs(norm - closest.frequency);
+                            
                             for (const item of frequencyData) {
-                                const diff = Math.abs(freq - item.frequency);
+                                const diff = Math.abs(norm - item.frequency);
                                 if (diff < minDiff) {
                                     minDiff = diff;
                                     closest = item;
@@ -203,8 +208,6 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
                 </div>
             </div>
         )}
-        
-        {/* Optional: Add numbers 1-24 at the bottom if needed, but bars might be too thin on mobile */}
     </div>
   );
 };
