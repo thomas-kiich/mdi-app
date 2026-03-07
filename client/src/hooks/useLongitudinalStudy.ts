@@ -1,12 +1,16 @@
 import { useState, useEffect } from 'react';
 import { AnalysisResult } from './useAudioAnalyzer';
 import { TONES } from '@/lib/tones';
+import frequencyData from '@/lib/frequencyData.json';
 
 const STORAGE_KEY = 'mdi_longitudinal_data';
+const REQUIRED_DAYS = 5;
+const OUTLIERS_TO_REMOVE = 2;
 
 export interface DailyResult {
   date: string; // ISO date string
   result: AnalysisResult;
+  distance?: number; // Calculated distance from mean
 }
 
 export interface LongitudinalState {
@@ -14,6 +18,7 @@ export interface LongitudinalState {
   history: DailyResult[];
   isComplete: boolean;
   finalResult: AnalysisResult | null;
+  mdiResult: typeof frequencyData[0] | null;
 }
 
 export function useLongitudinalStudy() {
@@ -22,6 +27,7 @@ export function useLongitudinalStudy() {
     history: [],
     isComplete: false,
     finalResult: null,
+    mdiResult: null
   });
 
   // Load from local storage on mount
@@ -30,21 +36,23 @@ export function useLongitudinalStudy() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        // Recalculate if complete, just in case
-        if (parsed.history.length >= 7) {
-             const final = calculateTrueMean(parsed.history);
+        // Recalculate if complete, just in case logic changed
+        if (parsed.history.length >= REQUIRED_DAYS) {
+             const { final, mdi } = calculateTrueMean(parsed.history);
              setState({
                  daysCompleted: parsed.history.length,
                  history: parsed.history,
                  isComplete: true,
-                 finalResult: final
+                 finalResult: final,
+                 mdiResult: mdi
              });
         } else {
             setState({
                 daysCompleted: parsed.history.length,
                 history: parsed.history,
                 isComplete: false,
-                finalResult: null
+                finalResult: null,
+                mdiResult: null
             });
         }
       } catch (e) {
@@ -58,35 +66,35 @@ export function useLongitudinalStudy() {
     const today = new Date().toISOString().split('T')[0];
     const hasToday = state.history.some(entry => entry.date.startsWith(today));
 
+    let newHistory = [...state.history];
+
     if (hasToday) {
-        // Option: Overwrite today's result or ignore? 
-        // For now, let's allow overwriting if the user re-does the test today.
-        // We filter out the old "today" and append the new one.
-        const newHistory = state.history.filter(entry => !entry.date.startsWith(today));
-        newHistory.push({ date: new Date().toISOString(), result });
-        
-        updateState(newHistory);
-    } else {
-        // Append new result
-        const newHistory = [...state.history, { date: new Date().toISOString(), result }];
-        updateState(newHistory);
+        // Allow overwriting today's result
+        newHistory = newHistory.filter(entry => !entry.date.startsWith(today));
     }
+    
+    newHistory.push({ date: new Date().toISOString(), result });
+    updateState(newHistory);
   };
 
   const updateState = (history: DailyResult[]) => {
       let isComplete = false;
       let finalResult = null;
+      let mdiResult = null;
 
-      if (history.length >= 7) {
+      if (history.length >= REQUIRED_DAYS) {
           isComplete = true;
-          finalResult = calculateTrueMean(history);
+          const calculation = calculateTrueMean(history);
+          finalResult = calculation.final;
+          mdiResult = calculation.mdi;
       }
 
       const newState = {
           daysCompleted: history.length,
           history,
           isComplete,
-          finalResult
+          finalResult,
+          mdiResult
       };
 
       setState(newState);
@@ -99,101 +107,69 @@ export function useLongitudinalStudy() {
           daysCompleted: 0,
           history: [],
           isComplete: false,
-          finalResult: null
+          finalResult: null,
+          mdiResult: null
       });
   };
 
   // The Core Logic: Remove 2 outliers (most extreme) and average the rest
-  const calculateTrueMean = (history: DailyResult[]): AnalysisResult => {
-      // We need to find a metric for "outlier". 
-      // A good metric is the deviation from the mean of all samples.
-      // Or simply the highest and lowest fundamental frequency?
-      // But fundamental frequency varies by octave.
-      // Better: Convert everything to a standardized "Cent value relative to A440" or similar linear scale.
-      // Or: Calculate the "Cent deviation" from the standard tone of each measurement.
+  const calculateTrueMean = (history: DailyResult[]): { final: AnalysisResult, mdi: typeof frequencyData[0] } => {
+      // Step 1: Calculate global average frequency to find outliers
+      // We use Hz as the metric for outlier detection
+      let sumHz = 0;
+      history.forEach(day => sumHz += day.result.fundamentalFreq);
+      const avgHz = sumHz / history.length;
       
-      // Let's use the Tone Distribution as the fingerprint.
-      // We want to find the 5 days that are most "consistent".
-      
-      // Simplified robust approach for MDI:
-      // 1. Calculate the average distribution across all 7 days.
-      // 2. For each day, calculate the "distance" (difference) from this average distribution.
-      // 3. Remove the 2 days with the highest distance (the weirdest days).
-      // 4. Re-calculate the average from the remaining 5 days.
-      
-      // Step 1: Global Average
-      const globalDist: Record<string, number> = {};
-      history.forEach(day => {
-          if (!day.result.toneDistribution) return;
-          Object.entries(day.result.toneDistribution).forEach(([tone, val]) => {
-              globalDist[tone] = (globalDist[tone] || 0) + val;
-          });
-      });
-      // Normalize
-      Object.keys(globalDist).forEach(k => globalDist[k] /= history.length);
-      
-      // Step 2: Calculate Distance for each day
+      // Step 2: Calculate Distance for each day (absolute deviation from mean)
       const daysWithDistance = history.map(day => {
-          let distance = 0;
-          if (day.result.toneDistribution) {
-              Object.entries(day.result.toneDistribution).forEach(([tone, val]) => {
-                  const avg = globalDist[tone] || 0;
-                  distance += Math.pow(val - avg, 2); // Squared Euclidean distance
-              });
-          }
+          const distance = Math.abs(day.result.fundamentalFreq - avgHz);
           return { ...day, distance };
       });
       
-      // Step 3: Sort by distance (descending) and remove top 2
+      // Step 3: Sort by distance (descending) and remove top 2 outliers
+      // If we have exactly 5 days, we remove 2 and keep 3.
+      // If we have more, we still remove the 2 worst.
       daysWithDistance.sort((a, b) => b.distance - a.distance);
-      // The first 2 are the outliers. We keep the rest (index 2 to end).
-      const validDays = daysWithDistance.slice(2); // Keeps 5 best days
       
-      // Step 4: Calculate Final Mean from valid days
-      const finalDist: Record<string, number> = {};
-      validDays.forEach(day => {
-          if (!day.result.toneDistribution) return;
-          Object.entries(day.result.toneDistribution).forEach(([tone, val]) => {
-              finalDist[tone] = (finalDist[tone] || 0) + val;
-          });
-      });
-      Object.keys(finalDist).forEach(k => finalDist[k] /= validDays.length);
+      // Keep the best (n - 2) days
+      const validDays = daysWithDistance.slice(OUTLIERS_TO_REMOVE); 
       
-      // Determine Dominant Tone
-      let maxScore = 0;
-      let dominantToneName = "";
-      Object.entries(finalDist).forEach(([tone, score]) => {
-          if (score > maxScore) {
-              maxScore = score;
-              dominantToneName = tone;
+      // Step 4: Calculate Mean Hz from valid days
+      let validSumHz = 0;
+      validDays.forEach(day => validSumHz += day.result.fundamentalFreq);
+      const finalHz = validSumHz / validDays.length;
+      
+      // Step 5: Quantize to 24-step MDI scale
+      // Find the closest frequency in our data
+      let closestMdi = frequencyData[0];
+      let minDiff = Math.abs(finalHz - frequencyData[0].frequency);
+      
+      for (const item of frequencyData) {
+          const diff = Math.abs(finalHz - item.frequency);
+          if (diff < minDiff) {
+              minDiff = diff;
+              closestMdi = item;
           }
-      });
+      }
       
-      const toneData = TONES.find(t => t.name === dominantToneName);
+      // Construct final result object
+      // We use the closest MDI frequency as the "fundamentalFreq"
+      // But we keep the note name from the standard scale for compatibility
+      const toneData = TONES.find(t => Math.abs(t.frequency - closestMdi.frequency) < 10) || TONES[0];
       
-      // Calculate average Cents/Hz from the valid days
-      // We take the average cents deviation of the valid days to reconstruct a representative Hz
-      let totalCents = 0;
-      validDays.forEach(day => {
-          totalCents += day.result.cents;
-      });
-      const avgCents = totalCents / validDays.length;
-      
-      // Reconstruct Hz
-      const baseFreq = toneData?.frequency || 440;
-      const finalHz = baseFreq * Math.pow(2, avgCents / 1200);
-      
-      return {
-          fundamentalFreq: finalHz,
-          noteName: dominantToneName,
-          cents: avgCents,
-          diffHz: finalHz - baseFreq,
-          toneDistribution: finalDist,
-          tone: toneData || TONES[0], // Fallback
-          isSpeaking: false, // Calculated result is static
-          spectrum: new Uint8Array(0), // No live spectrum
-          volume: 0 // No live volume
+      const finalResult: AnalysisResult = {
+          fundamentalFreq: closestMdi.frequency, // Quantized Hz
+          noteName: toneData.name,
+          cents: 0, // Reset cents as we are now on a fixed grid
+          diffHz: 0,
+          toneDistribution: {}, // Not used in new logic
+          tone: toneData,
+          isSpeaking: false,
+          spectrum: new Uint8Array(0),
+          volume: 0
       };
+      
+      return { final: finalResult, mdi: closestMdi };
   };
 
   return {

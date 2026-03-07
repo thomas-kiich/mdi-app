@@ -1,0 +1,242 @@
+[
+  {
+    "id": 1,
+    "colorName": "Blauviolett",
+    "lightRange": "380 - 397 nm",
+    "toneRange": "789.5 - 755.7 Thz",
+    "frequency": 170,
+    "description": "Aktivierung des Frontallappens, Ambivalenz, Unsicherheit",
+    "talent": "Unterst\u00fctzung bei mystischen und esoterischen Fragestellungen",
+    "hex": "#8A2BE2"
+  },
+  {
+    "id": 2,
+    "colorName": "Violett",
+    "lightRange": "397 - 414 nm",
+    "toneRange": "755.7 - 724.6 Thz",
+    "frequency": 166,
+    "description": "Aktivierung der Epiphyse, Mystik, Zweideutigkeit",
+    "talent": "Meditation und Entspannung",
+    "hex": "#EE82EE"
+  },
+  {
+    "id": 3,
+    "colorName": "Violettblau",
+    "lightRange": "414 - 431 nm",
+    "toneRange": "724.6 - 696.0 Thz",
+    "frequency": 163,
+    "description": "Nicht explizit in Chakra-Lehre, Rationalit\u00e4t, Distanz",
+    "talent": "Analytisches Denken",
+    "hex": "#6A5ACD"
+  },
+  {
+    "id": 4,
+    "colorName": "Dunkelblau",
+    "lightRange": "431 - 448 nm",
+    "toneRange": "696.0 - 669.6 Thz",
+    "frequency": 159,
+    "description": "Aktivierung der Bindehaut, Ruhe, Sauberkeit",
+    "talent": "Unterst\u00fctzung bei administrativen Aufgaben",
+    "hex": "#00008B"
+  },
+  {
+    "id": 5,
+    "colorName": "Signalblau",
+    "lightRange": "448 - 465 nm",
+    "toneRange": "669.6 - 645.1 Thz",
+    "frequency": 156,
+    "description": "Aktivierung der Kehlkopfregion, Ordnung, Hinweis",
+    "talent": "Orientierungshilfe und Gebotsbefolgung",
+    "hex": "#003399"
+  },
+  {
+    "id": 6,
+    "colorName": "Himmelblau",
+    "lightRange": "465 - 482 nm",
+    "toneRange": "645.1 - 622.4 Thz",
+    "frequency": 152,
+    "description": "Senkung der Herzfrequenz, G\u00f6ttlichkeit, K\u00fchle",
+    "talent": "F\u00f6rderung der geistigen Klarheit",
+    "hex": "#87CEEB"
+  },
+  {
+    "id": 7,
+    "colorName": "Cyan",
+    "lightRange": "482 - 499 nm",
+    "toneRange": "622.4 - 601.2 Thz",
+    "frequency": 148,
+    "description": "Nicht explizit in Chakra-Lehre, Neutralit\u00e4t",
+    "talent": "Unterst\u00fctzung technischer Wahrnehmung",
+    "hex": "#00FFFF"
+  },
+  {
+    "id": 8,
+    "colorName": "T\u00fcrkisgr\u00fcn",
+    "lightRange": "499 - 516 nm",
+    "toneRange": "601.2 - 581.4 Thz",
+    "frequency": 145,
+    "description": "Aktivierung reger Zellteilung, Wachstum, Natur",
+    "talent": "Unterst\u00fctzung bei Erster Hilfe",
+    "hex": "#40E0D0"
+  },
+  {
+    "id": 9,
+    "colorName": "Smaragdgr\u00fcn",
+    "lightRange": "516 - 533 nm",
+    "toneRange": "581.4 - 562.8 Thz",
+    "frequency": 141,
+    "description": "F\u00f6rderung von Empathie, Sicherheit, Hoffnung",
+    "talent": "Unterst\u00fctzung bei kreativen Leistungen",
+    "hex": "#50C878"
+  },
+  {
+    "id": 10,
+    "colorName": "Laubgr\u00fcn",
+    "lightRange": "533 - 550 nm",
+    "toneRange": "562.8 - 545.5 Thz",
+    "frequency": 138,
+    "description": "Sicherheitsgef\u00fchl, Rettung, Fruchtbarkeit",
+    "talent": "Fluchtwegsorientierung",
+    "hex": "#4F7942"
+  },
+  {
+    "id": 11,
+    "colorName": "Gelbgr\u00fcn",
+    "lightRange": "550 - 567 nm",
+    "toneRange": "545.5 - 529.1 Thz",
+    "frequency": 134,
+    "description": "Maximale Empfindlichkeit, Aufmerksamkeit, Visuelle Salienz",
+    "talent": "Salienzsteigerung",
+    "hex": "#9ACD32"
+  },
+  {
+    "id": 12,
+    "colorName": "Zitronengelb",
+    "lightRange": "567 - 584 nm",
+    "toneRange": "529.1 - 513.7 Thz",
+    "frequency": 131,
+    "description": "Aktivierung bei saurem Geschmack, Heiterkeit, W\u00e4rme",
+    "talent": "Stimmungsaufhellung",
+    "hex": "#FFF700"
+  },
+  {
+    "id": 13,
+    "colorName": "Signalgelb",
+    "lightRange": "584 - 601 nm",
+    "toneRange": "513.7 - 499.2 Thz",
+    "frequency": 127,
+    "description": "Arousal-Steigerung, Warnungsbereitschaft",
+    "talent": "Vorbereitung auf Handlungen",
+    "hex": "#FFCC00"
+  },
+  {
+    "id": 14,
+    "colorName": "Goldgelb",
+    "lightRange": "601 - 618 nm",
+    "toneRange": "499.2 - 485.4 Thz",
+    "frequency": 123,
+    "description": "Aktivierung des Endokrinums, Sonnigkeit, Reichtum",
+    "talent": "Unterst\u00fctzung bei zeremoniellen T\u00e4tigkeiten",
+    "hex": "#FFD700"
+  },
+  {
+    "id": 15,
+    "colorName": "Hellorange",
+    "lightRange": "618 - 635 nm",
+    "toneRange": "485.4 - 472.4 Thz",
+    "frequency": 119,
+    "description": "Leichte sympathikotone Aktivierung, Mittlere Dringlichkeit",
+    "talent": "Aufmerksamkeitssteuerung",
+    "hex": "#FFA500"
+  },
+  {
+    "id": 16,
+    "colorName": "Reinorange",
+    "lightRange": "635 - 652 nm",
+    "toneRange": "472.4 - 460.1 Thz",
+    "frequency": 116,
+    "description": "Erh\u00f6hung des Arousals, Aufdringlichkeit, Schock",
+    "talent": "Katastrophenschutz-Einsatzunterst\u00fctzung",
+    "hex": "#FF8C00"
+  },
+  {
+    "id": 17,
+    "colorName": "Leuchtorange",
+    "lightRange": "652 - 669 nm",
+    "toneRange": "460.1 - 448.4 Thz",
+    "frequency": 112,
+    "description": "Adrenalinf\u00f6rdernd, Feuer, Energie",
+    "talent": "Warnsignalerfassung",
+    "hex": "#FF7F50"
+  },
+  {
+    "id": 18,
+    "colorName": "Orangerot",
+    "lightRange": "669 - 686 nm",
+    "toneRange": "448.4 - 437.3 Thz",
+    "frequency": 108,
+    "description": "Aktivierung des sympathischen NS, Aggressivit\u00e4t, Impuls",
+    "talent": "Unmittelbare Reaktionsbereitschaft",
+    "hex": "#FF4500"
+  },
+  {
+    "id": 19,
+    "colorName": "Feuerrot",
+    "lightRange": "686 - 703 nm",
+    "toneRange": "437.3 - 426.7 Thz",
+    "frequency": 105,
+    "description": "Anstieg der Herzfrequenz, Dominanz, Verbot",
+    "talent": "Stopp-Reaktion",
+    "hex": "#FF0000"
+  },
+  {
+    "id": 20,
+    "colorName": "Signalrot",
+    "lightRange": "703 - 720 nm",
+    "toneRange": "426.7 - 416.7 Thz",
+    "frequency": 101,
+    "description": "H\u00f6chste hormonelle Aktivierung, Gefahr, h\u00f6chste Dringlichkeit",
+    "talent": "Notfallmanagement",
+    "hex": "#A52A2A"
+  },
+  {
+    "id": 21,
+    "colorName": "Karminrot",
+    "lightRange": "720 - 737 nm",
+    "toneRange": "416.7 - 407.1 Thz",
+    "frequency": 98,
+    "description": "Aktivierung emotionaler Zentren, Liebe, Romantik",
+    "talent": "Soziale Interaktion",
+    "hex": "#960018"
+  },
+  {
+    "id": 22,
+    "colorName": "Purpur",
+    "lightRange": "737 - 754 nm",
+    "toneRange": "407.1 - 397.9 Thz",
+    "frequency": 94,
+    "description": "Nicht explizit in Chakra-Lehre, Autorit\u00e4t, Reichtum",
+    "talent": "Repr\u00e4sentative F\u00e4higkeiten",
+    "hex": "#800080"
+  },
+  {
+    "id": 23,
+    "colorName": "Tiefrot",
+    "lightRange": "754 - 771 nm",
+    "toneRange": "397.9 - 389.1 Thz",
+    "frequency": 91,
+    "description": "Blockierung von Melatonin, \u00c4rger, Blut",
+    "talent": "Durchsetzungskraft",
+    "hex": "#8B0000"
+  },
+  {
+    "id": 24,
+    "colorName": "Infrarotgrenze",
+    "lightRange": "771 - 780 nm",
+    "toneRange": "389.1 - 384.4 Thz",
+    "frequency": 88,
+    "description": "Nicht explizit in Chakra-Lehre, W\u00e4rmeempfindung",
+    "talent": "Thermisches Bewusstsein",
+    "hex": "#4B0000"
+  }
+]

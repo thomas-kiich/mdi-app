@@ -16,11 +16,12 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
+import frequencyData from '@/lib/frequencyData.json';
 import {
   Collapsible,
   CollapsibleContent,
@@ -73,6 +74,7 @@ export default function Home() {
     daysCompleted,
     isComplete: isStudyComplete,
     finalResult: studyResult,
+    mdiResult: studyMdiResult,
     saveDailyResult
   } = useLongitudinalStudy();
 
@@ -100,6 +102,7 @@ export default function Home() {
 
   // Combined result state
   const [finalResult, setFinalResult] = useState<any | null>(null);
+  const [mdiResult, setMdiResult] = useState<typeof frequencyData[0] | null>(null);
   const [showInterpretation, setShowInterpretation] = useState(false);
   const [showStory, setShowStory] = useState(false);
   const [showSpectralScanner, setShowSpectralScanner] = useState(false);
@@ -282,607 +285,371 @@ export default function Home() {
         if (Math.abs(finalCents) > 50) {
             console.warn(`Large cent deviation detected (${finalCents}). Clamping to 0.`);
             finalCents = 0;
-            finalHz = toneData.frequency; // Reset to perfect pitch
+            finalHz = toneData.frequency;
+            finalDiffHz = 0;
         }
 
-        setFinalResult({
-          tone: toneData,
+        const result: AnalysisResult = {
           fundamentalFreq: finalHz,
+          noteName: dominantToneName,
           cents: finalCents,
           diffHz: finalDiffHz,
-          noteName: toneData.name,
-          toneDistribution: combinedDistribution
-        });
+          toneDistribution: combinedDistribution,
+          tone: toneData,
+          isSpeaking: false,
+          spectrum: new Uint8Array(0), // No live spectrum for result
+          volume: 0
+        };
+        
+        setFinalResult(result);
+        
+        // Calculate MDI Result (24-step quantization)
+        let closestMdi = frequencyData[0];
+        let minDiff = Math.abs(finalHz - frequencyData[0].frequency);
+        
+        for (const item of frequencyData) {
+            const diff = Math.abs(finalHz - item.frequency);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestMdi = item;
+            }
+        }
+        setMdiResult(closestMdi);
+
+        // Save to longitudinal study
+        saveDailyResult(result);
       }
-    } else {
-        // Fallback if no dominant tone found (unlikely)
-        setFinalResult(analysisResult);
     }
   };
 
-  const handleDownloadResult = () => {
-    if (!finalResult) return;
-
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify({
-        date: new Date().toISOString(),
-        tone: finalResult.noteName,
-        frequency: finalResult.fundamentalFreq,
-        cents: finalResult.cents,
-        details: {
-            q1: results.q1,
-            q2: results.q2,
-            q3: results.q3
-        }
-    }, null, 2));
-    
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", `MDI_Analyse_${new Date().toISOString().split('T')[0]}.json`);
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
-  };
-
+  // RENDER CONTENT
   const renderContent = () => {
     switch (currentStep) {
       case "intro":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[50vh] pt-4 md:pt-12 space-y-12 animate-in fade-in duration-1000">
-            <div className="text-center space-y-8 max-w-3xl flex flex-col items-center">
-              <div className="relative w-64 h-64 md:w-80 md:h-80 mb-4 animate-in zoom-in duration-1000">
-                <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full animate-pulse" />
-                <img 
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
-                  alt="MDI Logo" 
-                  className="w-full h-full object-contain drop-shadow-[0_0_50px_rgba(0,0,0,0.5)] relative z-10"
-                />
-              </div>
-              
-              <h1 className="w-64 md:w-80 text-center text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] leading-none mb-2">
+          <div className="flex flex-col items-center justify-center min-h-[80vh] relative z-10">
+            {/* Logo */}
+            <div className="mb-12 relative group">
+              <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full animate-pulse-slow" />
+              <img 
+                src="/logo-quadratisch.png" 
+                alt="MDI Logo" 
+                className="w-48 h-48 md:w-64 md:h-64 object-contain relative z-10 drop-shadow-2xl transition-transform duration-700 hover:scale-105"
+              />
+            </div>
+
+            {/* Title & Slogan */}
+            <div className="text-center space-y-2 mb-8 relative z-10">
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white/90 drop-shadow-lg font-display">
                 DAS MDI SYSTEM
               </h1>
-
-              <p className="text-sm md:text-base text-zinc-400 font-normal tracking-wider uppercase mb-1">
-                Multidimensionales Identitätssystem
-              </p>
               
-              <div className="w-16 h-px bg-white/50 mx-auto mt-1 mb-2" />
-
-              <div className="space-y-1">
-                  <p className="text-xs md:text-sm text-yellow-200/90 font-medium tracking-widest uppercase">
-                    ERFORSCHE DEINE EINZIGARTIGE IDENTITÄT
-                  </p>
-                  <p className="text-xs md:text-sm text-yellow-200/90 font-medium tracking-widest uppercase">
-                    AUS LICHT & KLANG
-                  </p>
+              <div className="w-full h-px bg-white/30 my-6 mx-auto max-w-[200px]" />
+              
+              <h2 className="text-2xl md:text-3xl font-light text-white/80 tracking-wide">
+                Multidimensionales Identitätssystem
+              </h2>
+              
+              <div className="pt-6 pb-2">
+                 <p className="text-xl md:text-2xl text-yellow-200 font-medium tracking-wide">
+                  ERFORSCHE DEINE EINZIGARTIGE IDENTITÄT
+                 </p>
+                 <p className="text-xl md:text-2xl text-yellow-200 font-medium tracking-wide">
+                  AUS LICHT & KLANG
+                 </p>
               </div>
             </div>
 
-            <div className="pt-0 text-center">
+            {/* Start Button */}
+            <div className="pt-0 relative z-20"> {/* Removed padding-top to stick to text */}
               <Button 
                 size="lg" 
                 onClick={advanceStep}
-                className="bg-transparent hover:bg-white/10 text-white border border-white/30 hover:border-white rounded-full px-12 py-6 text-base tracking-widest uppercase transition-all duration-500"
+                className="bg-transparent hover:bg-white/5 text-white border border-white/40 px-12 py-8 text-lg rounded-none tracking-[0.2em] transition-all duration-500 hover:border-white hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] backdrop-blur-sm group"
               >
-                ANALYSE STARTEN <ChevronRight className="ml-2 h-5 w-5" />
+                <span className="group-hover:text-white transition-colors">ANALYSE STARTEN</span>
               </Button>
             </div>
             
-            <div className="flex gap-8 text-xs text-zinc-600 uppercase tracking-widest pt-12">
-                <button onClick={() => setShowStory(true)} className="hover:text-orange-500 transition-colors flex items-center gap-2">
-                    <Play className="h-3 w-3" /> Das Prinzip entdecken
-                </button>
-                <button className="hover:text-white transition-colors flex items-center gap-2">
-                    <Sparkles className="h-3 w-3" /> Anleitung
-                </button>
-                <button onClick={() => setShowSpectralScanner(true)} className="hover:text-orange-500 transition-colors flex items-center gap-2">
-                    <Activity className="h-3 w-3" /> Live Spektrum
-                </button>
-                <button onClick={() => setShowVitalDashboard(true)} className="hover:text-orange-500 transition-colors flex items-center gap-2">
-                    <Activity className="h-3 w-3" /> Vital Monitor
-                </button>
-            </div>
-
-            <div className="absolute bottom-4 left-0 right-0 text-center">
-              <div className="flex justify-center gap-6 text-[10px] text-zinc-700 uppercase tracking-widest">
-                <Link href="/impressum" className="hover:text-zinc-500 transition-colors">Impressum</Link>
-                <span className="text-zinc-800">•</span>
-                <Link href="/datenschutz" className="hover:text-zinc-500 transition-colors">Datenschutz</Link>
-                <span className="text-zinc-800">•</span>
-                <span className="text-zinc-800 cursor-not-allowed">Erklärung</span>
-              </div>
+            {/* Footer Links */}
+            <div className="absolute bottom-8 flex gap-6 text-xs text-zinc-500 tracking-widest uppercase">
+                <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
+                <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
+                <a href="#" className="hover:text-white transition-colors opacity-50 cursor-not-allowed">Erklärung</a>
             </div>
           </div>
         );
 
       case "preparation":
         return (
-          <div className="max-w-2xl mx-auto pt-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-2xl font-light text-center text-white">Vorbereitung</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-8 text-center">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-6 rounded-2xl bg-black/40 border border-zinc-800 flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500">
-                      <Mic className="h-6 w-6" />
-                    </div>
-                    <p className="text-sm text-zinc-300">Nutze ein gutes Mikrofon oder Headset</p>
-                  </div>
-                  <div className="p-6 rounded-2xl bg-black/40 border border-zinc-800 flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                      <VolumeX className="h-6 w-6" />
-                    </div>
-                    <p className="text-sm text-zinc-300">Suche einen ruhigen Ort ohne Störgeräusche</p>
-                  </div>
-                  <div className="p-6 rounded-2xl bg-black/40 border border-zinc-800 flex flex-col items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
-                      <User className="h-6 w-6" />
-                    </div>
-                    <p className="text-sm text-zinc-300">Sprich mit deiner natürlichen, entspannten Stimme</p>
-                  </div>
+          <div className="max-w-2xl mx-auto py-12 px-6">
+            <h2 className="text-3xl font-bold mb-6 text-orange-500">Vorbereitung</h2>
+            <Card className="bg-zinc-900 border-zinc-800 p-6 mb-8">
+              <div className="space-y-6 text-lg text-zinc-300">
+                <p>
+                  Wir werden nun 3 kurze Sprachaufnahmen machen.
+                </p>
+                <p>
+                  Bitte sorge für eine ruhige Umgebung und sprich mit deiner natürlichen, entspannten Stimme.
+                </p>
+                <div className="bg-black/40 p-4 rounded-lg border border-zinc-800 flex items-center gap-4">
+                  <Mic className="w-8 h-8 text-orange-500" />
+                  <span>Mikrofon-Zugriff wird benötigt.</span>
                 </div>
-
-                <div className="pt-8">
-                  <Button 
-                    size="lg" 
-                    onClick={advanceStep}
-                    className="bg-white text-black hover:bg-zinc-200 rounded-full px-8"
-                  >
-                    Ich bin bereit
-                  </Button>
-                </div>
-              </CardContent>
+              </div>
             </Card>
+            <div className="flex justify-end">
+              <Button onClick={advanceStep} size="lg" className="bg-orange-600 hover:bg-orange-700 text-white">
+                Weiter <ChevronRight className="ml-2 w-4 h-4" />
+              </Button>
+            </div>
           </div>
         );
 
       case "question1":
       case "question2":
       case "question3":
-        const questions = {
-          question1: {
-            title: "Gegenwart",
-            text: "Wie fühlst du dich in diesem Moment? Beschreibe deine aktuelle Situation.",
-            subtext: "Sprich bitte für ca. 30 - 60 Sekunden."
-          },
-          question2: {
-            title: "Vergangenheit",
-            text: "Was hat dich hierher geführt? Welche Erfahrung hat dich geprägt?",
-            subtext: "Sprich bitte für ca. 30 - 60 Sekunden."
-          },
-          question3: {
-            title: "Zukunft",
-            text: "Wo möchtest du hin? Was ist dein tiefster Wunsch?",
-            subtext: "Sprich bitte für ca. 30 - 60 Sekunden."
-          }
-        };
+        const qNum = currentStep === "question1" ? 1 : currentStep === "question2" ? 2 : 3;
+        const questions = [
+          "Bitte zähle langsam von 1 bis 10.",
+          "Nenne deine Wochentage (Montag bis Sonntag).",
+          "Erzähle kurz, was du heute gegessen hast."
+        ];
         
-        const q = questions[currentStep];
-        const hasResult = (currentStep === "question1" && results.q1) || 
-                          (currentStep === "question2" && results.q2) || 
-                          (currentStep === "question3" && results.q3);
-
         return (
-          <div className="max-w-2xl mx-auto pt-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            <div className="text-center space-y-8">
-              <div className="space-y-2">
-                <h2 className="text-sm font-mono text-orange-500 uppercase tracking-widest">{q.title}</h2>
-                <h3 className="text-3xl font-light text-white leading-tight">{q.text}</h3>
-                <p className="text-zinc-300 text-lg font-medium tracking-wide">{q.subtext}</p>
+          <div className="max-w-2xl mx-auto py-12 px-6 text-center">
+            <div className="mb-8">
+              <span className="text-sm font-mono text-orange-500 mb-2 block">AUFNAHME {qNum} / 3</span>
+              <h2 className="text-3xl font-bold text-white mb-4">{questions[qNum-1]}</h2>
+            </div>
+
+            <div className="flex flex-col items-center justify-center gap-8 py-12">
+              <div className={cn(
+                "w-32 h-32 rounded-full flex items-center justify-center transition-all duration-500",
+                isRecording ? "bg-red-500/20 scale-110 animate-pulse" : "bg-zinc-800"
+              )}>
+                {isRecording ? (
+                  <Mic className="w-12 h-12 text-red-500" />
+                ) : (
+                  <Mic className="w-12 h-12 text-zinc-400" />
+                )}
               </div>
 
-              <div className="flex justify-center py-12">
-                 <div className="flex flex-col items-center gap-6">
-                    {/* Always show recording button unless we have a result AND are not recording */}
-                    {(!hasResult || isRecording) && (
-                        <div className="flex flex-col items-center gap-8">
-                            {/* Live Visualizer */}
-                            {isRecording && analysisResult && (
-                                <div className="h-16 flex items-end justify-center gap-1 w-64">
-                                    {Array.from({ length: 20 }).map((_, i) => {
-                                        // Create a simple mirrored visualization
-                                        const index = i < 10 ? i : 19 - i;
-                                        // Use a subset of the spectrum for better visuals
-                                        const value = analysisResult.spectrum[index * 2] || 0;
-                                        const height = Math.max(4, (value / 255) * 64);
-                                        
-                                        return (
-                                            <div 
-                                                key={i} 
-                                                className="w-2 bg-orange-500/80 rounded-t-sm transition-all duration-75"
-                                                style={{ height: `${height}px` }}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            )}
-
-                            <div className="relative flex justify-center items-center">
-                                {isRecording && (
-                                    <div className="absolute inset-0 bg-orange-500/20 rounded-full animate-ping" />
-                                )}
-                                <Button
-                                    size="lg"
-                                    onClick={isRecording ? handleStopRecording : handleStartRecording}
-                                    className={cn(
-                                        "w-24 h-24 rounded-full transition-all duration-300 flex items-center justify-center border-4 relative z-10 shadow-[0_0_15px_rgba(0,0,0,0.5)]",
-                                        isRecording 
-                                            ? "bg-red-500 border-red-600 hover:bg-red-600 scale-110 shadow-[0_0_30px_rgba(239,68,68,0.4)]" 
-                                            : "bg-zinc-800 border-zinc-600 hover:border-orange-500 hover:bg-zinc-700 text-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                                    )}
-                                >
-                                    {isRecording ? <Square className="h-8 w-8 fill-current text-white" /> : <Mic className="h-8 w-8 text-white" />}
-                                </Button>
-                            </div>
-                            
-                            {isRecording ? (
-                                <p className="text-zinc-500 animate-pulse text-sm">Aufnahme läuft... Sprich jetzt.</p>
-                            ) : (
-                                <p className="text-zinc-500 text-sm font-medium">Hier Aufnahme starten</p>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Show Result & Next Steps */}
-                    {hasResult && !isRecording && (
-                        <div className="space-y-6 animate-in zoom-in duration-300 flex flex-col items-center">
-                            <div className="w-24 h-24 rounded-full bg-green-500/10 border border-green-500/50 flex items-center justify-center text-green-500">
-                                <Sparkles className="h-10 w-10" />
-                            </div>
-                            <p className="text-green-500 font-medium">
-                                {currentStep === "question1" && "Aufnahme gespeichert. Bereit für die Gegenwart."}
-                                {currentStep === "question2" && "Aufnahme gespeichert. Bereit für die Zukunft."}
-                                {currentStep === "question3" && "Alle Aufnahmen komplett. Starte Analyse."}
-                            </p>
-                            
-                            <div className="flex gap-4">
-                                <Button 
-                                    variant="outline"
-                                    onClick={() => {
-                                        // Reset current step result to allow re-recording
-                                        if (currentStep === "question1") setResults(prev => ({ ...prev, q1: null }));
-                                        else if (currentStep === "question2") setResults(prev => ({ ...prev, q2: null }));
-                                        else if (currentStep === "question3") setResults(prev => ({ ...prev, q3: null }));
-                                    }}
-                                    className="rounded-full border-zinc-700 hover:bg-zinc-800 text-zinc-400"
-                                >
-                                    <RotateCcw className="mr-2 h-4 w-4" /> Wiederholen
-                                </Button>
-                                <Button 
-                                    size="lg" 
-                                    onClick={advanceStep}
-                                    className="bg-white text-black hover:bg-zinc-200 rounded-full px-8"
-                                >
-                                    Weiter <ChevronRight className="ml-2 h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
-                    )}
-                 </div>
-               </div>
+              {!isRecording ? (
+                <Button 
+                  onClick={handleStartRecording} 
+                  size="lg" 
+                  className="rounded-full w-48 h-16 text-lg bg-orange-600 hover:bg-orange-700"
+                >
+                  Aufnahme starten
+                </Button>
+              ) : (
+                <Button 
+                  onClick={handleStopRecording} 
+                  size="lg" 
+                  variant="destructive"
+                  className="rounded-full w-48 h-16 text-lg animate-pulse"
+                >
+                  Stopp
+                </Button>
+              )}
             </div>
+
+            {/* Visual Feedback during recording */}
+            {isRecording && (
+               <div className="h-24 w-full max-w-md mx-auto mt-8 bg-black/50 rounded-xl overflow-hidden border border-zinc-800 relative">
+                  <div className="absolute inset-0 flex items-center justify-center text-zinc-500 text-sm">
+                    <Activity className="w-4 h-4 mr-2 animate-bounce" />
+                    Analyse läuft...
+                  </div>
+                  {/* We could add a mini visualizer here if we expose the analyzer node */}
+               </div>
+            )}
+
+            {/* Next Button (only if result captured) */}
+            {!isRecording && (
+                (currentStep === "question1" && results.q1) ||
+                (currentStep === "question2" && results.q2) ||
+                (currentStep === "question3" && results.q3)
+            ) ? (
+               <div className="mt-8 animate-in fade-in slide-in-from-bottom-4">
+                 <p className="text-green-500 mb-4 flex items-center justify-center gap-2">
+                   <Sparkles className="w-4 h-4" /> Aufnahme erfolgreich!
+                 </p>
+                 <Button onClick={advanceStep} variant="outline" className="border-zinc-700 hover:bg-zinc-800">
+                   Nächster Schritt <ArrowRight className="ml-2 w-4 h-4" />
+                 </Button>
+               </div>
+            ) : null}
           </div>
         );
 
       case "analyzing":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-8 animate-in fade-in duration-500">
-            <Loader2 className="h-16 w-16 text-orange-500 animate-spin" />
-            <p className="text-xl text-zinc-400 animate-pulse">
-              Berechne multidimensionale Resonanz...
-            </p>
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <Loader2 className="w-16 h-16 text-orange-500 animate-spin mb-8" />
+            <h2 className="text-2xl font-bold text-white mb-2">Berechne dein Profil...</h2>
+            <p className="text-zinc-400">Deine Frequenzen werden multidimensional ausgewertet.</p>
           </div>
         );
 
       case "result":
-        const res = finalResult || analysisResult;
-        if (!res) return <div>Kein Ergebnis verfügbar.</div>;
+        const res = isStudyComplete ? studyResult : finalResult;
+        const mdi = isStudyComplete ? studyMdiResult : mdiResult;
 
-        const { tone, cents, noteName } = res;
-        
-        // Calculate display values
-        const displayHz = res.fundamentalFreq.toFixed(2); 
-        
-        // Calculate playback frequency (including octave shift)
-        const baseFreq = res.fundamentalFreq;
-        const factor = Math.pow(2, currentOctaveShift);
-        const finalFreq = baseFreq * factor;
+        if (!res || !mdi) return <div>Fehler bei der Auswertung.</div>;
+
+        const handleDownloadResult = async () => {
+             // We can implement a simple text download or PDF here
+             const text = `MDI SYSTEM ANALYSE\nDatum: ${new Date().toLocaleDateString()}\n\nErgebnis: ${mdi.id} - ${mdi.colorName}\nFrequenz: ${mdi.frequency} Hz\nLicht: ${mdi.lightRange}\nTon: ${mdi.toneRange}\n\nPsychophysiologische Wirkung:\n${mdi.description}\n\nTalent:\n${mdi.talent}`;
+             
+             const blob = new Blob([text], { type: 'text/plain' });
+             const url = URL.createObjectURL(blob);
+             const a = document.createElement('a');
+             a.href = url;
+             a.download = `MDI-Analyse-${new Date().toISOString().split('T')[0]}.txt`;
+             document.body.appendChild(a);
+             a.click();
+             document.body.removeChild(a);
+             URL.revokeObjectURL(url);
+        };
 
         return (
-          <div className="animate-in fade-in slide-in-from-bottom-8 duration-700 pb-20">
-            {/* Top Navigation for Result View */}
-            <div className="absolute top-4 right-4 md:top-8 md:right-8">
-                <Button 
-                    variant="ghost" 
-                    onClick={() => window.location.reload()}
-                    className="text-zinc-500 hover:text-white"
-                >
-                    <X className="mr-2 h-4 w-4" /> Zur Übersicht
-                </Button>
-            </div>
-
+          <div className="max-w-4xl mx-auto py-8 px-4 animate-in fade-in duration-1000">
+            
+            {/* Header Result Card */}
             <div className="text-center mb-12">
-              <h2 className="text-sm font-mono text-orange-500 mb-2 tracking-widest uppercase">Deine MDI Signatur</h2>
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-4 tracking-tighter">
-                {noteName} <span className="text-2xl text-zinc-500 font-normal align-top">{cents > 0 ? '+' : ''}{Math.round(cents)} cent</span>
-              </h1>
-              <div className="inline-flex items-center px-4 py-1 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-400 font-mono text-sm">
-                {displayHz} Hz
+              <div className="inline-block mb-4 px-4 py-1 rounded-full bg-zinc-800/50 border border-zinc-700 text-xs font-mono text-zinc-400">
+                 {isStudyComplete ? "LÄNGSSCHNITT-STUDIE ABGESCHLOSSEN" : "TAGES-MESSUNG"}
               </div>
+              
+              <h1 className="text-5xl md:text-7xl font-bold text-white mb-2 tracking-tighter">
+                {mdi.colorName}
+              </h1>
+              <p className="text-xl text-orange-500 font-medium">{mdi.frequency} Hz</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-              {/* Left Column: Analysis & Sound */}
-              <div className="space-y-6">
-                <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden">
+            {/* Main Content Grid */}
+            <div className="grid md:grid-cols-2 gap-8 mb-12">
+              
+              {/* Left: Visual & Data */}
+              <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden relative group">
+                <div className="absolute inset-0 bg-gradient-to-br from-black/0 via-black/0 to-orange-500/5 pointer-events-none" />
+                <CardContent className="p-8 flex flex-col items-center justify-center min-h-[400px]">
+                   
+                   {/* Big Color Circle */}
+                   <div 
+                      className="w-48 h-48 rounded-full shadow-[0_0_100px_rgba(255,255,255,0.1)] flex items-center justify-center mb-8 relative"
+                      style={{ 
+                          backgroundColor: mdi.hex,
+                          boxShadow: `0 0 60px ${mdi.hex}40`
+                      }}
+                   >
+                      <div className="absolute inset-0 rounded-full border border-white/20 animate-pulse-slow" />
+                      <span className="text-4xl font-bold text-white drop-shadow-md">{mdi.id}</span>
+                   </div>
+
+                   <div className="grid grid-cols-2 gap-8 w-full text-center">
+                      <div>
+                        <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Licht</div>
+                        <div className="text-lg font-mono text-white">{mdi.lightRange}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Ton</div>
+                        <div className="text-lg font-mono text-white">{mdi.toneRange}</div>
+                      </div>
+                   </div>
+
+                </CardContent>
+              </Card>
+
+              {/* Right: Interpretation & Actions */}
+              <div className="space-y-4">
+                
+                {/* Description Card */}
+                <Card className="bg-zinc-900 border-zinc-800">
                   <CardHeader>
-                    <CardTitle className="text-zinc-300 flex items-center gap-2">
-                      <Volume2 className="h-5 w-5 text-orange-500" />
-                      Resonanz-Check
+                    <CardTitle className="flex items-center gap-2 text-white">
+                      <Sparkles className="w-5 h-5 text-orange-500" />
+                      Wirkung & Talent
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <p className="text-zinc-400 text-sm leading-relaxed">
-                      Dies ist dein identifizierter Grundton. Er verbindet deine zeitlichen Dimensionen.
-                      Höre ihn dir an und spüre die Resonanz.
-                    </p>
-                    
-                    <div className="flex flex-col gap-4">
-                      <Button 
-                        size="lg" 
-                        onClick={() => isPlaying ? stopTone() : playTone(finalFreq, 0, currentFineTune, isPureSineMode)}
-                        className={cn(
-                          "w-full py-8 text-lg rounded-xl transition-all",
-                          isPlaying 
-                            ? "bg-orange-500/20 text-orange-500 border border-orange-500/50 shadow-[0_0_20px_rgba(249,115,22,0.2)]" 
-                            : "bg-white text-black hover:bg-zinc-200"
-                        )}
-                      >
-                        {isPlaying ? (
-                          <>
-                            <Square className="mr-3 h-5 w-5 fill-current" /> Stop
-                          </>
-                        ) : (
-                          <>
-                            <Play className="mr-3 h-5 w-5 fill-current" /> Grundton hören
-                          </>
-                        )}
-                      </Button>
-                      
-                      {/* Octave Control */}
-                      <div className="flex items-center justify-between bg-black/40 p-3 rounded-lg border border-zinc-800">
-                        <span className="text-xs text-zinc-500 uppercase tracking-wider font-medium">Oktave</span>
-                        <div className="flex items-center gap-2">
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-8 w-8 p-0 hover:bg-zinc-800 text-zinc-400"
-                            onClick={() => setCurrentOctaveShift(prev => prev - 1)}
-                          >
-                            <ArrowDown className="h-4 w-4" />
-                          </Button>
-                          <span className="text-sm font-mono text-white w-8 text-center">
-                            {currentOctaveShift > 0 ? `+${currentOctaveShift}` : currentOctaveShift}
-                          </span>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="h-8 w-8 p-0 hover:bg-zinc-800 text-zinc-400"
-                            onClick={() => setCurrentOctaveShift(prev => prev + 1)}
-                          >
-                            <ArrowUp className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* EXPERT MODE TOGGLE */}
-                      <Collapsible
-                        open={isExpertOpen}
-                        onOpenChange={setIsExpertOpen}
-                        className="w-full space-y-2 border border-zinc-800 rounded-lg p-2 bg-zinc-950/30"
-                      >
-                        <div className="flex items-center justify-between px-2">
-                            <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium">
-                                <Settings className="h-3 w-3" /> EXPERTEN-MODUS
-                            </div>
-                            <CollapsibleTrigger asChild>
-                                <Button variant="ghost" size="sm" className="w-9 p-0 h-6">
-                                    <ChevronRight className={cn("h-4 w-4 transition-transform", isExpertOpen && "rotate-90")} />
-                                    <span className="sr-only">Toggle</span>
-                                </Button>
-                            </CollapsibleTrigger>
-                        </div>
-                        
-                        <CollapsibleContent className="space-y-4 pt-2 px-2">
-                            {/* 432 Hz Switch */}
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-zinc-300">432 Hz Referenz</span>
-                                <Switch 
-                                    checked={is432Hz}
-                                    onCheckedChange={setIs432Hz}
-                                />
-                            </div>
-
-                            {/* Pure Sine Switch */}
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm text-zinc-300">Reiner Sinus (Kalibrierung)</span>
-                                <Switch 
-                                    checked={isPureSineMode}
-                                    onCheckedChange={setIsPureSineMode}
-                                />
-                            </div>
-
-                            {/* Fine Tune Slider */}
-                            <div className="space-y-3 pt-2">
-                                <div className="flex justify-between">
-                                    <span className="text-xs text-zinc-400">Feinabstimmung (Cents)</span>
-                                    <span className="text-xs font-mono text-orange-500">{currentFineTune > 0 ? '+' : ''}{currentFineTune}</span>
-                                </div>
-                                <Slider
-                                    defaultValue={[0]}
-                                    max={100}
-                                    min={-100}
-                                    step={1}
-                                    value={[currentFineTune]}
-                                    onValueChange={(val) => setCurrentFineTune(val[0])}
-                                    className="py-2"
-                                />
-                            </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-                      
-                      {isPlaying && playingFreq && (
-                        <div className="text-center text-xs text-orange-500 animate-pulse font-mono border border-orange-500/30 bg-orange-500/10 py-2 rounded">
-                          <Activity className="h-3 w-3 inline mr-2" />
-                          OUTPUT: {playingFreq.toFixed(2)} Hz
-                        </div>
-                      )}
+                  <CardContent className="space-y-4">
+                    <div>
+                        <h4 className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Psychophysiologische Wirkung</h4>
+                        <p className="text-zinc-300">{mdi.description}</p>
+                    </div>
+                    <div>
+                        <h4 className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Talent</h4>
+                        <p className="text-zinc-300">{mdi.talent}</p>
                     </div>
                   </CardContent>
                 </Card>
-                
-                {/* Detail Analysis Table */}
-                <Card className="bg-zinc-900/50 border-zinc-800 backdrop-blur-sm overflow-hidden">
-                    <CardHeader>
-                        <CardTitle className="text-zinc-300 text-sm uppercase tracking-wider">Detail-Analyse</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Table>
-                            <TableHeader>
-                                <TableRow className="border-zinc-800 hover:bg-transparent">
-                                    <TableHead className="text-zinc-500">Phase</TableHead>
-                                    <TableHead className="text-zinc-500">Ton</TableHead>
-                                    <TableHead className="text-zinc-500 text-right">Frequenz</TableHead>
-                                    <TableHead className="text-zinc-500 text-right">Info</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {[
-                                    { name: "Gegenwart", data: results.q1 },
-                                    { name: "Vergangenheit", data: results.q2 },
-                                    { name: "Zukunft", data: results.q3 }
-                                ].map((step) => {
-                                    // RE-CALCULATE TONE FOR DISPLAY TO ENSURE CONSISTENCY
-                                    let displayTone = step.data?.noteName || "-";
-                                    let displayFreq = step.data?.fundamentalFreq;
-                                    let displayCents = step.data?.cents;
-                                    
-                                    if (displayFreq) {
-                                        const check = getToneFromFrequency(displayFreq);
-                                        displayTone = check.tone.name;
-                                        displayCents = check.cents;
-                                    }
 
-                                    return (
-                                    <TableRow key={step.name} className="border-zinc-800 hover:bg-zinc-800/50">
-                                        <TableCell className="font-medium text-zinc-300">{step.name}</TableCell>
-                                        <TableCell className="text-white">
-                                            {displayTone}
-                                        </TableCell>
-                                        <TableCell className="text-right font-mono text-orange-500">
-                                            {displayFreq ? `${displayFreq.toFixed(2)} Hz` : "-"}
-                                        </TableCell>
-                                        <TableCell className="text-right text-xs text-zinc-500">
-                                            {step.data?.correctionNote ? (
-                                                <span className="text-orange-400" title={step.data.correctionNote}>Korr.</span>
-                                            ) : (
-                                                <span>{displayCents !== undefined ? `${displayCents > 0 ? '+' : ''}${Math.round(displayCents)} ct` : ""}</span>
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
-                    </CardContent>
-                </Card>
-              </div>
+                {/* Action Buttons */}
+                <div className="grid gap-3">
+                  <Button 
+                    size="lg" 
+                    className="w-full bg-white text-black hover:bg-zinc-200"
+                    onClick={() => setShowInterpretation(true)}
+                  >
+                    Detaillierte Deutung ansehen <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
 
-              {/* Right Column: Visual Generation */}
-              <div className="space-y-6">
-                {/* Abstract Square Removed as requested */}
-                
-                {/* NEW: Spectral Resonance Matrix */}
-                {res.toneDistribution && (
-                    <SpectralMatrix toneDistribution={res.toneDistribution} />
-                )}
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button 
+                      variant="outline" 
+                      className="border-zinc-800 hover:bg-zinc-800"
+                      onClick={() => setShowSpectralScanner(true)}
+                    >
+                      <Activity className="mr-2 h-4 w-4" />
+                      Live-Scanner
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="border-zinc-800 hover:bg-zinc-800"
+                      onClick={() => setShowIntervalTrainer(true)}
+                    >
+                      <Music2 className="mr-2 h-4 w-4" />
+                      Training
+                    </Button>
+                  </div>
+                  
+                  <Button 
+                      variant="ghost" 
+                      className="text-zinc-500 hover:text-white"
+                      onClick={handleDownloadResult}
+                    >
+                      <Download className="mr-2 h-4 w-4" />
+                      Ergebnis als Text speichern
+                    </Button>
+                </div>
 
-                {/* NEW: Sound Body Visualization */}
-                {res.toneDistribution && (
-                    <SoundBody 
-                        toneDistribution={res.toneDistribution} 
-                        dominantToneName={res.tone.name} 
-                    />
-                )}
-                
-                {/* Legacy Frequency Distribution Chart (Optional, kept for reference if needed) */}
-                {/* 
-                {res.toneDistribution && (
-                  <FrequencyChart 
-                    distribution={res.toneDistribution} 
-                    stepDistributions={res.stepDistributions}
-                  />
-                )}
-                */}
               </div>
             </div>
             
-            <div className="flex flex-col items-center gap-6 pt-12 pb-20">
-              <div className="flex gap-4 flex-wrap justify-center">
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  onClick={() => window.location.reload()}
-                  className="rounded-full border-zinc-700 hover:bg-zinc-800 text-zinc-300"
-                >
-                  <RotateCcw className="mr-2 h-4 w-4" />
-                  Startseite
-                </Button>
-                
-                <Button 
-                  size="lg"
-                  className="rounded-full bg-white text-black hover:bg-zinc-200"
-                  onClick={() => setShowInterpretation(true)}
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Deutung lesen
-                </Button>
+            {/* Longitudinal Progress */}
+            {!isStudyComplete && (
+                <div className="mb-12 bg-zinc-900/30 border border-zinc-800 rounded-xl p-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 className="text-lg font-semibold text-white">Deine 5-Tage-Messung</h3>
+                            <p className="text-sm text-zinc-400">Wir benötigen 5 Messungen für dein valides Profil.</p>
+                        </div>
+                        <div className="text-2xl font-bold text-orange-500">
+                            {daysCompleted} / 5
+                        </div>
+                    </div>
+                    <Progress value={(daysCompleted / 5) * 100} className="h-2 bg-zinc-800" />
+                    <p className="text-xs text-zinc-500 mt-2 text-center">
+                        Die 2 extremsten Werte werden automatisch als Ausreißer entfernt.
+                    </p>
+                </div>
+            )}
 
-                <Button 
-                  size="lg"
-                  className="rounded-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
-                  onClick={() => setShowSpectralScanner(true)}
-                >
-                  <Activity className="mr-2 h-4 w-4" />
-                  Live-Scanner & Training
-                </Button>
-
-                <Button 
-                  size="lg"
-                  className="rounded-full bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700"
-                  onClick={() => setShowIntervalTrainer(true)}
-                >
-                  <Music2 className="mr-2 h-4 w-4" />
-                  Intervall-Training
-                </Button>
-
-                <Button 
-                  size="lg"
-                  className="rounded-full bg-orange-500 hover:bg-orange-600 text-white"
-                  onClick={handleDownloadResult}
-                >
-                  <Download className="mr-2 h-4 w-4" />
-                  Ergebnis speichern
-                </Button>
-              </div>
-            </div>
-
-            {showInterpretation && res && (
+            {showInterpretation && mdi && (
                 <InterpretationView 
-                  innerTone={res.tone}
-                  outerTone={TONES[(TONES.findIndex(t => t.name === res.tone.name) + 6) % 12]}
+                  mdiResult={mdi}
                   onClose={() => setShowInterpretation(false)}
                 />
             )}

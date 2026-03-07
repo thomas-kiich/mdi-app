@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ToneData } from "@/lib/tones";
-import { INTERPRETATIONS } from "@/lib/interpretations";
+import frequencyData from "@/lib/frequencyData.json";
 import { X, ArrowRight, Sparkles, Lock, Download } from "lucide-react";
 import { motion } from "framer-motion";
 import jsPDF from 'jspdf';
@@ -10,17 +9,14 @@ import html2canvas from 'html2canvas';
 import { useRef } from "react";
 
 interface InterpretationViewProps {
-  innerTone: ToneData;
-  outerTone: ToneData;
+  mdiResult: typeof frequencyData[0];
   onClose: () => void;
 }
 
-export function InterpretationView({ innerTone, outerTone, onClose }: InterpretationViewProps) {
-  const innerText = INTERPRETATIONS[innerTone.name];
-  const outerText = INTERPRETATIONS[outerTone.name];
+export function InterpretationView({ mdiResult, onClose }: InterpretationViewProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
-  if (!innerText || !outerText) return null;
+  if (!mdiResult) return null;
 
   const handleDownloadPDF = async () => {
     if (!contentRef.current) return;
@@ -44,7 +40,7 @@ export function InterpretationView({ innerTone, outerTone, onClose }: Interpreta
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       
       pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
-      pdf.save(`MDI-Analyse-${innerTone.name}-${outerTone.name}.pdf`);
+      pdf.save(`MDI-Analyse-Typ-${mdiResult.id}.pdf`);
     } catch (error) {
       console.error("PDF generation failed:", error);
     }
@@ -62,10 +58,10 @@ export function InterpretationView({ innerTone, outerTone, onClose }: Interpreta
           <div>
             <CardTitle className="text-2xl text-white flex items-center gap-2">
               <Sparkles className="w-6 h-6 text-orange-500" />
-              Deine Analyse-Deutung
+              Deine MDI-Analyse
             </CardTitle>
             <p className="text-zinc-400 mt-1">
-              Was dein Klangbild über deine aktuelle Lebensphase verrät.
+              Dein Ergebnis im 24-stufigen Frequenzsystem.
             </p>
           </div>
           <div className="flex gap-2">
@@ -85,94 +81,60 @@ export function InterpretationView({ innerTone, outerTone, onClose }: Interpreta
         </CardHeader>
 
         <ScrollArea className="flex-1 p-6">
-          <div ref={contentRef} className="bg-zinc-950 p-8 rounded-xl"> {/* Wrapper for PDF capture */}
+          <div ref={contentRef} className="bg-zinc-950 p-8 rounded-xl min-h-[600px] flex flex-col items-center">
             
-            {/* PDF Header - Visible only in PDF ideally, but here part of layout */}
-            <div className="mb-8 text-center border-b border-zinc-800 pb-8">
+            {/* PDF Header */}
+            <div className="mb-12 text-center border-b border-zinc-800 pb-8 w-full">
                <h1 className="text-3xl font-bold text-white mb-2">MDI SYSTEM</h1>
                <p className="text-zinc-500 uppercase tracking-widest text-sm">Persönliche Frequenz-Analyse</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-12 pb-8">
-              {/* INNER FIELD */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-4 mb-6 border-b border-zinc-800 pb-4">
-                  <div 
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-black shadow-lg"
-                    style={{ backgroundColor: innerTone.color }}
-                  >
-                    {innerTone.name}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white">Dein Innenfeld</h3>
-                    <p className="text-zinc-400 text-sm">Deine vorhandene Ressource</p>
-                  </div>
+            {/* Main Result */}
+            <div className="flex flex-col items-center gap-8 w-full max-w-2xl">
+                
+                {/* Color Circle / Visual */}
+                <div 
+                    className="w-48 h-48 rounded-full shadow-[0_0_100px_rgba(255,255,255,0.2)] flex flex-col items-center justify-center border-4 border-white/10"
+                    style={{ 
+                        backgroundColor: mdiResult.hex,
+                        boxShadow: `0 0 80px ${mdiResult.hex}40`
+                    }}
+                >
+                    <span className="text-4xl font-bold text-white drop-shadow-md">{mdiResult.id}</span>
+                    <span className="text-sm text-white/80 mt-1">{mdiResult.frequency} Hz</span>
                 </div>
 
-                <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-800/50">
-                  <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                    {innerText.innerPower.heading}
-                  </h4>
-                  <p className="text-zinc-300 leading-relaxed">
-                    {innerText.innerPower.text}
-                  </p>
+                {/* Title & Color Name */}
+                <div className="text-center space-y-2">
+                    <h2 className="text-4xl font-bold text-white">{mdiResult.colorName}</h2>
+                    <div className="flex items-center justify-center gap-4 text-zinc-400 text-sm">
+                        <span>Licht: {mdiResult.lightRange}</span>
+                        <span>•</span>
+                        <span>Ton: {mdiResult.toneRange}</span>
+                    </div>
                 </div>
 
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {innerText.keywords.map((k, i) => (
-                    <span key={i} className="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-700 text-xs text-zinc-400">
-                      {k}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* OUTER FIELD */}
-              <div className="space-y-6">
-                <div className="flex items-center gap-4 mb-6 border-b border-zinc-800 pb-4">
-                  <div 
-                    className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-black shadow-lg ring-2 ring-white/20"
-                    style={{ backgroundColor: outerTone.color }}
-                  >
-                    {outerTone.name}
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white">Dein Außenfeld</h3>
-                    <p className="text-zinc-400 text-sm">Dein Wachstumspotenzial</p>
-                  </div>
+                {/* Description Box */}
+                <div className="bg-zinc-900/50 rounded-xl p-8 border border-zinc-800 w-full mt-4">
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <h4 className="text-orange-500 font-semibold mb-2 uppercase text-xs tracking-wider">Psychophysiologische Wirkung</h4>
+                            <p className="text-zinc-300 leading-relaxed text-lg">
+                                {mdiResult.description}
+                            </p>
+                        </div>
+                        <div>
+                            <h4 className="text-orange-500 font-semibold mb-2 uppercase text-xs tracking-wider">Talent & Potenzial</h4>
+                            <p className="text-zinc-300 leading-relaxed text-lg">
+                                {mdiResult.talent}
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="bg-zinc-900/50 rounded-xl p-6 border border-zinc-800/50 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-4 opacity-5">
-                    <Lock className="w-24 h-24 text-white" />
-                  </div>
-                  <h4 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                    {outerText.outerPotential.heading}
-                  </h4>
-                  <p className="text-zinc-300 leading-relaxed relative z-10">
-                    {outerText.outerPotential.text}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {outerText.keywords.map((k, i) => (
-                    <span key={i} className="px-3 py-1 rounded-full bg-zinc-900 border border-zinc-700 text-xs text-zinc-400">
-                      {k}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-orange-500/10 border border-orange-500/20 rounded-xl p-8 text-center mt-4">
-              <h4 className="text-orange-500 font-semibold mb-3 text-lg">Die Synthese</h4>
-              <p className="text-zinc-300 max-w-2xl mx-auto leading-relaxed">
-                Die wahre Meisterschaft liegt in der Verbindung dieser beiden Pole. 
-                Nutze die Kraft deines Innenfeldes ({innerTone.name}), um das Potenzial deines Außenfeldes ({outerTone.name}) zu erschließen.
-              </p>
             </div>
             
-            <div className="mt-12 text-center text-zinc-600 text-xs font-mono">
+            <div className="mt-auto pt-16 text-center text-zinc-600 text-xs font-mono w-full">
                 MDI SYSTEM • Multidimensionales Identitätssystem • mdi-system.com
             </div>
           </div>
