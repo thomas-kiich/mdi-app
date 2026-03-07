@@ -1,4 +1,5 @@
 import { getToneFromFrequency, ToneData, TONES } from '@/lib/tones';
+import { getMdiTypeFromFrequency } from '@/lib/mdi';
 import { useCallback, useRef, useState } from 'react';
 
 export interface AnalysisResult {
@@ -11,6 +12,7 @@ export interface AnalysisResult {
   spectrum: Uint8Array;
   volume: number;
   toneDistribution?: Record<string, number>;
+  mdiDistribution?: Record<string, number>;
   correctionNote?: string;
 }
 
@@ -26,6 +28,7 @@ export function useAudioAnalyzer() {
   const rafIdRef = useRef<number | null>(null);
   
   const accumulatedTonesRef = useRef<Record<string, number>>({});
+  const accumulatedMdiRef = useRef<Record<string, number>>({});
   const accumulatedFreqsRef = useRef<Record<string, number[]>>({});
   const totalFramesRef = useRef(0);
   const lastValidResultRef = useRef<AnalysisResult | null>(null);
@@ -100,6 +103,14 @@ export function useAudioAnalyzer() {
       }
       accumulatedTonesRef.current[toneName]++;
       accumulatedFreqsRef.current[toneName].push(fundamentalFreq);
+
+      // Accumulate MDI data
+      const mdiType = getMdiTypeFromFrequency(fundamentalFreq);
+      const mdiId = mdiType.id.toString();
+      if (!accumulatedMdiRef.current[mdiId]) {
+          accumulatedMdiRef.current[mdiId] = 0;
+      }
+      accumulatedMdiRef.current[mdiId]++;
       
       totalFramesRef.current++;
     } else {
@@ -176,6 +187,12 @@ export function useAudioAnalyzer() {
             for (const [name, count] of Object.entries(accumulatedTonesRef.current)) {
                 distribution[name] = (count / totalFramesRef.current) * 100;
             }
+
+            // Calculate MDI distribution
+            const mdiDistribution: Record<string, number> = {};
+            for (const [id, count] of Object.entries(accumulatedMdiRef.current)) {
+                mdiDistribution[id] = (count / totalFramesRef.current) * 100;
+            }
             
             // Calculate average frequency for dominant tone
             const measuredFreqs = accumulatedFreqsRef.current[dominantToneName] || [];
@@ -199,6 +216,7 @@ export function useAudioAnalyzer() {
                 diffHz: avgMeasuredFreq - idealFreq,
                 noteName: finalTone.name,
                 toneDistribution: distribution,
+                mdiDistribution: mdiDistribution,
                 correctionNote: undefined
             };
         }
@@ -225,6 +243,7 @@ export function useAudioAnalyzer() {
       
       setError(null);
       accumulatedTonesRef.current = {};
+      accumulatedMdiRef.current = {};
       accumulatedFreqsRef.current = {};
       totalFramesRef.current = 0;
       lastValidResultRef.current = null;

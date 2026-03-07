@@ -45,13 +45,12 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Normalize data source
-  // If spectrum is provided, use it. Otherwise try result.spectrum.
   const data = spectrum || result?.spectrum || new Uint8Array(0);
   
   // Determine active state
   const active = isActive !== undefined ? isActive : (result?.isSpeaking || false);
   
-  // Frequency display only available if result object is passed or we could calculate it (but here we just use result)
+  // Frequency display
   const freq = result?.fundamentalFreq || 0;
 
   useEffect(() => {
@@ -75,81 +74,106 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // If no data or empty, stop here (after clearing)
-    if (data.length === 0) {
-      return () => window.removeEventListener('resize', updateCanvasSize);
-    }
+    // Map Spectrum to 24 MDI Bars
+    const numBars = 24;
+    const gap = 2; // Small gap for wider bars
+    const totalGap = gap * (numBars - 1);
+    const barWidth = (canvas.width - totalGap) / numBars;
 
-    const bufferLength = data.length;
+    // We need to map the FFT data (0-Nyquist) to our 24 MDI types.
+    // MDI types are roughly 88Hz to 170Hz (plus octaves).
+    // We will sum energy around each MDI frequency (including octaves).
     
-    // We draw only relevant frequencies (not up to Nyquist)
-    // Most voice content is < 4000 Hz
-    // At 44.1kHz SampleRate, Nyquist is 22kHz
-    // bufferLength = 1024 (at FFT 2048) -> each bin approx 21.5 Hz
-    // We want to see approx first 200 bins (up to ~4300 Hz)
-    // REDUCED to 48 bins to make bars wider as requested
-    const displayBins = Math.min(bufferLength, 48); 
-    
-    const barWidth = canvas.width / displayBins;
-    const gap = 2; // Gap between bars
-    const drawWidth = Math.max(1, barWidth - gap);
-    
-    let x = 0;
+    const energies = new Array(24).fill(0);
+    const sampleRate = 44100; // Assumed, but good enough for visual
+    const binSize = sampleRate / (data.length * 2); // approx resolution
 
-    // Determine color based on 24-step MDI system ONCE per frame
-    let colorHex = "#FF6B00"; // Default orange
-    let mdiType = "";
-    
-    if (freq > 0) {
-        // Find closest MDI frequency
-        let closest = frequencyData[0];
-        let minDiff = Math.abs(freq - closest.frequency);
-        
-        for (const item of frequencyData) {
-            const diff = Math.abs(freq - item.frequency);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closest = item;
+    if (active && data.length > 0) {
+        // For each FFT bin
+        for (let i = 0; i < data.length; i++) {
+            const binFreq = i * binSize;
+            if (binFreq < 50 || binFreq > 1000) continue; // Voice range only
+            
+            const amplitude = data[i];
+            if (amplitude < 10) continue; // Noise gate
+
+            // Find which MDI type this freq belongs to (handling octaves)
+            // We use the same logic as getMdiTypeFromFrequency but optimized for loop
+            
+            let normFreq = binFreq;
+            while (normFreq < 85) normFreq *= 2;
+            while (normFreq > 180) normFreq /= 2;
+
+            let bestIdx = 0;
+            let minDiff = Math.abs(normFreq - frequencyData[0].frequency);
+
+            for (let j = 1; j < frequencyData.length; j++) {
+                const diff = Math.abs(normFreq - frequencyData[j].frequency);
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    bestIdx = j;
+                }
             }
+            
+            // Add energy
+            energies[bestIdx] += amplitude;
         }
-        colorHex = closest.hex;
-        mdiType = closest.id;
     }
 
-    if (active) {
-         ctx.shadowBlur = 15;
-         ctx.shadowColor = colorHex;
-    } else {
-         ctx.shadowBlur = 0;
-    }
+    // Normalize energies
+    const maxEnergy = Math.max(...energies, 1);
+    
+    // Draw Bars
+    let x = 0;
+    frequencyData.forEach((item, index) => {
+        const energy = energies[index];
+        const normalizedHeight = (energy / maxEnergy);
+        
+        // Base height 5%, max height 95%
+        let barHeight = canvas.height * (0.05 + normalizedHeight * 0.9);
+        
+        // Opacity based on energy
+        let opacity = 0.4 + (normalizedHeight * 0.6);
+        
+        // Highlight dominant
+        const isDominant = energy === maxEnergy && energy > 0;
+        if (isDominant) {
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = item.hex;
+            opacity = 1.0;
+        } else {
+            ctx.shadowBlur = 0;
+        }
 
-    for (let i = 0; i < displayBins; i++) {
-      const value = data[i]; // 0-255
-      
-      // Calculate height relative to canvas height
-      const percent = value / 255;
-      const barHeight = percent * canvas.height;
+        ctx.fillStyle = item.hex;
+        ctx.globalAlpha = opacity;
+        
+        // Draw bar
+        ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+        
+        // Draw Number Label
+        if (barWidth > 15) { // Only if wide enough
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "10px monospace";
+            ctx.textAlign = "center";
+            ctx.globalAlpha = 0.8;
+            ctx.fillText(item.id, x + barWidth/2, canvas.height - 5);
+        }
 
-      // Use the MDI color with opacity based on intensity
-      ctx.fillStyle = colorHex;
-      ctx.globalAlpha = 0.5 + (percent * 0.5); // Min 50% opacity, max 100%
-      
-      ctx.fillRect(x, canvas.height - barHeight, drawWidth, barHeight);
-
-      x += barWidth;
-    }
+        x += barWidth + gap;
+    });
     
     return () => window.removeEventListener('resize', updateCanvasSize);
-  }, [data, active, width, height, freq]); // Added freq to dependency array
+  }, [data, active, width, height, freq]);
 
   return (
-    <div ref={containerRef} className="relative border border-orange-500/20 bg-black rounded-lg overflow-hidden shadow-[0_0_15px_rgba(255,107,0,0.1)] w-full h-full">
+    <div ref={containerRef} className="relative border border-zinc-800 bg-black rounded-lg overflow-hidden shadow-2xl w-full h-full">
         <canvas 
             ref={canvasRef} 
             className="w-full h-full block" 
         />
         {active && freq > 0 && (
-            <div className="absolute top-2 right-2 flex flex-col items-end gap-1 animate-pulse">
+            <div className="absolute top-2 right-2 flex flex-col items-end gap-1 animate-pulse z-10">
                 <div 
                     className="text-lg font-bold px-3 py-1 rounded border shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                     style={{ 
@@ -179,6 +203,8 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
                 </div>
             </div>
         )}
+        
+        {/* Optional: Add numbers 1-24 at the bottom if needed, but bars might be too thin on mobile */}
     </div>
   );
 };

@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TONES } from "@/lib/tones";
 import { cn } from "@/lib/utils";
+import frequencyData from '@/lib/frequencyData.json';
 
 interface FrequencyChartProps {
   distribution: Record<string, number>;
+  mdiDistribution?: Record<string, number>;
   stepDistributions?: {
     q1?: Record<string, number>;
     q2?: Record<string, number>;
@@ -11,12 +13,41 @@ interface FrequencyChartProps {
   };
 }
 
-export function FrequencyChart({ distribution, stepDistributions }: FrequencyChartProps) {
-  // Sort tones by musical order (C to B)
-  const sortedTones = TONES.map(t => t.name);
+export function FrequencyChart({ distribution, mdiDistribution, stepDistributions }: FrequencyChartProps) {
+  // Determine which data to show
+  const showMdi = !!mdiDistribution;
   
-  // Calculate max value for scaling
-  const maxValue = Math.max(...Object.values(distribution), 1);
+  // Prepare data for rendering
+  let chartData: { label: string, value: number, color: string, isDominant: boolean }[] = [];
+  let maxValue = 1;
+
+  if (showMdi && mdiDistribution) {
+      // Use MDI Data (1-24)
+      maxValue = Math.max(...Object.values(mdiDistribution), 1);
+      
+      chartData = frequencyData.map(item => {
+          const val = mdiDistribution[item.id.toString()] || 0;
+          return {
+              label: item.id.toString(),
+              value: val,
+              color: item.hex,
+              isDominant: val === maxValue
+          };
+      });
+  } else {
+      // Fallback to Tones (C-B)
+      maxValue = Math.max(...Object.values(distribution), 1);
+      
+      chartData = TONES.map(t => {
+          const val = distribution[t.name] || 0;
+          return {
+              label: t.name,
+              value: val,
+              color: t.color, // Use tone color if available, or default
+              isDominant: val === maxValue
+          };
+      });
+  }
 
   // Helper to get bar height percentage
   const getHeight = (val: number) => {
@@ -27,38 +58,39 @@ export function FrequencyChart({ distribution, stepDistributions }: FrequencyCha
     <Card className="bg-zinc-900/50 border-zinc-800 w-full">
       <CardHeader>
         <CardTitle className="text-zinc-400 text-sm font-medium tracking-wider">
-          FREQUENZ-SPEKTRUM (GESAMT)
+          {showMdi ? "MDI-SPEKTRUM (1-24)" : "FREQUENZ-SPEKTRUM (GESAMT)"}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-48 flex items-end justify-between gap-1 mt-4">
-          {sortedTones.map((toneName) => {
-            const value = distribution[toneName] || 0;
-            const height = getHeight(value);
-            const isDominant = value === maxValue;
+          {chartData.map((item) => {
+            const height = getHeight(item.value);
             
             return (
-              <div key={toneName} className="flex flex-col items-center gap-2 flex-1 group">
+              <div key={item.label} className="flex flex-col items-center gap-2 flex-1 group">
                 <div className="relative w-full flex items-end justify-center h-full">
                   <div 
                     className={cn(
                       "w-full rounded-t-sm transition-all duration-500",
-                      isDominant ? "bg-orange-500 shadow-[0_0_15px_rgba(249,115,22,0.5)]" : "bg-zinc-800 group-hover:bg-zinc-700"
+                      item.isDominant ? "shadow-[0_0_15px_rgba(255,255,255,0.3)]" : "opacity-80 group-hover:opacity-100"
                     )}
-                    style={{ height: `${height}%` }}
+                    style={{ 
+                        height: `${height}%`,
+                        backgroundColor: item.color 
+                    }}
                   >
-                    {value > 0 && (
+                    {item.value > 0 && (
                       <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {Math.round(value)}%
+                        {Math.round(item.value)}%
                       </div>
                     )}
                   </div>
                 </div>
                 <div className={cn(
-                  "text-xs font-medium",
-                  isDominant ? "text-orange-500" : "text-zinc-500"
+                  "text-[10px] font-medium truncate w-full text-center",
+                  item.isDominant ? "text-white font-bold" : "text-zinc-600"
                 )}>
-                  {toneName}
+                  {item.label}
                 </div>
               </div>
             );

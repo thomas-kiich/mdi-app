@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { X, Mic, MicOff, Maximize, Minimize, Camera, Box, Layers, Play, Square, Sparkles, Heart, Activity } from "lucide-react";
 import { getToneFromFrequency } from "@/lib/tones";
+import { getMdiTypeFromFrequency } from "@/lib/mdi";
 import { useLocation } from 'wouter';
 import { Method36Trainer } from "@/components/Method36Trainer";
 
@@ -44,8 +45,8 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
 
   // Helper to get tone color
   const getToneColor = (freq: number) => {
-    const { tone } = getToneFromFrequency(freq);
-    return { color: tone.color, tone: tone.name };
+    const mdi = getMdiTypeFromFrequency(freq);
+    return { color: mdi.hex, tone: mdi.id.toString() };
   };
 
   // --- AUDIO SYNTHESIS ---
@@ -282,19 +283,19 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
           freq = Math.exp(minLog + invertedNormY * logRange);
       }
       
-      const { tone, color } = getToneColor(freq);
-      
-      // Ensure color is valid hex
-      const safeColor = color && color.startsWith('#') ? color : '#ffffff';
-      
-      setHoverInfo({
-          x: e.clientX,
-          y: e.clientY,
-          freq: freq,
-          tone: tone,
-          note: tone, // Simplified
-          color: safeColor
-      });
+          const { tone, color } = getToneColor(freq);
+          
+          // Ensure color is valid hex
+          const safeColor = color && color.startsWith('#') ? color : '#ffffff';
+          
+          setHoverInfo({
+              x: e.clientX,
+              y: e.clientY,
+              freq: freq,
+              tone: tone,
+              note: `Typ ${tone}`,
+              color: safeColor
+          });
   };
 
   // Visualization Loop

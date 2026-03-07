@@ -158,6 +158,8 @@ export default function Home() {
     const combinedDistribution: Record<string, number> = {};
     let totalCombinedSamples = 0;
     
+    const combinedMdiDistribution: Record<string, number> = {};
+
     const processResult = (res: AnalysisResult | null) => {
       if (!res || !res.toneDistribution) return;
       
@@ -166,6 +168,14 @@ export default function Home() {
         // Add weighted contribution
         combinedDistribution[tone] += percent;
       }
+      
+      if (res.mdiDistribution) {
+        for (const [id, percent] of Object.entries(res.mdiDistribution)) {
+          if (!combinedMdiDistribution[id]) combinedMdiDistribution[id] = 0;
+          combinedMdiDistribution[id] += percent;
+        }
+      }
+
       totalCombinedSamples++;
     };
     
@@ -182,6 +192,9 @@ export default function Home() {
     if (validSteps > 0) {
         for (const tone in combinedDistribution) {
             combinedDistribution[tone] /= validSteps;
+        }
+        for (const id in combinedMdiDistribution) {
+            combinedMdiDistribution[id] /= validSteps;
         }
     }
 
@@ -295,6 +308,7 @@ export default function Home() {
           cents: finalCents,
           diffHz: finalDiffHz,
           toneDistribution: combinedDistribution,
+          mdiDistribution: combinedMdiDistribution,
           tone: toneData,
           isSpeaking: false,
           spectrum: new Uint8Array(0), // No live spectrum for result
