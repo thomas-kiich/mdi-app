@@ -16,7 +16,7 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, HeartPulse } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
@@ -371,8 +371,39 @@ export default function Home() {
               </Button>
             </div>
             
+            {/* Tools Navigation */}
+            <div className="mt-16 mb-8 flex flex-wrap justify-center gap-4 relative z-20">
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-zinc-800"
+                  onClick={() => setShowSpectralScanner(true)}
+                >
+                  <Activity className="w-4 h-4 mr-2" />
+                  Live-Scanner
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-zinc-800"
+                  onClick={() => setShowVitalDashboard(true)}
+                >
+                  <HeartPulse className="w-4 h-4 mr-2" />
+                  Vital-Monitor
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-zinc-800"
+                  onClick={() => setShowStory(true)}
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Intro-Animation
+                </Button>
+            </div>
+
             {/* Footer Links */}
-            <div className="mt-24 mb-8 flex gap-6 text-xs text-zinc-500 tracking-widest uppercase relative z-20">
+            <div className="mb-8 flex gap-6 text-xs text-zinc-500 tracking-widest uppercase relative z-20">
                 <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
                 <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
                 <Link href="/erklaerung" className="hover:text-white transition-colors">Erklärung</Link>
