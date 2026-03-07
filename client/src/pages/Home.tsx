@@ -346,7 +346,7 @@ export default function Home() {
               
               <div className="w-full h-px bg-white/30 my-6 mx-auto max-w-[200px]" />
               
-              <h2 className="text-2xl md:text-3xl font-light text-white/80 tracking-wide">
+              <h2 className="text-2xl md:text-3xl font-normal text-white tracking-wide drop-shadow-md font-['Philosopher']">
                 Das multidimensionale Identitätssystem
               </h2>
               
