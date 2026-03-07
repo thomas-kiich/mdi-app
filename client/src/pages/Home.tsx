@@ -332,15 +332,15 @@ export default function Home() {
             <div className="mb-12 relative group">
               <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full animate-pulse-slow" />
               <img 
-                src="/logo-quadratisch.png" 
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
                 alt="MDI Logo" 
-                className="w-80 h-80 md:w-[500px] md:h-[500px] object-contain relative z-10 drop-shadow-2xl transition-transform duration-700 hover:scale-105"
+                className="w-full max-w-[600px] h-auto object-contain relative z-10 drop-shadow-2xl transition-transform duration-700 hover:scale-105 mx-auto"
               />
             </div>
 
             {/* Title & Slogan */}
             <div className="text-center space-y-2 mb-8 relative z-10">
-              <h1 className="text-5xl md:text-8xl font-normal tracking-wider text-white/90 drop-shadow-lg font-['Cinzel']">
+              <h1 className="text-5xl md:text-8xl font-normal tracking-wider text-white/90 drop-shadow-lg font-['Philosopher']">
                 METHODE 36
               </h1>
               
