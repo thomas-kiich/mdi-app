@@ -492,7 +492,8 @@ export default function Home() {
                   <SpectrumVisualizer 
                       spectrum={analysisResult.spectrum} 
                       width={400} 
-                      height={192} 
+                      height={192}
+                      isActive={isRecording}
                   />
                   <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
                       <div className="text-xs font-mono text-zinc-500 uppercase">Frequenz</div>

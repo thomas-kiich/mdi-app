@@ -1,5 +1,19 @@
 import React, { useEffect, useRef } from 'react';
-import frequencyData from "@/lib/frequencyData.json";
+import frequencyDataRaw from "@/lib/frequencyData.json";
+
+// Define the type for frequency data items
+interface FrequencyDataItem {
+  id: string;
+  frequency: number;
+  colorName: string;
+  hex: string;
+  lightRange: string;
+  toneRange: string;
+  description: string;
+  talent: string;
+}
+
+const frequencyData = frequencyDataRaw as FrequencyDataItem[];
 
 // Define a simplified AnalysisResult interface locally to avoid circular dependencies or import issues
 interface AnalysisResult {
@@ -10,7 +24,7 @@ interface AnalysisResult {
 
 interface SpectrumVisualizerProps {
   // New props used in Home.tsx
-  frequencyData?: Uint8Array;
+  spectrum?: Uint8Array;
   isActive?: boolean;
   
   // Legacy props support
@@ -21,7 +35,7 @@ interface SpectrumVisualizerProps {
 }
 
 export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({ 
-  frequencyData, 
+  spectrum, 
   isActive, 
   result, 
   width = 600, 
@@ -31,8 +45,8 @@ export const SpectrumVisualizer: React.FC<SpectrumVisualizerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Normalize data source
-  // If frequencyData is provided, use it. Otherwise try result.spectrum.
-  const data = frequencyData || result?.spectrum || new Uint8Array(0);
+  // If spectrum is provided, use it. Otherwise try result.spectrum.
+  const data = spectrum || result?.spectrum || new Uint8Array(0);
   
   // Determine active state
   const active = isActive !== undefined ? isActive : (result?.isSpeaking || false);
