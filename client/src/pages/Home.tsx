@@ -334,13 +334,13 @@ export default function Home() {
               <img 
                 src="/logo-quadratisch.png" 
                 alt="MDI Logo" 
-                className="w-64 h-64 md:w-80 md:h-80 object-contain relative z-10 drop-shadow-2xl transition-transform duration-700 hover:scale-105"
+                className="w-80 h-80 md:w-[500px] md:h-[500px] object-contain relative z-10 drop-shadow-2xl transition-transform duration-700 hover:scale-105"
               />
             </div>
 
             {/* Title & Slogan */}
             <div className="text-center space-y-2 mb-8 relative z-10">
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white/90 drop-shadow-lg font-display">
+              <h1 className="text-5xl md:text-8xl font-normal tracking-wider text-white/90 drop-shadow-lg font-['Cinzel']">
                 METHODE 36
               </h1>
               
