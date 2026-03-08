@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff, Camera, Box, Play, Square, Sparkles, Heart, Info, Volume2 } from "lucide-react";
+import { X, Mic, MicOff, Camera, Box, Play, Square, Sparkles, Heart, Info, Volume2, ChevronUp, ChevronDown } from "lucide-react";
 import { getToneFromFrequency } from "@/lib/tones";
 import { getMdiTypeFromFrequency } from "@/lib/mdi";
 import { useLocation } from 'wouter';
@@ -48,6 +48,9 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
   const [selectedInfo, setSelectedInfo] = useState<FrequencyDataItem | null>(null);
   const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string } | null>(null);
   const [currentFreq, setCurrentFreq] = useState<number>(0);
+  
+  // New State for Details Expansion
+  const [isDetailsExpanded, setIsDetailsExpanded] = useState(false);
 
   // --- AUDIO SYNTHESIS HELPERS ---
   const playHarmonicTone = (frequency: number) => {
@@ -444,6 +447,10 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
       return () => window.removeEventListener('resize', handleResize);
   }, [isListening]);
 
+  // Determine which info to show
+  const activeInfo = selectedInfo || hoverInfo?.item;
+  const activeColor = selectedInfo ? selectedInfo.hex : hoverInfo?.item?.hex;
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-black">
       {/* Header */}
@@ -473,51 +480,96 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
             onMouseLeave={handleCanvasLeave}
           />
           
-          {/* Hover / Selection Info Panel */}
+          {/* Info Panel - Mobile Optimized (Bottom Sheet style) */}
           <AnimatePresence>
-              {(hoverInfo || selectedInfo) && (
+              {activeInfo && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 20 }}
-                    className="absolute top-8 left-8 z-30 max-w-sm pointer-events-none" // Pointer events none so canvas keeps getting mouse events
+                    initial={{ y: "100%" }}
+                    animate={{ y: 0 }}
+                    exit={{ y: "100%" }}
+                    transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                    className="absolute bottom-0 left-0 right-0 z-30 pointer-events-none flex justify-center pb-24 md:pb-8 px-4"
                   >
-                      <div className="bg-black/80 backdrop-blur-md border border-zinc-700 p-6 rounded-2xl shadow-2xl pointer-events-auto">
+                      <div className="bg-black/90 backdrop-blur-xl border border-zinc-700 p-6 rounded-2xl shadow-2xl pointer-events-auto w-full max-w-md relative overflow-hidden">
+                          {/* Close Button for Selection */}
+                          {selectedInfo && (
+                              <button 
+                                onClick={() => setSelectedInfo(null)}
+                                className="absolute top-2 right-2 p-2 text-zinc-500 hover:text-white bg-black/50 rounded-full"
+                              >
+                                  <X className="w-4 h-4" />
+                              </button>
+                          )}
+
                           <div className="flex items-center gap-4 mb-4">
-                              <div 
-                                className="w-16 h-16 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] flex items-center justify-center border border-white/10"
-                                style={{ backgroundColor: selectedInfo ? selectedInfo.hex : hoverInfo?.item.hex }}
+                             <div 
+                                className="w-16 h-16 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.2)] flex items-center justify-center border border-white/10 shrink-0"
+                                style={{ backgroundColor: activeColor }}
                              >
                                 <span className="text-2xl font-bold text-white drop-shadow-md">
-                                    {selectedInfo ? selectedInfo.id : hoverInfo?.item.id}
+                                    {activeInfo.id}
                                 </span>
                              </div>
                              <div>
-                                 <h2 className="text-2xl font-bold text-white">{selectedInfo ? selectedInfo.colorName : hoverInfo?.item.colorName}</h2>
-                                 <p className="text-orange-500 font-mono">{selectedInfo ? selectedInfo.frequency : hoverInfo?.item.frequency} Hz</p>
+                                 <h2 className="text-2xl font-bold text-white">{activeInfo.colorName}</h2>
+                                 <p className="text-orange-500 font-mono">{activeInfo.frequency} Hz</p>
                              </div>
                           </div>
                           
                           <div className="space-y-4">
                               <div>
                                   <h3 className="text-xs uppercase text-zinc-500 font-bold tracking-wider mb-1">Wirkung</h3>
-                                  <p className="text-sm text-zinc-300 leading-relaxed">
-                                      {selectedInfo ? selectedInfo.description : hoverInfo?.item.description}
+                                  <p className="text-sm text-zinc-300 leading-relaxed line-clamp-2">
+                                      {activeInfo.description}
                                   </p>
                               </div>
-                              <div>
-                                  <h3 className="text-xs uppercase text-zinc-500 font-bold tracking-wider mb-1">Talent</h3>
-                                  <p className="text-sm text-zinc-300 leading-relaxed">
-                                      {selectedInfo ? selectedInfo.talent : hoverInfo?.item.talent}
-                                  </p>
-                              </div>
+                              
+                              <AnimatePresence>
+                                {isDetailsExpanded && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="overflow-hidden"
+                                    >
+                                        <div className="pt-4 space-y-4">
+                                            <div>
+                                                <h3 className="text-xs uppercase text-zinc-500 font-bold tracking-wider mb-1">Talent</h3>
+                                                <p className="text-sm text-zinc-300 leading-relaxed">
+                                                    {activeInfo.talent}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xs uppercase text-zinc-500 font-bold tracking-wider mb-1">Licht & Ton</h3>
+                                                <div className="grid grid-cols-2 gap-2 text-sm text-zinc-400 font-mono">
+                                                    <div>Licht: {activeInfo.lightRange}</div>
+                                                    <div>Ton: {activeInfo.toneRange}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                )}
+                              </AnimatePresence>
+                              
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full text-zinc-400 hover:text-white h-8 text-xs"
+                                onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
+                              >
+                                  {isDetailsExpanded ? (
+                                      <><ChevronDown className="w-3 h-3 mr-1" /> Weniger anzeigen</>
+                                  ) : (
+                                      <><ChevronUp className="w-3 h-3 mr-1" /> Mehr Details</>
+                                  )}
+                              </Button>
                           </div>
 
-                          <div className="mt-6 pt-4 border-t border-zinc-800 flex gap-2">
+                          <div className="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
                                <Button 
                                   size="sm" 
                                   className="flex-1 bg-zinc-800 hover:bg-zinc-700"
-                                  onClick={() => playHarmonicTone(selectedInfo ? selectedInfo.frequency : hoverInfo?.item.frequency || 0)}
+                                  onClick={() => playHarmonicTone(activeInfo.frequency)}
                                 >
                                   {isPlayingTone ? <Square className="mr-2 h-4 w-4 text-red-500 fill-current" /> : <Volume2 className="mr-2 h-4 w-4" />}
                                   {isPlayingTone ? "Stop" : "Hören"}
@@ -534,7 +586,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                           
                           {!selectedInfo && (
                               <p className="text-[10px] text-zinc-500 mt-2 text-center">
-                                  Klicken zum Fixieren & Trainieren
+                                  Klicken zum Fixieren
                               </p>
                           )}
                       </div>
@@ -570,7 +622,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
             className={`rounded-full px-8 text-lg font-bold transition-all ${isListening ? 'bg-red-500 hover:bg-red-600 shadow-[0_0_30px_rgba(239,68,68,0.4)]' : 'bg-white text-black hover:bg-zinc-200'}`}
          >
              {isListening ? <Mic className="mr-2 h-5 w-5 animate-pulse" /> : <MicOff className="mr-2 h-5 w-5" />}
-             {isListening ? "MIKROFON STOPPEN" : "MIKROFON STARTEN"}
+             {isListening ? "SCANNER" : "START"}
          </Button>
       </div>
     </div>
