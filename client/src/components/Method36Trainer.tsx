@@ -347,6 +347,13 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             playGong('end');
                             saveSessionLog(); // Save session
                             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+                            
+                            // Play Outro Voice after Gong (approx 4.5s)
+                            setTimeout(() => {
+                                const audio = new Audio('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/outro_congrats_535f6028.wav');
+                                audio.play().catch(e => console.error("Audio play failed", e));
+                            }, 5000); // Wait for gong to fade out
+
                             return 0;
                         }
                         return prev - 1;
