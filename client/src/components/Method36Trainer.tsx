@@ -35,6 +35,10 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     const lastBeatRef = useRef<number>(0); // Track last processed beat to prevent double counting
     const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
+    // Calculate total cycles if duration is set
+    // 1 cycle = 6 beats * 1.666s = 10 seconds
+    const totalCycles = duration ? duration * 6 : null;
+
     // Initialize Audio
     useEffect(() => {
         const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -365,6 +369,29 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                 
                 {/* SVG Overlay for Indicators - using viewBox for responsiveness */}
                 <svg className="absolute inset-[-10%] w-[120%] h-[120%] -rotate-90 pointer-events-none overflow-visible" viewBox="0 0 600 600">
+                     {/* Progress Ring Background */}
+                     {totalCycles && (
+                         <circle 
+                            cx="300" cy="300" r="290" 
+                            fill="none" 
+                            stroke="#333" 
+                            strokeWidth="2"
+                         />
+                     )}
+                     
+                     {/* Progress Ring Active */}
+                     {totalCycles && (
+                         <circle 
+                            cx="300" cy="300" r="290" 
+                            fill="none" 
+                            stroke={color} 
+                            strokeWidth="4"
+                            strokeDasharray={`${(cycleCount / totalCycles) * 1822} 1822`} // 2 * PI * 290 approx 1822
+                            strokeLinecap="round"
+                            className="transition-all duration-1000 ease-linear"
+                         />
+                     )}
+
                      {[...Array(6)].map((_, i) => {
                         const angle = (i * 60) * (Math.PI / 180);
                         const r = 280; // Relative to 600x600 viewBox (center 300,300)
@@ -426,7 +453,13 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                 </Button>
                 
                 <div className="text-zinc-500 text-xs font-mono">
-                    {cycleCount > 0 ? `ZYKLUS: ${cycleCount}` : "36 BPM RHYTHMUS"}
+                    {totalCycles ? (
+                        <span className={cycleCount >= totalCycles ? "text-green-500 font-bold" : ""}>
+                            ZYKLUS: {cycleCount} / {totalCycles}
+                        </span>
+                    ) : (
+                        cycleCount > 0 ? `ZYKLUS: ${cycleCount}` : "36 BPM RHYTHMUS"
+                    )}
                 </div>
             </div>
         </div>
