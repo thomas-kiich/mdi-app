@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle, Clock } from "lucide-react";
+import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle, Clock, Waves, History } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface Method36TrainerProps {
     frequency: number;
@@ -16,19 +17,31 @@ const BEAT_DURATION = 1.666666;
 
 type Phase = 'IN' | 'HOLD_FULL' | 'TONE' | 'HOLD_EMPTY';
 
+interface SessionLog {
+    date: string;
+    duration: number;
+    toneName: string;
+}
+
 export function Method36Trainer({ frequency, toneName, color, duration, onClose }: Method36TrainerProps) {
+    const { toast } = useToast();
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentBeat, setCurrentBeat] = useState(0); // 1 to 6
     const [phase, setPhase] = useState<Phase>('HOLD_EMPTY');
     const [cycleCount, setCycleCount] = useState(0);
     const [isHighOctave, setIsHighOctave] = useState(false); // Default to Low Octave (Base Frequency)
     const [timeLeft, setTimeLeft] = useState<number | null>(duration ? duration * 60 : null);
+    const [showLog, setShowLog] = useState(false);
+    const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
+    const [isStreamSoundEnabled, setIsStreamSoundEnabled] = useState(true);
     
     const audioCtxRef = useRef<AudioContext | null>(null);
     const masterGainRef = useRef<GainNode | null>(null);
     const toneOscillatorsRef = useRef<OscillatorNode[]>([]);
     const toneGainRef = useRef<GainNode | null>(null);
     const filterRef = useRef<BiquadFilterNode | null>(null);
+    const streamNodeRef = useRef<AudioBufferSourceNode | null>(null);
+    const streamGainRef = useRef<GainNode | null>(null);
     
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
@@ -38,6 +51,34 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     // Calculate total cycles if duration is set
     // 1 cycle = 6 beats * 1.666s = 10 seconds
     const totalCycles = duration ? duration * 6 : null;
+
+    // Load logs from localStorage
+    useEffect(() => {
+        const storedLogs = localStorage.getItem('method36_logs');
+        if (storedLogs) {
+            setSessionLogs(JSON.parse(storedLogs));
+        }
+    }, []);
+
+    // Save log when session completes
+    const saveSessionLog = () => {
+        if (!duration) return;
+        
+        const newLog: SessionLog = {
+            date: new Date().toISOString(),
+            duration: duration,
+            toneName: toneName
+        };
+        
+        const updatedLogs = [newLog, ...sessionLogs].slice(0, 50); // Keep last 50 logs
+        setSessionLogs(updatedLogs);
+        localStorage.setItem('method36_logs', JSON.stringify(updatedLogs));
+        
+        toast({
+            title: "Training abgeschlossen",
+            description: `${duration} Min. Session im Logbuch gespeichert.`,
+        });
+    };
 
     // Initialize Audio
     useEffect(() => {
@@ -59,13 +100,61 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         filter.connect(master);
         filterRef.current = filter;
 
+        // Generate Stream Sound (Pink Noise + Lowpass Filter)
+        createStreamSound(ctx, master);
+
         return () => {
             stopTone();
+            if (streamNodeRef.current) {
+                try { streamNodeRef.current.stop(); } catch(e) {}
+            }
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             ctx.close();
         };
     }, []);
+
+    const createStreamSound = (ctx: AudioContext, destination: AudioNode) => {
+        // Create Pink Noise buffer
+        const bufferSize = 2 * ctx.sampleRate;
+        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const output = noiseBuffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            const white = Math.random() * 2 - 1;
+            output[i] = (lastOut + (0.02 * white)) / 1.02;
+            lastOut = output[i];
+            output[i] *= 3.5; 
+        }
+        
+        const noise = ctx.createBufferSource();
+        noise.buffer = noiseBuffer;
+        noise.loop = true;
+        
+        // Filter to make it sound like water
+        const streamFilter = ctx.createBiquadFilter();
+        streamFilter.type = 'lowpass';
+        streamFilter.frequency.value = 400; // Muffled water sound
+        
+        const streamGain = ctx.createGain();
+        streamGain.gain.value = 0; // Start silent
+        
+        noise.connect(streamFilter).connect(streamGain).connect(destination);
+        noise.start();
+        
+        streamNodeRef.current = noise;
+        streamGainRef.current = streamGain;
+    };
+    
+    // Helper for pink noise generation
+    let lastOut = 0;
+
+    const toggleStreamSound = () => {
+        setIsStreamSoundEnabled(!isStreamSoundEnabled);
+        if (streamGainRef.current && audioCtxRef.current) {
+            const targetGain = !isStreamSoundEnabled && isPlaying ? 0.08 : 0;
+            streamGainRef.current.gain.setTargetAtTime(targetGain, audioCtxRef.current.currentTime, 0.5);
+        }
+    };
 
     const playGong = (pitch: 'low' | 'high' | 'end') => {
         const ctx = audioCtxRef.current;
@@ -129,8 +218,8 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
 
         const toneGain = ctx.createGain();
         toneGain.gain.setValueAtTime(0, ctx.currentTime);
-        // INCREASED TONE VOLUME
-        toneGain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.5); 
+        // INCREASED TONE VOLUME (from 0.6 to 0.75 to cut through water sound)
+        toneGain.gain.linearRampToValueAtTime(0.75, ctx.currentTime + 0.5); 
         // Connect to Filter instead of Master directly
         toneGain.connect(filterRef.current); 
         toneGainRef.current = toneGain;
@@ -240,6 +329,11 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             setCycleCount(0); 
             requestRef.current = requestAnimationFrame(updateLoop);
 
+            // Start Stream Sound if enabled
+            if (isStreamSoundEnabled && streamGainRef.current && audioCtxRef.current) {
+                streamGainRef.current.gain.setTargetAtTime(0.08, audioCtxRef.current.currentTime, 2); // Fade in to 8% volume
+            }
+
             // Start Timer if duration is set
             if (duration) {
                 setTimeLeft(duration * 60);
@@ -251,6 +345,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             // Timer finished
                             setIsPlaying(false);
                             playGong('end');
+                            saveSessionLog(); // Save session
                             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
                             return 0;
                         }
@@ -263,6 +358,12 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             stopTone();
+            
+            // Stop Stream Sound
+            if (streamGainRef.current && audioCtxRef.current) {
+                streamGainRef.current.gain.setTargetAtTime(0, audioCtxRef.current.currentTime, 1); // Fade out
+            }
+
             setPhase('HOLD_EMPTY');
             setCurrentBeat(0);
         }
@@ -286,6 +387,12 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
+    const formatDate = (dateString: string) => {
+        return new Date(dateString).toLocaleDateString('de-DE', {
+            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+        });
+    };
+
     return (
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/95 text-white font-sans backdrop-blur-xl">
             
@@ -296,6 +403,28 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                     <h2 className="text-xl font-bold tracking-widest hidden md:block">METHODE 36 TRAINER</h2>
                 </div>
                 <div className="flex gap-4 items-center">
+                    {/* Logbook Toggle */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowLog(!showLog)}
+                        className={`rounded-full ${showLog ? 'bg-white/20' : 'hover:bg-white/10'}`}
+                        title="Session Logbuch"
+                    >
+                        <History className="h-5 w-5" />
+                    </Button>
+
+                    {/* Stream Sound Toggle */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={toggleStreamSound}
+                        className={`rounded-full ${isStreamSoundEnabled ? 'text-blue-400' : 'text-zinc-600'}`}
+                        title="Hintergrundgeräusch (Bach)"
+                    >
+                        {isStreamSoundEnabled ? <Waves className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+                    </Button>
+
                     {/* Timer Display */}
                     {timeLeft !== null && (
                         <div className={`font-mono text-xl md:text-2xl font-bold ${timeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-orange-400'}`}>
@@ -312,6 +441,32 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                     </Button>
                 </div>
             </div>
+
+            {/* Logbook Overlay */}
+            {showLog && (
+                <div className="absolute top-20 right-6 w-80 bg-zinc-900/95 border border-white/10 rounded-xl p-4 z-50 shadow-2xl backdrop-blur-md max-h-[60vh] overflow-y-auto">
+                    <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                        <History className="h-4 w-4 text-orange-400" /> Meine Trainings
+                    </h3>
+                    {sessionLogs.length === 0 ? (
+                        <p className="text-zinc-500 text-sm">Noch keine Trainings aufgezeichnet.</p>
+                    ) : (
+                        <div className="space-y-2">
+                            {sessionLogs.map((log, i) => (
+                                <div key={i} className="flex justify-between items-center text-sm p-2 bg-white/5 rounded hover:bg-white/10 transition-colors">
+                                    <div className="flex flex-col">
+                                        <span className="font-bold text-white">{log.toneName}</span>
+                                        <span className="text-zinc-500 text-xs">{formatDate(log.date)}</span>
+                                    </div>
+                                    <div className="text-orange-400 font-mono font-bold">
+                                        {log.duration} min
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Central Visual */}
             <div className="relative w-[300px] h-[300px] md:w-[500px] md:h-[500px] flex items-center justify-center">
@@ -353,15 +508,6 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                     {[...Array(6)].map((_, i) => {
                         const angle = (i * 60) * (Math.PI / 180);
                         const r = 260; // Radius slightly outside (adjust for mobile if needed, but keeping simple)
-                        // Mobile adjustment logic handled by CSS scaling if needed, but SVG is relative to container
-                        // Container is fixed size, so we might need responsive logic if we want perfect mobile fit
-                        // For now, let's keep r relative to 500px container.
-                        // Wait, r=260 is outside 500px (r=250). 
-                        
-                        // Let's use percentages for responsiveness if we can, or just stick to fixed since container is fixed.
-                        // Actually container is responsive: w-[300px] md:w-[500px]
-                        // We need to calculate based on container size.
-                        // SVG viewBox approach is better.
                         
                         return null; // Rendered below with viewBox
                     })}
