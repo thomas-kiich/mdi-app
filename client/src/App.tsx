@@ -7,7 +7,7 @@ import { GuidePendulum } from "./pages/GuidePendulum";
 import { Impressum } from "./pages/Impressum";
 import { Datenschutz } from "./pages/Datenschutz";
 import Erklaerung from "./pages/Erklaerung";
-import { Wissen } from "./pages/Wissen";
+import Wissen from "./pages/Wissen";
 
 // Create a client
 const queryClient = new QueryClient();
