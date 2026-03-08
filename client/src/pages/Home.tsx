@@ -708,7 +708,12 @@ export default function Home() {
     <div className="min-h-screen bg-black text-foreground font-sans selection:bg-orange-500/30">
       <div className="container max-w-5xl mx-auto px-4 py-8">
         {/* Navbar - Logo removed, content shifted up */}
-        <header className="flex justify-end items-center mb-4 md:mb-8">
+        <header className="flex justify-between items-center mb-4 md:mb-8">
+          <Link href="/wissen">
+            <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white">
+              <span className="mr-2">📚</span> Wissenspool
+            </Button>
+          </Link>
           <div className="text-xs font-mono text-zinc-600">
             BETA 1.1
           </div>

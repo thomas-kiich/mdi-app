@@ -7,6 +7,7 @@ import { GuidePendulum } from "./pages/GuidePendulum";
 import { Impressum } from "./pages/Impressum";
 import { Datenschutz } from "./pages/Datenschutz";
 import Erklaerung from "./pages/Erklaerung";
+import { Wissen } from "./pages/Wissen";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ function Router() {
       <Route path="/impressum" component={Impressum} />
       <Route path="/datenschutz" component={Datenschutz} />
       <Route path="/erklaerung" component={Erklaerung} />
+      <Route path="/wissen" component={Wissen} />
       <Route component={NotFound} />
     </Switch>
   );
