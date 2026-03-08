@@ -414,6 +414,15 @@ export default function Home() {
                   <Play className="w-4 h-4 mr-2" />
                   Intro-Animation
                 </Button>
+                <Link href="/wissen">
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    className="text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-zinc-800"
+                  >
+                    <span className="mr-2">📚</span> Wissenspool
+                  </Button>
+                </Link>
             </div>
 
             {/* Footer Links */}
