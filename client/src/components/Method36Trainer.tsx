@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle, Clock } from "lucide-react";
 
 interface Method36TrainerProps {
     frequency: number;
     toneName: string;
     color: string;
+    duration?: number; // Duration in minutes
     onClose: () => void;
 }
 
@@ -15,12 +16,13 @@ const BEAT_DURATION = 1.666666;
 
 type Phase = 'IN' | 'HOLD_FULL' | 'TONE' | 'HOLD_EMPTY';
 
-export function Method36Trainer({ frequency, toneName, color, onClose }: Method36TrainerProps) {
+export function Method36Trainer({ frequency, toneName, color, duration, onClose }: Method36TrainerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentBeat, setCurrentBeat] = useState(0); // 1 to 6
     const [phase, setPhase] = useState<Phase>('HOLD_EMPTY');
     const [cycleCount, setCycleCount] = useState(0);
     const [isHighOctave, setIsHighOctave] = useState(false); // Default to Low Octave (Base Frequency)
+    const [timeLeft, setTimeLeft] = useState<number | null>(duration ? duration * 60 : null);
     
     const audioCtxRef = useRef<AudioContext | null>(null);
     const masterGainRef = useRef<GainNode | null>(null);
@@ -31,6 +33,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
     const lastBeatRef = useRef<number>(0); // Track last processed beat to prevent double counting
+    const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
     // Initialize Audio
     useEffect(() => {
@@ -55,27 +58,42 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         return () => {
             stopTone();
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
+            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             ctx.close();
         };
     }, []);
 
-    const playGong = (pitch: 'low' | 'high') => {
+    const playGong = (pitch: 'low' | 'high' | 'end') => {
         const ctx = audioCtxRef.current;
         if (!ctx || !masterGainRef.current) return;
         
         const osc = ctx.createOscillator();
         osc.type = 'sine';
-        osc.frequency.value = pitch === 'low' ? 440 : 880; 
+        
+        if (pitch === 'end') {
+            osc.frequency.value = 220; // Deep gong for end
+        } else {
+            osc.frequency.value = pitch === 'low' ? 440 : 880; 
+        }
         
         const gain = ctx.createGain();
         gain.gain.setValueAtTime(0, ctx.currentTime);
-        // INCREASED GONG VOLUME
-        gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01); 
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5); 
         
-        osc.connect(gain).connect(masterGainRef.current);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.6);
+        if (pitch === 'end') {
+            // Long decay for end gong
+            gain.gain.linearRampToValueAtTime(0.8, ctx.currentTime + 0.1); 
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 4.0); 
+            osc.connect(gain).connect(masterGainRef.current);
+            osc.start();
+            osc.stop(ctx.currentTime + 4.5);
+        } else {
+            // INCREASED GONG VOLUME
+            gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01); 
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5); 
+            osc.connect(gain).connect(masterGainRef.current);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.6);
+        }
     };
 
     const playClick = () => {
@@ -217,16 +235,38 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
             setCurrentBeat(0);
             setCycleCount(0); 
             requestRef.current = requestAnimationFrame(updateLoop);
+
+            // Start Timer if duration is set
+            if (duration) {
+                setTimeLeft(duration * 60);
+                if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+                
+                timerIntervalRef.current = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev === null || prev <= 0) {
+                            // Timer finished
+                            setIsPlaying(false);
+                            playGong('end');
+                            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+            }
+
         } else {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
+            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             stopTone();
             setPhase('HOLD_EMPTY');
             setCurrentBeat(0);
         }
         return () => {
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
+            if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
         };
-    }, [isPlaying]);
+    }, [isPlaying, duration]);
 
     // Restart tone if octave changes while playing in TONE phase
     useEffect(() => {
@@ -235,16 +275,30 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
         }
     }, [isHighOctave]);
 
+    // Format time helper
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+
     return (
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/95 text-white font-sans backdrop-blur-xl">
             
             {/* Header */}
-            <div className="absolute top-6 left-6 right-6 flex justify-between items-center">
+            <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-10">
                 <div className="flex items-center gap-3">
                     <Heart className="text-red-500 animate-pulse" />
-                    <h2 className="text-xl font-bold tracking-widest">METHODE 36 TRAINER</h2>
+                    <h2 className="text-xl font-bold tracking-widest hidden md:block">METHODE 36 TRAINER</h2>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-center">
+                    {/* Timer Display */}
+                    {timeLeft !== null && (
+                        <div className={`font-mono text-xl md:text-2xl font-bold ${timeLeft < 60 ? 'text-red-500 animate-pulse' : 'text-orange-400'}`}>
+                            {formatTime(timeLeft)}
+                        </div>
+                    )}
+
                     <Button 
                         variant="outline" 
                         onClick={onClose} 
@@ -283,8 +337,8 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                         <span className="text-2xl md:text-4xl tracking-tighter leading-tight">
                             {phase === 'IN' ? 'EIN' : phase === 'TONE' ? 'MANTRA YOHN TÖNEN' : 'HALTEN'}
                         </span>
-                        <span className="text-xs md:text-sm font-mono opacity-50 mt-2">
-                            {toneName} • {(isHighOctave ? frequency * 2 : frequency).toFixed(1)} Hz
+                        <span className="text-xs md:text-sm mt-2 opacity-70 uppercase tracking-widest">
+                            {phase === 'IN' ? 'Energie aufnehmen' : phase === 'TONE' ? 'Frequenz senden' : 'Stille'}
                         </span>
                     </div>
                 </motion.div>
@@ -294,11 +348,28 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                     {/* Render 6 segments for beats */}
                     {[...Array(6)].map((_, i) => {
                         const angle = (i * 60) * (Math.PI / 180);
-                        const r = 260; // Radius slightly outside
-                        const x = 250 + r * Math.cos(angle);
-                        const y = 250 + r * Math.sin(angle);
+                        const r = 260; // Radius slightly outside (adjust for mobile if needed, but keeping simple)
+                        // Mobile adjustment logic handled by CSS scaling if needed, but SVG is relative to container
+                        // Container is fixed size, so we might need responsive logic if we want perfect mobile fit
+                        // For now, let's keep r relative to 500px container.
+                        // Wait, r=260 is outside 500px (r=250). 
                         
-                        // Active state logic
+                        // Let's use percentages for responsiveness if we can, or just stick to fixed since container is fixed.
+                        // Actually container is responsive: w-[300px] md:w-[500px]
+                        // We need to calculate based on container size.
+                        // SVG viewBox approach is better.
+                        
+                        return null; // Rendered below with viewBox
+                    })}
+                </svg>
+                
+                {/* SVG Overlay for Indicators - using viewBox for responsiveness */}
+                <svg className="absolute inset-[-10%] w-[120%] h-[120%] -rotate-90 pointer-events-none overflow-visible" viewBox="0 0 600 600">
+                     {[...Array(6)].map((_, i) => {
+                        const angle = (i * 60) * (Math.PI / 180);
+                        const r = 280; // Relative to 600x600 viewBox (center 300,300)
+                        const x = 300 + r * Math.cos(angle);
+                        const y = 300 + r * Math.sin(angle);
                         const isActive = currentBeat === i + 1;
                         
                         return (
@@ -315,10 +386,10 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
             </div>
 
             {/* Controls */}
-            <div className="absolute bottom-12 flex flex-col items-center gap-6 w-full max-w-md px-6">
+            <div className="absolute bottom-12 flex flex-col items-center gap-6 w-full max-w-md px-6 z-20">
                 
                 {/* Octave Toggle */}
-                <div className="flex items-center gap-4 bg-zinc-900/50 p-2 rounded-full border border-white/10">
+                <div className="flex items-center gap-4 bg-zinc-900/50 p-2 rounded-full border border-white/10 backdrop-blur-md">
                     <span className="text-xs text-zinc-500 pl-3 font-mono uppercase">Oktave</span>
                     <div className="flex gap-1">
                         <Button 
@@ -351,7 +422,7 @@ export function Method36Trainer({ frequency, toneName, color, onClose }: Method3
                     }`}
                 >
                     {isPlaying ? <Square className="mr-3 h-6 w-6 fill-current" /> : <Play className="mr-3 h-6 w-6 fill-current" />}
-                    {isPlaying ? "STOP" : "START TRAINING"}
+                    {isPlaying ? "PAUSE" : "START"}
                 </Button>
                 
                 <div className="text-zinc-500 text-xs font-mono">
