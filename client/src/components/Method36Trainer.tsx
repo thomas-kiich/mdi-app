@@ -347,7 +347,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
 
             // Start Stream Sound if enabled
             if (isStreamSoundEnabled && waterSoundRef.current) {
-                waterSoundRef.current.setVolume(0.15);
+                waterSoundRef.current.setVolume(0.5); // Increased volume for better ambience
             }
 
             // Start Timer if duration is set

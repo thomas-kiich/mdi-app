@@ -112,6 +112,8 @@ export default function Home() {
   const [showIntervalTrainer, setShowIntervalTrainer] = useState(false);
   const [showFrequencyTable, setShowFrequencyTable] = useState(false);
   const [showDirectTrainer, setShowDirectTrainer] = useState(false);
+  const [showTrainingDurationSelect, setShowTrainingDurationSelect] = useState(false);
+  const [selectedTrainingDuration, setSelectedTrainingDuration] = useState<number>(7);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -751,7 +753,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       className="border-zinc-800 hover:bg-zinc-800"
-                      onClick={() => setShowDirectTrainer(true)}
+                      onClick={() => setShowTrainingDurationSelect(true)}
                     >
                       <Music2 className="mr-2 h-4 w-4" />
                       Training
@@ -844,8 +846,46 @@ export default function Home() {
                 frequency={finalResult.fundamentalFreq || mdiResult.frequency}
                 toneName={finalResult.tone.name}
                 color={mdiResult.hex}
+                duration={selectedTrainingDuration}
                 onClose={() => setShowDirectTrainer(false)}
              />
+          ) : showTrainingDurationSelect ? (
+             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                 <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full space-y-8">
+                     <div className="text-center">
+                         <h2 className="text-2xl font-bold text-white mb-2">Training Starten</h2>
+                         <p className="text-zinc-400">Wähle deine Trainingsdauer für heute.</p>
+                     </div>
+                     
+                     <div className="grid grid-cols-1 gap-4">
+                         {[7, 12, 21].map(min => (
+                             <Button
+                                key={min}
+                                variant="outline"
+                                className="h-16 text-lg border-zinc-700 hover:bg-zinc-800 hover:border-orange-500 hover:text-orange-500 transition-all justify-between px-6 group"
+                                onClick={() => {
+                                    setSelectedTrainingDuration(min);
+                                    setShowTrainingDurationSelect(false);
+                                    setShowDirectTrainer(true);
+                                }}
+                             >
+                                 <span className="font-bold">{min} Minuten</span>
+                                 <span className="text-xs text-zinc-500 group-hover:text-orange-400 uppercase tracking-widest">
+                                     {min === 7 ? "Zentrierung" : min === 12 ? "Entspannung" : "Transformation"}
+                                 </span>
+                             </Button>
+                         ))}
+                     </div>
+                     
+                     <Button 
+                        variant="ghost" 
+                        className="w-full text-zinc-500 hover:text-white"
+                        onClick={() => setShowTrainingDurationSelect(false)}
+                     >
+                         Abbrechen
+                     </Button>
+                 </div>
+             </div>
           ) : showFrequencyTable ? (
             <FrequencyTable onClose={() => setShowFrequencyTable(false)} />
           ) : (

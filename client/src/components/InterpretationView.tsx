@@ -102,6 +102,7 @@ export function InterpretationView({ mdiResult, onClose }: InterpretationViewPro
                 >
                     <span className="text-4xl font-bold text-white drop-shadow-md">{mdiResult.id}</span>
                     <span className="text-sm text-white/80 mt-1">{mdiResult.frequency} Hz</span>
+                    <span className="text-xs text-white/60 mt-1 font-mono">{mdiResult.toneRange}</span>
                 </div>
 
                 {/* Title & Color Name */}
