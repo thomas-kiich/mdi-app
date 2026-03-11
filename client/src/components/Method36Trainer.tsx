@@ -35,6 +35,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     const [showLog, setShowLog] = useState(false);
     const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
     const [isStreamSoundEnabled, setIsStreamSoundEnabled] = useState(true);
+    const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
     
     const audioCtxRef = useRef<AudioContext | null>(null);
     const masterGainRef = useRef<GainNode | null>(null);
@@ -106,41 +107,51 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         filter.connect(master);
         filterRef.current = filter;
 
-            // Initialize Water Sound (User provided WAV)
-            // We'll use an HTMLAudioElement for the user's WAV file to ensure easy looping and playback
-            const audio = new Audio('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/user_water_sound_eac86237.wav');
-            audio.loop = true;
+            // Initialize Water Sound based on duration
+            let soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/user_water_sound_eac86237.wav'; // Default fallback
+            
+            // Select specific file based on duration (7, 12, or 21)
+            if (duration === 7) {
+                soundUrl = '/training_07min.wav';
+            } else if (duration === 12) {
+                soundUrl = '/training_12min.wav';
+            } else if (duration === 21) {
+                soundUrl = '/training_21min.wav';
+            }
+
+            const audio = new Audio(soundUrl);
+            audio.loop = true; // Loop just in case, though files should be length-matched
             audio.crossOrigin = "anonymous";
-            
-            // Connect to Web Audio API for volume control if needed, or just control element volume
-            // For simplicity and reliability with large WAVs, we'll control the element directly
-            // but we can also pipe it through the context if we want to apply filters later.
-            // For now, direct element control is safer for "just playing" a background track.
-            
-            // Store in a ref compatible way (we'll cast it or change the ref type if needed, 
-            // but let's just create a wrapper that matches the WaterSound interface to minimize code changes)
             
             const waterSoundWrapper = {
                 start: () => {
                     audio.play().catch(e => console.error("Water sound play failed", e));
                 },
                 stop: () => {
-                    audio.pause();
-                    audio.currentTime = 0;
+                    // Fade out logic for stop
+                    const fadeOut = setInterval(() => {
+                        if (audio.volume > 0.05) {
+                            audio.volume -= 0.05;
+                        } else {
+                            audio.pause();
+                            audio.currentTime = 0;
+                            clearInterval(fadeOut);
+                        }
+                    }, 100);
                 },
                 setVolume: (vol: number) => {
+                    // Only set volume if not fading out/in (simplified)
                     audio.volume = vol;
                     if (vol > 0 && audio.paused) audio.play().catch(e => console.error("Water sound play failed", e));
                     if (vol === 0 && !audio.paused) audio.pause();
                 }
             };
 
-            // We are replacing the procedural WaterSound with this wrapper
-            // @ts-ignore - We are swapping the implementation
+            // @ts-ignore
             waterSoundRef.current = waterSoundWrapper;
             
-            // Set initial volume based on state
-            waterSoundWrapper.setVolume(isStreamSoundEnabled && isPlaying ? 0.5 : 0); // Higher volume for WAV
+            // Set initial volume
+            waterSoundWrapper.setVolume(isStreamSoundEnabled && isPlaying ? 0.5 : 0);
 
         return () => {
             stopTone();
@@ -350,14 +361,22 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             // Timer finished
                             setIsPlaying(false);
                             playGong('end');
-                            saveSessionLog(); // Save session
+                            saveSessionLog(); 
                             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
                             
-                            // Play Outro Voice after Gong (approx 4.5s)
+                            // Show Congratulation Screen
+                            setShowCongrats(true);
+
+                            // Fade out water sound
+                            if (waterSoundRef.current) {
+                                waterSoundRef.current.stop(); // Uses our new fade-out logic
+                            }
+                            
+                            // Play Outro Voice
                             setTimeout(() => {
                                 const audio = new Audio('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/outro_congrats_535f6028.wav');
                                 audio.play().catch(e => console.error("Audio play failed", e));
-                            }, 5000); // Wait for gong to fade out
+                            }, 2000); 
 
                             return 0;
                         }
@@ -408,6 +427,40 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     return (
         <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/95 text-white font-sans backdrop-blur-xl">
             
+            {/* Congratulation Overlay */}
+            {showCongrats && (
+                <div className="absolute inset-0 z-[70] flex flex-col items-center justify-center bg-black/90 animate-in fade-in duration-1000">
+                    <div className="text-center space-y-8 p-8 max-w-2xl">
+                        <motion.div 
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            transition={{ duration: 1, delay: 0.2 }}
+                            className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center shadow-[0_0_50px_rgba(255,100,0,0.3)]"
+                        >
+                            <Heart className="w-16 h-16 text-white fill-white animate-pulse" />
+                        </motion.div>
+                        
+                        <div className="space-y-4">
+                            <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+                                Herzlichen Glückwunsch!
+                            </h2>
+                            <p className="text-xl text-zinc-300 leading-relaxed">
+                                Du hast dich erfolgreich auf deine wahre Frequenz eingeschwungen.
+                                Nimm diese Harmonie mit in deinen Tag.
+                            </p>
+                        </div>
+
+                        <Button 
+                            size="lg" 
+                            className="bg-white text-black hover:bg-zinc-200 rounded-full px-8 py-6 text-lg mt-8"
+                            onClick={onClose}
+                        >
+                            Training beenden
+                        </Button>
+                    </div>
+                </div>
+            )}
+
             {/* Header */}
             <div className="absolute top-6 left-6 right-6 flex justify-between items-center z-10">
                 <div className="flex items-center gap-3">
