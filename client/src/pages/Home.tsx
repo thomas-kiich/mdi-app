@@ -356,10 +356,14 @@ export default function Home() {
       case "intro":
         return (
           <div className="flex flex-col items-center justify-center min-h-[70vh] animate-in fade-in duration-700">
-            <div className="relative mb-12 group">
+            <div className="relative mb-12 group flex flex-col items-center">
               <div className="absolute inset-0 bg-orange-500/20 blur-3xl rounded-full animate-pulse-slow group-hover:bg-orange-500/30 transition-all duration-500" />
-              <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-full flex items-center justify-center shadow-2xl relative z-10 group-hover:scale-105 transition-transform duration-500">
-                <Mic className="w-12 h-12 md:w-16 md:h-16 text-white" />
+              <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-full flex items-center justify-center shadow-2xl relative z-10 group-hover:scale-105 transition-transform duration-500 mb-6 overflow-hidden">
+                <img 
+                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
+                    alt="METHODE 36 Logo" 
+                    className="w-full h-full object-cover p-2"
+                />
               </div>
               
               {/* Orbiting Elements */}
@@ -368,12 +372,15 @@ export default function Home() {
               </div>
             </div>
 
-            <h1 className="text-4xl md:text-6xl font-bold text-center text-white mb-6 tracking-tight">
-              Entdecke deine <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">
-                Wahre Frequenz
-              </span>
-            </h1>
+            <div className="mb-6 flex flex-col items-center">
+                <span className="text-orange-500 font-mono tracking-[0.5em] text-sm md:text-base uppercase mb-2">METHODE 36</span>
+                <h1 className="text-4xl md:text-6xl font-bold text-center text-white tracking-tight">
+                  Entdecke deine <br/>
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">
+                    Wahre Frequenz
+                  </span>
+                </h1>
+            </div>
             
             <p className="text-lg md:text-xl text-zinc-400 text-center max-w-xl mb-12 leading-relaxed">
               Deine Stimme ist der Schlüssel zu deiner Identität. 
