@@ -1,0 +1,77 @@
+# METHODE 36 - Audio Guide & Funktionen
+
+Dies ist ein Quelldokument für NotebookLM, um kurze, prägnante Audio-Erklärungen oder Podcasts über die App "METHODE 36" zu generieren.
+
+---
+
+## 1. Stimm-Analyse
+**Was ist das?**
+Eine 10-sekündige Aufnahme deiner natürlichen Sprechstimme. Die App analysiert das Frequenzspektrum in Echtzeit.
+
+**Warum machen wir das?**
+Jeder Mensch hat einen einzigartigen "Grundton" – eine energetische Signatur, die so individuell ist wie ein Fingerabdruck. Dieser Ton verrät viel über deine aktuelle Stimmung, deine Talente und deine körperliche Verfassung.
+
+**Was bringt es dir?**
+Du erfährst deinen exakten Hz-Wert (z.B. 136.1 Hz / Cis) und die dazugehörige Farbe. Das ist der Ausgangspunkt für alles Weitere: Wer seinen Grundton kennt, kann sich selbst besser "stimmen".
+
+---
+
+## 2. Frequenz-Training
+**Was ist das?**
+Geführte Tönungs-Sessions, bei denen du deinen eigenen Grundton mitsummst oder -tönst. Du kannst zwischen 7, 12 oder 21 Minuten wählen.
+
+**Warum machen wir das?**
+Durch das Tönen (Summen) versetzt du deinen Körper in Schwingung. Wenn du genau deinen Grundton triffst, entsteht Resonanz. Das ist wie bei einem Instrument, das gestimmt wird.
+
+**Was bringt es dir?**
+*   **7 Minuten:** Schnelle Zentrierung für zwischendurch.
+*   **12 Minuten:** Tiefere Entspannung und Stressabbau.
+*   **21 Minuten:** Intensive Neuprogrammierung des Zellgedächtnisses und emotionale Balance.
+
+---
+
+## 3. Live-Scanner
+**Was ist das?**
+Ein visuelles Tool, das deine Stimme während des Sprechens als farbige Wellenform darstellt. Du siehst sofort, welche Frequenzen in deiner Stimme stark oder schwach sind.
+
+**Warum machen wir das?**
+Oft merken wir gar nicht, wie wir klingen. Sind wir gepresst? Hektisch? Oder ruhig und voll? Der Scanner macht das hörbare Signal sichtbar.
+
+**Was bringt es dir?**
+Direktes Bio-Feedback. Du lernst, deine Stimme bewusster einzusetzen und kannst spielerisch ausprobieren, wie sich verschiedene Emotionen auf dein Frequenzbild auswirken.
+
+---
+
+## 4. Wissenspool
+**Was ist das?**
+Eine kuratierte Sammlung von Videos und Artikeln rund um die "METHODE 36", Frequenzlehre und die Kraft der Stimme.
+
+**Warum machen wir das?**
+Verständnis verstärkt die Wirkung. Wenn du weißt, *warum* Tönen funktioniert (Vagusnerv-Stimulation, Stickstoffmonoxid-Produktion), übst du motivierter.
+
+**Was bringt es dir?**
+Hintergrundwissen von Experten. Du tauchst tiefer in die Materie ein und verstehst die Zusammenhänge zwischen Stimme, Körper und Bewusstsein.
+
+---
+
+## 5. Frequenz-Tabelle
+**Was ist das?**
+Ein interaktives Nachschlagewerk aller 24 Frequenz-Typen. Jeder Ton (z.B. G, Gis, A) hat eine spezifische Bedeutung, Farbe und Qualität.
+
+**Warum machen wir das?**
+Die Welt besteht aus Schwingung. Diese Tabelle ordnet die Frequenzen den archetypischen Qualitäten zu (z.B. Rot für Erdung, Blau für Kommunikation).
+
+**Was bringt es dir?**
+Du kannst nachschauen, was dein Ton bedeutet. "Ich bin ein Cis-Typ" – was heißt das für meine Talente? Welche Farbe stärkt mich? Hier findest du die Antworten.
+
+---
+
+## 6. 5-Tage-Studie
+**Was ist das?**
+Ein wissenschaftlich angelegtes Programm, bei dem du deine Stimme 5 Tage lang immer zur gleichen Zeit misst.
+
+**Warum machen wir das?**
+Eine einzelne Messung ist eine Momentaufnahme. Um deinen *wahren* Grundton sicher zu bestimmen, braucht es Wiederholung. Schwankungen sind normal, aber der Kern bleibt gleich.
+
+**Was bringt es dir?**
+Gewissheit. Nach 5 Tagen erhältst du ein valides Profil und kannst sicher sein, dass du mit der richtigen Frequenz trainierst. Zudem erkennst du Muster: "Bin ich morgens tiefer als abends?"
