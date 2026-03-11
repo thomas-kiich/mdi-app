@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle, Clock, Waves, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { WaterSound } from "@/lib/WaterSound";
+// import { WaterSound } from "@/lib/WaterSound"; // Deprecated in favor of user WAV
 
 interface Method36TrainerProps {
     frequency: number;
@@ -41,7 +41,13 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     const toneOscillatorsRef = useRef<OscillatorNode[]>([]);
     const toneGainRef = useRef<GainNode | null>(null);
     const filterRef = useRef<BiquadFilterNode | null>(null);
-    const waterSoundRef = useRef<WaterSound | null>(null);
+    // Define a simple interface for our water sound wrapper
+    interface WaterSoundWrapper {
+        start: () => void;
+        stop: () => void;
+        setVolume: (vol: number) => void;
+    }
+    const waterSoundRef = useRef<WaterSoundWrapper | null>(null);
     
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
@@ -100,14 +106,41 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         filter.connect(master);
         filterRef.current = filter;
 
-        // Initialize Water Sound
-        const waterSound = new WaterSound(ctx, master);
-        waterSoundRef.current = waterSound;
-        
-        // Start water sound if enabled (initially silent via class logic, but we trigger start)
-        waterSound.start();
-        // Set initial volume based on state
-        waterSound.setVolume(isStreamSoundEnabled && isPlaying ? 0.15 : 0);
+            // Initialize Water Sound (User provided WAV)
+            // We'll use an HTMLAudioElement for the user's WAV file to ensure easy looping and playback
+            const audio = new Audio('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/user_water_sound_eac86237.wav');
+            audio.loop = true;
+            audio.crossOrigin = "anonymous";
+            
+            // Connect to Web Audio API for volume control if needed, or just control element volume
+            // For simplicity and reliability with large WAVs, we'll control the element directly
+            // but we can also pipe it through the context if we want to apply filters later.
+            // For now, direct element control is safer for "just playing" a background track.
+            
+            // Store in a ref compatible way (we'll cast it or change the ref type if needed, 
+            // but let's just create a wrapper that matches the WaterSound interface to minimize code changes)
+            
+            const waterSoundWrapper = {
+                start: () => {
+                    audio.play().catch(e => console.error("Water sound play failed", e));
+                },
+                stop: () => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                },
+                setVolume: (vol: number) => {
+                    audio.volume = vol;
+                    if (vol > 0 && audio.paused) audio.play().catch(e => console.error("Water sound play failed", e));
+                    if (vol === 0 && !audio.paused) audio.pause();
+                }
+            };
+
+            // We are replacing the procedural WaterSound with this wrapper
+            // @ts-ignore - We are swapping the implementation
+            waterSoundRef.current = waterSoundWrapper;
+            
+            // Set initial volume based on state
+            waterSoundWrapper.setVolume(isStreamSoundEnabled && isPlaying ? 0.5 : 0); // Higher volume for WAV
 
         return () => {
             stopTone();
@@ -542,7 +575,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                 
                 {/* Octave Toggle */}
                 <div className="flex items-center gap-4 bg-zinc-900/50 p-2 rounded-full border border-white/10 backdrop-blur-md">
-                    <span className="text-xs text-zinc-500 pl-3 font-mono uppercase">Oktave</span>
+                    <span className="text-xs text-zinc-500 pl-3 font-mono uppercase">Stimme</span>
                     <div className="flex gap-1">
                         <Button 
                             size="sm" 
@@ -550,7 +583,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             onClick={() => setIsHighOctave(false)}
                             className={!isHighOctave ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
                         >
-                            <ArrowDownCircle className="mr-2 h-4 w-4" /> Tief
+                            <ArrowDownCircle className="mr-2 h-4 w-4" /> Männlich
                         </Button>
                         <Button 
                             size="sm" 
@@ -558,7 +591,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             onClick={() => setIsHighOctave(true)}
                             className={isHighOctave ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
                         >
-                            <ArrowUpCircle className="mr-2 h-4 w-4" /> Hoch
+                            <ArrowUpCircle className="mr-2 h-4 w-4" /> Weiblich
                         </Button>
                     </div>
                 </div>
