@@ -442,11 +442,10 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                         
                         <div className="space-y-4">
                             <h2 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
-                                Herzlichen Glückwunsch!
+                                Gratuliere!
                             </h2>
                             <p className="text-xl text-zinc-300 leading-relaxed">
-                                Du hast dich erfolgreich auf deine wahre Frequenz eingeschwungen.
-                                Nimm diese Harmonie mit in deinen Tag.
+                                Super trainiert – bis bald.
                             </p>
                         </div>
 
