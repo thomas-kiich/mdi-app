@@ -112,11 +112,11 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             
             // Select specific file based on duration (7, 12, or 21)
             if (duration === 7) {
-                soundUrl = '/training_07min.wav';
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/training_07min_2729a1ac.wav';
             } else if (duration === 12) {
-                soundUrl = '/training_12min.wav';
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/training_12min_5fc2d93b.wav';
             } else if (duration === 21) {
-                soundUrl = '/training_21min.wav';
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/training_21min_37862f3d.wav';
             }
 
             const audio = new Audio(soundUrl);

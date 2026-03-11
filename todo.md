@@ -186,3 +186,5 @@
 - [ ] **Restore Voice Visualization in Analysis:** Ensure live frequency visualization during recording.
 - [ ] **Research: Voice Vibration & Cellular Health:** Gather scientific data on the effects of sound on cells.
 - [ ] **Draft Content: 'Maschinen atmen nicht':** Write chapters on Voice vs. AI and cellular resonance.
+
+- [x] Move uploaded audio files (training_07min.wav, training_12min.wav, training_21min.wav) to `client/public` so they are accessible by the browser.
