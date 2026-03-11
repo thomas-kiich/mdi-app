@@ -411,6 +411,58 @@ export default function Home() {
                     </Button>
                 </div>
             </div>
+
+            {/* Features Overview */}
+            <div className="w-full max-w-4xl mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-12 duration-1000 delay-300">
+                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center mb-4">
+                        <Mic className="w-5 h-5 text-orange-500" />
+                    </div>
+                    <h3 className="text-white font-medium mb-2">Stimm-Analyse</h3>
+                    <p className="text-sm text-zinc-500">Ermittle deinen persönlichen Grundton und deine energetische Signatur durch präzise Frequenzmessung.</p>
+                </div>
+
+                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
+                        <Music2 className="w-5 h-5 text-blue-500" />
+                    </div>
+                    <h3 className="text-white font-medium mb-2">Frequenz-Training</h3>
+                    <p className="text-sm text-zinc-500">Harmonisiere dein System mit geführten Tönungs-Sessions (7, 12 oder 21 Minuten) in deiner Frequenz.</p>
+                </div>
+
+                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-4">
+                        <Activity className="w-5 h-5 text-green-500" />
+                    </div>
+                    <h3 className="text-white font-medium mb-2">Live-Scanner</h3>
+                    <p className="text-sm text-zinc-500">Visualisiere deine Stimme und das gesamte Frequenzspektrum in Echtzeit mit detailliertem Feedback.</p>
+                </div>
+
+                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
+                        <span className="text-lg">📚</span>
+                    </div>
+                    <h3 className="text-white font-medium mb-2">Wissenspool</h3>
+                    <p className="text-sm text-zinc-500">Vertiefe dein Verständnis mit kuratierten Videos zur Methode 36 und ihren Hintergründen.</p>
+                </div>
+
+                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center mb-4">
+                        <span className="text-lg">📊</span>
+                    </div>
+                    <h3 className="text-white font-medium mb-2">Frequenz-Tabelle</h3>
+                    <p className="text-sm text-zinc-500">Umfassendes Nachschlagewerk für alle 24 Typen, inklusive Farben, Hz-Werten und Talenten.</p>
+                </div>
+
+                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
+                        <HeartPulse className="w-5 h-5 text-red-500" />
+                    </div>
+                    <h3 className="text-white font-medium mb-2">5-Tage-Studie</h3>
+                    <p className="text-sm text-zinc-500">Validiere dein Profil durch wiederholte Messungen über mehrere Tage für maximale Genauigkeit.</p>
+                </div>
+            </div>
+
           </div>
         );
 
