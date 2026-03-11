@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { SpectrumVisualizer } from "@/components/SpectrumVisualizer";
 import { FrequencyChart } from "@/components/FrequencyChart";
 import { SpectralMatrix } from '@/components/SpectralMatrix'; // Import new component
+import { FrequencyTable } from '@/components/FrequencyTable'; // Import new component
 import { SoundBody } from '@/components/SoundBody'; // Import new component
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
@@ -108,6 +109,7 @@ export default function Home() {
   const [showSpectralScanner, setShowSpectralScanner] = useState(false);
   const [showVitalDashboard, setShowVitalDashboard] = useState(false);
   const [showIntervalTrainer, setShowIntervalTrainer] = useState(false);
+  const [showFrequencyTable, setShowFrequencyTable] = useState(false);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -733,6 +735,14 @@ export default function Home() {
               <span className="mr-2">📚</span> Wissenspool
             </Button>
           </Link>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-zinc-500 hover:text-white ml-2"
+            onClick={() => setShowFrequencyTable(true)}
+          >
+            <span className="mr-2">📊</span> Tabelle
+          </Button>
           <div className="text-xs font-mono text-zinc-600">
             BETA 1.1
           </div>
@@ -753,6 +763,8 @@ export default function Home() {
               baseTone={finalResult.tone} 
               onClose={() => setShowIntervalTrainer(false)} 
             />
+          ) : showFrequencyTable ? (
+            <FrequencyTable onClose={() => setShowFrequencyTable(false)} />
           ) : (
             renderContent()
           )}
