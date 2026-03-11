@@ -800,6 +800,19 @@ export default function Home() {
             renderContent()
           )}
         </main>
+        
+        {/* Footer */}
+        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && (
+            <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
+                <div>
+                    &copy; {new Date().getFullYear()} MDI System.
+                </div>
+                <div className="flex gap-6">
+                    <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
+                    <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
+                </div>
+            </footer>
+        )}
       </div>
     </div>
   );
