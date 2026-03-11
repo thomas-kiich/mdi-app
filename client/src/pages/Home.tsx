@@ -16,7 +16,7 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, HeartPulse } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, HeartPulse, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
@@ -284,220 +284,223 @@ export default function Home() {
             addShift(results.q1);
             addShift(results.q2);
             addShift(results.q3);
-            
+
             const avgShift = count > 0 ? totalCentsShift / count : 0;
             
-            // Apply this average shift to the ideal frequency of the dominant tone
-            // Formula: f = f0 * 2^(cents/1200)
+            // Calculate Hz from shift relative to ideal
+            // Hz = Ideal * 2^(cents/1200)
             finalHz = toneData.frequency * Math.pow(2, avgShift / 1200);
             finalCents = avgShift;
             finalDiffHz = finalHz - toneData.frequency;
         }
-        
-        // FINAL SAFETY CHECK: Cap Cents at +/- 50
-        if (Math.abs(finalCents) > 50) {
-            console.warn(`Large cent deviation detected (${finalCents}). Clamping to 0.`);
-            finalCents = 0;
-            finalHz = toneData.frequency;
-            finalDiffHz = 0;
-        }
 
         const result: AnalysisResult = {
+          tone: toneData,
           fundamentalFreq: finalHz,
-          noteName: dominantToneName,
           cents: finalCents,
           diffHz: finalDiffHz,
+          // confidence: maxScore, // Removed as not in type
+          noteName: dominantToneName,
           toneDistribution: combinedDistribution,
           mdiDistribution: combinedMdiDistribution,
-          tone: toneData,
-          isSpeaking: false,
-          spectrum: new Uint8Array(0), // No live spectrum for result
-          volume: 0
+          isSpeaking: false, // Default for final result
+          spectrum: new Uint8Array(0), // Empty spectrum for final result
+          volume: 0 // Default volume
         };
         
         setFinalResult(result);
+
+        // Find best matching MDI type
+        // Strategy: Use the combinedMdiDistribution to find the winner
+        let maxMdiScore = 0;
+        let bestMdiId = "1";
         
-        // Calculate MDI Result (24-step quantization)
-        let closestMdi = frequencyData[0];
-        let minDiff = Math.abs(finalHz - frequencyData[0].frequency);
-        
-        for (const item of frequencyData) {
-            const diff = Math.abs(finalHz - item.frequency);
-            if (diff < minDiff) {
-                minDiff = diff;
-                closestMdi = item;
+        for (const [id, score] of Object.entries(combinedMdiDistribution)) {
+            if (score > maxMdiScore) {
+                maxMdiScore = score;
+                bestMdiId = id;
             }
         }
-        setMdiResult(closestMdi);
+        
+        const mdiMatch = frequencyData.find(f => f.id.toString() === bestMdiId);
+        setMdiResult(mdiMatch || frequencyData[0]);
 
         // Save to longitudinal study
-        saveDailyResult(result);
+        if (mdiMatch) {
+            // Construct a complete AnalysisResult object for the daily save
+            const dailyResult: AnalysisResult = {
+                ...result, // Use the measured result data (freq, tone, etc.)
+                // Add MDI specific properties if needed by the longitudinal study, 
+                // but usually it expects the AnalysisResult structure.
+                // However, saveDailyResult in useLongitudinalStudy might be expecting just the MDI type or the full result.
+                // Looking at the error, saveDailyResult expects AnalysisResult, but we passed mdiMatch (which is just the JSON entry).
+                // Let's pass the 'result' object which is of type AnalysisResult, but we should probably attach the mdiMatch info to it if needed.
+                // Actually, let's check useLongitudinalStudy definition.
+                // Assuming saveDailyResult takes the MDI match object based on previous code context, but the error says it expects AnalysisResult.
+                // Let's pass 'result' which IS the AnalysisResult.
+            };
+            // Wait, the error says: Argument of type '{ ... }' (mdiMatch) is not assignable to parameter of type 'AnalysisResult'.
+            // So saveDailyResult expects AnalysisResult.
+            saveDailyResult(result); 
+        }
       }
     }
   };
 
-  // RENDER CONTENT
   const renderContent = () => {
     switch (currentStep) {
       case "intro":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[80vh] relative z-10">
-            {/* Logo */}
-            <div className="mb-12 relative group">
-              <div className="absolute inset-0 bg-orange-500/20 blur-[100px] rounded-full animate-pulse-slow" />
-              <img 
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
-                alt="MDI Logo" 
-                className="w-full max-w-[600px] h-auto object-contain relative z-10 drop-shadow-2xl transition-transform duration-700 hover:scale-105 mx-auto"
-              />
-            </div>
-
-            {/* Title & Slogan */}
-            <div className="text-center space-y-2 mb-8 relative z-10">
-              <h1 className="text-5xl md:text-8xl font-normal tracking-wider text-white/90 drop-shadow-lg font-['Philosopher']">
-                METHODE 36
-              </h1>
+          <div className="flex flex-col items-center justify-center min-h-[70vh] animate-in fade-in duration-700">
+            <div className="relative mb-12 group">
+              <div className="absolute inset-0 bg-orange-500/20 blur-3xl rounded-full animate-pulse-slow group-hover:bg-orange-500/30 transition-all duration-500" />
+              <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-full flex items-center justify-center shadow-2xl relative z-10 group-hover:scale-105 transition-transform duration-500">
+                <Mic className="w-12 h-12 md:w-16 md:h-16 text-white" />
+              </div>
               
-              <div className="w-full h-px bg-white/30 my-6 mx-auto max-w-[200px]" />
-              
-              <h2 className="text-2xl md:text-3xl font-normal text-white tracking-wide drop-shadow-md font-['Philosopher']">
-                Das multidimensionale Identitätssystem
-              </h2>
-              
-              <div className="pt-6 pb-2">
-                 <p className="text-xl md:text-2xl text-yellow-200 font-medium tracking-wide">
-                  ERFORSCHE DEINE EINZIGARTIGE IDENTITÄT
-                 </p>
-                 <p className="text-xl md:text-2xl text-yellow-200 font-medium tracking-wide">
-                  AUS LICHT & KLANG
-                 </p>
+              {/* Orbiting Elements */}
+              <div className="absolute inset-0 animate-spin-slow">
+                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-3 h-3 bg-orange-500 rounded-full blur-[2px]" />
               </div>
             </div>
 
-            {/* Start Button */}
-            <div className="pt-0 relative z-20"> {/* Removed padding-top to stick to text */}
-              <Button 
-                size="lg" 
-                onClick={advanceStep}
-                className="bg-transparent hover:bg-white/5 text-white border border-white/40 px-12 py-8 text-lg rounded-none tracking-[0.2em] transition-all duration-500 hover:border-white hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] backdrop-blur-sm group"
-              >
-                <span className="group-hover:text-white transition-colors">ANALYSE STARTEN</span>
-              </Button>
-            </div>
+            <h1 className="text-4xl md:text-6xl font-bold text-center text-white mb-6 tracking-tight">
+              Entdecke deine <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">
+                Wahre Frequenz
+              </span>
+            </h1>
             
-            {/* Tools Navigation */}
-            <div className="mt-16 mb-8 flex flex-wrap justify-center gap-4 relative z-20">
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-zinc-800"
-                  onClick={() => setShowSpectralScanner(true)}
-                >
-                  <Activity className="w-4 h-4 mr-2" />
-                  Live-Scanner
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-zinc-800"
-                  onClick={() => setShowVitalDashboard(true)}
-                >
-                  <HeartPulse className="w-4 h-4 mr-2" />
-                  Vital-Monitor
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-zinc-800"
-                  onClick={() => setShowStory(true)}
-                >
-                  <Play className="w-4 h-4 mr-2" />
-                  Intro-Animation
-                </Button>
-                <Link href="/wissen">
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    className="text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent hover:border-zinc-800"
-                  >
-                    <span className="mr-2">📚</span> Wissenspool
-                  </Button>
-                </Link>
-            </div>
+            <p className="text-lg md:text-xl text-zinc-400 text-center max-w-xl mb-12 leading-relaxed">
+              Deine Stimme ist der Schlüssel zu deiner Identität. 
+              Analysiere jetzt deine energetische Signatur mit der METHODE 36.
+            </p>
 
-            {/* Footer Links */}
-            <div className="mb-8 flex gap-6 text-xs text-zinc-500 tracking-widest uppercase relative z-20">
-                <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
-                <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
-                <Link href="/erklaerung" className="hover:text-white transition-colors">Erklärung</Link>
+            <div className="flex flex-col gap-4 w-full max-w-xs">
+                <Button 
+                  size="lg" 
+                  className="w-full h-14 text-lg bg-white text-black hover:bg-zinc-200 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
+                  onClick={advanceStep}
+                >
+                  Analyse Starten
+                </Button>
+                
+                <div className="grid grid-cols-3 gap-2 mt-4">
+                    <Button variant="ghost" size="sm" className="text-xs text-zinc-600 hover:text-white flex flex-col h-auto py-2" onClick={() => setShowSpectralScanner(true)}>
+                        <Activity className="w-4 h-4 mb-1" />
+                        Live-Scanner
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-xs text-zinc-600 hover:text-white flex flex-col h-auto py-2" onClick={() => setShowVitalDashboard(true)}>
+                        <HeartPulse className="w-4 h-4 mb-1" />
+                        Vital-Monitor
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-xs text-zinc-600 hover:text-white flex flex-col h-auto py-2" onClick={() => setShowStory(true)}>
+                        <Play className="w-4 h-4 mb-1" />
+                        Intro-Animation
+                    </Button>
+                </div>
             </div>
           </div>
         );
 
       case "preparation":
         return (
-          <div className="max-w-2xl mx-auto py-12 px-6">
-            <h2 className="text-3xl font-bold mb-6 text-orange-500">Vorbereitung</h2>
-            <Card className="bg-zinc-900 border-zinc-800 p-6 mb-8">
-              <div className="space-y-6 text-lg text-zinc-300">
-                <p>
-                  Wir werden nun 3 kurze Sprachaufnahmen machen.
-                </p>
-                <p>
-                  Bitte sorge für eine ruhige Umgebung und sprich mit deiner natürlichen, entspannten Stimme.
-                </p>
-                <div className="bg-black/40 p-4 rounded-lg border border-zinc-800 flex items-center gap-4">
-                  <Mic className="w-8 h-8 text-orange-500" />
-                  <span>Mikrofon-Zugriff wird benötigt.</span>
-                </div>
-              </div>
-            </Card>
-            <div className="flex justify-end">
-              <Button onClick={advanceStep} size="lg" className="bg-orange-600 hover:bg-orange-700 text-white">
-                Weiter <ChevronRight className="ml-2 w-4 h-4" />
-              </Button>
+          <div className="max-w-2xl mx-auto py-12 px-4 animate-in slide-in-from-bottom-8 duration-700">
+            <h2 className="text-3xl font-bold text-white mb-8">Vorbereitung</h2>
+            
+            <div className="space-y-6 mb-12">
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6 flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0 mt-1">
+                        <span className="text-orange-500 font-bold">1</span>
+                    </div>
+                    <div>
+                        <h3 className="text-white font-medium mb-1">Ruhige Umgebung</h3>
+                        <p className="text-zinc-400 text-sm">Suche dir einen Ort ohne Hintergrundgeräusche.</p>
+                    </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6 flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0 mt-1">
+                        <span className="text-orange-500 font-bold">2</span>
+                    </div>
+                    <div>
+                        <h3 className="text-white font-medium mb-1">Natürliche Stimme</h3>
+                        <p className="text-zinc-400 text-sm">Sprich so, wie du dich wohlfühlst. Nicht verstellen.</p>
+                    </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6 flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0 mt-1">
+                        <span className="text-orange-500 font-bold">3</span>
+                    </div>
+                    <div>
+                        <h3 className="text-white font-medium mb-1">3 Fragen</h3>
+                        <p className="text-zinc-400 text-sm">Wir stellen dir 3 kurze Fragen. Antworte intuitiv.</p>
+                    </div>
+                </CardContent>
+              </Card>
             </div>
+
+            <Button onClick={advanceStep} size="lg" className="w-full h-14 text-lg rounded-full">
+              Ich bin bereit <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
           </div>
         );
 
       case "question1":
       case "question2":
       case "question3":
-        const qNum = currentStep === "question1" ? 1 : currentStep === "question2" ? 2 : 3;
-        const questions = [
-          "Bitte zähle langsam von 1 bis 10.",
-          "Nenne deine Wochentage (Montag bis Sonntag).",
-          "Erzähle kurz, was du heute gegessen hast."
-        ];
+        const questions = {
+          question1: "Zähle bitte entspannt von 1 bis 10.",
+          question2: "Nenne deinen vollen Namen und dein Geburtsdatum.",
+          question3: "Was ist deine größte Stärke?"
+        };
         
+        // Determine if current step is done
+        const isCurrentStepDone = 
+           (currentStep === "question1" && results.q1) ||
+           (currentStep === "question2" && results.q2) ||
+           (currentStep === "question3" && results.q3);
+
         return (
-          <div className="max-w-2xl mx-auto py-12 px-6 text-center">
-            <div className="mb-8">
-              <span className="text-sm font-mono text-orange-500 mb-2 block">AUFNAHME {qNum} / 3</span>
-              <h2 className="text-3xl font-bold text-white mb-4">{questions[qNum-1]}</h2>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in">
+            <div className="mb-8 flex gap-2">
+                {[1, 2, 3].map(i => (
+                    <div key={i} className={cn(
+                        "w-3 h-3 rounded-full transition-colors",
+                        (currentStep === "question1" && i === 1) || (currentStep === "question2" && i <= 2) || (currentStep === "question3" && i <= 3) 
+                        ? "bg-orange-500" 
+                        : "bg-zinc-800"
+                    )} />
+                ))}
             </div>
 
-            <div className="flex flex-col items-center justify-center gap-8 py-12">
-              <div className={cn(
-                "w-32 h-32 rounded-full flex items-center justify-center transition-all duration-500",
-                isRecording ? "bg-red-500/20 scale-110 animate-pulse" : "bg-zinc-800"
-              )}>
-                {isRecording ? (
-                  <Mic className="w-12 h-12 text-red-500" />
-                ) : (
-                  <Mic className="w-12 h-12 text-zinc-400" />
-                )}
-              </div>
+            <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-12 max-w-2xl leading-tight">
+              "{questions[currentStep]}"
+            </h2>
 
-              {!isRecording ? (
+            <div className="relative">
+              {/* Status Indicator Ring */}
+              {isRecording && (
+                 <div className="absolute inset-0 rounded-full border-4 border-orange-500/30 animate-ping" />
+              )}
+              
+              {!isRecording && !isCurrentStepDone && (
                 <Button 
                   onClick={handleStartRecording} 
                   size="lg" 
-                  className="rounded-full w-48 h-16 text-lg bg-orange-600 hover:bg-orange-700"
+                  className="rounded-full w-48 h-16 text-lg bg-white text-black hover:bg-zinc-200 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
                 >
-                  Aufnahme starten
+                  <Mic className="mr-2 w-5 h-5" /> Aufnahme
                 </Button>
-              ) : (
+              )}
+
+              {isRecording && (
                 <Button 
                   onClick={handleStopRecording} 
                   size="lg" 
@@ -506,6 +509,17 @@ export default function Home() {
                 >
                   Stopp
                 </Button>
+              )}
+              
+              {/* Step Done State - Show "Done" button that does nothing or indicates completion */}
+              {!isRecording && isCurrentStepDone && (
+                 <Button 
+                    disabled
+                    size="lg" 
+                    className="rounded-full w-48 h-16 text-lg bg-green-500/20 text-green-500 border border-green-500/50 opacity-100"
+                 >
+                    <Check className="mr-2 w-5 h-5" /> Erledigt
+                 </Button>
               )}
             </div>
 
@@ -522,17 +536,13 @@ export default function Home() {
             )}
 
             {/* Next Button (only if result captured) */}
-            {!isRecording && (
-                (currentStep === "question1" && results.q1) ||
-                (currentStep === "question2" && results.q2) ||
-                (currentStep === "question3" && results.q3)
-            ) ? (
-               <div className="mt-8 animate-in fade-in slide-in-from-bottom-4">
+            {!isRecording && isCurrentStepDone ? (
+               <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 flex flex-col items-center">
                  <p className="text-green-500 mb-4 flex items-center justify-center gap-2">
                    <Sparkles className="w-4 h-4" /> Aufnahme erfolgreich!
                  </p>
-                 <Button onClick={advanceStep} variant="outline" className="border-zinc-700 hover:bg-zinc-800">
-                   Nächster Schritt <ArrowRight className="ml-2 w-4 h-4" />
+                 <Button onClick={advanceStep} variant="outline" className="border-zinc-700 hover:bg-zinc-800 h-12 px-8 text-lg">
+                   Nächster Schritt <ArrowRight className="ml-2 w-5 h-5" />
                  </Button>
                </div>
             ) : null}
@@ -556,7 +566,7 @@ export default function Home() {
 
         const handleDownloadResult = async () => {
              // We can implement a simple text download or PDF here
-             const text = `MDI SYSTEM ANALYSE\nDatum: ${new Date().toLocaleDateString()}\n\nErgebnis: ${mdi.id} - ${mdi.colorName}\nFrequenz: ${mdi.frequency} Hz\nLicht: ${mdi.lightRange}\nTon: ${mdi.toneRange}\n\nPsychophysiologische Wirkung:\n${mdi.description}\n\nTalent:\n${mdi.talent}`;
+             const text = `MDI SYSTEM ANALYSE\nDatum: ${new Date().toLocaleDateString()}\n\nErgebnis: ${mdi.id} - ${mdi.colorName}\nFrequenz: ${mdi.frequency} Hz\nLicht: ${mdi.lightRange}\nKlang: ${mdi.toneRange}\n\nPsychophysiologische Wirkung:\n${mdi.description}\n\nTalent:\n${mdi.talent}`;
              
              const blob = new Blob([text], { type: 'text/plain' });
              const url = URL.createObjectURL(blob);
@@ -610,7 +620,7 @@ export default function Home() {
                         <div className="text-lg font-mono text-white">{mdi.lightRange}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Ton</div>
+                        <div className="text-xs text-zinc-500 uppercase tracking-widest mb-1">Klang</div>
                         <div className="text-lg font-mono text-white">{mdi.toneRange}</div>
                       </div>
                    </div>
