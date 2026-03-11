@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle, Clock, Waves, History } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { WaterSound } from "@/lib/WaterSound";
 
 interface Method36TrainerProps {
     frequency: number;
@@ -40,8 +41,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     const toneOscillatorsRef = useRef<OscillatorNode[]>([]);
     const toneGainRef = useRef<GainNode | null>(null);
     const filterRef = useRef<BiquadFilterNode | null>(null);
-    const streamNodeRef = useRef<AudioBufferSourceNode | null>(null);
-    const streamGainRef = useRef<GainNode | null>(null);
+    const waterSoundRef = useRef<WaterSound | null>(null);
     
     const startTimeRef = useRef<number>(0);
     const requestRef = useRef<number>(0);
@@ -100,13 +100,19 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         filter.connect(master);
         filterRef.current = filter;
 
-        // Generate Stream Sound (Pink Noise + Lowpass Filter)
-        createStreamSound(ctx, master);
+        // Initialize Water Sound
+        const waterSound = new WaterSound(ctx, master);
+        waterSoundRef.current = waterSound;
+        
+        // Start water sound if enabled (initially silent via class logic, but we trigger start)
+        waterSound.start();
+        // Set initial volume based on state
+        waterSound.setVolume(isStreamSoundEnabled && isPlaying ? 0.15 : 0);
 
         return () => {
             stopTone();
-            if (streamNodeRef.current) {
-                try { streamNodeRef.current.stop(); } catch(e) {}
+            if (waterSoundRef.current) {
+                waterSoundRef.current.stop();
             }
             if (requestRef.current) cancelAnimationFrame(requestRef.current);
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
@@ -114,45 +120,11 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         };
     }, []);
 
-    const createStreamSound = (ctx: AudioContext, destination: AudioNode) => {
-        // Create Pink Noise buffer
-        const bufferSize = 2 * ctx.sampleRate;
-        const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const output = noiseBuffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            const white = Math.random() * 2 - 1;
-            output[i] = (lastOut + (0.02 * white)) / 1.02;
-            lastOut = output[i];
-            output[i] *= 3.5; 
-        }
-        
-        const noise = ctx.createBufferSource();
-        noise.buffer = noiseBuffer;
-        noise.loop = true;
-        
-        // Filter to make it sound like water
-        const streamFilter = ctx.createBiquadFilter();
-        streamFilter.type = 'lowpass';
-        streamFilter.frequency.value = 400; // Muffled water sound
-        
-        const streamGain = ctx.createGain();
-        streamGain.gain.value = 0; // Start silent
-        
-        noise.connect(streamFilter).connect(streamGain).connect(destination);
-        noise.start();
-        
-        streamNodeRef.current = noise;
-        streamGainRef.current = streamGain;
-    };
-    
-    // Helper for pink noise generation
-    let lastOut = 0;
-
     const toggleStreamSound = () => {
-        setIsStreamSoundEnabled(!isStreamSoundEnabled);
-        if (streamGainRef.current && audioCtxRef.current) {
-            const targetGain = !isStreamSoundEnabled && isPlaying ? 0.08 : 0;
-            streamGainRef.current.gain.setTargetAtTime(targetGain, audioCtxRef.current.currentTime, 0.5);
+        const newState = !isStreamSoundEnabled;
+        setIsStreamSoundEnabled(newState);
+        if (waterSoundRef.current) {
+            waterSoundRef.current.setVolume(newState && isPlaying ? 0.15 : 0);
         }
     };
 
@@ -330,8 +302,8 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             requestRef.current = requestAnimationFrame(updateLoop);
 
             // Start Stream Sound if enabled
-            if (isStreamSoundEnabled && streamGainRef.current && audioCtxRef.current) {
-                streamGainRef.current.gain.setTargetAtTime(0.08, audioCtxRef.current.currentTime, 2); // Fade in to 8% volume
+            if (isStreamSoundEnabled && waterSoundRef.current) {
+                waterSoundRef.current.setVolume(0.15);
             }
 
             // Start Timer if duration is set
@@ -367,8 +339,8 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             stopTone();
             
             // Stop Stream Sound
-            if (streamGainRef.current && audioCtxRef.current) {
-                streamGainRef.current.gain.setTargetAtTime(0, audioCtxRef.current.currentTime, 1); // Fade out
+            if (waterSoundRef.current) {
+                waterSoundRef.current.setVolume(0);
             }
 
             setPhase('HOLD_EMPTY');

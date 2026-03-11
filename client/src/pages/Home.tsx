@@ -16,6 +16,7 @@ import { ConnectionStory } from "@/components/ConnectionStory";
 import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
+import { Method36Trainer } from "@/components/Method36Trainer";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, HeartPulse, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -110,6 +111,7 @@ export default function Home() {
   const [showVitalDashboard, setShowVitalDashboard] = useState(false);
   const [showIntervalTrainer, setShowIntervalTrainer] = useState(false);
   const [showFrequencyTable, setShowFrequencyTable] = useState(false);
+  const [showDirectTrainer, setShowDirectTrainer] = useState(false);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -485,6 +487,21 @@ export default function Home() {
             <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-12 max-w-2xl leading-tight">
               "{questions[currentStep]}"
             </h2>
+            
+            {/* Instructions - Only show if NOT done */}
+            {!isCurrentStepDone && (
+              <div className="mb-8 p-6 bg-zinc-900/50 rounded-xl border border-zinc-800 text-left w-full max-w-md">
+                <p className="text-zinc-300 text-lg leading-relaxed mb-4">
+                  {currentStep === "question1" && "Zähle bitte entspannt von 1 bis 10."}
+                  {currentStep === "question2" && "Sage deinen Vor- und Nachnamen drei Mal."}
+                  {currentStep === "question3" && "Summe einen Ton, der sich für dich angenehm anfühlt."}
+                </p>
+                <div className="flex items-center gap-2 text-zinc-500 text-sm">
+                  <Mic className="w-4 h-4" />
+                  <span>Sprich in normaler Lautstärke.</span>
+                </div>
+              </div>
+            )}
 
             <div className="relative">
               {/* Status Indicator Ring */}
@@ -675,7 +692,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       className="border-zinc-800 hover:bg-zinc-800"
-                      onClick={() => setShowIntervalTrainer(true)}
+                      onClick={() => setShowDirectTrainer(true)}
                     >
                       <Music2 className="mr-2 h-4 w-4" />
                       Training
@@ -763,6 +780,13 @@ export default function Home() {
               baseTone={finalResult.tone} 
               onClose={() => setShowIntervalTrainer(false)} 
             />
+          ) : showDirectTrainer && finalResult && mdiResult ? (
+             <Method36Trainer
+                frequency={finalResult.fundamentalFreq || mdiResult.frequency}
+                toneName={finalResult.tone.name}
+                color={mdiResult.hex}
+                onClose={() => setShowDirectTrainer(false)}
+             />
           ) : showFrequencyTable ? (
             <FrequencyTable onClose={() => setShowFrequencyTable(false)} />
           ) : (
