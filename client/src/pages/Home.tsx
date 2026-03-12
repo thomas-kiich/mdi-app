@@ -114,6 +114,7 @@ export default function Home() {
   const [showDirectTrainer, setShowDirectTrainer] = useState(false);
   const [showTrainingDurationSelect, setShowTrainingDurationSelect] = useState(false);
   const [selectedTrainingDuration, setSelectedTrainingDuration] = useState<number>(7);
+  const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -416,54 +417,114 @@ export default function Home() {
 
             {/* Features Overview */}
             <div className="w-full max-w-4xl mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-12 duration-1000 delay-300">
-                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center mb-4">
-                        <Mic className="w-5 h-5 text-orange-500" />
+                {[
+                    {
+                        title: "Stimm-Analyse",
+                        description: "Ermittle deinen persönlichen Grundton und deine energetische Signatur durch präzise Frequenzmessung.",
+                        icon: <Mic className="w-5 h-5 text-orange-500" />,
+                        bg: "bg-orange-500/10"
+                    },
+                    {
+                        title: "Frequenz-Training",
+                        description: "Harmonisiere dein System mit geführten Tönungs-Sessions (7, 12 oder 21 Minuten) in deiner Frequenz.",
+                        icon: <Music2 className="w-5 h-5 text-blue-500" />,
+                        bg: "bg-blue-500/10"
+                    },
+                    {
+                        title: "Live-Scanner",
+                        description: "Visualisiere deine Stimme und das gesamte Frequenzspektrum in Echtzeit mit detailliertem Feedback.",
+                        icon: <Activity className="w-5 h-5 text-green-500" />,
+                        bg: "bg-green-500/10"
+                    },
+                    {
+                        title: "Wissenspool",
+                        description: "Vertiefe dein Verständnis mit kuratierten Videos zur Methode 36 und ihren Hintergründen.",
+                        icon: <span className="text-lg">📚</span>,
+                        bg: "bg-purple-500/10"
+                    },
+                    {
+                        title: "Frequenz-Tabelle",
+                        description: "Umfassendes Nachschlagewerk für alle 24 Typen, inklusive Farben, Hz-Werten und Talenten.",
+                        icon: <span className="text-lg">📊</span>,
+                        bg: "bg-yellow-500/10"
+                    },
+                    {
+                        title: "5-Tage-Studie",
+                        description: "Validiere dein Profil durch wiederholte Messungen über mehrere Tage für maximale Genauigkeit.",
+                        icon: <HeartPulse className="w-5 h-5 text-red-500" />,
+                        bg: "bg-red-500/10"
+                    }
+                ].map((feature, i) => (
+                    <div 
+                        key={i}
+                        onClick={() => setSelectedFeature(feature)}
+                        className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-all cursor-pointer hover:scale-105 group"
+                    >
+                        <div className={`w-10 h-10 rounded-full ${feature.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                            {feature.icon}
+                        </div>
+                        <h3 className="text-white font-medium mb-2 group-hover:text-orange-400 transition-colors">{feature.title}</h3>
+                        <p className="text-sm text-zinc-500">{feature.description}</p>
                     </div>
-                    <h3 className="text-white font-medium mb-2">Stimm-Analyse</h3>
-                    <p className="text-sm text-zinc-500">Ermittle deinen persönlichen Grundton und deine energetische Signatur durch präzise Frequenzmessung.</p>
-                </div>
-
-                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center mb-4">
-                        <Music2 className="w-5 h-5 text-blue-500" />
-                    </div>
-                    <h3 className="text-white font-medium mb-2">Frequenz-Training</h3>
-                    <p className="text-sm text-zinc-500">Harmonisiere dein System mit geführten Tönungs-Sessions (7, 12 oder 21 Minuten) in deiner Frequenz.</p>
-                </div>
-
-                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-4">
-                        <Activity className="w-5 h-5 text-green-500" />
-                    </div>
-                    <h3 className="text-white font-medium mb-2">Live-Scanner</h3>
-                    <p className="text-sm text-zinc-500">Visualisiere deine Stimme und das gesamte Frequenzspektrum in Echtzeit mit detailliertem Feedback.</p>
-                </div>
-
-                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center mb-4">
-                        <span className="text-lg">📚</span>
-                    </div>
-                    <h3 className="text-white font-medium mb-2">Wissenspool</h3>
-                    <p className="text-sm text-zinc-500">Vertiefe dein Verständnis mit kuratierten Videos zur Methode 36 und ihren Hintergründen.</p>
-                </div>
-
-                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center mb-4">
-                        <span className="text-lg">📊</span>
-                    </div>
-                    <h3 className="text-white font-medium mb-2">Frequenz-Tabelle</h3>
-                    <p className="text-sm text-zinc-500">Umfassendes Nachschlagewerk für alle 24 Typen, inklusive Farben, Hz-Werten und Talenten.</p>
-                </div>
-
-                <div className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-colors">
-                    <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center mb-4">
-                        <HeartPulse className="w-5 h-5 text-red-500" />
-                    </div>
-                    <h3 className="text-white font-medium mb-2">5-Tage-Studie</h3>
-                    <p className="text-sm text-zinc-500">Validiere dein Profil durch wiederholte Messungen über mehrere Tage für maximale Genauigkeit.</p>
-                </div>
+                ))}
             </div>
+
+            {/* Feature Detail Modal */}
+            {selectedFeature && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300" onClick={() => setSelectedFeature(null)}>
+                    <div 
+                        className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-2xl w-full space-y-6 relative shadow-2xl animate-in zoom-in-95 duration-300"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="absolute top-4 right-4 rounded-full hover:bg-white/10"
+                            onClick={() => setSelectedFeature(null)}
+                        >
+                            <X className="w-5 h-5" />
+                        </Button>
+
+                        <div className="flex items-center gap-4">
+                            <div className={`w-16 h-16 rounded-full ${selectedFeature.bg} flex items-center justify-center`}>
+                                {selectedFeature.icon}
+                            </div>
+                            <h2 className="text-3xl font-bold text-white">{selectedFeature.title}</h2>
+                        </div>
+
+                        <p className="text-lg text-zinc-300 leading-relaxed">
+                            {selectedFeature.description}
+                        </p>
+
+                        {/* Audio Player Placeholder */}
+                        <div className="bg-zinc-950/50 rounded-xl p-6 border border-zinc-800/50">
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs font-mono text-orange-500 uppercase tracking-widest">Audio Guide</span>
+                                <span className="text-xs text-zinc-500">Coming Soon</span>
+                            </div>
+                            
+                            <div className="flex items-center gap-4 opacity-50 pointer-events-none">
+                                <Button size="icon" className="rounded-full h-12 w-12 bg-white text-black">
+                                    <Play className="h-5 w-5 ml-1" />
+                                </Button>
+                                <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                                    <div className="w-0 h-full bg-orange-500" />
+                                </div>
+                                <span className="text-xs font-mono text-zinc-500">00:00</span>
+                            </div>
+                            <p className="text-xs text-zinc-600 mt-4 text-center">
+                                Hier wird bald eine detaillierte Audio-Erklärung von NotebookLM verfügbar sein.
+                            </p>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <Button onClick={() => setSelectedFeature(null)} variant="outline" className="border-zinc-700">
+                                Schließen
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
           </div>
         );

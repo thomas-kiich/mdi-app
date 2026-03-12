@@ -188,3 +188,6 @@
 - [ ] **Draft Content: 'Maschinen atmen nicht':** Write chapters on Voice vs. AI and cellular resonance.
 
 - [x] Move uploaded audio files (training_07min.wav, training_12min.wav, training_21min.wav) to `client/public` so they are accessible by the browser.
+
+- [ ] Implement "Zurück zur Übersicht" button on the congratulation screen in `Method36Trainer.tsx`.
+- [ ] Make feature cards on the start page clickable and open a modal with placeholders for NotebookLM audio and content.

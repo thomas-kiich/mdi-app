@@ -449,13 +449,15 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             </p>
                         </div>
 
-                        <Button 
-                            size="lg" 
-                            className="bg-white text-black hover:bg-zinc-200 rounded-full px-8 py-6 text-lg mt-8"
-                            onClick={onClose}
-                        >
-                            Training beenden
-                        </Button>
+                        <div className="flex flex-col gap-4 mt-8">
+                            <Button 
+                                size="lg" 
+                                className="bg-white text-black hover:bg-zinc-200 rounded-full px-8 py-6 text-lg w-full"
+                                onClick={onClose}
+                            >
+                                Zurück zur Übersicht
+                            </Button>
+                        </div>
                     </div>
                 </div>
             )}
