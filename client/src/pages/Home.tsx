@@ -17,6 +17,7 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
+import { OnboardingTour } from "@/components/OnboardingTour";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, HeartPulse, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -115,6 +116,16 @@ export default function Home() {
   const [showTrainingDurationSelect, setShowTrainingDurationSelect] = useState(false);
   const [selectedTrainingDuration, setSelectedTrainingDuration] = useState<number>(7);
   const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
+
+  // Show onboarding tour on first visit
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+      const hasSeenTour = localStorage.getItem('mdi_onboarding_completed');
+      if (!hasSeenTour) {
+          setShowOnboarding(true);
+      }
+  }, []);
 
   const handleStartRecording = async () => {
     await startRecording();
@@ -866,6 +877,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-black text-foreground font-sans selection:bg-orange-500/30">
+      {/* Onboarding Tour */}
+      {showOnboarding && <OnboardingTour />}
+      
       <div className="container max-w-5xl mx-auto px-4 py-8">
         {/* Navbar - Logo removed, content shifted up */}
         <header className="flex justify-between items-center mb-4 md:mb-8">
