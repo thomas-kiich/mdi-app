@@ -17,6 +17,7 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
+import { TrainingCenter } from "@/components/TrainingCenter";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, HeartPulse, Check } from "lucide-react";
@@ -114,6 +115,7 @@ export default function Home() {
   const [showFrequencyTable, setShowFrequencyTable] = useState(false);
   const [showDirectTrainer, setShowDirectTrainer] = useState(false);
   const [showTrainingDurationSelect, setShowTrainingDurationSelect] = useState(false);
+  const [showTrainingCenter, setShowTrainingCenter] = useState(false);
   const [selectedTrainingDuration, setSelectedTrainingDuration] = useState<number>(7);
   const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
 
@@ -820,7 +822,7 @@ export default function Home() {
                     <Button 
                       variant="outline" 
                       className="border-zinc-800 hover:bg-zinc-800"
-                      onClick={() => setShowTrainingDurationSelect(true)}
+                      onClick={() => setShowTrainingCenter(true)}
                     >
                       <Music2 className="mr-2 h-4 w-4" />
                       Training
@@ -911,6 +913,13 @@ export default function Home() {
               baseTone={finalResult.tone} 
               onClose={() => setShowIntervalTrainer(false)} 
             />
+          ) : showTrainingCenter && finalResult && mdiResult ? (
+            <TrainingCenter
+                frequency={finalResult.fundamentalFreq || mdiResult.frequency}
+                toneName={finalResult.tone.name}
+                color={mdiResult.hex}
+                onClose={() => setShowTrainingCenter(false)}
+            />
           ) : showDirectTrainer && finalResult && mdiResult ? (
              <Method36Trainer
                 frequency={finalResult.fundamentalFreq || mdiResult.frequency}
@@ -964,7 +973,7 @@ export default function Home() {
         </main>
         
         {/* Footer */}
-        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && (
+        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && (
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
                 <div>
                     &copy; {new Date().getFullYear()} MDI System.

@@ -195,3 +195,11 @@
 
 - [x] Implement sharing functionality on the result screen (InterpretationView) and the congratulation screen (Method36Trainer).
 - [x] Adjust logo on Home page: remove circular crop, increase size slightly, and move it down for better harmony with text.
+
+- [x] Create a new "Training Center" menu/dashboard to select between different breathing techniques.
+- [x] Implement "Stoffwechselatmung" (Metabolic Breathing) module:
+    - [x] Rhythm: 2 beats Inhale (High Gong) : 4 beats Exhale (Low Gong) based on 36 BPM (1 beat = 1.666s).
+    - [x] Endless mode (Start/Stop toggle), no fixed duration.
+    - [x] Minimalist visualization for continuous breathing.
+    - [x] Separate audio logic for High/Low Gongs.
+- [x] Refactor existing "Yohnatmung" to be a distinct module within the Training Center.
