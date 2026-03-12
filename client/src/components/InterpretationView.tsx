@@ -2,11 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import frequencyData from "@/lib/frequencyData.json";
-import { X, ArrowRight, ArrowLeft, Sparkles, Lock, Download } from "lucide-react";
+import { X, ArrowRight, ArrowLeft, Sparkles, Lock, Download, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface InterpretationViewProps {
   mdiResult: typeof frequencyData[0];
@@ -15,6 +16,35 @@ interface InterpretationViewProps {
 
 export function InterpretationView({ mdiResult, onClose }: InterpretationViewProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+
+  const handleShare = async () => {
+    const shareText = `Ich habe meine wahre Frequenz gefunden: Mein Grundton ist ${mdiResult.id} (${mdiResult.frequency} Hz). Entdecke auch du deine Frequenz mit Methode 36!`;
+    const shareUrl = window.location.origin;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Meine MDI Frequenz-Analyse',
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      // Fallback for desktop: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+        toast({
+          title: "Ergebnis kopiert!",
+          description: "Der Text wurde in deine Zwischenablage kopiert.",
+        });
+      } catch (err) {
+        console.error('Failed to copy: ', err);
+      }
+    }
+  };
 
   if (!mdiResult) return null;
 
@@ -65,6 +95,15 @@ export function InterpretationView({ mdiResult, onClose }: InterpretationViewPro
             </p>
           </div>
           <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleShare}
+              className="hidden md:flex gap-2 border-zinc-700 hover:bg-zinc-800 text-zinc-300 mr-2"
+            >
+              <Share2 className="w-4 h-4" />
+              Teilen
+            </Button>
             <Button 
               variant="outline" 
               size="sm" 
@@ -136,14 +175,24 @@ export function InterpretationView({ mdiResult, onClose }: InterpretationViewPro
             </div>
             
             <div className="mt-12 flex justify-center w-full">
-                <Button 
-                    size="lg" 
-                    onClick={onClose}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 px-8"
-                >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Zurück zur Übersicht
-                </Button>
+                <div className="flex gap-4">
+                    <Button 
+                        size="lg" 
+                        onClick={handleShare}
+                        className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 px-8"
+                    >
+                        <Share2 className="w-4 h-4 mr-2" />
+                        Teilen
+                    </Button>
+                    <Button 
+                        size="lg" 
+                        onClick={onClose}
+                        className="bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 px-8"
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Zurück zur Übersicht
+                    </Button>
+                </div>
             </div>
             
             <div className="mt-auto pt-16 text-center text-zinc-600 text-xs font-mono w-full">

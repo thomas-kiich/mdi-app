@@ -192,3 +192,5 @@
 - [x] Implement "Zurück zur Übersicht" button on the congratulation screen in `Method36Trainer.tsx`.
 - [x] Make feature cards on the start page clickable and open a modal with placeholders for NotebookLM audio and content.
 - [x] Implement onboarding tour with video placeholder that shows only on first visit.
+
+- [x] Implement sharing functionality on the result screen (InterpretationView) and the congratulation screen (Method36Trainer).

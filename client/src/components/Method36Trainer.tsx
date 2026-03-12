@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle, Clock, Waves, History } from "lucide-react";
+import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle, Clock, Waves, History, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 // import { WaterSound } from "@/lib/WaterSound"; // Deprecated in favor of user WAV
 
@@ -37,6 +37,33 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     const [isStreamSoundEnabled, setIsStreamSoundEnabled] = useState(true);
     const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
     
+    const handleShare = async () => {
+        const shareText = `Ich habe mich erfolgreich auf ${frequency} Hz (${toneName}) eingeschwungen. MDI Methode 36.`;
+        const shareUrl = window.location.origin;
+
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'MDI Training Abgeschlossen',
+                    text: shareText,
+                    url: shareUrl,
+                });
+            } catch (error) {
+                console.log('Error sharing:', error);
+            }
+        } else {
+            try {
+                await navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+                toast({
+                    title: "Ergebnis kopiert!",
+                    description: "Der Text wurde in deine Zwischenablage kopiert.",
+                });
+            } catch (err) {
+                console.error('Failed to copy: ', err);
+            }
+        }
+    };
+
     const audioCtxRef = useRef<AudioContext | null>(null);
     const masterGainRef = useRef<GainNode | null>(null);
     const toneOscillatorsRef = useRef<OscillatorNode[]>([]);
@@ -498,13 +525,22 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                         </div>
                     )}
 
-                    <Button 
-                        variant="outline" 
-                        onClick={onClose} 
-                        className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
-                    >
-                        <X className="mr-2 h-4 w-4" /> Schließen
-                    </Button>
+                        <div className="flex gap-4">
+                             <Button 
+                                variant="outline" 
+                                onClick={handleShare} 
+                                className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
+                            >
+                                <Share2 className="mr-2 h-4 w-4" /> Teilen
+                            </Button>
+                            <Button 
+                                variant="outline" 
+                                onClick={onClose} 
+                                className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
+                            >
+                                <X className="mr-2 h-4 w-4" /> Schließen
+                            </Button>
+                        </div>
                 </div>
             </div>
 
