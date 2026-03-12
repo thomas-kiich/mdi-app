@@ -370,19 +370,14 @@ export default function Home() {
       case "intro":
         return (
           <div className="flex flex-col items-center justify-center min-h-[70vh] animate-in fade-in duration-700">
-            <div className="relative mb-12 group flex flex-col items-center">
+            <div className="relative mb-12 group flex flex-col items-center translate-y-4">
               <div className="absolute inset-0 bg-orange-500/20 blur-3xl rounded-full animate-pulse-slow group-hover:bg-orange-500/30 transition-all duration-500" />
-              <div className="w-32 h-32 md:w-40 md:h-40 bg-gradient-to-br from-zinc-900 to-black border border-zinc-800 rounded-full flex items-center justify-center shadow-2xl relative z-10 group-hover:scale-105 transition-transform duration-500 mb-6 overflow-hidden">
+              <div className="w-40 h-40 md:w-48 md:h-48 flex items-center justify-center relative z-10 group-hover:scale-105 transition-transform duration-500 mb-6">
                 <img 
                     src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
                     alt="METHODE 36 Logo" 
-                    className="w-full h-full object-cover p-2"
+                    className="w-full h-full object-contain drop-shadow-2xl"
                 />
-              </div>
-              
-              {/* Orbiting Elements */}
-              <div className="absolute inset-0 animate-spin-slow">
-                 <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-3 h-3 bg-orange-500 rounded-full blur-[2px]" />
               </div>
             </div>
 

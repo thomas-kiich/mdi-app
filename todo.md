@@ -194,3 +194,4 @@
 - [x] Implement onboarding tour with video placeholder that shows only on first visit.
 
 - [x] Implement sharing functionality on the result screen (InterpretationView) and the congratulation screen (Method36Trainer).
+- [x] Adjust logo on Home page: remove circular crop, increase size slightly, and move it down for better harmony with text.
