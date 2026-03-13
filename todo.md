@@ -204,10 +204,18 @@
     - [x] Separate audio logic for High/Low Gongs.
 - [x] Refactor existing "Yohnatmung" to be a distinct module within the Training Center.
 
-- [ ] Create a new main "Dashboard" view as the starting point, replacing the direct analysis wizard start.
-- [ ] Implement "Dashboard" with 3 main pillars:
-    - [ ] Analysis: The existing voice analysis flow.
-    - [ ] Training Center: Direct access to breathing techniques.
-    - [ ] Laboratory (Scanner): Direct access to the Spectral Scanner.
-- [ ] Integrate "Interval Training" as a third module in the Training Center.
-- [ ] Update navigation to allow returning to the Dashboard from any sub-module.
+- [x] Create a new main "Dashboard" view as the starting point, replacing the direct analysis wizard start.
+- [x] Implement "Dashboard" with 3 main pillars:
+    - [x] Analysis: The existing voice analysis flow.
+    - [x] Training Center: Direct access to breathing techniques.
+    - [x] Laboratory (Scanner): Direct access to the Spectral Scanner.
+- [x] Integrate "Interval Training" as a third module in the Training Center.
+- [x] Update navigation to allow returning to the Dashboard from any sub-module.
+
+- [x] Debug and fix the red error notification appearing on the bottom left of the Dashboard/Home page.
+
+- [ ] Implement "Scanner-Training Bridge":
+    - [ ] Add "Freeze/Snapshot" button to SpectralScanner to capture current peak frequency.
+    - [ ] Add "Work with this Frequency" button in SpectralScanner (visible when frozen).
+    - [ ] Redirect to TrainingCenter with the captured frequency as a parameter.
+    - [ ] Update TrainingCenter/Method36Trainer/MetabolicBreathingTrainer to accept a custom frequency (instead of just the user's fundamental).

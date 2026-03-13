@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
-import { X, Mic, MicOff, Camera, Box, Play, Square, Sparkles, Heart, Info, Volume2, ChevronUp, ChevronDown, Star, Share2, Download, Clock } from "lucide-react";
+import { X, Mic, MicOff, Camera, Box, Play, Square, Sparkles, Heart, Info, Volume2, ChevronUp, ChevronDown, Star, Share2, Download, Clock, Zap } from "lucide-react";
 import { getToneFromFrequency } from "@/lib/tones";
 import { getMdiTypeFromFrequency } from "@/lib/mdi";
 import { useLocation } from 'wouter';
 import { Method36Trainer } from "@/components/Method36Trainer";
+import { TrainingCenter } from "@/components/TrainingCenter";
 import frequencyDataRaw from "@/lib/frequencyData.json";
 import { useToast } from "@/hooks/use-toast";
 
@@ -67,8 +68,8 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
   const [showShareCard, setShowShareCard] = useState(false);
   const shareCardRef = useRef<HTMLDivElement>(null);
 
-  // New State for Training Duration Selection
-  const [showDurationSelect, setShowDurationSelect] = useState(false);
+  // New State for Training Center Integration
+  const [showTrainingCenter, setShowTrainingCenter] = useState(false);
 
 
   // --- START ANIMATION ---
@@ -244,16 +245,10 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
       link.click();
   };
 
-  const handleStartTraining = (duration: number) => {
+  const handleOpenTrainingCenter = () => {
       const info = selectedInfo || hoverInfo?.item;
       if (info) {
-          setTrainingMode({
-              freq: info.frequency,
-              tone: info.id.toString(),
-              color: info.hex,
-              duration: duration
-          });
-          setShowDurationSelect(false);
+          setShowTrainingCenter(true);
       }
   };
 
@@ -295,256 +290,269 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
 
       const draw = () => {
           if (!isListeningRef.current) return;
+          
           animationRef.current = requestAnimationFrame(draw);
-          
           analyser.getByteFrequencyData(dataArray);
-          
-          // 1. Clear Canvas
-          ctx.fillStyle = '#000000';
+
+          // Clear with fade
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
           ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-          // 2. Analyze Audio
-          const mdiEnergy = new Map<number, number>();
-          let maxAmp = 0;
-          let domFreq = 0;
-
+          // Find dominant frequency
+          let maxVal = 0;
+          let maxIndex = 0;
           for (let i = 0; i < bufferLength; i++) {
-              const binFreq = i * binSize;
-              if (binFreq < 50 || binFreq > 1000) continue; // Voice range
-              
-              const amplitude = dataArray[i];
-              if (amplitude > maxAmp) {
-                  maxAmp = amplitude;
-                  domFreq = binFreq;
+              if (dataArray[i] > maxVal) {
+                  maxVal = dataArray[i];
+                  maxIndex = i;
               }
-
-              if (amplitude < 10) continue;
-
-              const normFreq = normalizeToOctave(binFreq);
-              
-              // Find closest MDI type
-              let bestId = frequencyData[0].id;
-              let minDiff = Math.abs(normFreq - frequencyData[0].frequency);
-              for (let j = 1; j < frequencyData.length; j++) {
-                  const diff = Math.abs(normFreq - frequencyData[j].frequency);
-                  if (diff < minDiff) {
-                      minDiff = diff;
-                      bestId = frequencyData[j].id;
-                  }
-              }
-              const current = mdiEnergy.get(bestId) || 0;
-              mdiEnergy.set(bestId, Math.max(current, amplitude));
           }
 
-          // Update current frequency state
-          if (maxAmp > 30) {
-             setCurrentFreq(domFreq);
+          let dominantFreq = 0;
+          if (maxVal > 100) { // Threshold
+             // Interpolation
+             const i = maxIndex;
+             const prev = dataArray[i-1] || 0;
+             const next = dataArray[i+1] || 0;
+             const adjustedIndex = i + (next - prev) / (2 * (2 * dataArray[i] - next - prev));
+             dominantFreq = adjustedIndex * binSize;
+          }
+
+          if (dominantFreq > 0) {
+              const normFreq = normalizeToOctave(dominantFreq);
+              setCurrentFreq(normFreq);
+              
+              // Draw "Live" Cursor
+              const x = getX(normFreq);
+              
+              ctx.beginPath();
+              ctx.moveTo(x, 0);
+              ctx.lineTo(x, canvas.height);
+              ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+              ctx.lineWidth = 2;
+              ctx.setLineDash([5, 5]);
+              ctx.stroke();
+              ctx.setLineDash([]);
+
+              // Glow
+              const gradient = ctx.createLinearGradient(x-20, 0, x+20, 0);
+              gradient.addColorStop(0, 'rgba(255,0,0,0)');
+              gradient.addColorStop(0.5, 'rgba(255,0,0,0.3)');
+              gradient.addColorStop(1, 'rgba(255,0,0,0)');
+              ctx.fillStyle = gradient;
+              ctx.fillRect(x-20, 0, 40, canvas.height);
           } else {
-             setCurrentFreq(0);
+              setCurrentFreq(0);
           }
 
-          // 3. Draw Contiguous Bands
-          const sortedMdi = [...frequencyData].sort((a, b) => a.frequency - b.frequency);
+          // Draw Spectral Lines (MDI Zones)
+          // We draw the MDI zones based on frequencyData
+          // But only if we are in "Scanner Mode" (which we are)
+          
+          // Draw MDI Zones
+          // We iterate over frequencyData and draw zones
+          // Optimization: Pre-calculate zones or draw them efficiently
+          
+          // Let's just draw lines for each MDI frequency
+          // To make it look like a spectrum, we can use the width of each zone
+          // But frequencyData is discrete points.
+          // Let's assume each ID covers the range between midpoints.
+          
+          // Actually, let's just draw vertical bars for each ID
+          
+          // SCAN LINE ANIMATION
+          const scanX = (Date.now() / 10) % (canvas.width + 200) - 100;
 
-          sortedMdi.forEach((item, index) => {
-              const startFreq = index === 0 
-                  ? minFreq 
-                  : (sortedMdi[index - 1].frequency + item.frequency) / 2;
-              const endFreq = index === sortedMdi.length - 1 
-                  ? maxFreq 
-                  : (item.frequency + sortedMdi[index + 1].frequency) / 2;
-
+          frequencyData.forEach(item => {
+              const freq = item.frequency;
+              // Calculate width (approx 1Hz or dynamic)
+              // Let's say +/- 0.5Hz
+              const startFreq = freq - 0.5;
+              const endFreq = freq + 0.5;
+              
               const x1 = getX(startFreq);
               const x2 = getX(endFreq);
               const w = Math.max(1, x2 - x1);
-
-              const amp = mdiEnergy.get(item.id) || 0;
-              
-              // Highlight if fundamental
-              const normFund = normalizeToOctave(domFreq);
-              const isFundamental = domFreq > 0 && Math.abs(normFund - item.frequency) < 2;
               
               ctx.fillStyle = item.hex;
               
-              // NEW LOGIC: Full brightness base, extra brightness on active
-              let opacity = 0.6; // Base brightness much higher (was 0.15)
-              
-              if (isFundamental) {
-                  opacity = 1.0; // Spotlight
-                  ctx.shadowBlur = 60;
-                  ctx.shadowColor = item.hex;
-              } else if (amp > 20) {
-                  opacity = 0.6 + (amp / 255) * 0.4; // React to sound
-                  ctx.shadowBlur = amp / 5;
-                  ctx.shadowColor = item.hex;
-              } else {
-                  ctx.shadowBlur = 0;
+              // Animation Highlight
+              let opacity = 0.6;
+              if (startAnimationProgress < 1) {
+                  const dist = Math.abs((x1 + w/2) - scanX);
+                  if (dist < 100) {
+                      opacity = 1.0;
+                      ctx.shadowBlur = 30;
+                      ctx.shadowColor = item.hex;
+                  } else {
+                      opacity = 0.3; // Dim others during scan
+                  }
               }
-
+              
               ctx.globalAlpha = opacity;
               ctx.fillRect(x1, 0, w, canvas.height);
-
-              // Flash white overlay
-              if (isFundamental) {
-                  ctx.fillStyle = '#ffffff';
-                  ctx.globalAlpha = 0.4;
-                  ctx.fillRect(x1, 0, w, canvas.height);
-              }
-
-              // Label
+              
               if (w > 20) {
                   ctx.fillStyle = "rgba(255,255,255,0.9)";
                   ctx.font = "bold 14px monospace";
                   ctx.textAlign = "center";
-                  ctx.globalAlpha = isFundamental ? 1.0 : 0.7; // More visible labels
+                  ctx.globalAlpha = opacity > 0.8 ? 1.0 : 0.5;
                   ctx.fillText(item.id.toString(), x1 + w/2, canvas.height - 30);
-                  
-                  // Freq Label
                   ctx.font = "10px monospace";
                   ctx.fillStyle = "rgba(255,255,255,0.6)";
                   ctx.fillText(`${item.frequency} Hz`, x1 + w/2, canvas.height - 15);
               }
-          });
+              
+              // Reset shadow
+              ctx.shadowBlur = 0;
+         });
+         
+         if (startAnimationProgress < 1) {
+             requestAnimationFrame(() => {
+                 // Force re-render for animation
+                 const ctx = canvas.getContext('2d');
+                 // ... (this is handled by the useEffect dependency or rAF loop)
+             });
+         }
       };
+
       draw();
   };
 
-  // Handle Mouse Move for Interaction
   const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      
+      // Inverse of getX
+      // x = norm * width
+      // norm = x / width
+      // norm = (logF - minLog) / logRange
+      // logF = norm * logRange + minLog
+      // f = exp(logF)
       
       const minFreq = 86;
       const maxFreq = 174;
       const minLog = Math.log(minFreq);
       const maxLog = Math.log(maxFreq);
       const logRange = maxLog - minLog;
-
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const normX = x / canvas.width;
       
-      const freq = Math.exp(minLog + normX * logRange);
-
-      let bestItem = frequencyData[0];
-      let minDiff = Math.abs(freq - frequencyData[0].frequency);
-      for (const item of frequencyData) {
-          const diff = Math.abs(freq - item.frequency);
-          if (diff < minDiff) {
-              minDiff = diff;
-              bestItem = item;
+      const norm = x / canvas.width;
+      const logF = norm * logRange + minLog;
+      const freq = Math.exp(logF);
+      
+      // Find closest MDI
+      let closest: FrequencyDataItem | null = null;
+      let minDist = Infinity;
+      
+      frequencyData.forEach(item => {
+          const dist = Math.abs(item.frequency - freq);
+          if (dist < minDist) {
+              minDist = dist;
+              closest = item;
           }
-      }
-
-      setHoverInfo({
-          x: e.clientX,
-          y: e.clientY,
-          freq: bestItem.frequency,
-          tone: bestItem.id.toString(),
-          note: `Typ ${bestItem.id}`,
-          color: bestItem.hex,
-          item: bestItem
       });
+      
+      if (closest && minDist < 2.0) { // Within 2Hz
+          const match = closest as FrequencyDataItem;
+          setHoverInfo({
+              x: e.clientX,
+              y: e.clientY,
+              freq: match.frequency,
+              tone: match.toneRange,
+              note: match.toneRange,
+              color: match.hex,
+              item: match
+          });
+      } else {
+          setHoverInfo(null);
+      }
+  };
+
+  const handleCanvasLeave = () => {
+      setHoverInfo(null);
   };
 
   const handleCanvasClick = () => {
       if (hoverInfo) {
           setSelectedInfo(hoverInfo.item);
-          playHarmonicTone(hoverInfo.freq);
+          // Auto-play tone when selected
+          playHarmonicTone(hoverInfo.item.frequency);
+      } else {
+          setSelectedInfo(null);
       }
   };
 
-  const handleCanvasLeave = () => {
-      // Optional: clear hover info if desired, but keeping it might be nice
-      // setHoverInfo(null); 
-  };
-
+  // Handle window resize
   useEffect(() => {
       const handleResize = () => {
-          if (canvasRef.current) {
-              canvasRef.current.width = window.innerWidth;
-              canvasRef.current.height = window.innerHeight;
-          }
-      };
-      window.addEventListener('resize', handleResize);
-      
-      // Auto-start visualization even if not listening to mic (for color display)
-      if (canvasRef.current) {
-         handleResize();
-         // We need a dummy draw loop if not listening
-         if (!isListening) {
-             const canvas = canvasRef.current;
-             const ctx = canvas.getContext('2d');
-             if (ctx) {
-                 // Draw static spectrum
-                 const minFreq = 86;
-                 const maxFreq = 174;
-                 const minLog = Math.log(minFreq);
-                 const maxLog = Math.log(maxFreq);
-                 const logRange = maxLog - minLog;
-                 
-                 const getX = (f: number) => {
-                    const logF = Math.log(Math.max(f, minFreq));
-                    const norm = (logF - minLog) / logRange;
-                    return norm * canvas.width;
-                 };
+         if (canvasRef.current) {
+             canvasRef.current.width = window.innerWidth;
+             canvasRef.current.height = window.innerHeight;
+             
+             if (!isListening) {
+                 const canvas = canvasRef.current;
+                 const ctx = canvas.getContext('2d');
+                 if (ctx) {
+                     ctx.clearRect(0, 0, canvas.width, canvas.height);
+                     
+                     const minFreq = 86;
+                     const maxFreq = 174;
+                     const minLog = Math.log(minFreq);
+                     const maxLog = Math.log(maxFreq);
+                     const logRange = maxLog - minLog;
+                     const getX = (f: number) => {
+                          const logF = Math.log(Math.max(f, minFreq));
+                          const norm = (logF - minLog) / logRange;
+                          return norm * canvas.width;
+                      };
 
-                 const sortedMdi = [...frequencyData].sort((a, b) => a.frequency - b.frequency);
-                 
-                 // ANIMATION LOGIC
-                 const scanX = startAnimationProgress * canvas.width;
-                 
-                 sortedMdi.forEach((item, index) => {
-                      const startFreq = index === 0 ? minFreq : (sortedMdi[index - 1].frequency + item.frequency) / 2;
-                      const endFreq = index === sortedMdi.length - 1 ? maxFreq : (item.frequency + sortedMdi[index + 1].frequency) / 2;
-                      const x1 = getX(startFreq);
-                      const x2 = getX(endFreq);
-                      const w = Math.max(1, x2 - x1);
-                      
-                      ctx.fillStyle = item.hex;
-                      
-                      // Animation Highlight
-                      let opacity = 0.6;
-                      if (startAnimationProgress < 1) {
-                          const dist = Math.abs((x1 + w/2) - scanX);
-                          if (dist < 100) {
-                              opacity = 1.0;
-                              ctx.shadowBlur = 30;
-                              ctx.shadowColor = item.hex;
-                          } else {
-                              opacity = 0.3; // Dim others during scan
-                          }
-                      }
-                      
-                      ctx.globalAlpha = opacity;
-                      ctx.fillRect(x1, 0, w, canvas.height);
-                      
-                      if (w > 20) {
-                          ctx.fillStyle = "rgba(255,255,255,0.9)";
-                          ctx.font = "bold 14px monospace";
-                          ctx.textAlign = "center";
-                          ctx.globalAlpha = opacity > 0.8 ? 1.0 : 0.5;
-                          ctx.fillText(item.id.toString(), x1 + w/2, canvas.height - 30);
-                          ctx.font = "10px monospace";
-                          ctx.fillStyle = "rgba(255,255,255,0.6)";
-                          ctx.fillText(`${item.frequency} Hz`, x1 + w/2, canvas.height - 15);
-                      }
-                      
-                      // Reset shadow
-                      ctx.shadowBlur = 0;
-                 });
-                 
-                 if (startAnimationProgress < 1) {
-                     requestAnimationFrame(() => {
-                         // Force re-render for animation
-                         const ctx = canvas.getContext('2d');
-                         // ... (this is handled by the useEffect dependency or rAF loop)
+                     frequencyData.forEach(item => {
+                        const freq = item.frequency;
+                        const startFreq = freq - 0.5;
+                        const endFreq = freq + 0.5;
+                        const x1 = getX(startFreq);
+                        const x2 = getX(endFreq);
+                        const w = Math.max(1, x2 - x1);
+                        ctx.fillStyle = item.hex;
+                        
+                        let opacity = 0.6;
+                        if (startAnimationProgress < 1) {
+                            // Simple scan animation logic
+                            const scanX = -200; 
+                            const dist = Math.abs((x1 + w/2) - scanX);
+                            if (dist < 100) {
+                                opacity = 1.0;
+                                ctx.shadowBlur = 30;
+                                ctx.shadowColor = item.hex;
+                            } else {
+                                opacity = 0.3;
+                            }
+                        }
+                        
+                        ctx.globalAlpha = opacity;
+                        ctx.fillRect(x1, 0, w, canvas.height);
+                        
+                        if (w > 20) {
+                            ctx.fillStyle = "rgba(255,255,255,0.9)";
+                            ctx.font = "bold 14px monospace";
+                            ctx.textAlign = "center";
+                            ctx.globalAlpha = opacity > 0.8 ? 1.0 : 0.5;
+                            ctx.fillText(item.id.toString(), x1 + w/2, canvas.height - 30);
+                            ctx.font = "10px monospace";
+                            ctx.fillStyle = "rgba(255,255,255,0.6)";
+                            ctx.fillText(`${item.frequency} Hz`, x1 + w/2, canvas.height - 15);
+                        }
+                        ctx.shadowBlur = 0;
                      });
                  }
              }
          }
-      }
+      };
 
+      window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
   }, [isListening, startAnimationProgress]);
 
@@ -583,7 +591,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
           
           {/* Info Panel - Mobile Optimized (Bottom Sheet style) */}
           <AnimatePresence>
-              {activeInfo && !showShareCard && !showDurationSelect && (
+              {activeInfo && !showShareCard && !showTrainingCenter && (
                   <motion.div 
                     initial={{ y: "100%" }}
                     animate={{ y: 0 }}
@@ -685,22 +693,25 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                               </Button>
                           </div>
 
-                          <div className="mt-4 pt-4 border-t border-zinc-800 flex gap-2">
-                               <Button 
-                                  size="sm" 
-                                  className="flex-1 bg-zinc-800 hover:bg-zinc-700"
-                                  onClick={() => playHarmonicTone(activeInfo.frequency)}
-                                >
-                                  {isPlayingTone ? <Square className="mr-2 h-4 w-4 text-red-500 fill-current" /> : <Volume2 className="mr-2 h-4 w-4" />}
-                                  {isPlayingTone ? "Stop" : "Hören"}
-                                </Button>
+                          <div className="mt-4 pt-4 border-t border-zinc-800 flex flex-col gap-2">
+                               <div className="flex gap-2">
+                                   <Button 
+                                      size="sm" 
+                                      className="flex-1 bg-zinc-800 hover:bg-zinc-700"
+                                      onClick={() => playHarmonicTone(activeInfo.frequency)}
+                                    >
+                                      {isPlayingTone ? <Square className="mr-2 h-4 w-4 text-red-500 fill-current" /> : <Volume2 className="mr-2 h-4 w-4" />}
+                                      {isPlayingTone ? "Stop" : "Hören"}
+                                    </Button>
+                               </div>
+                                
                                 <Button 
                                   size="sm" 
-                                  className="flex-1 bg-orange-600 hover:bg-orange-500"
-                                  onClick={() => setShowDurationSelect(true)}
+                                  className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold h-10"
+                                  onClick={handleOpenTrainingCenter}
                                 >
-                                  <Heart className="mr-2 h-4 w-4 fill-current" />
-                                  Training
+                                  <Zap className="mr-2 h-4 w-4 fill-current" />
+                                  Mit dieser Frequenz arbeiten
                                 </Button>
                           </div>
                           
@@ -717,112 +728,43 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
           {/* Share Card Overlay */}
           <AnimatePresence>
               {showShareCard && activeInfo && (
-                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                       <motion.div 
-                          initial={{ scale: 0.9, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0.9, opacity: 0 }}
-                          className="relative"
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        className="relative"
                       >
-                          <div 
-                              ref={shareCardRef}
-                              className="bg-zinc-900 border border-zinc-700 p-8 rounded-3xl shadow-2xl max-w-sm w-full text-center relative overflow-hidden"
-                          >
-                              {/* Background Glow */}
-                              <div 
-                                  className="absolute top-0 left-0 right-0 h-32 opacity-30 blur-3xl"
-                                  style={{ backgroundColor: activeColor }}
-                              />
+                          <div ref={shareCardRef} className="bg-zinc-950 border border-zinc-800 p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center relative overflow-hidden">
+                              <div className="absolute inset-0 bg-gradient-to-br from-black via-black to-orange-500/20" />
                               
                               <div className="relative z-10">
-                                  <div className="text-orange-500 font-bold tracking-widest text-sm mb-6">MDI <span className="text-white">INSIGHT</span></div>
-                                  
-                                  <div 
-                                      className="w-24 h-24 rounded-full mx-auto mb-6 shadow-[0_0_30px_rgba(255,255,255,0.2)] flex items-center justify-center border-4 border-white/10"
-                                      style={{ backgroundColor: activeColor }}
-                                  >
-                                      <span className="text-4xl font-bold text-white drop-shadow-md">{activeInfo.id}</span>
+                                  <div className="w-24 h-24 rounded-full mx-auto mb-6 shadow-[0_0_40px_rgba(255,255,255,0.1)] flex items-center justify-center border border-white/10" style={{ backgroundColor: activeInfo.hex }}>
+                                      <span className="text-4xl font-bold text-white">{activeInfo.id}</span>
                                   </div>
                                   
                                   <h2 className="text-3xl font-bold text-white mb-2">{activeInfo.colorName}</h2>
-                                  <p className="text-orange-400 font-mono text-lg mb-6">{activeInfo.frequency} Hz</p>
+                                  <p className="text-orange-500 font-mono text-xl mb-6">{activeInfo.frequency} Hz</p>
                                   
-                                  <div className="bg-white/5 rounded-xl p-4 mb-6">
-                                      <p className="text-zinc-300 italic leading-relaxed">
-                                          "{activeInfo.description}"
-                                      </p>
+                                  <div className="bg-zinc-900/50 p-4 rounded-xl mb-6">
+                                      <p className="text-zinc-300 text-sm italic">"{activeInfo.description}"</p>
                                   </div>
                                   
-                                  <div className="text-xs text-zinc-500 uppercase tracking-widest">
-                                      METHODE 36
+                                  <div className="flex justify-between items-center text-xs text-zinc-500 uppercase tracking-widest border-t border-zinc-800 pt-4">
+                                      <span>MDI System</span>
+                                      <span>Methode 36</span>
                                   </div>
                               </div>
                           </div>
                           
-                          <div className="flex gap-2 mt-4 justify-center">
-                              <Button variant="outline" onClick={() => setShowShareCard(false)}>
-                                  Schließen
-                              </Button>
-                              <Button className="bg-orange-600 hover:bg-orange-500" onClick={downloadShareCard}>
+                          <div className="mt-4 flex gap-2">
+                              <Button className="flex-1 bg-white text-black hover:bg-zinc-200" onClick={downloadShareCard}>
                                   <Download className="mr-2 h-4 w-4" /> Speichern
                               </Button>
-                          </div>
-                      </motion.div>
-                  </div>
-              )}
-          </AnimatePresence>
-
-          {/* Duration Selection Overlay */}
-          <AnimatePresence>
-              {showDurationSelect && activeInfo && (
-                  <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-                      <motion.div 
-                          initial={{ scale: 0.9, opacity: 0 }}
-                          animate={{ scale: 1, opacity: 1 }}
-                          exit={{ scale: 0.9, opacity: 0 }}
-                          className="bg-zinc-900 border border-zinc-700 p-6 rounded-2xl shadow-2xl max-w-sm w-full"
-                      >
-                          <h3 className="text-xl font-bold text-white mb-2 text-center">Trainingsdauer wählen</h3>
-                          <p className="text-zinc-400 text-center mb-6 text-sm">Wie lange möchten Sie trainieren?</p>
-                          
-                          <div className="grid gap-3">
-                              <Button 
-                                  variant="outline" 
-                                  className="h-14 justify-between px-4 border-zinc-700 hover:bg-zinc-800 hover:border-orange-500/50 group"
-                                  onClick={() => handleStartTraining(7)}
-                              >
-                                  <span className="flex items-center text-white group-hover:text-orange-400">
-                                      <Clock className="mr-2 h-4 w-4" /> 7 Minuten
-                                  </span>
-                                  <span className="text-xs text-zinc-500">Kurz & Fokus</span>
-                              </Button>
-                              
-                              <Button 
-                                  variant="outline" 
-                                  className="h-14 justify-between px-4 border-zinc-700 hover:bg-zinc-800 hover:border-orange-500/50 group"
-                                  onClick={() => handleStartTraining(12)}
-                              >
-                                  <span className="flex items-center text-white group-hover:text-orange-400">
-                                      <Clock className="mr-2 h-4 w-4" /> 12 Minuten
-                                  </span>
-                                  <span className="text-xs text-zinc-500">Standard</span>
-                              </Button>
-                              
-                              <Button 
-                                  variant="outline" 
-                                  className="h-14 justify-between px-4 border-zinc-700 hover:bg-zinc-800 hover:border-orange-500/50 group"
-                                  onClick={() => handleStartTraining(21)}
-                              >
-                                  <span className="flex items-center text-white group-hover:text-orange-400">
-                                      <Clock className="mr-2 h-4 w-4" /> 21 Minuten
-                                  </span>
-                                  <span className="text-xs text-zinc-500">Intensiv</span>
+                              <Button variant="outline" className="flex-1 border-zinc-700 text-white" onClick={() => setShowShareCard(false)}>
+                                  Schließen
                               </Button>
                           </div>
-                          
-                          <Button variant="ghost" className="w-full mt-4 text-zinc-500" onClick={() => setShowDurationSelect(false)}>
-                              Abbrechen
-                          </Button>
                       </motion.div>
                   </div>
               )}
@@ -835,15 +777,14 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
               </div>
           )}
           
-           {/* Training Overlay */}
+           {/* Training Center Integration */}
           <AnimatePresence>
-              {trainingMode && (
-                  <Method36Trainer 
-                    frequency={trainingMode.freq}
-                    toneName={trainingMode.tone}
-                    color={trainingMode.color}
-                    duration={trainingMode.duration}
-                    onClose={() => setTrainingMode(null)}
+              {showTrainingCenter && selectedInfo && (
+                  <TrainingCenter 
+                    frequency={selectedInfo.frequency}
+                    toneName={selectedInfo.toneRange} // Using toneRange as name for now, or fetch proper name
+                    color={selectedInfo.hex}
+                    onClose={() => setShowTrainingCenter(false)}
                   />
               )}
           </AnimatePresence>
