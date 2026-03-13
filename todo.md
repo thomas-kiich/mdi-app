@@ -203,3 +203,11 @@
     - [x] Minimalist visualization for continuous breathing.
     - [x] Separate audio logic for High/Low Gongs.
 - [x] Refactor existing "Yohnatmung" to be a distinct module within the Training Center.
+
+- [ ] Create a new main "Dashboard" view as the starting point, replacing the direct analysis wizard start.
+- [ ] Implement "Dashboard" with 3 main pillars:
+    - [ ] Analysis: The existing voice analysis flow.
+    - [ ] Training Center: Direct access to breathing techniques.
+    - [ ] Laboratory (Scanner): Direct access to the Spectral Scanner.
+- [ ] Integrate "Interval Training" as a third module in the Training Center.
+- [ ] Update navigation to allow returning to the Dashboard from any sub-module.

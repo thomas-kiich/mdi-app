@@ -18,9 +18,10 @@ import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCenter } from "@/components/TrainingCenter";
+import { Dashboard } from "@/components/Dashboard";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, HeartPulse, Check } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ import {
 
 // Define the steps of the wizard
 type WizardStep = 
+  | "dashboard" // New start step
   | "intro" 
   | "preparation" 
   | "question1" 
@@ -52,7 +54,7 @@ type WizardStep =
 
 export default function Home() {
   const [, setLocation] = useLocation();
-  const [currentStep, setCurrentStep] = useState<WizardStep>("intro");
+  const [currentStep, setCurrentStep] = useState<WizardStep>("dashboard"); // Start at Dashboard
   const { 
     isRecording, 
     startRecording, 
@@ -284,57 +286,26 @@ export default function Home() {
                  finalDiffHz = 0;
             }
         } else {
-            // Case B: The dominant tone (e.g. F#) won by accumulation/distribution, 
-            // but was never the fundamental of a single session.
-            // We use the IDEAL frequency of the dominant tone.
-            
-            // We can try to apply a small average shift from the sessions, but ONLY if it's small.
-            let totalCentsShift = 0;
-            let count = 0;
-            
-            const addShift = (res: AnalysisResult | null) => {
-                if (res && res.cents !== undefined) {
-                    // Only include shifts that are reasonable (< 50 cents)
-                    if (Math.abs(res.cents) < 50) {
-                        totalCentsShift += res.cents;
-                        count++;
-                    }
-                }
-            };
-            addShift(results.q1);
-            addShift(results.q2);
-            addShift(results.q3);
-
-            const avgShift = count > 0 ? totalCentsShift / count : 0;
-            
-            // Calculate Hz from shift relative to ideal
-            // Hz = Ideal * 2^(cents/1200)
-            finalHz = toneData.frequency * Math.pow(2, avgShift / 1200);
-            finalCents = avgShift;
-            finalDiffHz = finalHz - toneData.frequency;
+            // Case B: The dominant tone was inferred from harmonics, but never measured as fundamental.
+            // Use the ideal frequency.
+            finalHz = toneData.frequency;
+            finalCents = 0;
+            finalDiffHz = 0;
         }
 
-        const result: AnalysisResult = {
+        setFinalResult({
           tone: toneData,
           fundamentalFreq: finalHz,
           cents: finalCents,
           diffHz: finalDiffHz,
-          // confidence: maxScore, // Removed as not in type
-          noteName: dominantToneName,
           toneDistribution: combinedDistribution,
-          mdiDistribution: combinedMdiDistribution,
-          isSpeaking: false, // Default for final result
-          spectrum: new Uint8Array(0), // Empty spectrum for final result
-          volume: 0 // Default volume
-        };
-        
-        setFinalResult(result);
+          mdiDistribution: combinedMdiDistribution
+        });
 
-        // Find best matching MDI type
-        // Strategy: Use the combinedMdiDistribution to find the winner
+        // Find MDI Result
+        // We use the highest score from mdiDistribution
         let maxMdiScore = 0;
-        let bestMdiId = "1";
-        
+        let bestMdiId = "";
         for (const [id, score] of Object.entries(combinedMdiDistribution)) {
             if (score > maxMdiScore) {
                 maxMdiScore = score;
@@ -342,26 +313,25 @@ export default function Home() {
             }
         }
         
-        const mdiMatch = frequencyData.find(f => f.id.toString() === bestMdiId);
-        setMdiResult(mdiMatch || frequencyData[0]);
-
-        // Save to longitudinal study
-        if (mdiMatch) {
-            // Construct a complete AnalysisResult object for the daily save
-            const dailyResult: AnalysisResult = {
-                ...result, // Use the measured result data (freq, tone, etc.)
-                // Add MDI specific properties if needed by the longitudinal study, 
-                // but usually it expects the AnalysisResult structure.
-                // However, saveDailyResult in useLongitudinalStudy might be expecting just the MDI type or the full result.
-                // Looking at the error, saveDailyResult expects AnalysisResult, but we passed mdiMatch (which is just the JSON entry).
-                // Let's pass the 'result' object which is of type AnalysisResult, but we should probably attach the mdiMatch info to it if needed.
-                // Actually, let's check useLongitudinalStudy definition.
-                // Assuming saveDailyResult takes the MDI match object based on previous code context, but the error says it expects AnalysisResult.
-                // Let's pass 'result' which IS the AnalysisResult.
+        const mdi = frequencyData.find(f => f.id === parseInt(bestMdiId));
+        if (mdi) {
+            setMdiResult(mdi);
+            
+            // Save to longitudinal study
+            // Construct a synthetic AnalysisResult for storage
+            const syntheticResult: AnalysisResult = {
+                fundamentalFreq: finalHz,
+                tone: toneData,
+                cents: finalCents,
+                diffHz: finalDiffHz,
+                noteName: dominantToneName,
+                isSpeaking: false,
+                spectrum: new Uint8Array(0),
+                volume: 0,
+                toneDistribution: combinedDistribution,
+                mdiDistribution: combinedMdiDistribution
             };
-            // Wait, the error says: Argument of type '{ ... }' (mdiMatch) is not assignable to parameter of type 'AnalysisResult'.
-            // So saveDailyResult expects AnalysisResult.
-            saveDailyResult(result); 
+            saveDailyResult(syntheticResult);
         }
       }
     }
@@ -369,171 +339,57 @@ export default function Home() {
 
   const renderContent = () => {
     switch (currentStep) {
+      case "dashboard":
+        return (
+            <Dashboard 
+                onStartAnalysis={() => setCurrentStep("intro")}
+                onOpenTraining={() => setShowTrainingCenter(true)}
+                onOpenScanner={() => setShowSpectralScanner(true)}
+                onOpenKnowledge={() => setLocation("/wissen")}
+                onOpenTable={() => setShowFrequencyTable(true)}
+            />
+        );
+
       case "intro":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[70vh] animate-in fade-in duration-700">
-            <div className="relative mb-12 group flex flex-col items-center translate-y-4">
-              <div className="absolute inset-0 bg-orange-500/20 blur-3xl rounded-full animate-pulse-slow group-hover:bg-orange-500/30 transition-all duration-500" />
-              <div className="w-40 h-40 md:w-48 md:h-48 flex items-center justify-center relative z-10 group-hover:scale-105 transition-transform duration-500 mb-6">
-                <img 
-                    src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
-                    alt="METHODE 36 Logo" 
-                    className="w-full h-full object-contain drop-shadow-2xl"
-                />
-              </div>
+          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in duration-700">
+            
+            <div className="mb-8 relative">
+                 {/* Logo Container */}
+                 <div className="w-48 h-48 rounded-full bg-black border border-zinc-800 flex items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(249,115,22,0.2)]">
+                     {/* Inner Glow */}
+                     <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/20 to-transparent opacity-50" />
+                     
+                     {/* Logo Image - Adjusted Size and Position */}
+                     <img 
+                        src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/mdi_logo_neu_b556f8e7.jpg" 
+                        alt="MDI Logo" 
+                        className="w-40 h-40 object-contain relative z-10 translate-y-2" 
+                     />
+                 </div>
             </div>
 
-            <div className="mb-6 flex flex-col items-center">
-                <span className="text-orange-500 font-mono tracking-[0.5em] text-sm md:text-base uppercase mb-2">METHODE 36</span>
-                <h1 className="text-4xl md:text-6xl font-bold text-center text-white tracking-tight">
-                  Entdecke deine <br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-red-600">
-                    Wahre Frequenz
-                  </span>
-                </h1>
-            </div>
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">
+              METHODE 36
+            </h1>
             
-            <p className="text-lg md:text-xl text-zinc-400 text-center max-w-xl mb-12 leading-relaxed">
-              Deine Stimme ist der Schlüssel zu deiner Identität. 
-              Analysiere jetzt deine energetische Signatur mit der METHODE 36.
+            <p className="text-xl text-zinc-400 max-w-2xl mb-12 leading-relaxed">
+              Entdecke deine wahre Frequenz und bringe Körper & Geist in Einklang.
+              <br/>
+              <span className="text-sm text-zinc-500 mt-4 block">
+                Schön, dass du da bist! Diese App hilft dir, deine energetische Signatur zu finden und zu harmonisieren.
+              </span>
             </p>
 
-            <div className="flex flex-col gap-4 w-full max-w-xs">
-                <Button 
-                  size="lg" 
-                  className="w-full h-14 text-lg bg-white text-black hover:bg-zinc-200 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.1)] transition-all hover:shadow-[0_0_30px_rgba(255,255,255,0.2)]"
-                  onClick={advanceStep}
-                >
-                  Analyse Starten
-                </Button>
-                
-                <div className="grid grid-cols-3 gap-2 mt-4">
-                    <Button variant="ghost" size="sm" className="text-xs text-zinc-600 hover:text-white flex flex-col h-auto py-2" onClick={() => setShowSpectralScanner(true)}>
-                        <Activity className="w-4 h-4 mb-1" />
-                        Live-Scanner
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-xs text-zinc-600 hover:text-white flex flex-col h-auto py-2" onClick={() => setShowVitalDashboard(true)}>
-                        <HeartPulse className="w-4 h-4 mb-1" />
-                        Vital-Monitor
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-xs text-zinc-600 hover:text-white flex flex-col h-auto py-2" onClick={() => setShowStory(true)}>
-                        <Play className="w-4 h-4 mb-1" />
-                        Intro-Animation
-                    </Button>
-                </div>
-            </div>
-
-            {/* Features Overview */}
-            <div className="w-full max-w-4xl mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-12 duration-1000 delay-300">
-                {[
-                    {
-                        title: "Stimm-Analyse",
-                        description: "Ermittle deinen persönlichen Grundton und deine energetische Signatur durch präzise Frequenzmessung.",
-                        icon: <Mic className="w-5 h-5 text-orange-500" />,
-                        bg: "bg-orange-500/10"
-                    },
-                    {
-                        title: "Frequenz-Training",
-                        description: "Harmonisiere dein System mit geführten Tönungs-Sessions (7, 12 oder 21 Minuten) in deiner Frequenz.",
-                        icon: <Music2 className="w-5 h-5 text-blue-500" />,
-                        bg: "bg-blue-500/10"
-                    },
-                    {
-                        title: "Live-Scanner",
-                        description: "Visualisiere deine Stimme und das gesamte Frequenzspektrum in Echtzeit mit detailliertem Feedback.",
-                        icon: <Activity className="w-5 h-5 text-green-500" />,
-                        bg: "bg-green-500/10"
-                    },
-                    {
-                        title: "Wissenspool",
-                        description: "Vertiefe dein Verständnis mit kuratierten Videos zur Methode 36 und ihren Hintergründen.",
-                        icon: <span className="text-lg">📚</span>,
-                        bg: "bg-purple-500/10"
-                    },
-                    {
-                        title: "Frequenz-Tabelle",
-                        description: "Umfassendes Nachschlagewerk für alle 24 Typen, inklusive Farben, Hz-Werten und Talenten.",
-                        icon: <span className="text-lg">📊</span>,
-                        bg: "bg-yellow-500/10"
-                    },
-                    {
-                        title: "5-Tage-Studie",
-                        description: "Validiere dein Profil durch wiederholte Messungen über mehrere Tage für maximale Genauigkeit.",
-                        icon: <HeartPulse className="w-5 h-5 text-red-500" />,
-                        bg: "bg-red-500/10"
-                    }
-                ].map((feature, i) => (
-                    <div 
-                        key={i}
-                        onClick={() => setSelectedFeature(feature)}
-                        className="bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-2xl hover:bg-zinc-900/50 transition-all cursor-pointer hover:scale-105 group"
-                    >
-                        <div className={`w-10 h-10 rounded-full ${feature.bg} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                            {feature.icon}
-                        </div>
-                        <h3 className="text-white font-medium mb-2 group-hover:text-orange-400 transition-colors">{feature.title}</h3>
-                        <p className="text-sm text-zinc-500">{feature.description}</p>
-                    </div>
+            <Button onClick={advanceStep} size="lg" className="rounded-full w-48 h-14 text-lg bg-white text-black hover:bg-zinc-200 transition-all hover:scale-105">
+              Weiter <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            
+            <div className="mt-16 flex gap-2 justify-center">
+                {[0, 1, 2, 3].map((_, i) => (
+                    <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-white' : 'bg-zinc-800'}`} />
                 ))}
             </div>
-
-            {/* Feature Detail Modal */}
-            {selectedFeature && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300" onClick={() => setSelectedFeature(null)}>
-                    <div 
-                        className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-2xl w-full space-y-6 relative shadow-2xl animate-in zoom-in-95 duration-300"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="absolute top-4 right-4 rounded-full hover:bg-white/10"
-                            onClick={() => setSelectedFeature(null)}
-                        >
-                            <X className="w-5 h-5" />
-                        </Button>
-
-                        <div className="flex items-center gap-4">
-                            <div className={`w-16 h-16 rounded-full ${selectedFeature.bg} flex items-center justify-center`}>
-                                {selectedFeature.icon}
-                            </div>
-                            <h2 className="text-3xl font-bold text-white">{selectedFeature.title}</h2>
-                        </div>
-
-                        <p className="text-lg text-zinc-300 leading-relaxed">
-                            {selectedFeature.description}
-                        </p>
-
-                        {/* Audio Player Placeholder */}
-                        <div className="bg-zinc-950/50 rounded-xl p-6 border border-zinc-800/50">
-                            <div className="flex items-center justify-between mb-4">
-                                <span className="text-xs font-mono text-orange-500 uppercase tracking-widest">Audio Guide</span>
-                                <span className="text-xs text-zinc-500">Coming Soon</span>
-                            </div>
-                            
-                            <div className="flex items-center gap-4 opacity-50 pointer-events-none">
-                                <Button size="icon" className="rounded-full h-12 w-12 bg-white text-black">
-                                    <Play className="h-5 w-5 ml-1" />
-                                </Button>
-                                <div className="flex-1 h-1 bg-zinc-800 rounded-full overflow-hidden">
-                                    <div className="w-0 h-full bg-orange-500" />
-                                </div>
-                                <span className="text-xs font-mono text-zinc-500">00:00</span>
-                            </div>
-                            <p className="text-xs text-zinc-600 mt-4 text-center">
-                                Hier wird bald eine detaillierte Audio-Erklärung von NotebookLM verfügbar sein.
-                            </p>
-                        </div>
-
-                        <div className="flex justify-end">
-                            <Button onClick={() => setSelectedFeature(null)} variant="outline" className="border-zinc-700">
-                                Schließen
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
           </div>
         );
 
@@ -721,8 +577,7 @@ export default function Home() {
              const url = URL.createObjectURL(blob);
              const a = document.createElement('a');
              a.href = url;
-             a.download = `MDI-Analyse-${new Date().toISOString().split('T')[0]}.txt`;
-             document.body.appendChild(a);
+             a.download = `mdi_analyse_${new Date().toISOString().split('T')[0]}.txt`;
              a.click();
              document.body.removeChild(a);
              URL.revokeObjectURL(url);
@@ -867,6 +722,17 @@ export default function Home() {
                   onClose={() => setShowInterpretation(false)}
                 />
             )}
+            
+            {/* Back to Dashboard Button */}
+            <div className="text-center mt-8">
+                <Button 
+                    variant="ghost" 
+                    className="text-zinc-500 hover:text-white"
+                    onClick={() => setCurrentStep("dashboard")}
+                >
+                    Zurück zum Dashboard
+                </Button>
+            </div>
           </div>
         );
     }
@@ -878,25 +744,32 @@ export default function Home() {
       {showOnboarding && <OnboardingTour />}
       
       <div className="container max-w-5xl mx-auto px-4 py-8">
-        {/* Navbar - Logo removed, content shifted up */}
-        <header className="flex justify-between items-center mb-4 md:mb-8">
-          <Link href="/wissen">
-            <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white">
-              <span className="mr-2">📚</span> Wissenspool
-            </Button>
-          </Link>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-zinc-500 hover:text-white ml-2"
-            onClick={() => setShowFrequencyTable(true)}
-          >
-            <span className="mr-2">📊</span> Tabelle
-          </Button>
-          <div className="text-xs font-mono text-zinc-600">
-            BETA 1.1
-          </div>
-        </header>
+        {/* Navbar - Only show if NOT in dashboard to keep dashboard clean, OR show minimal nav */}
+        {currentStep !== 'dashboard' && (
+            <header className="flex justify-between items-center mb-4 md:mb-8 animate-in fade-in">
+              <div className="flex gap-2">
+                 {/* Back to Dashboard if not on dashboard */}
+                 <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white" onClick={() => setCurrentStep("dashboard")}>
+                     <ArrowLeft className="mr-2 w-4 h-4" /> Dashboard
+                 </Button>
+              </div>
+              <div className="flex gap-2">
+                  <Link href="/wissen">
+                    <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white">
+                      <span className="mr-2">📚</span> Wissenspool
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-zinc-500 hover:text-white ml-2"
+                    onClick={() => setShowFrequencyTable(true)}
+                  >
+                    <span className="mr-2">📊</span> Tabelle
+                  </Button>
+              </div>
+            </header>
+        )}
 
         <main>
           {showStory ? (
@@ -913,11 +786,11 @@ export default function Home() {
               baseTone={finalResult.tone} 
               onClose={() => setShowIntervalTrainer(false)} 
             />
-          ) : showTrainingCenter && finalResult && mdiResult ? (
+          ) : showTrainingCenter ? (
             <TrainingCenter
-                frequency={finalResult.fundamentalFreq || mdiResult.frequency}
-                toneName={finalResult.tone.name}
-                color={mdiResult.hex}
+                frequency={finalResult?.fundamentalFreq || 440} // Default if no result yet
+                toneName={finalResult?.tone?.name || "A"}
+                color={mdiResult?.hex || "#ffffff"}
                 onClose={() => setShowTrainingCenter(false)}
             />
           ) : showDirectTrainer && finalResult && mdiResult ? (
@@ -973,7 +846,7 @@ export default function Home() {
         </main>
         
         {/* Footer */}
-        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && (
+        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && currentStep === 'dashboard' && (
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
                 <div>
                     &copy; {new Date().getFullYear()} MDI System.

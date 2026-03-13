@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info } from "lucide-react";
+import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info, Music2 } from "lucide-react";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { MetabolicBreathingTrainer } from "@/components/MetabolicBreathingTrainer";
+import { IntervalTrainer } from "@/components/IntervalTrainer";
+import { TONES } from "@/lib/tones";
 
 interface TrainingCenterProps {
     frequency: number;
@@ -12,7 +14,7 @@ interface TrainingCenterProps {
     onClose: () => void;
 }
 
-type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC';
+type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL';
 
 export function TrainingCenter({ frequency, toneName, color, onClose }: TrainingCenterProps) {
     const [mode, setMode] = useState<TrainingMode>('SELECTION');
@@ -42,9 +44,20 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
         );
     }
 
+    if (mode === 'INTERVAL') {
+        // Find the full tone object for IntervalTrainer
+        const toneObj = TONES.find(t => t.name === toneName) || TONES[0];
+        return (
+            <IntervalTrainer 
+                baseTone={toneObj}
+                onClose={() => setMode('SELECTION')}
+            />
+        );
+    }
+
     return (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-300">
-            <div className="w-full max-w-4xl mx-auto">
+        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-300 overflow-y-auto">
+            <div className="w-full max-w-6xl mx-auto py-12">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <Button 
@@ -59,7 +72,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
                     <div className="w-24" /> {/* Spacer for centering */}
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Option 1: YOHN-Atmung (Active) */}
                     <Card 
                         className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-900 hover:border-orange-500/50 transition-all cursor-pointer group relative overflow-hidden"
@@ -80,7 +93,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
                                 Die zentrale Atemtechnik der Methode 36. Kombiniert Atmung, Bewegung und Klang (Tönen) zur aktiven Harmonisierung und Frequenz-Aktivierung.
                             </p>
 
-                            <div className="space-y-4">
+                            <div className="space-y-4 mt-auto">
                                 <div className="grid grid-cols-3 gap-2">
                                     {[7, 12, 21].map(mins => (
                                         <Button
@@ -149,6 +162,50 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
                                 >
                                     <Play className="w-4 h-4 mr-2" />
                                     Endlos-Modus Starten
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Option 3: Interval Training (Musical) */}
+                    <Card 
+                        className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-900 hover:border-purple-500/50 transition-all cursor-pointer group relative overflow-hidden"
+                        onClick={() => setMode('INTERVAL')}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <CardContent className="p-8 flex flex-col h-full relative z-10">
+                            <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mb-6 text-purple-500">
+                                <Music2 className="w-6 h-6" />
+                            </div>
+                            
+                            <h3 className="text-2xl font-bold text-white mb-2">Intervall-Training</h3>
+                            <div className="flex items-center gap-2 text-xs font-mono text-purple-400 mb-4 uppercase tracking-wider">
+                                <Activity className="w-3 h-3" />
+                                Musikalisch • Harmonien
+                            </div>
+                            
+                            <p className="text-zinc-400 mb-8 flex-grow leading-relaxed">
+                                Trainiere dein Gehör und deine Stimme mit harmonischen Intervallen. Lerne, die Resonanzräume deines Körpers gezielt anzusteuern.
+                            </p>
+
+                            <div className="mt-auto">
+                                <div className="bg-zinc-950/50 rounded-lg p-4 mb-4 border border-zinc-800/50">
+                                    <div className="grid grid-cols-4 gap-1 h-8">
+                                        {[1,2,3,4,5,6,7,8].map(i => (
+                                            <div key={i} className={`rounded-sm ${i % 2 === 0 ? 'bg-purple-500/40' : 'bg-purple-500/20'}`} />
+                                        ))}
+                                    </div>
+                                    <div className="flex justify-between text-xs text-zinc-600 mt-2 font-mono">
+                                        <span>Grundton</span>
+                                        <span>Oktave</span>
+                                    </div>
+                                </div>
+                                <Button 
+                                    className="w-full border-zinc-700 text-white hover:bg-zinc-800 h-12 text-lg font-medium"
+                                    variant="outline"
+                                >
+                                    <Play className="w-4 h-4 mr-2" />
+                                    Training Öffnen
                                 </Button>
                             </div>
                         </CardContent>
