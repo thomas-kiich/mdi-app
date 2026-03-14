@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { X, Download, Share2, Loader2 } from "lucide-react";
+import { X, Download, Share2, Loader2, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -84,6 +84,18 @@ export function CertificateView({ mdiResult, toneDistribution, onClose }: Certif
               <X className="w-6 h-6 text-zinc-400" />
             </Button>
           </div>
+        </div>
+        
+        {/* Back Button for better UX */}
+        <div className="w-full max-w-[210mm] mb-4 flex justify-start px-4">
+            <Button 
+                variant="outline" 
+                onClick={onClose}
+                className="text-zinc-400 border-zinc-700 hover:text-white hover:bg-zinc-800"
+            >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Zurück zur Analyse
+            </Button>
         </div>
 
         {/* Certificate Preview Area */}

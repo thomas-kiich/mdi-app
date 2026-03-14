@@ -61,8 +61,18 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     const numPoints = sortedData.length;
     
     // Find index of dominant tone
-    const domIndex = sortedData.findIndex(d => d.name === dominantToneName);
-    if (domIndex === -1) return { path: "", points: [] };
+    // Handle ranges like "C - D" by taking the first part
+    const cleanDominantName = dominantToneName.split(' - ')[0].split('/')[0].trim();
+    
+    let domIndex = sortedData.findIndex(d => d.name === cleanDominantName);
+    
+    // Fallback: if still not found, try to find a partial match or default to first
+    if (domIndex === -1) {
+        domIndex = sortedData.findIndex(d => dominantToneName.includes(d.name));
+    }
+    
+    // Last resort: default to 0 (E) if nothing matches, to ensure visualization always appears
+    if (domIndex === -1) domIndex = 0;
 
     // Determine spectral direction based on body part (UP/DOWN)
     // The list 'sortedData' is ordered: E, Dis, D, Cis, C, H, Ais, A, Gis, G, Fis, F.

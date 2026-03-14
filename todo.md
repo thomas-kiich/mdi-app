@@ -226,3 +226,8 @@
     - [x] Include Logo, Frequency, Tone, Color, Aura visualization, and key attributes.
     - [x] Add a "Download Certificate" button in the result view.
     - [x] Use `html2canvas` and `jspdf` to generate the PDF.
+
+- [ ] Fix missing Aura visualization in Analysis Result and PDF Certificate:
+    - [ ] Debug why `toneDistribution` is empty or not passed correctly.
+    - [ ] Ensure `SoundBody` receives valid data.
+- [ ] Add a "Back" button to the Certificate view.
