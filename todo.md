@@ -220,3 +220,9 @@
     - [x] Redirect to TrainingCenter with the captured frequency as a parameter.
     - [x] Update TrainingCenter/Method36Trainer/MetabolicBreathingTrainer to accept a custom frequency (instead of just the user's fundamental).
 - [x] Restore the full Analysis Result screen with color aura visualization after completing the analysis process.
+
+- [x] Implement PDF Certificate generation:
+    - [x] Design a high-quality A4 layout for the certificate.
+    - [x] Include Logo, Frequency, Tone, Color, Aura visualization, and key attributes.
+    - [x] Add a "Download Certificate" button in the result view.
+    - [x] Use `html2canvas` and `jspdf` to generate the PDF.

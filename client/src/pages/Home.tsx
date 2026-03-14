@@ -8,6 +8,7 @@ import { FrequencyChart } from "@/components/FrequencyChart";
 import { SpectralMatrix } from '@/components/SpectralMatrix'; // Import new component
 import { FrequencyTable } from '@/components/FrequencyTable'; // Import new component
 import { SoundBody } from '@/components/SoundBody'; // Import new component
+import { CertificateView } from "@/components/CertificateView"; // Import new component
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { useLongitudinalStudy } from "@/hooks/useLongitudinalStudy";
@@ -110,6 +111,7 @@ export default function Home() {
   const [finalResult, setFinalResult] = useState<any | null>(null);
   const [mdiResult, setMdiResult] = useState<typeof frequencyData[0] | null>(null);
   const [showInterpretation, setShowInterpretation] = useState(false);
+  const [showCertificate, setShowCertificate] = useState(false);
   const [showStory, setShowStory] = useState(false);
   const [showSpectralScanner, setShowSpectralScanner] = useState(false);
   const [showVitalDashboard, setShowVitalDashboard] = useState(false);
@@ -569,18 +571,8 @@ export default function Home() {
 
         if (!res || !mdi) return <div>Fehler bei der Auswertung.</div>;
 
-        const handleDownloadResult = async () => {
-             // We can implement a simple text download or PDF here
-             const text = `MDI SYSTEM ANALYSE\nDatum: ${new Date().toLocaleDateString()}\n\nErgebnis: ${mdi.id} - ${mdi.colorName}\nFrequenz: ${mdi.frequency} Hz\nLicht: ${mdi.lightRange}\nKlang: ${mdi.toneRange}\n\nPsychophysiologische Wirkung:\n${mdi.description}\n\nTalent:\n${mdi.talent}`;
-             
-             const blob = new Blob([text], { type: 'text/plain' });
-             const url = URL.createObjectURL(blob);
-             const a = document.createElement('a');
-             a.href = url;
-             a.download = `mdi_analyse_${new Date().toISOString().split('T')[0]}.txt`;
-             a.click();
-             document.body.removeChild(a);
-             URL.revokeObjectURL(url);
+        const handleDownloadResult = () => {
+             setShowCertificate(true);
         };
 
         return (
@@ -690,7 +682,7 @@ export default function Home() {
                       onClick={handleDownloadResult}
                     >
                       <Download className="mr-2 h-4 w-4" />
-                      Ergebnis als Text speichern
+                      Zertifikat erstellen
                     </Button>
                 </div>
 
@@ -743,6 +735,15 @@ export default function Home() {
                     Zurück zum Dashboard
                 </Button>
             </div>
+
+            {/* Certificate View Overlay */}
+            {showCertificate && mdi && (
+                <CertificateView 
+                    mdiResult={mdi}
+                    toneDistribution={res.toneDistribution}
+                    onClose={() => setShowCertificate(false)}
+                />
+            )}
           </div>
         );
     }
