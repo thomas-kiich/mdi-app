@@ -696,6 +696,16 @@ export default function Home() {
 
               </div>
             </div>
+
+            {/* AURA VISUALIZATION (Restored) */}
+            {res && res.toneDistribution && (
+                <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+                    <SoundBody 
+                        toneDistribution={res.toneDistribution} 
+                        dominantToneName={mdi.toneRange} 
+                    />
+                </div>
+            )}
             
             {/* Longitudinal Progress */}
             {!isStudyComplete && (
