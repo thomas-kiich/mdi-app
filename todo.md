@@ -231,3 +231,9 @@
     - [ ] Debug why `toneDistribution` is empty or not passed correctly.
     - [ ] Ensure `SoundBody` receives valid data.
 - [ ] Add a "Back" button to the Certificate view.
+
+- [ ] Implement the "Knowledge Pool" (Wissenspool) section:
+    - [ ] Create a new `KnowledgePool.tsx` component.
+    - [ ] Structure content into "The Method", "Frequencies & Colors", and "Instructions".
+    - [ ] Integrate the `KnowledgePool` into the Dashboard and navigation.
+    - [ ] Populate the "Frequencies & Colors" section with data from `TONES` and `frequencyData`.

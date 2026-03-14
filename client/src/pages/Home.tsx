@@ -9,6 +9,7 @@ import { SpectralMatrix } from '@/components/SpectralMatrix'; // Import new comp
 import { FrequencyTable } from '@/components/FrequencyTable'; // Import new component
 import { SoundBody } from '@/components/SoundBody'; // Import new component
 import { CertificateView } from "@/components/CertificateView"; // Import new component
+import { KnowledgePool } from "@/components/KnowledgePool"; // Import new component
 import { useAudioAnalyzer, AnalysisResult } from "@/hooks/useAudioAnalyzer";
 import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 import { useLongitudinalStudy } from "@/hooks/useLongitudinalStudy";
@@ -112,6 +113,7 @@ export default function Home() {
   const [mdiResult, setMdiResult] = useState<typeof frequencyData[0] | null>(null);
   const [showInterpretation, setShowInterpretation] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
+  const [showKnowledgePool, setShowKnowledgePool] = useState(false);
   const [showStory, setShowStory] = useState(false);
   const [showSpectralScanner, setShowSpectralScanner] = useState(false);
   const [showVitalDashboard, setShowVitalDashboard] = useState(false);
@@ -347,7 +349,7 @@ export default function Home() {
                 onStartAnalysis={() => setCurrentStep("intro")}
                 onOpenTraining={() => setShowTrainingCenter(true)}
                 onOpenScanner={() => setShowSpectralScanner(true)}
-                onOpenKnowledge={() => setLocation("/wissen")}
+                onOpenKnowledge={() => setShowKnowledgePool(true)}
                 onOpenTable={() => setShowFrequencyTable(true)}
             />
         );
@@ -765,11 +767,14 @@ export default function Home() {
                  </Button>
               </div>
               <div className="flex gap-2">
-                  <Link href="/wissen">
-                    <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white">
-                      <span className="mr-2">📚</span> Wissenspool
-                    </Button>
-                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-zinc-500 hover:text-white"
+                    onClick={() => setShowKnowledgePool(true)}
+                  >
+                    <span className="mr-2">📚</span> Wissenspool
+                  </Button>
                   <Button 
                     variant="ghost" 
                     size="sm" 
@@ -783,7 +788,9 @@ export default function Home() {
         )}
 
         <main>
-          {showStory ? (
+          {showKnowledgePool ? (
+            <KnowledgePool onClose={() => setShowKnowledgePool(false)} />
+          ) : showStory ? (
             <ConnectionStory onClose={() => setShowStory(false)} />
           ) : showSpectralScanner ? (
             <SpectralScanner 
