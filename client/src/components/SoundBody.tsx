@@ -433,16 +433,26 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
       {/* HUMAN BODY SILHOUETTE OVERLAY - Hidden in Vision Mode */}
       {!isVisionMode && (
-          <div className="absolute inset-0 pointer-events-none flex justify-center items-start pt-[120px] opacity-80 mix-blend-overlay">
+          <div className="absolute inset-0 pointer-events-none flex justify-center items-start opacity-100">
              {/* Simple SVG Silhouette */}
-             <svg width="400" height="800" viewBox="0 0 400 800" className="opacity-30">
+             <svg width="400" height="800" viewBox="0 0 400 800" className="opacity-60">
                 {/* Head */}
-                <circle cx="200" cy="120" r="35" fill="none" stroke="white" strokeWidth="2" />
-                {/* Body Lines */}
-                <path d="M 200 155 L 200 380" stroke="white" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="160" y1="180" x2="240" y2="180" stroke="white" strokeWidth="1" />
-                <line x1="200" y1="380" x2="160" y2="600" stroke="white" strokeWidth="1" />
-                <line x1="200" y1="380" x2="240" y2="600" stroke="white" strokeWidth="1" />
+                <circle cx="200" cy="130" r="30" fill="none" stroke="white" strokeWidth="1.5" />
+                {/* Spine/Chakra Line */}
+                <path d="M 200 160 L 200 380" stroke="white" strokeWidth="1" strokeDasharray="2 4" opacity="0.5" />
+                {/* Shoulders */}
+                <path d="M 160 170 Q 200 160 240 170" fill="none" stroke="white" strokeWidth="1.5" />
+                {/* Arms */}
+                <path d="M 160 170 L 140 300" stroke="white" strokeWidth="1" opacity="0.8" />
+                <path d="M 240 170 L 260 300" stroke="white" strokeWidth="1" opacity="0.8" />
+                {/* Torso Sides */}
+                <path d="M 160 170 Q 150 280 165 380" fill="none" stroke="white" strokeWidth="0.5" opacity="0.5" />
+                <path d="M 240 170 Q 250 280 235 380" fill="none" stroke="white" strokeWidth="0.5" opacity="0.5" />
+                {/* Hips */}
+                <path d="M 165 380 L 235 380" stroke="white" strokeWidth="1" opacity="0.5" />
+                {/* Legs */}
+                <line x1="180" y1="380" x2="170" y2="750" stroke="white" strokeWidth="1" opacity="0.8" />
+                <line x1="220" y1="380" x2="230" y2="750" stroke="white" strokeWidth="1" opacity="0.8" />
              </svg>
           </div>
       )}

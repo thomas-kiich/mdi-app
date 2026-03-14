@@ -237,3 +237,6 @@
     - [ ] Structure content into "The Method", "Frequencies & Colors", and "Instructions".
     - [ ] Integrate the `KnowledgePool` into the Dashboard and navigation.
     - [ ] Populate the "Frequencies & Colors" section with data from `TONES` and `frequencyData`.
+
+- [ ] Fix the question transition in the Analysis flow: Ensure the new question appears immediately or the old one is hidden during the transition to the next recording step.
+- [ ] Restore the human silhouette in the Aura visualization (SoundBody component) to provide better context for the color aura.
