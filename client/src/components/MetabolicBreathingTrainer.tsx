@@ -48,72 +48,41 @@ export function MetabolicBreathingTrainer({ frequency, toneName, color, audioMod
         };
     }, []);
 
-    const playGong = (pitch: 'low' | 'high') => {
-        if (isMuted) return;
-        const ctx = audioCtxRef.current;
-        if (!ctx || !masterGainRef.current) return;
-        
-        const osc = ctx.createOscillator();
-        osc.type = 'sine';
-        
-        // High gong for Inhale (Start), Low gong for Exhale
-        // We use harmonics of the user's fundamental frequency if possible, or standard A4/A3
-        // For simplicity and clarity in this passive mode, let's use a clear 5th interval or Octave
-        // Let's use the user's frequency!
-        
-        const baseFreq = frequency;
-        
-        if (pitch === 'high') {
-            // High Gong: Octave up
-            osc.frequency.value = baseFreq * 2; 
-        } else {
-            // Low Gong: Fundamental
-            osc.frequency.value = baseFreq; 
-        }
-        
-        const gain = ctx.createGain();
-        gain.gain.setValueAtTime(0, ctx.currentTime);
-        
-        // Soft attack, long release
-        gain.gain.linearRampToValueAtTime(0.4, ctx.currentTime + 0.05); 
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.0); 
-        
-        osc.connect(gain).connect(masterGainRef.current);
-        osc.start();
-        osc.stop(ctx.currentTime + 2.5);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Get audio URL based on selected module
+    const getAudioUrl = () => {
+        const urls: Record<'7min' | '21min' | '21min-loop', string> = {
+            '7min': 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav',
+            '21min': 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_0665d0c7.wav',
+            '21min-loop': 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_0665d0c7.wav'
+        };
+        return urls[audioModule];
     };
 
     const startTraining = () => {
-        const ctx = audioCtxRef.current;
-        if (!ctx) return;
-        if (ctx.state === 'suspended') ctx.resume();
-        
         setIsPlaying(true);
         setCycleCount(0);
-        setPhase('OUT'); // Reset to start
+        setPhase('OUT');
         
-        // The cycle is 6 beats total: 2 IN, 4 OUT
-        // Total duration = 6 * 1.666s = 10s
+        // Play the selected music module
+        if (audioRef.current) {
+            audioRef.current.src = getAudioUrl();
+            audioRef.current.loop = audioModule === '21min-loop';
+            audioRef.current.play().catch(err => console.error('Audio playback error:', err));
+        }
+        
+        // Breathing animation loop (visual only, no sound)
         const CYCLE_DURATION = 6 * BEAT_DURATION * 1000;
         const IN_DURATION = 2 * BEAT_DURATION * 1000;
-        
         let cycleStart = Date.now();
+        let lastPhase: Phase = 'IN';
         
-        // Initial Gong (High for Inhale)
-        playGong('high');
-        setPhase('IN');
-
-        // Better approach: Main Loop Function
-        // We need to keep track of the LAST phase to detect transitions
-        // Initialize lastPhase to 'IN' because we manually start with IN
-        let lastPhase: Phase = 'IN'; 
-
         const loop = () => {
             const now = Date.now();
             const elapsed = now - cycleStart;
             const cycleTime = elapsed % CYCLE_DURATION;
             
-            // Determine Phase based on time
             let currentPhase: Phase = 'OUT';
             if (cycleTime < IN_DURATION) {
                 currentPhase = 'IN';
@@ -121,30 +90,19 @@ export function MetabolicBreathingTrainer({ frequency, toneName, color, audioMod
                 currentPhase = 'OUT';
             }
 
-            // Detect Edge
             if (currentPhase !== lastPhase) {
-                // Update React State
                 setPhase(currentPhase);
-                
-                // Trigger Audio
                 if (currentPhase === 'IN') {
-                    playGong('high');
                     setCycleCount(c => c + 1);
-                } else {
-                    playGong('low');
                 }
-                
-                // Update tracker
                 lastPhase = currentPhase;
             }
             
             requestRef.current = requestAnimationFrame(loop);
         };
         
-        // Reset state for loop
         cycleStart = Date.now();
         setPhase('IN');
-        playGong('high');
         
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
         requestRef.current = requestAnimationFrame(loop);
@@ -152,6 +110,10 @@ export function MetabolicBreathingTrainer({ frequency, toneName, color, audioMod
 
     const stopTraining = () => {
         setIsPlaying(false);
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
         if (requestRef.current) cancelAnimationFrame(requestRef.current);
         if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
         setPhase('OUT');
@@ -163,6 +125,8 @@ export function MetabolicBreathingTrainer({ frequency, toneName, color, audioMod
 
     return (
         <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-500">
+            {/* Hidden audio element for music playback */}
+            <audio ref={audioRef} />
             
             {/* Background Ambient Animation */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
