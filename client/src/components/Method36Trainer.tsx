@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { X, Heart, Play, Square, Volume2, VolumeX, ArrowUpCircle, ArrowDownCircle, Clock, Waves, History, Share2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { saveTrainingSession } from "@/lib/training";
 // import { WaterSound } from "@/lib/WaterSound"; // Deprecated in favor of user WAV
 
 interface Method36TrainerProps {
@@ -86,27 +87,17 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     // 1 cycle = 6 beats * 1.666s = 10 seconds
     const totalCycles = duration ? duration * 6 : null;
 
-    // Load logs from localStorage
-    useEffect(() => {
-        const storedLogs = localStorage.getItem('method36_logs');
-        if (storedLogs) {
-            setSessionLogs(JSON.parse(storedLogs));
-        }
-    }, []);
-
     // Save log when session completes
     const saveSessionLog = () => {
         if (!duration) return;
         
-        const newLog: SessionLog = {
-            date: new Date().toISOString(),
+        saveTrainingSession({
+            type: 'methode36',
             duration: duration,
-            toneName: toneName
-        };
-        
-        const updatedLogs = [newLog, ...sessionLogs].slice(0, 50); // Keep last 50 logs
-        setSessionLogs(updatedLogs);
-        localStorage.setItem('method36_logs', JSON.stringify(updatedLogs));
+            tone: toneName,
+            frequency: frequency,
+            notes: `Methode 36 - ${duration} Min`
+        });
         
         toast({
             title: "Training abgeschlossen",

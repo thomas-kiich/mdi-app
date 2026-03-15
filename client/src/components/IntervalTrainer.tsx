@@ -6,6 +6,7 @@ import { Play, Pause, X, Music2, Info, User, Mic, ArrowLeft } from "lucide-react
 import { motion, AnimatePresence } from "framer-motion";
 import { TONES, ToneData } from "@/lib/tones";
 import { useAudioAnalyzer } from "@/hooks/useAudioAnalyzer";
+import { saveTrainingSession } from "@/lib/training";
 
 interface IntervalTrainerProps {
   baseTone: ToneData;
@@ -34,6 +35,10 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
   const animationFrameRef = useRef<number | undefined>(undefined);
   const startTimeRef = useRef<number>(0);
   const [progress, setProgress] = useState(0);
+  
+  // Track session stats
+  const sessionStartRef = useRef<number>(Date.now());
+  const completedIntervalsRef = useRef<number>(0);
 
   useEffect(() => {
     // Initialize Audio Context
@@ -44,6 +49,18 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
       stopSound();
       if (audioCtxRef.current) {
         audioCtxRef.current.close();
+      }
+      
+      // Save session on unmount if any intervals were completed
+      if (completedIntervalsRef.current > 0) {
+          const durationMinutes = Math.max(1, Math.round((Date.now() - sessionStartRef.current) / 60000));
+          saveTrainingSession({
+              type: 'interval',
+              duration: durationMinutes,
+              tone: baseTone.name,
+              frequency: baseTone.frequency,
+              notes: `Intervall-Training: ${completedIntervalsRef.current} Durchgänge`
+          });
       }
     };
   }, []);
@@ -124,6 +141,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
         setIsPlaying(false);
         stopRecording(); // Stop mic when finished
         setProgress(0);
+        completedIntervalsRef.current += 1; // Increment completed count
         return; // Stop animation
       }
 

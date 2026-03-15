@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info, Music2 } from "lucide-react";
+import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info, Music2, History as HistoryIcon } from "lucide-react";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { MetabolicBreathingTrainer } from "@/components/MetabolicBreathingTrainer";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
+import { TrainingHistory } from "@/components/TrainingHistory";
 import { TONES } from "@/lib/tones";
 
 interface TrainingCenterProps {
@@ -14,7 +15,7 @@ interface TrainingCenterProps {
     onClose: () => void;
 }
 
-type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL';
+type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL' | 'HISTORY';
 
 export function TrainingCenter({ frequency, toneName, color, onClose }: TrainingCenterProps) {
     const [mode, setMode] = useState<TrainingMode>('SELECTION');
@@ -55,6 +56,14 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
         );
     }
 
+    if (mode === 'HISTORY') {
+        return (
+            <TrainingHistory 
+                onClose={() => setMode('SELECTION')}
+            />
+        );
+    }
+
     return (
         <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-300 overflow-y-auto">
             <div className="w-full max-w-6xl mx-auto py-12">
@@ -69,7 +78,14 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
                         Zurück
                     </Button>
                     <h2 className="text-2xl font-bold text-white">Frequenz-Training</h2>
-                    <div className="w-24" /> {/* Spacer for centering */}
+                    <Button 
+                        variant="ghost" 
+                        onClick={() => setMode('HISTORY')}
+                        className="text-zinc-400 hover:text-white"
+                    >
+                        <HistoryIcon className="w-5 h-5 mr-2" />
+                        Verlauf
+                    </Button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
