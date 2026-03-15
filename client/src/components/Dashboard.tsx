@@ -23,7 +23,7 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
     }, []);
 
     return (
-        <div className="min-h-[80vh] flex flex-col justify-center animate-in fade-in duration-700 py-12 pt-20 relative">
+        <div className="min-h-[80vh] flex flex-col justify-center animate-in fade-in duration-700 py-12 pt-48 relative">
             
             {/* Theme Toggle */}
             <div className="absolute top-4 right-4 md:top-6 md:right-6">

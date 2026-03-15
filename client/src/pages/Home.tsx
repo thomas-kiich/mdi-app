@@ -400,7 +400,7 @@ export default function Home() {
 
       case "preparation":
         return (
-          <div className="max-w-2xl mx-auto py-20 px-4 animate-in slide-in-from-bottom-8 duration-700 pt-32">
+          <div className="max-w-2xl mx-auto py-20 px-4 animate-in slide-in-from-bottom-8 duration-700 pt-48">
             <h2 className="text-3xl font-bold text-white mb-8">Vorbereitung</h2>
             
             <div className="space-y-6 mb-12">
@@ -463,7 +463,7 @@ export default function Home() {
            (currentStep === "question3" && results.q3);
 
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in pt-20">
+          <div className="flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in pt-48">
             <div className="mb-8 flex gap-2">
                 {[1, 2, 3].map(i => (
                     <div key={i} className={cn(
@@ -561,7 +561,7 @@ export default function Home() {
 
       case "analyzing":
         return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] pt-20">
+          <div className="flex flex-col items-center justify-center min-h-[60vh] pt-48">
             <Loader2 className="w-16 h-16 text-orange-500 animate-spin mb-8" />
             <h2 className="text-2xl font-bold text-white mb-2">Berechne dein Profil...</h2>
             <p className="text-zinc-400">Deine Frequenzen werden multidimensional ausgewertet.</p>
@@ -579,7 +579,7 @@ export default function Home() {
         };
 
         return (
-          <div className="max-w-4xl mx-auto py-8 px-4 animate-in fade-in duration-1000 pt-20">
+          <div className="max-w-4xl mx-auto py-8 px-4 animate-in fade-in duration-1000 pt-48">
             
             {/* Header Result Card */}
             <div className="text-center mb-12">

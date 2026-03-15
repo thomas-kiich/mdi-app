@@ -53,8 +53,8 @@ export function TrainingHistory({ onClose }: TrainingHistoryProps) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-300 pt-20">
-            <div className="w-full max-w-4xl mx-auto h-[80vh] flex flex-col pt-4">
+        <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-300 pt-40">
+            <div className="w-full max-w-4xl mx-auto h-[80vh] flex flex-col pt-12">
                 <div className="flex items-center justify-between mb-6">
                     <Button 
                         variant="ghost" 
