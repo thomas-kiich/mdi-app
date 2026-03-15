@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame } from "lucide-react";
+import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame, Moon } from "lucide-react";
 import { calculateStreak } from "@/lib/training";
 import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
@@ -13,9 +13,10 @@ interface DashboardProps {
     onOpenKnowledge: () => void;
     onOpenTable: () => void;
     onOpenVital: () => void;
+    onOpenSleep: () => void;
 }
 
-export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOpenKnowledge, onOpenTable, onOpenVital }: DashboardProps) {
+export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOpenKnowledge, onOpenTable, onOpenVital, onOpenSleep }: DashboardProps) {
     const [streak, setStreak] = useState(0);
 
     useEffect(() => {
@@ -214,11 +215,41 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                     </Card>
                 </motion.div>
 
-                 {/* Pillar 6: Frequency Table (To balance the grid 3x2) */}
+                 {/* Pillar 6: Sleep & Theta */}
                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.6 }}
+                >
+                    <Card 
+                        className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-purple-500/50 transition-all cursor-pointer group h-full relative overflow-hidden min-h-[320px]"
+                        onClick={onOpenSleep}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <CardContent className="p-8 flex flex-col h-full relative z-10">
+                            <div className="w-14 h-14 rounded-2xl bg-purple-500/20 flex items-center justify-center mb-6 text-purple-500 group-hover:scale-110 transition-transform">
+                                <Moon className="w-7 h-7" />
+                            </div>
+                            
+                            <h2 className="text-2xl font-bold text-white mb-2">Schlaf & Theta</h2>
+                            <p className="text-zinc-400 mb-8 leading-relaxed">
+                                Affirmationen & Umprogrammierung im Theta-Zustand. Schlaf mit Intention.
+                            </p>
+
+                            <div className="mt-auto">
+                                <Button className="w-full bg-white text-black hover:bg-zinc-200 h-12 text-lg group-hover:translate-x-1 transition-transform">
+                                    Schlaf-Session Starten <ArrowRight className="ml-2 w-4 h-4" />
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+
+                 {/* Pillar 7: Frequency Table (To balance the grid 3x2) */}
+                 <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.7 }}
                 >
                     <Card 
                         className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-cyan-500/50 transition-all cursor-pointer group h-full relative overflow-hidden min-h-[320px]"

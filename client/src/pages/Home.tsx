@@ -20,6 +20,7 @@ import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCenter } from "@/components/TrainingCenter";
+import { SleepTheta } from "@/components/SleepTheta";
 import { Dashboard } from "@/components/Dashboard";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
@@ -124,6 +125,7 @@ export default function Home() {
   const [showTrainingCenter, setShowTrainingCenter] = useState(false);
   const [selectedTrainingDuration, setSelectedTrainingDuration] = useState<number>(7);
   const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
+  const [showSleepTheta, setShowSleepTheta] = useState(false);
 
   // Show onboarding tour on first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -352,6 +354,7 @@ export default function Home() {
                 onOpenKnowledge={() => setShowKnowledgePool(true)}
                 onOpenTable={() => setShowFrequencyTable(true)}
                 onOpenVital={() => setShowVitalDashboard(true)}
+                onOpenSleep={() => setShowSleepTheta(true)}
             />
         );
 
@@ -797,7 +800,9 @@ export default function Home() {
         )}
 
         <main>
-          {showKnowledgePool ? (
+          {showSleepTheta ? (
+            <SleepTheta onClose={() => setShowSleepTheta(false)} />
+          ) : showKnowledgePool ? (
             <KnowledgePool onClose={() => setShowKnowledgePool(false)} />
           ) : showStory ? (
             <ConnectionStory onClose={() => setShowStory(false)} />
