@@ -14,9 +14,24 @@ interface IntervalTrainerProps {
 }
 
 const INTERVALS = [
-  { name: "Reine Quinte", ratio: 1.5, description: "Verbindung Nabel (Ich-Kraft) zu Herz (Verbundenheit). Harmonisiert und öffnet." },
-  { name: "Oktave", ratio: 2.0, description: "Die Vollendung. Der gleiche Ton auf einer höheren Ebene. Transformation." },
-  { name: "Große Terz", ratio: 1.25, description: "Helle, freudige Ausdehnung. Schafft Raum und Zuversicht." },
+  { 
+    name: "Reine Quinte", 
+    ratio: 1.5, 
+    description: "Verbindung Nabel (Ich-Kraft) zu Herz (Verbundenheit). Harmonisiert und öffnet.",
+    infoText: "Die Quinte ist eine der mächtigsten Harmonien. Sie verbindet deine Willenskraft (Nabel-Chakra) mit deiner Herzöffnung. Ideal für: Selbstermächtigung, emotionale Heilung, innere Stabilität. Beste Zeit: Morgens oder mittags. Dauer: 7-10 Min täglich für tiefe Wirkung."
+  },
+  { 
+    name: "Oktave", 
+    ratio: 2.0, 
+    description: "Die Vollendung. Der gleiche Ton auf einer höheren Ebene. Transformation.",
+    infoText: "Die Oktave ist die Vollkommenheit. Derselbe Ton, aber auf einer höheren Frequenz-Ebene. Sie aktiviert Transformation und Bewusstseinserweiterung. Ideal für: Spirituelle Entwicklung, innere Klarheit, Übergang. Beste Zeit: Abends zur Reflexion. Dauer: 5-15 Min, je nach Empfindung."
+  },
+  { 
+    name: "Große Terz", 
+    ratio: 1.25, 
+    description: "Helle, freudige Ausdehnung. Schafft Raum und Zuversicht.",
+    infoText: "Die Große Terz strahlt Freude und Optimismus aus. Sie öffnet Raum für Kreativität und positive Emotionen. Ideal für: Motivation, Kreativität, emotionale Leichtigkeit. Beste Zeit: Tagsüber für Energie-Boost. Dauer: 5-7 Min, um die Stimmung zu heben."
+  },
 ];
 
 export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {

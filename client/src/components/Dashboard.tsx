@@ -4,6 +4,7 @@ import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPuls
 import { calculateStreak } from "@/lib/training";
 import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
+import { ThemeToggle } from "./ThemeToggle";
 
 interface DashboardProps {
     onStartAnalysis: () => void;
@@ -22,7 +23,12 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
     }, []);
 
     return (
-        <div className="min-h-[80vh] flex flex-col justify-center animate-in fade-in duration-700 py-12">
+        <div className="min-h-[80vh] flex flex-col justify-center animate-in fade-in duration-700 py-12 relative">
+            
+            {/* Theme Toggle */}
+            <div className="absolute top-4 right-4 md:top-6 md:right-6">
+                <ThemeToggle />
+            </div>
             
             <div className="text-center mb-12 space-y-4 relative">
                  {streak > 0 && (
