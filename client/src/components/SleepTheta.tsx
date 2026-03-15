@@ -123,14 +123,18 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [showPlayback, setShowPlayback] = useState(false);
 
   const handlePlaySession = (session: AffirmationSession) => {
     setSelectedSession(session);
+    setShowPlayback(true);
     setIsPlaying(true);
-    if (audioRef.current && session.audioUrl) {
-      audioRef.current.src = session.audioUrl;
-      audioRef.current.play().catch(err => console.error('Playback error:', err));
-    }
+    setTimeout(() => {
+      if (audioRef.current && session.audioUrl) {
+        audioRef.current.src = session.audioUrl;
+        audioRef.current.play().catch(err => console.error('Playback error:', err));
+      }
+    }, 100);
   };
 
   const handlePlayPause = () => {
@@ -189,13 +193,18 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
     return colors[category] || 'from-zinc-500/20 to-zinc-500/20 border-zinc-500/30';
   };
 
-  if (selectedSession) {
+  if (showPlayback && selectedSession) {
     return (
       <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-300 pt-40">
         <div className="w-full max-w-2xl mx-auto h-[80vh] flex flex-col pt-12">
           <Button 
             variant="ghost" 
-            onClick={() => setSelectedSession(null)}
+            onClick={() => {
+              setShowPlayback(false);
+              setSelectedSession(null);
+              setIsPlaying(false);
+              if (audioRef.current) audioRef.current.pause();
+            }}
             className="text-zinc-400 hover:text-white mb-8"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
