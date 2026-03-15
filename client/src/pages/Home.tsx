@@ -351,6 +351,7 @@ export default function Home() {
                 onOpenScanner={() => setShowSpectralScanner(true)}
                 onOpenKnowledge={() => setShowKnowledgePool(true)}
                 onOpenTable={() => setShowFrequencyTable(true)}
+                onOpenVital={() => setShowVitalDashboard(true)}
             />
         );
 
@@ -771,9 +772,17 @@ export default function Home() {
                     variant="ghost" 
                     size="sm" 
                     className="text-zinc-500 hover:text-white"
+                    onClick={() => setShowVitalDashboard(true)}
+                  >
+                    <span className="mr-2">❤️</span> Vital
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-zinc-500 hover:text-white ml-2"
                     onClick={() => setShowKnowledgePool(true)}
                   >
-                    <span className="mr-2">📚</span> Wissenspool
+                    <span className="mr-2">📚</span> Wissen
                   </Button>
                   <Button 
                     variant="ghost" 
