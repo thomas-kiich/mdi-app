@@ -69,6 +69,7 @@ export function MetabolicBreathingTrainer({ frequency, toneName, color, audioMod
         if (audioRef.current) {
             audioRef.current.src = getAudioUrl();
             audioRef.current.loop = audioModule === '21min-loop';
+            audioRef.current.volume = isMuted ? 0 : 0.7;
             audioRef.current.play().catch(err => console.error('Audio playback error:', err));
         }
         
@@ -120,13 +121,17 @@ export function MetabolicBreathingTrainer({ frequency, toneName, color, audioMod
     };
 
     const toggleMute = () => {
-        setIsMuted(!isMuted);
+        const newMutedState = !isMuted;
+        setIsMuted(newMutedState);
+        if (audioRef.current) {
+            audioRef.current.volume = newMutedState ? 0 : 0.7;
+        }
     };
 
     return (
         <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-500">
             {/* Hidden audio element for music playback */}
-            <audio ref={audioRef} />
+            <audio ref={audioRef} crossOrigin="anonymous" />
             
             {/* Background Ambient Animation */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
