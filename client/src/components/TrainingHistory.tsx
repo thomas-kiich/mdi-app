@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getTrainingHistory, TrainingSession, deleteSession, clearHistory } from "@/lib/training";
-import { ArrowLeft, Trash2, Calendar, Clock, Music2, Activity, Wind } from "lucide-react";
+import { getTrainingHistory, TrainingSession, deleteSession, clearHistory, getTrainingStats, TrainingStats } from "@/lib/training";
+import { ArrowLeft, Trash2, Calendar, Clock, Music2, Activity, Wind, Trophy, Flame, Timer } from "lucide-react";
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -13,20 +13,24 @@ interface TrainingHistoryProps {
 
 export function TrainingHistory({ onClose }: TrainingHistoryProps) {
     const [history, setHistory] = useState<TrainingSession[]>([]);
+    const [stats, setStats] = useState<TrainingStats | null>(null);
 
     useEffect(() => {
         setHistory(getTrainingHistory());
+        setStats(getTrainingStats());
     }, []);
 
     const handleDelete = (id: string) => {
         deleteSession(id);
         setHistory(getTrainingHistory());
+        setStats(getTrainingStats());
     };
 
     const handleClear = () => {
         if (confirm("Möchtest du wirklich den gesamten Verlauf löschen?")) {
             clearHistory();
             setHistory([]);
+            setStats(getTrainingStats());
         }
     };
 
@@ -72,6 +76,40 @@ export function TrainingHistory({ onClose }: TrainingHistoryProps) {
                         </Button>
                     )}
                 </div>
+
+                {/* Statistics Section */}
+                {stats && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <Card className="bg-zinc-900/50 border-zinc-800 p-4 flex flex-col items-center justify-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center mb-2">
+                                <Timer className="w-5 h-5 text-blue-500" />
+                            </div>
+                            <div className="text-2xl font-bold text-white">{stats.totalMinutes}</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-wider">Minuten Gesamt</div>
+                        </Card>
+                        <Card className="bg-zinc-900/50 border-zinc-800 p-4 flex flex-col items-center justify-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-2">
+                                <Activity className="w-5 h-5 text-green-500" />
+                            </div>
+                            <div className="text-2xl font-bold text-white">{stats.totalSessions}</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-wider">Sessions</div>
+                        </Card>
+                        <Card className="bg-zinc-900/50 border-zinc-800 p-4 flex flex-col items-center justify-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center mb-2">
+                                <Music2 className="w-5 h-5 text-purple-500" />
+                            </div>
+                            <div className="text-2xl font-bold text-white">{stats.favoriteTone}</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-wider">Lieblingston</div>
+                        </Card>
+                        <Card className="bg-zinc-900/50 border-zinc-800 p-4 flex flex-col items-center justify-center text-center">
+                            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center mb-2">
+                                <Flame className="w-5 h-5 text-orange-500" />
+                            </div>
+                            <div className="text-2xl font-bold text-white">{stats.thisWeekSessions}</div>
+                            <div className="text-xs text-zinc-500 uppercase tracking-wider">Diese Woche</div>
+                        </Card>
+                    </div>
+                )}
 
                 <Card className="flex-1 bg-zinc-900/50 border-zinc-800 overflow-hidden flex flex-col">
                     <CardHeader className="border-b border-zinc-800 pb-4">

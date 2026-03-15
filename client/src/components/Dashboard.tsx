@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap } from "lucide-react";
+import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame } from "lucide-react";
+import { calculateStreak } from "@/lib/training";
+import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
 
 interface DashboardProps {
@@ -13,10 +15,28 @@ interface DashboardProps {
 }
 
 export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOpenKnowledge, onOpenTable, onOpenVital }: DashboardProps) {
+    const [streak, setStreak] = useState(0);
+
+    useEffect(() => {
+        setStreak(calculateStreak());
+    }, []);
+
     return (
         <div className="min-h-[80vh] flex flex-col justify-center animate-in fade-in duration-700 py-12">
             
-            <div className="text-center mb-12 space-y-4">
+            <div className="text-center mb-12 space-y-4 relative">
+                 {streak > 0 && (
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="absolute top-0 right-4 md:right-12 lg:right-24 flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 px-4 py-2 rounded-full cursor-help"
+                        title="Tage in Folge trainiert"
+                    >
+                        <Flame className="w-5 h-5 text-orange-500 fill-orange-500 animate-pulse" />
+                        <span className="text-orange-500 font-bold">{streak} Tage Streak</span>
+                    </motion.div>
+                )}
+
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
