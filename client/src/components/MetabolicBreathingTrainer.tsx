@@ -8,6 +8,7 @@ interface MetabolicBreathingTrainerProps {
     frequency: number;
     toneName: string;
     color: string;
+    audioModule?: '7min' | '21min' | '21min-loop';
     onClose: () => void;
 }
 
@@ -16,7 +17,7 @@ const BEAT_DURATION = 1.666666;
 
 type Phase = 'IN' | 'OUT';
 
-export function MetabolicBreathingTrainer({ frequency, toneName, color, onClose }: MetabolicBreathingTrainerProps) {
+export function MetabolicBreathingTrainer({ frequency, toneName, color, audioModule = '7min', onClose }: MetabolicBreathingTrainerProps) {
     const { toast } = useToast();
     const [isPlaying, setIsPlaying] = useState(false);
     const [phase, setPhase] = useState<Phase>('OUT');

@@ -20,6 +20,7 @@ type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL' | 'HISTORY';
 export function TrainingCenter({ frequency, toneName, color, onClose }: TrainingCenterProps) {
     const [mode, setMode] = useState<TrainingMode>('SELECTION');
     const [selectedDuration, setSelectedDuration] = useState<number>(7);
+    const [selectedAudioModule, setSelectedAudioModule] = useState<'7min' | '21min' | '21min-loop'>('7min');
 
     // If a specific trainer is active, render it
     if (mode === 'YOHN') {
@@ -40,6 +41,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
                 frequency={frequency}
                 toneName={toneName}
                 color={color}
+                audioModule={selectedAudioModule}
                 onClose={() => setMode('SELECTION')}
             />
         );
@@ -138,8 +140,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
 
                     {/* Option 2: Stoffwechsel-Atmung (Passive) */}
                     <Card 
-                        className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-900 hover:border-blue-500/50 transition-all cursor-pointer group relative overflow-hidden"
-                        onClick={() => setMode('METABOLIC')}
+                        className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-900 hover:border-blue-500/50 transition-all group relative overflow-hidden"
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CardContent className="p-8 flex flex-col h-full relative z-10">
@@ -157,8 +158,8 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
                                 Eine passive Technik zur unterbewussten parasympathischen Regulation. Ideal als Hintergrundbegleitung bei der Arbeit oder Entspannung.
                             </p>
 
-                            <div className="mt-auto">
-                                <div className="bg-zinc-950/50 rounded-lg p-4 mb-4 border border-zinc-800/50">
+                            <div className="mt-auto space-y-4">
+                                <div className="bg-zinc-950/50 rounded-lg p-4 border border-zinc-800/50">
                                     <div className="flex justify-between text-sm text-zinc-500 mb-2">
                                         <span>Einatmen</span>
                                         <span>Ausatmen</span>
@@ -172,12 +173,36 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
                                         <span>4 Beats</span>
                                     </div>
                                 </div>
+                                
+                                <div className="space-y-2">
+                                    <label className="text-xs font-mono text-blue-400 uppercase tracking-wider">Musik-Modul</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {['7min', '21min', '21min-loop'].map((module: any) => (
+                                            <Button
+                                                key={module}
+                                                variant={selectedAudioModule === module ? "default" : "outline"}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedAudioModule(module as '7min' | '21min' | '21min-loop');
+                                                }}
+                                                className={`h-10 text-xs font-medium ${
+                                                    selectedAudioModule === module
+                                                        ? 'bg-blue-500 hover:bg-blue-600 text-white border-blue-500' 
+                                                        : 'border-zinc-700 text-zinc-300 hover:bg-zinc-800'
+                                                }`}
+                                            >
+                                                {module === '7min' ? '7 Min' : module === '21min' ? '21 Min' : '21 Loop'}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </div>
+                                
                                 <Button 
-                                    className="w-full border-zinc-700 text-white hover:bg-zinc-800 h-12 text-lg font-medium"
-                                    variant="outline"
+                                    className="w-full bg-white text-black hover:bg-zinc-200 h-12 text-lg font-medium"
+                                    onClick={() => setMode('METABOLIC')}
                                 >
-                                    <Play className="w-4 h-4 mr-2" />
-                                    Endlos-Modus Starten
+                                    <Play className="w-4 h-4 mr-2 fill-current" />
+                                    Training Starten
                                 </Button>
                             </div>
                         </CardContent>
