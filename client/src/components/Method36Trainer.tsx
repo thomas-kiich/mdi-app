@@ -14,6 +14,8 @@ interface Method36TrainerProps {
     onClose: () => void;
 }
 
+type AudioModule = '7min' | '21min' | '21min-loop';
+
 // 36 BPM = 1 Beat every 1.6666... seconds (60 / 36)
 const BEAT_DURATION = 1.666666; 
 
@@ -37,6 +39,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
     const [isStreamSoundEnabled, setIsStreamSoundEnabled] = useState(true);
     const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
+    const [audioModule, setAudioModule] = useState<AudioModule>('7min'); // Audio module selection
     
     const handleShare = async () => {
         const shareText = `Ich habe mich erfolgreich auf ${frequency} Hz (${toneName}) eingeschwungen. MDI Methode 36.`;
@@ -125,20 +128,24 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         filter.connect(master);
         filterRef.current = filter;
 
-            // Initialize Water Sound based on duration
-            let soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/user_water_sound_eac86237.wav'; // Default fallback
+            // Initialize Music Composition based on selected audio module
+            let soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav'; // Default 7min
+            let shouldLoop = false;
             
-            // Select specific file based on duration (7, 12, or 21)
-            if (duration === 7) {
-                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/training_07min_2729a1ac.wav';
-            } else if (duration === 12) {
-                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/training_12min_5fc2d93b.wav';
-            } else if (duration === 21) {
-                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/training_21min_37862f3d.wav';
+            // Select specific file based on audio module
+            if (audioModule === '7min') {
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav';
+                shouldLoop = false;
+            } else if (audioModule === '21min') {
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_0665d0c7.wav';
+                shouldLoop = false;
+            } else if (audioModule === '21min-loop') {
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_0665d0c7.wav';
+                shouldLoop = true;
             }
 
             const audio = new Audio(soundUrl);
-            audio.loop = true; // Loop just in case, though files should be length-matched
+            audio.loop = shouldLoop; // Loop enabled for 21min-loop module
             audio.crossOrigin = "anonymous";
             
             const waterSoundWrapper = {
@@ -180,7 +187,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             ctx.close();
         };
-    }, []);
+    }, [audioModule]);
 
     const toggleStreamSound = () => {
         const newState = !isStreamSoundEnabled;
@@ -673,6 +680,40 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             className={isHighOctave ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
                         >
                             <ArrowUpCircle className="mr-2 h-4 w-4" /> Weiblich
+                        </Button>
+                    </div>
+                </div>
+
+                {/* Audio Module Selection */}
+                <div className="flex items-center gap-2 bg-zinc-900/50 p-2 rounded-full border border-white/10 backdrop-blur-md w-full justify-center">
+                    <span className="text-xs text-zinc-500 font-mono uppercase">Musik</span>
+                    <div className="flex gap-1">
+                        <Button 
+                            size="sm" 
+                            variant={audioModule === '7min' ? "default" : "ghost"}
+                            onClick={() => setAudioModule('7min')}
+                            disabled={isPlaying}
+                            className={audioModule === '7min' ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
+                        >
+                            7 Min
+                        </Button>
+                        <Button 
+                            size="sm" 
+                            variant={audioModule === '21min' ? "default" : "ghost"}
+                            onClick={() => setAudioModule('21min')}
+                            disabled={isPlaying}
+                            className={audioModule === '21min' ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
+                        >
+                            21 Min
+                        </Button>
+                        <Button 
+                            size="sm" 
+                            variant={audioModule === '21min-loop' ? "default" : "ghost"}
+                            onClick={() => setAudioModule('21min-loop')}
+                            disabled={isPlaying}
+                            className={audioModule === '21min-loop' ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
+                        >
+                            21 Loop
                         </Button>
                     </div>
                 </div>
