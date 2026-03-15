@@ -11,6 +11,7 @@ interface AffirmationSession {
   affirmationText: string;
   duration: number; // in minutes
   category: 'arrival' | 'healing' | 'forgiveness' | 'acceptance' | 'gratitude' | 'awakening';
+  audioUrl?: string; // Optional audio URL for playback
 }
 
 const AFFIRMATION_SESSIONS: AffirmationSession[] = [
@@ -40,7 +41,8 @@ Mit jedem Atemzug fließt Heilung durch mich. Ich bin gesund. Ich bin vital. Ich
 
 Mein Körper dankt mir für diese Ruhe. Ich bin dankbar für meine Gesundheit.`,
     duration: 21,
-    category: 'healing'
+    category: 'healing',
+    audioUrl: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/selbstheilung_affirmation_b996e120.wav'
   },
   {
     id: 'forgiveness',
@@ -119,11 +121,34 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
   const [customAffirmation, setCustomAffirmation] = useState('');
   const [showCustomInput, setShowCustomInput] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
 
   const handlePlaySession = (session: AffirmationSession) => {
     setSelectedSession(session);
     setIsPlaying(true);
-    // TODO: Integrate text-to-speech here
+    if (audioRef.current && session.audioUrl) {
+      audioRef.current.src = session.audioUrl;
+      audioRef.current.play().catch(err => console.error('Playback error:', err));
+    }
+  };
+
+  const handlePlayPause = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(err => console.error('Playback error:', err));
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleMute = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = !isMuted;
+      setIsMuted(!isMuted);
+    }
   };
 
   const handleCustomAffirmation = () => {
@@ -132,6 +157,25 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
       setIsPlaying(true);
     }
   };
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const updateTime = () => setCurrentTime(audio.currentTime);
+    const updateDuration = () => setDuration(audio.duration);
+    const handleEnded = () => setIsPlaying(false);
+
+    audio.addEventListener('timeupdate', updateTime);
+    audio.addEventListener('loadedmetadata', updateDuration);
+    audio.addEventListener('ended', handleEnded);
+
+    return () => {
+      audio.removeEventListener('timeupdate', updateTime);
+      audio.removeEventListener('loadedmetadata', updateDuration);
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, []);
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
@@ -177,7 +221,7 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
             <div className="flex items-center justify-center gap-6">
               <Button 
                 size="lg"
-                onClick={() => setIsPlaying(!isPlaying)}
+                onClick={handlePlayPause}
                 className="bg-orange-500 hover:bg-orange-600 text-white h-16 px-12 text-lg rounded-full"
               >
                 {isPlaying ? (
@@ -196,7 +240,7 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
               <Button 
                 variant="outline"
                 size="lg"
-                onClick={() => setIsMuted(!isMuted)}
+                onClick={handleMute}
                 className="border-zinc-700 hover:bg-zinc-800 h-16 px-6"
               >
                 {isMuted ? (
@@ -207,9 +251,19 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
               </Button>
             </div>
 
+            {/* Audio Element */}
+            <audio 
+              ref={audioRef}
+              crossOrigin="anonymous"
+              onEnded={() => setIsPlaying(false)}
+            />
+
             {/* Duration Info */}
             <div className="text-center mt-8 text-zinc-400">
               <p className="text-sm">Dauer: {selectedSession.duration} Minuten</p>
+              {duration > 0 && (
+                <p className="text-xs mt-2">{Math.floor(currentTime / 60)}:{String(Math.floor(currentTime % 60)).padStart(2, '0')} / {Math.floor(duration / 60)}:{String(Math.floor(duration % 60)).padStart(2, '0')}</p>
+              )}
             </div>
           </div>
         </div>
