@@ -42,6 +42,11 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                 >
+                    <img 
+                        src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
+                        alt="METHODE 36 Logo" 
+                        className="h-24 md:h-32 mx-auto mb-6 drop-shadow-lg"
+                    />
                     <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter mb-4">
                         METHODE 36
                     </h1>
