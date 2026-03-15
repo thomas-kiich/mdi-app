@@ -685,15 +685,15 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                 </div>
 
                 {/* Audio Module Selection */}
-                <div className="flex items-center gap-2 bg-zinc-900/50 p-2 rounded-full border border-white/10 backdrop-blur-md w-full justify-center">
-                    <span className="text-xs text-zinc-500 font-mono uppercase">Musik</span>
-                    <div className="flex gap-1">
+                <div className="flex flex-col items-center gap-3 w-full">
+                    <div className="text-xs text-zinc-500 font-mono uppercase tracking-widest">Musik-Modul</div>
+                    <div className="flex items-center gap-3 bg-zinc-900/50 p-3 rounded-lg border border-white/20 backdrop-blur-md w-full justify-center flex-wrap">
                         <Button 
                             size="sm" 
                             variant={audioModule === '7min' ? "default" : "ghost"}
                             onClick={() => setAudioModule('7min')}
                             disabled={isPlaying}
-                            className={audioModule === '7min' ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
+                            className={audioModule === '7min' ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
                         >
                             7 Min
                         </Button>
@@ -702,7 +702,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             variant={audioModule === '21min' ? "default" : "ghost"}
                             onClick={() => setAudioModule('21min')}
                             disabled={isPlaying}
-                            className={audioModule === '21min' ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
+                            className={audioModule === '21min' ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
                         >
                             21 Min
                         </Button>
@@ -711,7 +711,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             variant={audioModule === '21min-loop' ? "default" : "ghost"}
                             onClick={() => setAudioModule('21min-loop')}
                             disabled={isPlaying}
-                            className={audioModule === '21min-loop' ? "bg-white text-black hover:bg-zinc-200" : "text-zinc-400 hover:text-white"}
+                            className={audioModule === '21min-loop' ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
                         >
                             21 Loop
                         </Button>
