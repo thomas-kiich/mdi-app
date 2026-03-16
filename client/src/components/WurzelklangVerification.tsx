@@ -18,10 +18,14 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
   const [isRecording, setIsRecording] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentAttemptResult, setCurrentAttemptResult] = useState<'correct' | 'too_high' | 'too_low' | null>(null);
+  const [isPlayingGlissando, setIsPlayingGlissando] = useState(false);
+  const [glissandoTime, setGlissandoTime] = useState(0);
+  const [glissandoDuration, setGlissandoDuration] = useState(8);
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyzerRef = useRef<AnalyserNode | null>(null);
+  const glissandoAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Calculate Wurzelklang (Lebensklang + 10 in the 24-tone scale)
   const wurzelklangToneId = ((analyzedToneId - 1 + 10) % 24) + 1;
@@ -31,6 +35,36 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
   if (!wurzelklangTone || !lebensklangTone) {
     return null;
   }
+
+  // Glissando audio URL mapping
+  const glissandoUrls: Record<number, string> = {
+    1: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone01_to_wurzelklang11_1298609c.wav',
+    2: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone02_to_wurzelklang12_b7eb5d27.wav',
+    3: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone03_to_wurzelklang13_df2b47c0.wav',
+    4: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone04_to_wurzelklang14_ff500178.wav',
+    5: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone05_to_wurzelklang15_a40202ca.wav',
+    6: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone06_to_wurzelklang16_4dc80f8d.wav',
+    7: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone07_to_wurzelklang17_4d2e3553.wav',
+    8: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone08_to_wurzelklang18_b0454bda.wav',
+    9: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone09_to_wurzelklang19_3562a40c.wav',
+    10: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone10_to_wurzelklang20_90c31bac.wav',
+    11: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone11_to_wurzelklang21_83c43a9f.wav',
+    12: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone12_to_wurzelklang22_caf23a44.wav',
+    13: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone13_to_wurzelklang23_53e755a0.wav',
+    14: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone14_to_wurzelklang24_bb49b47a.wav',
+    15: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone15_to_wurzelklang01_be704f49.wav',
+    16: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone16_to_wurzelklang02_59bcd6dc.wav',
+    17: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone17_to_wurzelklang03_650ea32e.wav',
+    18: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone18_to_wurzelklang04_620d5a1f.wav',
+    19: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone19_to_wurzelklang05_1baf5ef1.wav',
+    20: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone20_to_wurzelklang06_af87436d.wav',
+    21: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone21_to_wurzelklang07_ee235c61.wav',
+    22: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone22_to_wurzelklang08_3aaeafab.wav',
+    23: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone23_to_wurzelklang09_51909a34.wav',
+    24: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/glissando_tone24_to_wurzelklang10_bd8af334.wav'
+  };
+
+  const glissandoUrl = glissandoUrls[analyzedToneId];
 
   // Get frequency range for Wurzelklang (frequency field)
   const wurzelklangFreqMin = wurzelklangTone.frequency * 0.97; // ±3% tolerance
@@ -106,6 +140,22 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
     }
   };
 
+  const playGlissando = () => {
+    if (glissandoAudioRef.current) {
+      glissandoAudioRef.current.currentTime = 0;
+      glissandoAudioRef.current.play();
+      setIsPlayingGlissando(true);
+    }
+  };
+
+  const stopGlissando = () => {
+    if (glissandoAudioRef.current) {
+      glissandoAudioRef.current.pause();
+      glissandoAudioRef.current.currentTime = 0;
+      setIsPlayingGlissando(false);
+    }
+  };
+
   const handleContinue = () => {
     if (attemptCount < 3) {
       setCurrentAttemptResult(null);
@@ -120,6 +170,14 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
 
   return (
     <div className="fixed inset-0 z-50 bg-black/95 flex flex-col items-center justify-center p-4 animate-in fade-in duration-300 pt-40 overflow-y-auto">
+      {/* Hidden audio element for glissando playback */}
+      <audio 
+        ref={glissandoAudioRef}
+        src={glissandoUrl}
+        crossOrigin="anonymous"
+        onEnded={() => setIsPlayingGlissando(false)}
+      />
+      
       <div className="w-full max-w-2xl mx-auto py-12 pt-20">
         {/* Back Button */}
         <Button 
@@ -200,58 +258,93 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
           <div className="space-y-6">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-white mb-2">Versuch {attemptCount + 1} von 3</h2>
-              <p className="text-zinc-400">Töne einen Glissando von oben nach unten</p>
+              <p className="text-zinc-400">Höre den Glissando und folge ihm mit deiner Stimme</p>
             </div>
 
             <Card className="bg-zinc-900/50 border-zinc-800">
               <CardContent className="p-8 text-center space-y-6">
-                <div className="flex justify-center gap-4">
-                  <Button
-                    onClick={isRecording ? stopRecording : startRecording}
-                    className={isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}
-                    size="lg"
-                  >
-                    {isRecording ? (
-                      <>
-                        <Square className="w-5 h-5 mr-2" />
-                        Stopp
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-5 h-5 mr-2" />
-                        Aufnahme starten
-                      </>
-                    )}
-                  </Button>
-
-                  <Button
-                    onClick={() => setIsMuted(!isMuted)}
-                    variant="outline"
-                    className="border-zinc-700"
-                  >
-                    {isMuted ? (
-                      <VolumeX className="w-5 h-5" />
-                    ) : (
-                      <Volume2 className="w-5 h-5" />
-                    )}
-                  </Button>
+                {/* Glissando Playback */}
+                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-6 mb-6">
+                  <p className="text-sm text-blue-300 mb-4">Zuerst: Höre den Glissando-Ton</p>
+                  <div className="flex justify-center gap-4">
+                    <Button
+                      onClick={isPlayingGlissando ? stopGlissando : playGlissando}
+                      className={isPlayingGlissando ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'}
+                      size="lg"
+                    >
+                      {isPlayingGlissando ? (
+                        <>
+                          <Square className="w-5 h-5 mr-2" />
+                          Stopp
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-5 h-5 mr-2" />
+                          Glissando abspielen
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {isPlayingGlissando && (
+                    <div className="flex justify-center gap-1 mt-4">
+                      {[0, 1, 2].map(i => (
+                        <div
+                          key={i}
+                          className="w-1 h-6 bg-blue-500 rounded animate-pulse"
+                          style={{ animationDelay: `${i * 0.1}s` }}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {isRecording && (
-                  <div className="flex justify-center gap-1">
-                    {[0, 1, 2].map(i => (
-                      <div
-                        key={i}
-                        className="w-1 h-8 bg-red-500 rounded animate-pulse"
-                        style={{ animationDelay: `${i * 0.1}s` }}
-                      />
-                    ))}
-                  </div>
-                )}
+                {/* Recording Section */}
+                <div className="border-t border-zinc-700 pt-6">
+                  <p className="text-sm text-zinc-300 mb-4">Dann: Töne selbst nach</p>
+                  <div className="flex justify-center gap-4">
+                    <Button
+                      onClick={isRecording ? stopRecording : startRecording}
+                      className={isRecording ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'}
+                      size="lg"
+                    >
+                      {isRecording ? (
+                        <>
+                          <Square className="w-5 h-5 mr-2" />
+                          Stopp
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-5 h-5 mr-2" />
+                          Aufnahme starten
+                        </>
+                      )}
+                    </Button>
 
-                <p className="text-sm text-zinc-400">
-                  Töne von deinem Lebensklang (TYP {lebensklangTone.id}) hinunter zum Wurzelklang (TYP {wurzelklangTone.id})
-                </p>
+                    <Button
+                      onClick={() => setIsMuted(!isMuted)}
+                      variant="outline"
+                      className="border-zinc-700"
+                    >
+                      {isMuted ? (
+                        <VolumeX className="w-5 h-5" />
+                      ) : (
+                        <Volume2 className="w-5 h-5" />
+                      )}
+                    </Button>
+                  </div>
+
+                  {isRecording && (
+                    <div className="flex justify-center gap-1 mt-4">
+                      {[0, 1, 2].map(i => (
+                        <div
+                          key={i}
+                          className="w-1 h-8 bg-red-500 rounded animate-pulse"
+                          style={{ animationDelay: `${i * 0.1}s` }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
