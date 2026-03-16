@@ -666,17 +666,25 @@ export default function Home() {
                     Detaillierte Deutung ansehen <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
 
+                  {!wurzelklangVerified && (
+                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-center">
+                      <p className="text-sm text-blue-300">
+                        <span className="font-semibold">Nächster Schritt:</span> Überprüfe deinen Wurzelklang
+                      </p>
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-2 gap-3">
                     <Button 
                       variant="outline" 
-                      className={`border-zinc-800 hover:bg-zinc-800 ${wurzelklangVerified ? 'border-green-500/50' : ''}`}
+                      className={`border-zinc-800 hover:bg-zinc-800 hover:border-zinc-600 cursor-pointer transition-all ${wurzelklangVerified ? 'border-green-500/50 hover:border-green-500/70' : ''}`}
                       onClick={() => setShowWurzelklangVerification(true)}
                     >
                       {wurzelklangVerified ? '✓' : ''} Wurzelklang
                     </Button>
                     <Button 
                       variant="outline" 
-                      className="border-zinc-800 hover:bg-zinc-800"
+                      className="border-zinc-800 hover:bg-zinc-800 hover:border-zinc-600 cursor-pointer transition-all"
                       onClick={() => setShowTrainingCenter(true)}
                     >
                       <Music2 className="mr-2 h-4 w-4" />
@@ -723,6 +731,14 @@ export default function Home() {
                     <p className="text-xs text-zinc-500 mt-2 text-center">
                         Die 2 extremsten Werte werden automatisch als Ausreißer entfernt.
                     </p>
+                    
+                    {!wurzelklangVerified && (
+                        <div className="mt-4 bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-center">
+                            <p className="text-sm text-blue-300">
+                                <span className="font-semibold">Wichtig:</span> Überprüfe heute auch deinen Wurzelklang!
+                            </p>
+                        </div>
+                    )}
                 </div>
             )}
 
