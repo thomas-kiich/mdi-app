@@ -39,10 +39,10 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
     return null;
   }
 
-  // Root tone audio URL mapping for all registers
+  // Root tone audio URL mapping for all registers (UPDATED)
   const rootToneUrls: Record<'male' | 'female' | 'normal', Record<number, string>> = {
     male: {
-      1: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang11_3d01f728.wav',
+      1: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang01_e6f8a1d2.wav',
       2: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang12_04c60e57.wav',
       3: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang13_fe5f3756.wav',
       4: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang14_f00a2b98.wav',
@@ -372,12 +372,14 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
                   <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-zinc-700">
                     <div className="text-center">
                       <div className="text-xs text-zinc-500 uppercase mb-1">Dein Lebensklang</div>
-                      <div className="text-2xl font-bold text-orange-500">{lebensklangTone.id}</div>
+                      <div className="text-2xl font-bold" style={{ color: lebensklangTone.hex }}>{lebensklangTone.id}</div>
+                      <div className="text-xs text-zinc-400">{lebensklangTone.colorName}</div>
                       <div className="text-xs text-zinc-400">{lebensklangTone.frequency.toFixed(1)} Hz</div>
                     </div>
                     <div className="text-center">
                       <div className="text-xs text-zinc-500 uppercase mb-1">Dein Wurzelklang</div>
-                      <div className="text-2xl font-bold text-blue-500">{wurzelklangTone.id}</div>
+                      <div className="text-2xl font-bold" style={{ color: wurzelklangTone.hex }}>{wurzelklangTone.id}</div>
+                      <div className="text-xs text-zinc-400">{wurzelklangTone.colorName}</div>
                       <div className="text-xs text-zinc-400">{wurzelklangTone.frequency.toFixed(1)} Hz</div>
                     </div>
                   </div>
