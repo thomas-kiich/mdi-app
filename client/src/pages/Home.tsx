@@ -21,6 +21,7 @@ import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCenter } from "@/components/TrainingCenter";
 import { SleepTheta } from "@/components/SleepTheta";
+import { WurzelklangVerification } from "@/components/WurzelklangVerification";
 import { Dashboard } from "@/components/Dashboard";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
@@ -123,6 +124,8 @@ export default function Home() {
   const [showDirectTrainer, setShowDirectTrainer] = useState(false);
   const [showTrainingDurationSelect, setShowTrainingDurationSelect] = useState(false);
   const [showTrainingCenter, setShowTrainingCenter] = useState(false);
+  const [showWurzelklangVerification, setShowWurzelklangVerification] = useState(false);
+  const [wurzelklangVerified, setWurzelklangVerified] = useState(false);
   const [selectedTrainingDuration, setSelectedTrainingDuration] = useState<number>(7);
   const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
   const [showSleepTheta, setShowSleepTheta] = useState(false);
@@ -666,11 +669,10 @@ export default function Home() {
                   <div className="grid grid-cols-2 gap-3">
                     <Button 
                       variant="outline" 
-                      className="border-zinc-800 hover:bg-zinc-800"
-                      onClick={() => setShowSpectralScanner(true)}
+                      className={`border-zinc-800 hover:bg-zinc-800 ${wurzelklangVerified ? 'border-green-500/50' : ''}`}
+                      onClick={() => setShowWurzelklangVerification(true)}
                     >
-                      <Activity className="mr-2 h-4 w-4" />
-                      Live-Scanner
+                      {wurzelklangVerified ? '✓' : ''} Wurzelklang
                     </Button>
                     <Button 
                       variant="outline" 
@@ -748,6 +750,16 @@ export default function Home() {
                     mdiResult={mdi}
                     toneDistribution={res.toneDistribution}
                     onClose={() => setShowCertificate(false)}
+                />
+            )}
+
+            {showWurzelklangVerification && mdi && (
+                <WurzelklangVerification 
+                    analyzedToneId={mdi.id}
+                    onClose={() => setShowWurzelklangVerification(false)}
+                    onVerificationComplete={(isValid) => {
+                      setWurzelklangVerified(isValid);
+                    }}
                 />
             )}
           </div>
