@@ -481,9 +481,12 @@ export default function Home() {
                 ))}
             </div>
 
-            <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-12 max-w-2xl leading-tight">
-              "{questions[currentStep]}"
-            </h2>
+            {/* Show question text only if recording is not done */}
+            {!isCurrentStepDone && (
+              <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-12 max-w-2xl leading-tight">
+                "{questions[currentStep]}"
+              </h2>
+            )}
             
             {/* Instructions - Only show if NOT done */}
             {!isCurrentStepDone && (
