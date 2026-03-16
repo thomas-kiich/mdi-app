@@ -12,13 +12,15 @@ interface WurzelklangVerificationProps {
 }
 
 export function WurzelklangVerification({ analyzedToneId, onClose, onVerificationComplete }: WurzelklangVerificationProps) {
-  const [step, setStep] = useState<'info' | 'training' | 'feedback'>('info');
+  const [step, setStep] = useState<'register' | 'info' | 'training' | 'feedback'>('register');
+  const [selectedRegister, setSelectedRegister] = useState<'male' | 'female' | 'normal' | null>(null);
   const [attemptCount, setAttemptCount] = useState(0);
   const [attemptResults, setAttemptResults] = useState<Array<{ attempt: number; result: 'correct' | 'too_high' | 'too_low' }>>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [currentAttemptResult, setCurrentAttemptResult] = useState<'correct' | 'too_high' | 'too_low' | null>(null);
   const [isPlayingGlissando, setIsPlayingGlissando] = useState(false);
+  const [isPlayingRootTone, setIsPlayingRootTone] = useState(false);
   const [glissandoTime, setGlissandoTime] = useState(0);
   const [glissandoDuration, setGlissandoDuration] = useState(8);
   
@@ -26,6 +28,7 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyzerRef = useRef<AnalyserNode | null>(null);
   const glissandoAudioRef = useRef<HTMLAudioElement | null>(null);
+  const rootToneAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Calculate Wurzelklang (Lebensklang + 10 in the 24-tone scale)
   const wurzelklangToneId = ((analyzedToneId - 1 + 10) % 24) + 1;
@@ -35,6 +38,88 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
   if (!wurzelklangTone || !lebensklangTone) {
     return null;
   }
+
+  // Root tone audio URL mapping for all registers
+  const rootToneUrls: Record<'male' | 'female' | 'normal', Record<number, string>> = {
+    male: {
+      1: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang11_3d01f728.wav',
+      2: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang12_04c60e57.wav',
+      3: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang13_fe5f3756.wav',
+      4: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang14_f00a2b98.wav',
+      5: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang15_3d01f728.wav',
+      6: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang16_04c60e57.wav',
+      7: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang17_fe5f3756.wav',
+      8: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang18_f00a2b98.wav',
+      9: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang19_3d01f728.wav',
+      10: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang20_04c60e57.wav',
+      11: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang21_fe5f3756.wav',
+      12: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang22_f00a2b98.wav',
+      13: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang23_3d01f728.wav',
+      14: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang24_04c60e57.wav',
+      15: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang01_fe5f3756.wav',
+      16: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang02_f00a2b98.wav',
+      17: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang03_3d01f728.wav',
+      18: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang04_04c60e57.wav',
+      19: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang05_fe5f3756.wav',
+      20: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang06_f00a2b98.wav',
+      21: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang07_3d01f728.wav',
+      22: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang08_04c60e57.wav',
+      23: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang09_fe5f3756.wav',
+      24: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_male_wurzelklang10_04c60e57.wav'
+    },
+    normal: {
+      1: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang11_7009eab0.wav',
+      2: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang12_3c39cd73.wav',
+      3: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang13_7015db0d.wav',
+      4: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang14_100b77c2.wav',
+      5: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang15_bed69892.wav',
+      6: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang16_8f556b47.wav',
+      7: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang17_3fffc5c8.wav',
+      8: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang18_f304208f.wav',
+      9: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang19_ebbc54e7.wav',
+      10: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang20_52e69219.wav',
+      11: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang21_002c98d7.wav',
+      12: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang22_da7ae938.wav',
+      13: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang23_e1ff16c5.wav',
+      14: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang24_73f45542.wav',
+      15: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang01_bf19bf90.wav',
+      16: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang02_38a47914.wav',
+      17: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang03_8527bbb7.wav',
+      18: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang04_865c2417.wav',
+      19: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang05_200848d4.wav',
+      20: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang06_c0cf1374.wav',
+      21: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang07_1eb31273.wav',
+      22: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang08_b7f33b24.wav',
+      23: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang09_aece3fac.wav',
+      24: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_normal_wurzelklang10_7ee36ed4.wav'
+    },
+    female: {
+      1: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang11_7009eab0.wav',
+      2: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang12_3c39cd73.wav',
+      3: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang13_7015db0d.wav',
+      4: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang14_100b77c2.wav',
+      5: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang15_bed69892.wav',
+      6: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang16_8f556b47.wav',
+      7: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang17_3fffc5c8.wav',
+      8: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang18_f304208f.wav',
+      9: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang19_ebbc54e7.wav',
+      10: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang20_52e69219.wav',
+      11: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang21_002c98d7.wav',
+      12: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang22_da7ae938.wav',
+      13: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang23_e1ff16c5.wav',
+      14: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang24_73f45542.wav',
+      15: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang01_bf19bf90.wav',
+      16: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang02_38a47914.wav',
+      17: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang03_8527bbb7.wav',
+      18: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang04_865c2417.wav',
+      19: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang05_200848d4.wav',
+      20: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang06_c0cf1374.wav',
+      21: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang07_1eb31273.wav',
+      22: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang08_b7f33b24.wav',
+      23: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang09_aece3fac.wav',
+      24: 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/rootTone_female_wurzelklang10_7ee36ed4.wav'
+    }
+  };
 
   // Glissando audio URL mapping
   const glissandoUrls: Record<number, string> = {
@@ -189,6 +274,62 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
           Zurück
         </Button>
 
+        {step === 'register' && (
+          <div className="space-y-6">
+            <Card className="bg-zinc-900/50 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-white">Wähle deine Stimmlage</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-zinc-300 text-center mb-6">
+                  Damit die Analyse korrekt funktioniert, wähle deine natürliche Stimmlage:
+                </p>
+                <div className="grid grid-cols-3 gap-4">
+                  <Button
+                    onClick={() => {
+                      setSelectedRegister('male');
+                      setStep('info');
+                    }}
+                    className={`py-6 text-lg font-semibold transition-all ${
+                      selectedRegister === 'male'
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                        : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                    }`}
+                  >
+                    🎤 Männlich
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSelectedRegister('normal');
+                      setStep('info');
+                    }}
+                    className={`py-6 text-lg font-semibold transition-all ${
+                      selectedRegister === 'normal'
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white'
+                        : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                    }`}
+                  >
+                    🎤 Normal
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setSelectedRegister('female');
+                      setStep('info');
+                    }}
+                    className={`py-6 text-lg font-semibold transition-all ${
+                      selectedRegister === 'female'
+                        ? 'bg-pink-600 hover:bg-pink-700 text-white'
+                        : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                    }`}
+                  >
+                    🎤 Weiblich
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
         {step === 'info' && (
           <div className="space-y-6">
             <div className="text-center mb-8">
@@ -244,13 +385,36 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
               </CardContent>
             </Card>
 
-            <Button 
-              onClick={() => setStep('training')}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
-              size="lg"
-            >
-              Verifikation starten
-            </Button>
+            <div className="space-y-4">
+              <Button 
+                onClick={() => {
+                  if (selectedRegister && rootToneAudioRef.current) {
+                    const rootToneUrl = rootToneUrls[selectedRegister][wurzelklangToneId];
+                    rootToneAudioRef.current.src = rootToneUrl;
+                    rootToneAudioRef.current.play();
+                    setIsPlayingRootTone(true);
+                  }
+                }}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                size="lg"
+                disabled={!selectedRegister || isPlayingRootTone}
+              >
+                {isPlayingRootTone ? 'Hoere deinen Wurzelklang...' : 'Wurzelklang abspielen'}
+              </Button>
+              <Button 
+                onClick={() => setStep('training')}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                size="lg"
+                disabled={!selectedRegister}
+              >
+                Verifikation starten
+              </Button>
+            </div>
+            <audio 
+              ref={rootToneAudioRef}
+              onEnded={() => setIsPlayingRootTone(false)}
+              crossOrigin="anonymous"
+            />
           </div>
         )}
 
