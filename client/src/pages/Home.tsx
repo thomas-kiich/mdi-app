@@ -694,7 +694,7 @@ export default function Home() {
                   
                   <Button 
                       variant="ghost" 
-                      className="text-zinc-500 hover:text-white"
+                      className="text-zinc-500 hover:text-white cursor-pointer transition-colors"
                       onClick={handleDownloadResult}
                     >
                       <Download className="mr-2 h-4 w-4" />

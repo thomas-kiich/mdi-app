@@ -169,8 +169,8 @@ export function CertificateView({ mdiResult, toneDistribution, onClose }: Certif
                     <div className="absolute top-4 left-4 text-xs text-zinc-500 uppercase tracking-widest">Klang-Körper Resonanzfeld</div>
                     
                     {/* Render SoundBody in a constrained container tailored for PDF */}
-                    <div className="w-full h-full flex items-center justify-center scale-90 origin-center">
-                        <div className="w-[300px] h-[500px] pointer-events-none">
+                    <div className="w-full h-full flex items-center justify-center">
+                        <div className="w-[400px] h-[600px] pointer-events-none relative">
                             {/* Force SoundBody to be visible and static for capture */}
                             <SoundBody 
                                 toneDistribution={toneDistribution} 
