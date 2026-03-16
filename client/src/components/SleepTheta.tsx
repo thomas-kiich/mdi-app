@@ -281,14 +281,14 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center p-4 animate-in fade-in duration-300 pt-40">
-      <div className="w-full max-w-6xl mx-auto py-12 pt-40">
-        {/* Header */}
+    <div className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-start p-4 animate-in fade-in duration-300 overflow-y-auto">
+      <div className="w-full max-w-6xl mx-auto py-12 pt-20">
+        {/* Header with Back Button */}
         <div className="flex items-center justify-between mb-12">
           <Button 
             variant="ghost" 
             onClick={onClose}
-            className="text-zinc-400 hover:text-white"
+            className="text-zinc-400 hover:text-white mb-4"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Zurück
