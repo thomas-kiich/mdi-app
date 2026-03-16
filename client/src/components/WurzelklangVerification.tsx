@@ -368,6 +368,16 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
                       <li>• Du erhältst jeweils sofort eine Information ob du den Wurzelklang erreicht hast</li>
                     </ul>
                   </div>
+                  
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mt-4">
+                    <p className="text-sm text-amber-300 font-semibold mb-2">Wichtige Tontechnik:</p>
+                    <p className="text-sm text-amber-300 mb-3">
+                      Bitte töne deinen Wurzelklang indem du die Silbe <span className="font-bold">NOOOOOO</span> erklingen lässt.
+                    </p>
+                    <p className="text-sm text-amber-300">
+                      Du formst also deine Lippen so, dass sie eine hohe Spannung erzeugen und nur eine kleine runde Öffnung für das Ausströmen der Atemluft freigeben. Das hilft dir dabei, deinen tiefsten Ton zu tönen, der dir möglich ist.
+                    </p>
+                  </div>
 
                   <div className="grid grid-cols-2 gap-4 mt-6 pt-6 border-t border-zinc-700">
                     <div className="text-center">
