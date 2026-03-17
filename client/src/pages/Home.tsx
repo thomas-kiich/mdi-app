@@ -186,29 +186,28 @@ export default function Home() {
   const calculateFinalResult = () => {
     // Aggregation Logic:
     // Combine distribution maps from all 3 recordings
-    
-    const combinedDistribution: Record<string, number> = {};
-    let totalCombinedSamples = 0;
+    // Note: toneDistribution now contains MDI type IDs, not tone names
     
     const combinedMdiDistribution: Record<string, number> = {};
+    const combinedDistribution: Record<string, number> = {}; // Keep for compatibility
 
     const processResult = (res: AnalysisResult | null) => {
-      if (!res || !res.toneDistribution) return;
+      if (!res) return;
       
-      for (const [tone, percent] of Object.entries(res.toneDistribution)) {
-        if (!combinedDistribution[tone]) combinedDistribution[tone] = 0;
-        // Add weighted contribution
-        combinedDistribution[tone] += percent;
-      }
-      
+      // Use mdiDistribution (which contains MDI type IDs)
       if (res.mdiDistribution) {
         for (const [id, percent] of Object.entries(res.mdiDistribution)) {
           if (!combinedMdiDistribution[id]) combinedMdiDistribution[id] = 0;
           combinedMdiDistribution[id] += percent;
         }
       }
-
-      totalCombinedSamples++;
+      // For backward compatibility, also populate combinedDistribution with MDI IDs
+      if (res.toneDistribution) {
+        for (const [id, percent] of Object.entries(res.toneDistribution)) {
+          if (!combinedDistribution[id]) combinedDistribution[id] = 0;
+          combinedDistribution[id] += percent;
+        }
+      }
     };
     
     processResult(results.q1);
@@ -230,23 +229,25 @@ export default function Home() {
         }
     }
 
-    // Find dominant tone across all sessions
+    // Find dominant MDI type across all sessions
     let maxScore = 0;
-    let dominantToneName = "";
+    let dominantMdiId = "";
     
-    for (const [tone, score] of Object.entries(combinedDistribution)) {
+    for (const [id, score] of Object.entries(combinedMdiDistribution)) {
       if (score > maxScore) {
         maxScore = score;
-        dominantToneName = tone;
+        dominantMdiId = id;
       }
     }
     
     // If we have a winner, construct the final result
-    if (dominantToneName) {
-      // Find the tone data
+    if (dominantMdiId) {
+      // Find the MDI data
+      const mdiData = frequencyData.find(f => f.id === parseInt(dominantMdiId));
+      const dominantToneName = mdiData?.toneRange || "";
       const toneData = TONES.find(t => t.name === dominantToneName);
       
-      if (toneData) {
+      if (toneData && mdiData) {
         // Determine the "Final Hz" for the result.
         // FIX: Ensure the Hz matches the Tone (F) and not some distant frequency (A).
         // If the deviation is too large (> 50 cents), clamp it or reset to 0.
