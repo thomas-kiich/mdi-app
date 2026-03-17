@@ -247,7 +247,7 @@ export default function Home() {
       const dominantToneName = mdiData?.toneRange || "";
       const toneData = TONES.find(t => t.name === dominantToneName);
       
-      if (toneData && mdiData) {
+      if (toneData && mdiData && dominantToneName) {
         // Determine the "Final Hz" for the result.
         // FIX: Ensure the Hz matches the Tone (F) and not some distant frequency (A).
         // If the deviation is too large (> 50 cents), clamp it or reset to 0.
@@ -257,17 +257,21 @@ export default function Home() {
         let bestConfidence = 0;
         
         const checkSession = (res: AnalysisResult | null) => {
-            if (!res || !res.toneDistribution) return;
+            if (!res) return;
             // Check if this session's FUNDAMENTAL tone matches our dominant tone
             const fundCheck = getToneFromFrequency(res.fundamentalFreq);
             
             if (fundCheck.tone.name === dominantToneName) {
                 // This session actually measured our dominant tone as the fundamental!
                 // We prefer this real measurement.
-                const score = res.toneDistribution[dominantToneName] || 0;
-                if (score > bestConfidence) {
-                    bestConfidence = score;
-                    measuredHz = res.fundamentalFreq;
+                // Find the MDI ID for this tone
+                const mdiForTone = frequencyData.find(f => f.toneRange === dominantToneName);
+                if (mdiForTone && res.toneDistribution) {
+                    const score = res.toneDistribution[mdiForTone.id.toString()] || 0;
+                    if (score > bestConfidence) {
+                        bestConfidence = score;
+                        measuredHz = res.fundamentalFreq;
+                    }
                 }
             }
         };
