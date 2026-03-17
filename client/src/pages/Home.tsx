@@ -22,6 +22,7 @@ import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCenter } from "@/components/TrainingCenter";
 import { SleepTheta } from "@/components/SleepTheta";
 import { WurzelklangVerification } from "@/components/WurzelklangVerification";
+import { HarmonicSpectrumChart } from "@/components/HarmonicSpectrumChart";
 import { Dashboard } from "@/components/Dashboard";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
@@ -707,6 +708,16 @@ export default function Home() {
 
               </div>
             </div>
+
+            {/* HARMONIC SPECTRUM ANALYSIS */}
+            {res && res.toneDistribution && (
+                <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+                    <HarmonicSpectrumChart 
+                        toneDistribution={res.toneDistribution}
+                        dominantToneId={mdi.id}
+                    />
+                </div>
+            )}
 
             {/* AURA VISUALIZATION (Restored) */}
             {res && res.toneDistribution && (
