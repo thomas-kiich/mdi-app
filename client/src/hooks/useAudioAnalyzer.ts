@@ -182,13 +182,13 @@ export function useAudioAnalyzer() {
         }
         
         if (dominantToneName) {
-            // Calculate distribution
+            // Calculate distribution using MDI types (not tone names)
             const distribution: Record<string, number> = {};
-            for (const [name, count] of Object.entries(accumulatedTonesRef.current)) {
-                distribution[name] = (count / totalFramesRef.current) * 100;
+            for (const [id, count] of Object.entries(accumulatedMdiRef.current)) {
+                distribution[id] = (count / totalFramesRef.current) * 100;
             }
 
-            // Calculate MDI distribution
+            // Calculate MDI distribution (same as distribution in this case)
             const mdiDistribution: Record<string, number> = {};
             for (const [id, count] of Object.entries(accumulatedMdiRef.current)) {
                 mdiDistribution[id] = (count / totalFramesRef.current) * 100;
