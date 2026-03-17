@@ -32,6 +32,7 @@ import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
 import frequencyData from '@/lib/frequencyData.json';
+import { getToneNameFromMdiId } from '@/lib/mdiToToneMapping';
 import {
   Collapsible,
   CollapsibleContent,
@@ -244,7 +245,8 @@ export default function Home() {
     if (dominantMdiId) {
       // Find the MDI data
       const mdiData = frequencyData.find(f => f.id === parseInt(dominantMdiId));
-      const dominantToneName = mdiData?.toneRange || "";
+      // Use the mapping to get the actual tone name (E, Dis, D, etc.)
+      const dominantToneName = getToneNameFromMdiId(dominantMdiId);
       const toneData = TONES.find(t => t.name === dominantToneName);
       
       if (toneData && mdiData && dominantToneName) {
@@ -264,10 +266,8 @@ export default function Home() {
             if (fundCheck.tone.name === dominantToneName) {
                 // This session actually measured our dominant tone as the fundamental!
                 // We prefer this real measurement.
-                // Find the MDI ID for this tone
-                const mdiForTone = frequencyData.find(f => f.toneRange === dominantToneName);
-                if (mdiForTone && res.toneDistribution) {
-                    const score = res.toneDistribution[mdiForTone.id.toString()] || 0;
+                if (mdiData && res.toneDistribution) {
+                    const score = res.toneDistribution[mdiData.id.toString()] || 0;
                     if (score > bestConfidence) {
                         bestConfidence = score;
                         measuredHz = res.fundamentalFreq;
