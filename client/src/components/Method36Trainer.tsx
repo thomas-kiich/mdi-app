@@ -192,7 +192,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     useEffect(() => {
         if (waterSoundRef.current) {
             if (isPlaying && isStreamSoundEnabled) {
-                waterSoundRef.current.setVolume(0.5);
+                waterSoundRef.current.setVolume(1.0); // Maximum volume for water sound
             } else {
                 waterSoundRef.current.setVolume(0);
             }
