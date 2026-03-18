@@ -32,7 +32,7 @@ import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
 import frequencyData from '@/lib/frequencyData.json';
-import { getToneNameFromMdiId } from '@/lib/mdiToToneMapping';
+import { getToneNameFromMdiId, convertMdiDistributionToToneDistribution } from '@/lib/mdiToToneMapping';
 import {
   Collapsible,
   CollapsibleContent,
@@ -725,10 +725,10 @@ export default function Home() {
             )}
 
             {/* AURA VISUALIZATION (Restored) */}
-            {res && res.toneDistribution && (
+            {res && res.mdiDistribution && (
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
                     <SoundBody 
-                        toneDistribution={res.toneDistribution} 
+                        toneDistribution={convertMdiDistributionToToneDistribution(res.mdiDistribution)} 
                         dominantToneName={mdi.toneRange} 
                     />
                 </div>

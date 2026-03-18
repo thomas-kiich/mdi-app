@@ -37,3 +37,25 @@ export function getToneNameFromMdiId(mdiId: number | string): string {
   const id = typeof mdiId === 'string' ? parseInt(mdiId) : mdiId;
   return MDI_TO_TONE_NAME[id] || "";
 }
+
+/**
+ * Convert MDI distribution (keyed by MDI ID) to tone distribution (keyed by tone name)
+ * This aggregates multiple MDI IDs that map to the same tone name
+ */
+export function convertMdiDistributionToToneDistribution(
+  mdiDistribution: Record<string, number>
+): Record<string, number> {
+  const toneDistribution: Record<string, number> = {};
+  
+  for (const [mdiIdStr, value] of Object.entries(mdiDistribution)) {
+    const toneName = getToneNameFromMdiId(mdiIdStr);
+    if (toneName) {
+      if (!toneDistribution[toneName]) {
+        toneDistribution[toneName] = 0;
+      }
+      toneDistribution[toneName] += value;
+    }
+  }
+  
+  return toneDistribution;
+}
