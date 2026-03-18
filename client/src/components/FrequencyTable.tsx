@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { ArrowLeft, Download, Table as TableIcon, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Download, Table as TableIcon } from "lucide-react";
 import frequencyData from '@/lib/frequencyData.json';
 import {
   Table,
@@ -66,29 +66,17 @@ function hslToHex(h: number, s: number, l: number): string {
   let b = 0;
 
   if (h >= 0 && h < 60) {
-    r = c;
-    g = x;
-    b = 0;
+    r = c; g = x; b = 0;
   } else if (h >= 60 && h < 120) {
-    r = x;
-    g = c;
-    b = 0;
+    r = x; g = c; b = 0;
   } else if (h >= 120 && h < 180) {
-    r = 0;
-    g = c;
-    b = x;
+    r = 0; g = c; b = x;
   } else if (h >= 180 && h < 240) {
-    r = 0;
-    g = x;
-    b = c;
+    r = 0; g = x; b = c;
   } else if (h >= 240 && h < 300) {
-    r = x;
-    g = 0;
-    b = c;
+    r = x; g = 0; b = c;
   } else if (h >= 300 && h < 360) {
-    r = c;
-    g = 0;
-    b = x;
+    r = c; g = 0; b = x;
   }
 
   const toHex = (val: number) => {
@@ -101,7 +89,6 @@ function hslToHex(h: number, s: number, l: number): string {
 
 export function FrequencyTable({ onClose }: FrequencyTableProps) {
   const [saturationValues, setSaturationValues] = useState<Record<number, number>>({});
-  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
 
   const handleSaturationChange = (id: number, value: number[]) => {
     setSaturationValues(prev => ({
@@ -110,18 +97,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
     }));
   };
 
-  const toggleRowExpanded = (id: number) => {
-    const newExpanded = new Set(expandedRows);
-    if (newExpanded.has(id)) {
-      newExpanded.delete(id);
-    } else {
-      newExpanded.add(id);
-    }
-    setExpandedRows(newExpanded);
-  };
-
   const handleDownloadPDF = () => {
-    // Simple text export for now, similar to the result export
     const headers = ["ID", "Farbe", "Frequenz (Hz)", "Licht (nm)", "Klang (Thz)", "Wirkung", "Talent"];
     const rows = frequencyData.map(item => [
       item.id,
@@ -150,7 +126,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black text-white overflow-y-auto animate-in slide-in-from-bottom-10 duration-500">
-      <div className="container max-w-6xl mx-auto px-4 py-8">
+      <div className="container max-w-7xl mx-auto px-4 py-8">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-8 sticky top-0 bg-black/90 backdrop-blur-md py-4 z-10 border-b border-zinc-800">
@@ -176,128 +152,135 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
           </Button>
         </div>
 
-        {/* Table Content */}
-        <div className="rounded-xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
-          <Table>
-            <TableHeader className="bg-zinc-900">
-              <TableRow className="border-zinc-800 hover:bg-zinc-900">
-                <TableHead className="w-[50px] text-zinc-400">ID</TableHead>
-                <TableHead className="w-[150px] text-zinc-400">Farbe</TableHead>
-                <TableHead className="text-zinc-400">Frequenz</TableHead>
-                <TableHead className="text-zinc-400">Licht (nm)</TableHead>
-                <TableHead className="text-zinc-400">Klang (Thz)</TableHead>
-                <TableHead className="hidden md:table-cell text-zinc-400">Wirkung</TableHead>
-                <TableHead className="hidden lg:table-cell w-[40px]"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {frequencyData.map((item) => {
-                const saturation = saturationValues[item.id] ?? 100;
-                const hsl = hexToHsl(item.hex);
-                const modifiedHex = hslToHex(hsl.h, saturation, hsl.l);
-                const isExpanded = expandedRows.has(item.id);
+        {/* Info Box */}
+        <div className="mb-6 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+          <p className="text-sm text-blue-300">
+            💡 <strong>Sättigung erkunden:</strong> Verschiebe die Regler unter jeder Farbe, um die Intensität zu verändern. 
+            0% = Zart & Himmlisch | 100% = Intensiv & Kraftvoll
+          </p>
+        </div>
 
-                return (
-                  <React.Fragment key={item.id}>
-                    <TableRow className="border-zinc-800 hover:bg-zinc-800/50 transition-colors cursor-pointer">
-                      <TableCell className="font-mono text-zinc-500">{item.id}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <div 
-                            className="w-6 h-6 rounded-full border border-white/10 shadow-sm" 
-                            style={{ backgroundColor: item.hex }}
-                          />
-                          <span className="font-medium">{item.colorName}</span>
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-mono text-orange-400">{item.frequency} Hz</TableCell>
-                      <TableCell className="font-mono text-xs text-zinc-400">{item.lightRange}</TableCell>
-                      <TableCell className="font-mono text-xs text-zinc-400">{item.toneRange}</TableCell>
-                      <TableCell className="hidden md:table-cell text-sm text-zinc-300 max-w-[200px] truncate" title={item.description}>
-                        {item.description}
-                      </TableCell>
-                      <TableCell className="hidden lg:table-cell">
-                        <button
-                          onClick={() => toggleRowExpanded(item.id)}
-                          className="text-zinc-400 hover:text-white transition-colors"
-                        >
-                          {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                        </button>
-                      </TableCell>
-                    </TableRow>
+        {/* Grid of Color Cards with Saturation Sliders */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+          {frequencyData.map((item) => {
+            const saturation = saturationValues[item.id] ?? 100;
+            const hsl = hexToHsl(item.hex);
+            const modifiedHex = hslToHex(hsl.h, saturation, hsl.l);
 
-                    {/* Expanded Row - Saturation Explorer */}
-                    {isExpanded && (
-                      <TableRow className="bg-zinc-900/50 border-zinc-800">
-                        <TableCell colSpan={7} className="p-4">
-                          <div className="space-y-4">
-                            <div className="text-sm font-semibold text-white mb-3">
-                              Sättigung erkunden für {item.colorName}
-                            </div>
+            return (
+              <div
+                key={item.id}
+                className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 hover:border-zinc-700 transition-colors"
+              >
+                {/* Header */}
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <div className="text-sm font-bold text-white">TYP {item.id}</div>
+                    <div className="text-xs text-zinc-400">{item.colorName}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-zinc-500">Frequenz</div>
+                    <div className="text-sm font-mono text-orange-400">{item.frequency} Hz</div>
+                  </div>
+                </div>
 
-                            {/* Color Comparison */}
-                            <div className="flex gap-4 mb-4">
-                              <div className="flex-1">
-                                <div className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">100% Sättigung</div>
-                                <div
-                                  className="w-full h-20 rounded-lg border border-white/20 shadow-lg"
-                                  style={{ backgroundColor: item.hex }}
-                                />
-                              </div>
-                              <div className="flex-1">
-                                <div className="text-xs text-zinc-500 mb-2 uppercase tracking-wider">{saturation}% Sättigung</div>
-                                <div
-                                  className="w-full h-20 rounded-lg border border-white/20 shadow-lg"
-                                  style={{ backgroundColor: modifiedHex }}
-                                />
-                              </div>
-                            </div>
+                {/* Color Preview */}
+                <div className="flex gap-2 mb-4">
+                  <div className="flex-1">
+                    <div className="text-xs text-zinc-500 mb-1">100%</div>
+                    <div
+                      className="w-full h-12 rounded border border-white/20 shadow-md"
+                      style={{ backgroundColor: item.hex }}
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <div className="text-xs text-zinc-500 mb-1">{saturation}%</div>
+                    <div
+                      className="w-full h-12 rounded border border-white/20 shadow-md"
+                      style={{ backgroundColor: modifiedHex }}
+                    />
+                  </div>
+                </div>
 
-                            {/* Saturation Slider */}
-                            <div className="space-y-2">
-                              <div className="flex justify-between items-center">
-                                <label className="text-xs uppercase tracking-wider text-zinc-400">
-                                  Sättigung anpassen
-                                </label>
-                                <span className="text-sm font-bold text-white">{saturation}%</span>
-                              </div>
-                              <Slider
-                                value={[saturation]}
-                                onValueChange={(value) => handleSaturationChange(item.id, value)}
-                                min={0}
-                                max={100}
-                                step={5}
-                                className="w-full"
-                              />
-                              <div className="flex justify-between text-xs text-zinc-500">
-                                <span>Zart</span>
-                                <span>Intensiv</span>
-                              </div>
-                            </div>
+                {/* Saturation Slider */}
+                <div className="space-y-2 mb-4">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs uppercase tracking-wider text-zinc-400">
+                      Sättigung
+                    </label>
+                    <span className="text-sm font-bold text-white">{saturation}%</span>
+                  </div>
+                  <Slider
+                    value={[saturation]}
+                    onValueChange={(value) => handleSaturationChange(item.id, value)}
+                    min={0}
+                    max={100}
+                    step={5}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-zinc-500">
+                    <span>Zart</span>
+                    <span>Intensiv</span>
+                  </div>
+                </div>
 
-                            {/* Description */}
-                            <div className="bg-black/30 rounded-lg p-3 border border-zinc-700/50 mt-4">
-                              <div className="text-xs text-zinc-400 uppercase tracking-wider mb-1">
-                                Talent / Wirkung:
-                              </div>
-                              <div className="text-sm text-white">
-                                {item.talent}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </React.Fragment>
-                );
-              })}
-            </TableBody>
-          </Table>
+                {/* Info */}
+                <div className="bg-black/40 rounded p-2 border border-zinc-700/50">
+                  <div className="text-xs text-zinc-400 mb-1">Wirkung:</div>
+                  <div className="text-xs text-zinc-300 line-clamp-2">{item.description}</div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Table View */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold text-white mb-4">Detaillierte Tabelle</h2>
+          <div className="rounded-xl border border-zinc-800 overflow-hidden bg-zinc-900/30">
+            <Table>
+              <TableHeader className="bg-zinc-900">
+                <TableRow className="border-zinc-800 hover:bg-zinc-900">
+                  <TableHead className="w-[50px] text-zinc-400">ID</TableHead>
+                  <TableHead className="w-[150px] text-zinc-400">Farbe</TableHead>
+                  <TableHead className="text-zinc-400">Frequenz</TableHead>
+                  <TableHead className="text-zinc-400">Licht (nm)</TableHead>
+                  <TableHead className="text-zinc-400">Klang (Thz)</TableHead>
+                  <TableHead className="hidden md:table-cell text-zinc-400">Wirkung</TableHead>
+                  <TableHead className="hidden lg:table-cell text-zinc-400">Talent</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {frequencyData.map((item) => (
+                  <TableRow key={item.id} className="border-zinc-800 hover:bg-zinc-800/50 transition-colors">
+                    <TableCell className="font-mono text-zinc-500">{item.id}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-6 h-6 rounded-full border border-white/10 shadow-sm" 
+                          style={{ backgroundColor: item.hex }}
+                        />
+                        <span className="font-medium">{item.colorName}</span>
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-mono text-orange-400">{item.frequency} Hz</TableCell>
+                    <TableCell className="font-mono text-xs text-zinc-400">{item.lightRange}</TableCell>
+                    <TableCell className="font-mono text-xs text-zinc-400">{item.toneRange}</TableCell>
+                    <TableCell className="hidden md:table-cell text-sm text-zinc-300 max-w-[200px] truncate" title={item.description}>
+                      {item.description}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell text-sm text-zinc-300 max-w-[200px] truncate" title={item.talent}>
+                      {item.talent}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </div>
         
         <div className="mt-8 text-center text-zinc-500 text-sm">
           <p>MDI - Multidimensionales Identitätssystem © 2026</p>
-          <p className="mt-2 text-xs text-zinc-600">Klicke auf die Pfeile, um die Sättigung jeder Farbe zu erkunden</p>
         </div>
 
       </div>
