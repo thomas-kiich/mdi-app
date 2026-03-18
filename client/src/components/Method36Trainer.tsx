@@ -141,9 +141,11 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                 shouldLoop = false;
             }
 
-            const audio = new Audio(soundUrl);
-            audio.loop = shouldLoop; // Loop enabled for 21min-loop module
+            const audio = new Audio();
+            audio.src = soundUrl;
+            audio.loop = shouldLoop;
             audio.crossOrigin = "anonymous";
+            audio.preload = "auto";
             
             const waterSoundWrapper = {
                 start: () => {
