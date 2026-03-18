@@ -50,11 +50,6 @@ export function HarmonicSpectrumChart({
             <div key={tone.id} className="space-y-1">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
-                  <div 
-                    className="w-6 h-6 rounded-sm shadow-lg border border-white/20"
-                    style={{ backgroundColor: tone.hex }}
-                    title={tone.colorName}
-                  />
                   <div className="flex-1">
                     <div className="text-sm font-medium text-white">
                       TYP {tone.id}: {tone.colorName}
