@@ -172,8 +172,8 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             // @ts-ignore
             waterSoundRef.current = waterSoundWrapper;
             
-            // Set initial volume
-            waterSoundWrapper.setVolume(isStreamSoundEnabled && isPlaying ? 0.5 : 0);
+            // Set initial volume to 0 (will be started when isPlaying becomes true)
+            waterSoundWrapper.setVolume(0);
 
         return () => {
             stopTone();
@@ -185,6 +185,17 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             ctx.close();
         };
     }, [duration]);
+
+    // Handle water sound playback when training starts/stops
+    useEffect(() => {
+        if (waterSoundRef.current) {
+            if (isPlaying && isStreamSoundEnabled) {
+                waterSoundRef.current.setVolume(0.5);
+            } else {
+                waterSoundRef.current.setVolume(0);
+            }
+        }
+    }, [isPlaying, isStreamSoundEnabled]);
 
     const toggleStreamSound = () => {
         const newState = !isStreamSoundEnabled;
@@ -366,11 +377,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             setCurrentBeat(0);
             setCycleCount(0); 
             requestRef.current = requestAnimationFrame(updateLoop);
-
-            // Start Stream Sound if enabled
-            if (isStreamSoundEnabled && waterSoundRef.current) {
-                waterSoundRef.current.setVolume(0.5); // Increased volume for better ambience
-            }
+            // Water sound is now handled by separate useEffect
 
             // Start Timer if duration is set
             if (duration) {
