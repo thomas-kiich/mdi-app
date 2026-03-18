@@ -125,19 +125,19 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         filter.connect(master);
         filterRef.current = filter;
 
-            // Initialize Music Composition - use duration for YOHN training
-            let soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav'; // Default 7min
+            // Initialize Music Composition - use duration for YOHN training with water sounds
+            let soundUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/BjSApDsrGEcfxBra.wav'; // Default 7min water sound
             let shouldLoop = false;
             
             // Select specific file based on duration
             if (duration === 7) {
-                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav';
+                soundUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/BjSApDsrGEcfxBra.wav'; // 7min water sound
                 shouldLoop = false;
             } else if (duration === 12) {
-                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav'; // Use 7min as fallback for 12min
+                soundUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/RAAdVvMIZOzqXesH.wav'; // 12min water sound
                 shouldLoop = false;
             } else if (duration === 21) {
-                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_0665d0c7.wav';
+                soundUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/iRBqzrwZzszWLqcR.wav'; // 21min water sound
                 shouldLoop = false;
             }
 
