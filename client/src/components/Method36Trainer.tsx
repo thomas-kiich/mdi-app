@@ -27,6 +27,7 @@ interface SessionLog {
 
 export function Method36Trainer({ frequency, toneName, color, duration, onClose }: Method36TrainerProps) {
     const { toast } = useToast();
+    const waterAudioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentBeat, setCurrentBeat] = useState(0); // 1 to 6
     const [phase, setPhase] = useState<Phase>('HOLD_EMPTY');
@@ -190,11 +191,13 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
 
     // Handle water sound playback when training starts/stops
     useEffect(() => {
-        if (waterSoundRef.current) {
+        if (waterAudioRef.current) {
+            waterAudioRef.current.volume = 1.0;
             if (isPlaying && isStreamSoundEnabled) {
-                waterSoundRef.current.setVolume(1.0); // Maximum volume for water sound
+                waterAudioRef.current.play().catch(e => console.error("Water sound play failed", e));
             } else {
-                waterSoundRef.current.setVolume(0);
+                waterAudioRef.current.pause();
+                waterAudioRef.current.currentTime = 0;
             }
         }
     }, [isPlaying, isStreamSoundEnabled]);
@@ -745,6 +748,18 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                     )}
                 </div>
             </div>
+            
+            {/* Water Sound Background */}
+            <audio
+                ref={waterAudioRef}
+                loop
+                style={{ display: 'none' }}
+            >
+                <source
+                    src={duration === 7 ? 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/BjSApDsrGEcfxBra.wav' : duration === 12 ? 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/RAAdVvMIZOzqXesH.wav' : 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/iRBqzrwZzszWLqcR.wav'}
+                    type="audio/wav"
+                />
+            </audio>
         </div>
     );
 }
