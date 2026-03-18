@@ -14,8 +14,6 @@ interface Method36TrainerProps {
     onClose: () => void;
 }
 
-type AudioModule = '7min' | '21min' | '21min-loop';
-
 // 36 BPM = 1 Beat every 1.6666... seconds (60 / 36)
 const BEAT_DURATION = 1.666666; 
 
@@ -39,7 +37,6 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
     const [isStreamSoundEnabled, setIsStreamSoundEnabled] = useState(true);
     const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
-    const [audioModule, setAudioModule] = useState<AudioModule>('7min'); // Audio module selection
     
     const handleShare = async () => {
         const shareText = `Ich habe mich erfolgreich auf ${frequency} Hz (${toneName}) eingeschwungen. MDI Methode 36.`;
@@ -128,20 +125,20 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
         filter.connect(master);
         filterRef.current = filter;
 
-            // Initialize Music Composition based on selected audio module
+            // Initialize Music Composition - use duration for YOHN training
             let soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav'; // Default 7min
             let shouldLoop = false;
             
-            // Select specific file based on audio module
-            if (audioModule === '7min') {
+            // Select specific file based on duration
+            if (duration === 7) {
                 soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav';
                 shouldLoop = false;
-            } else if (audioModule === '21min') {
+            } else if (duration === 12) {
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-07min_1a759185.wav'; // Use 7min as fallback for 12min
+                shouldLoop = false;
+            } else if (duration === 21) {
                 soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_0665d0c7.wav';
                 shouldLoop = false;
-            } else if (audioModule === '21min-loop') {
-                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_0665d0c7.wav';
-                shouldLoop = true;
             }
 
             const audio = new Audio(soundUrl);
@@ -187,7 +184,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
             if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
             ctx.close();
         };
-    }, [audioModule]);
+    }, [duration]);
 
     const toggleStreamSound = () => {
         const newState = !isStreamSoundEnabled;
@@ -690,30 +687,27 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                     <div className="flex items-center gap-3 bg-zinc-900/50 p-3 rounded-lg border border-white/20 backdrop-blur-md w-full justify-center flex-wrap">
                         <Button 
                             size="sm" 
-                            variant={audioModule === '7min' ? "default" : "ghost"}
-                            onClick={() => setAudioModule('7min')}
+                            variant={duration === 7 ? "default" : "ghost"}
                             disabled={isPlaying}
-                            className={audioModule === '7min' ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
+                            className={duration === 7 ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
                         >
                             7 Min
                         </Button>
                         <Button 
                             size="sm" 
-                            variant={audioModule === '21min' ? "default" : "ghost"}
-                            onClick={() => setAudioModule('21min')}
+                            variant={duration === 12 ? "default" : "ghost"}
                             disabled={isPlaying}
-                            className={audioModule === '21min' ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
+                            className={duration === 12 ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
                         >
-                            21 Min
+                            12 Min
                         </Button>
                         <Button 
                             size="sm" 
-                            variant={audioModule === '21min-loop' ? "default" : "ghost"}
-                            onClick={() => setAudioModule('21min-loop')}
+                            variant={duration === 21 ? "default" : "ghost"}
                             disabled={isPlaying}
-                            className={audioModule === '21min-loop' ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
+                            className={duration === 21 ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
                         >
-                            21 Loop
+                            21 Min
                         </Button>
                     </div>
                 </div>
