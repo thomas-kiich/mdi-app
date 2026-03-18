@@ -877,7 +877,7 @@ export default function Home() {
             />
           ) : showTrainingCenter ? (
             <TrainingCenter
-                frequency={finalResult?.fundamentalFreq || 440} // Default if no result yet
+                frequency={mdiResult?.frequency || finalResult?.fundamentalFreq || 440} // Use MDI frequency (from frequencyData)
                 toneName={finalResult?.tone?.name || "A"}
                 color={mdiResult?.hex || "#ffffff"}
                 onClose={() => setShowTrainingCenter(false)}
