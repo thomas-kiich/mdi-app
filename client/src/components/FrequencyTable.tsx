@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, Download, Table as TableIcon } from "lucide-react";
 import frequencyData from '@/lib/frequencyData.json';
+import { colorMatrix } from '@/lib/colorMatrix';
 import {
   Table,
   TableBody,
@@ -164,8 +165,10 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {frequencyData.map((item) => {
             const saturation = saturationValues[item.id] ?? 100;
-            const hsl = hexToHsl(item.hex);
-            const modifiedHex = hslToHex(hsl.h, saturation, hsl.l);
+            // Map saturation (0-100) to intensity levels (25, 50, 75, 100)
+            const intensityLevel = Math.max(25, Math.round((saturation / 100) * 100 / 25) * 25);
+            const matrixColor = colorMatrix[item.id]?.[intensityLevel as keyof typeof colorMatrix[typeof item.id]] || item.hex;
+            const displayColor = saturation === 100 ? matrixColor : item.hex;
 
             return (
               <div
@@ -197,7 +200,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
                     <div className="text-xs text-zinc-500 mb-1">{saturation}%</div>
                     <div
                       className="w-full h-12 rounded border border-white/20 shadow-md"
-                      style={{ backgroundColor: modifiedHex }}
+                      style={{ backgroundColor: matrixColor }}
                     />
                   </div>
                 </div>
