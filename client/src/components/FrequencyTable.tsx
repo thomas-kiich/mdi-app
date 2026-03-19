@@ -193,7 +193,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
                     <div className="text-xs text-zinc-500 mb-1">100%</div>
                     <div
                       className="w-full h-12 rounded border border-white/20 shadow-md"
-                      style={{ backgroundColor: item.hex }}
+                      style={{ backgroundColor: colorMatrix[item.id]?.[100] || item.hex }}
                     />
                   </div>
                   <div className="flex-1">
