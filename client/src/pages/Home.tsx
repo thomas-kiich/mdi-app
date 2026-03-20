@@ -889,12 +889,12 @@ export default function Home() {
               baseTone={finalResult.tone} 
               onClose={() => setShowIntervalTrainer(false)} 
             />
-          ) : showDirectTrainer && finalResult && mdiResult ? (
+          ) : showDirectTrainer ? (
              <Method36Trainer
-                frequency={finalResult.fundamentalFreq || mdiResult.frequency}
-                toneName={finalResult.tone.name}
-                color={mdiResult.hex}
-                duration={selectedTrainingDuration}
+                frequency={finalResult?.fundamentalFreq || mdiResult?.frequency || 95}
+                toneName={finalResult?.tone?.name || "F"}
+                color={mdiResult?.hex || "#FF4444"}
+                duration={selectedTrainingDuration || 7}
                 onClose={() => {
                   setShowDirectTrainer(false);
                   setShowTrainingCenter(false);
