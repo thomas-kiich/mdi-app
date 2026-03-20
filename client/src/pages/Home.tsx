@@ -20,6 +20,7 @@ import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCenter } from "@/components/TrainingCenter";
+import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
 import { SleepTheta } from "@/components/SleepTheta";
 import { WurzelklangVerification } from "@/components/WurzelklangVerification";
 import { HarmonicSpectrumChart } from "@/components/HarmonicSpectrumChart";
@@ -876,12 +877,15 @@ export default function Home() {
               onClose={() => setShowIntervalTrainer(false)} 
             />
           ) : showTrainingCenter ? (
-            <TrainingCenter
-                frequency={finalResult?.fundamentalFreq || mdiResult?.frequency || 440}
-                toneName={finalResult?.tone?.name || (mdiResult?.id ? getToneNameFromMdiId(mdiResult.id) : "A")  || "A"}
-                color={mdiResult?.hex || "#ffffff"}
-                onClose={() => setShowTrainingCenter(false)}
-            />
+            <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
+              <TrainingCategoryStructure />
+              <button
+                onClick={() => setShowTrainingCenter(false)}
+                className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-orange-500 text-zinc-400 hover:text-orange-500 transition-colors"
+              >
+                ✕
+              </button>
+            </div>
           ) : showDirectTrainer && finalResult && mdiResult ? (
              <Method36Trainer
                 frequency={finalResult.fundamentalFreq || mdiResult.frequency}
