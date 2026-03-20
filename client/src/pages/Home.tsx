@@ -28,6 +28,7 @@ import { ToneColorExplorer } from "@/components/ToneColorExplorer";
 import { Dashboard } from "@/components/Dashboard";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { PodcastFeature } from "@/components/PodcastFeature";
+import { AmbientTrainer } from "@/components/AmbientTrainer";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -911,24 +912,28 @@ export default function Home() {
                   setSelectedTrainingItem(null);
                 }}
              />
-          ) : showDirectTrainer && (selectedTrainingItem === "metabolic" || selectedTrainingItem === "mayerwelle") ? (
-             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
-               <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full text-center space-y-4">
-                 <h2 className="text-2xl font-bold text-white">Ambient Training</h2>
-                 <p className="text-zinc-400">Dauer: {selectedTrainingDuration} Minuten</p>
-                 <p className="text-sm text-zinc-500">Audio wird abgespielt...</p>
-                 <button
-                   onClick={() => {
-                     setShowDirectTrainer(false);
-                     setShowTrainingCenter(false);
-                     setSelectedTrainingItem(null);
-                   }}
-                   className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold py-2 rounded-lg transition-colors"
-                 >
-                   Beenden
-                 </button>
-               </div>
-             </div>
+          ) : showDirectTrainer && selectedTrainingItem === "metabolic" ? (
+             <AmbientTrainer
+               trainingId="metabolic"
+               duration={selectedTrainingDuration || 21}
+               audioUrl="https://files.manuscdn.com/user_upload_by_manus/2025-02-27/platonischesJAHR_21min_v1.wav"
+               onClose={() => {
+                 setShowDirectTrainer(false);
+                 setShowTrainingCenter(false);
+                 setSelectedTrainingItem(null);
+               }}
+             />
+          ) : showDirectTrainer && selectedTrainingItem === "mayerwelle" ? (
+             <AmbientTrainer
+               trainingId="mayerwelle"
+               duration={selectedTrainingDuration || 45}
+               audioUrl="https://files.manuscdn.com/user_upload_by_manus/2025-03-20/MAYERWELLE_5.5.wav"
+               onClose={() => {
+                 setShowDirectTrainer(false);
+                 setShowTrainingCenter(false);
+                 setSelectedTrainingItem(null);
+               }}
+             />
           ) : showTrainingCenter ? (
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
               <TrainingCategoryStructure

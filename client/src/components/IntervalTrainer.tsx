@@ -270,18 +270,19 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
           {/* Body Visualization Area */}
           <div className="relative h-48 w-full bg-zinc-950/50 rounded-xl border border-zinc-800 flex items-center justify-center overflow-hidden">
              {/* Simple Body Silhouette (Abstract) */}
-             <svg viewBox="0 0 100 200" className="h-full opacity-20">
+             <svg viewBox="0 0 100 200" className="h-full opacity-40">
                 <path d="M50 10 C 60 10 70 20 70 35 C 70 50 85 55 90 70 C 95 100 80 140 80 190 L 20 190 C 20 140 5 100 10 70 C 15 55 30 50 30 35 C 30 20 40 10 50 10" fill="currentColor" />
              </svg>
              
              {/* Energy Nodes */}
              {/* Nabel (Root/Start) */}
              <motion.div 
-               className="absolute w-4 h-4 rounded-full"
+               className="absolute w-6 h-6 rounded-full border-2"
                style={{ 
-                 bottom: '40%', 
+                 bottom: '32%', 
                  backgroundColor: baseTone.color,
-                 boxShadow: phase === 'pre-hold' || phase === 'glissando' ? `0 0 20px ${baseTone.color}` : 'none'
+                 borderColor: baseTone.color,
+                 boxShadow: phase === 'pre-hold' || phase === 'glissando' ? `0 0 25px ${baseTone.color}, inset 0 0 10px ${baseTone.color}` : `0 0 15px ${baseTone.color}`
                }}
                animate={{ scale: phase === 'pre-hold' ? [1, 1.5, 1] : 1 }}
                transition={{ repeat: Infinity, duration: 1.5 }}
