@@ -21,6 +21,11 @@ interface TrainingCategory {
   items: TrainingItem[];
 }
 
+interface TrainingCategoryStructureProps {
+  onStartTraining?: (item: TrainingItem, duration: number) => void;
+  onOpenKnowledge?: () => void;
+}
+
 const TRAINING_CATEGORIES: TrainingCategory[] = [
   {
     id: "breathing",
@@ -89,15 +94,10 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
   },
 ];
 
-const INTRO_TEXT = `Alle in diesem Trainingscenter abrufbaren Einheiten basieren auf den Prinzipien der METHODE 36. Dies bedeutet, dass der Grundpuls jeweils auf einem Atemzyklus von rund 6 Wiederholungen je Minute aufbaut. Weiterführende Trainingsabläufe variieren entsprechend der Dynamik der jeweiligen Übung.
-
-⚠️ ACHTUNG: Das Praktizieren aller angebotenen Übungen erfolgt auf der eigenen Verantwortlichkeit und Einschätzung der persönlichen gesundheitlichen Befindlichkeit. Bei Unklarheiten kontaktieren Sie bitte unbedingt eine medizinische Kompetenz ihrer Wahl.
-
-Nutzen Sie die umfassenden Angebote aus dem WISSENSPOOL für weiterführende Informationen über die natürlichen Qualitäten einer gesunden Atemkompetenz.`;
-
-export function TrainingCategoryStructure() {
+export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: TrainingCategoryStructureProps = {}) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
 
   const category = selectedCategory
     ? TRAINING_CATEGORIES.find((c) => c.id === selectedCategory)
@@ -118,7 +118,10 @@ export function TrainingCategoryStructure() {
               variant="ghost"
               size="sm"
               className="text-zinc-500 hover:text-white"
-              onClick={() => setSelectedItem(null)}
+              onClick={() => {
+                setSelectedItem(null);
+                setSelectedDuration(null);
+              }}
             >
               ← Zurück zu {category?.name}
             </Button>
@@ -142,7 +145,13 @@ export function TrainingCategoryStructure() {
                       <Button
                         key={duration}
                         variant="outline"
-                        className="border-zinc-700 hover:bg-zinc-800 hover:border-orange-500"
+                        className={cn(
+                          "border-zinc-700 transition-all",
+                          selectedDuration === duration
+                            ? "bg-orange-500 border-orange-500 text-black font-bold"
+                            : "hover:bg-zinc-800 hover:border-orange-500"
+                        )}
+                        onClick={() => setSelectedDuration(duration)}
                       >
                         {duration} Min
                       </Button>
@@ -152,8 +161,16 @@ export function TrainingCategoryStructure() {
               )}
 
               {/* Start Training Button */}
-              <Button className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold">
-                Training starten
+              <Button 
+                className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={!selectedDuration}
+                onClick={() => {
+                  if (selectedDuration && onStartTraining) {
+                    onStartTraining(item, selectedDuration);
+                  }
+                }}
+              >
+                {selectedDuration ? `Training starten (${selectedDuration} Min)` : "Dauer wählen"}
               </Button>
 
               {/* Info Box */}
@@ -204,11 +221,11 @@ export function TrainingCategoryStructure() {
                 onClick={() => setSelectedItem(item.id)}
               >
                 <CardContent className="p-6 flex items-center justify-between">
-                  <div>
+                  <div className="flex-1">
                     <h3 className="text-lg font-semibold mb-1">{item.name}</h3>
                     <p className="text-sm text-zinc-400">{item.description}</p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-zinc-500" />
+                  <ChevronRight className="w-5 h-5 text-zinc-500 flex-shrink-0" />
                 </CardContent>
               </Card>
             ))}
@@ -237,8 +254,30 @@ export function TrainingCategoryStructure() {
           {/* Intro Text */}
           <Card className="bg-zinc-900/50 border-zinc-800 mb-8">
             <CardContent className="p-6">
-              <p className="text-zinc-300 leading-relaxed whitespace-pre-line">
-                {INTRO_TEXT}
+              <p className="text-zinc-300 leading-relaxed space-y-4">
+                <span>
+                  Alle in diesem Trainingscenter abrufbaren Einheiten basieren auf den Prinzipien der{" "}
+                  <button
+                    onClick={onOpenKnowledge}
+                    className="text-orange-500 hover:text-orange-400 underline transition-colors font-semibold"
+                  >
+                    METHODE 36
+                  </button>
+                  . Dies bedeutet, dass der Grundpuls jeweils auf einem Atemzyklus von rund 6 Wiederholungen je Minute aufbaut. Weiterführende Trainingsabläufe variieren entsprechend der Dynamik der jeweiligen Übung.
+                </span>
+                <div className="pt-4">
+                  <p className="flex gap-2">
+                    <span className="text-orange-500 font-bold flex-shrink-0">⚠️</span>
+                    <span>
+                      <strong>ACHTUNG:</strong> Das Praktizieren aller angebotenen Übungen erfolgt auf der eigenen Verantwortlichkeit und Einschätzung der persönlichen gesundheitlichen Befindlichkeit. Bei Unklarheiten kontaktieren Sie bitte unbedingt eine medizinische Kompetenz ihrer Wahl.
+                    </span>
+                  </p>
+                </div>
+                <div className="pt-4">
+                  <p>
+                    Nutzen Sie die umfassenden Angebote aus dem WISSENSPOOL für weiterführende Informationen über die natürlichen Qualitäten einer gesunden Atemkompetenz.
+                  </p>
+                </div>
               </p>
             </CardContent>
           </Card>
@@ -262,7 +301,7 @@ export function TrainingCategoryStructure() {
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-zinc-500">
-                    {cat.items.length} Trainings
+                    {cat.items.length} {cat.items.length === 1 ? "Training" : "Trainings"}
                   </span>
                   <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-orange-500 transition-colors" />
                 </div>
@@ -276,6 +315,7 @@ export function TrainingCategoryStructure() {
           <Button
             variant="outline"
             className="border-zinc-700 hover:border-orange-500 hover:text-orange-500"
+            onClick={onOpenKnowledge}
           >
             <BookOpen className="mr-2 w-4 h-4" />
             Zum Wissenspool

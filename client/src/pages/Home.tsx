@@ -878,7 +878,21 @@ export default function Home() {
             />
           ) : showTrainingCenter ? (
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
-              <TrainingCategoryStructure />
+              <TrainingCategoryStructure
+                onStartTraining={(item, duration) => {
+                  if (item.id === 'yohn' || item.id === 'interval') {
+                    setSelectedTrainingDuration(duration);
+                    setShowDirectTrainer(true);
+                    setShowTrainingCenter(false);
+                  } else if (item.id === 'metabolic' || item.id === 'mayerwelle') {
+                    console.log(`Starting ${item.name} for ${duration} minutes`);
+                  }
+                }}
+                onOpenKnowledge={() => {
+                  setShowKnowledgePool(true);
+                  setShowTrainingCenter(false);
+                }}
+              />
               <button
                 onClick={() => setShowTrainingCenter(false)}
                 className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-orange-500 text-zinc-400 hover:text-orange-500 transition-colors"
