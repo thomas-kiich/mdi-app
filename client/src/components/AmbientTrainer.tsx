@@ -88,7 +88,22 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+    <>
+      {/* Audio Element - outside Card to prevent DOM removal */}
+      <audio
+        ref={audioRef}
+        src={audioUrl}
+        onEnded={() => {
+          setIsPlaying(false);
+          if (timerRef.current) clearInterval(timerRef.current);
+        }}
+        onLoadedMetadata={() => {
+          if (audioRef.current) {
+            audioRef.current.volume = 1.0;
+          }
+        }}
+      />
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
         <CardHeader className="relative pb-2">
           <button
@@ -153,20 +168,7 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
             </Button>
           </div>
 
-          {/* Audio Element */}
-          <audio
-            ref={audioRef}
-            src={audioUrl}
-            onEnded={() => {
-              setIsPlaying(false);
-              if (timerRef.current) clearInterval(timerRef.current);
-            }}
-            onLoadedMetadata={() => {
-              if (audioRef.current) {
-                audioRef.current.volume = 1.0;
-              }
-            }}
-          />
+
 
           {/* Info Text */}
           <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
@@ -177,5 +179,6 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
         </CardContent>
       </Card>
     </div>
+    </>
   );
 }
