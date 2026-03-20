@@ -259,8 +259,8 @@ export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: 
           {/* Intro Text */}
           <Card className="bg-zinc-900/50 border-zinc-800 mb-8">
             <CardContent className="p-6">
-              <p className="text-zinc-300 leading-relaxed space-y-4">
-                <span>
+              <div className="text-zinc-300 leading-relaxed space-y-4">
+                <p>
                   Alle in diesem Trainingscenter abrufbaren Einheiten basieren auf den Prinzipien der{" "}
                   <button
                     onClick={onOpenKnowledge}
@@ -269,7 +269,7 @@ export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: 
                     METHODE 36
                   </button>
                   . Dies bedeutet, dass der Grundpuls jeweils auf einem Atemzyklus von rund 6 Wiederholungen je Minute aufbaut. Weiterführende Trainingsabläufe variieren entsprechend der Dynamik der jeweiligen Übung.
-                </span>
+                </p>
                 <div className="pt-4">
                   <p className="flex gap-2">
                     <span className="text-orange-500 font-bold flex-shrink-0">⚠️</span>
@@ -283,7 +283,7 @@ export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: 
                     Nutzen Sie die umfassenden Angebote aus dem WISSENSPOOL für weiterführende Informationen über die natürlichen Qualitäten einer gesunden Atemkompetenz.
                   </p>
                 </div>
-              </p>
+              </div>
             </CardContent>
           </Card>
         </div>
