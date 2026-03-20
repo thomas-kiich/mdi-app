@@ -889,6 +889,17 @@ export default function Home() {
               baseTone={finalResult.tone} 
               onClose={() => setShowIntervalTrainer(false)} 
             />
+          ) : showDirectTrainer && finalResult && mdiResult ? (
+             <Method36Trainer
+                frequency={finalResult.fundamentalFreq || mdiResult.frequency}
+                toneName={finalResult.tone.name}
+                color={mdiResult.hex}
+                duration={selectedTrainingDuration}
+                onClose={() => {
+                  setShowDirectTrainer(false);
+                  setShowTrainingCenter(false);
+                }}
+             />
           ) : showTrainingCenter ? (
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
               <TrainingCategoryStructure
@@ -896,7 +907,6 @@ export default function Home() {
                   setSelectedTrainingDuration(duration);
                   setShowTrainingDurationSelect(false);
                   setShowDirectTrainer(true);
-                  setShowTrainingCenter(false);
                 }}                onOpenKnowledge={() => {
                   setShowKnowledgePool(true);
                   setShowTrainingCenter(false);
@@ -909,14 +919,6 @@ export default function Home() {
                 ✕
               </button>
             </div>
-          ) : showDirectTrainer && finalResult && mdiResult ? (
-             <Method36Trainer
-                frequency={finalResult.fundamentalFreq || mdiResult.frequency}
-                toneName={finalResult.tone.name}
-                color={mdiResult.hex}
-                duration={selectedTrainingDuration}
-                onClose={() => setShowDirectTrainer(false)}
-             />
           ) : showTrainingDurationSelect ? (
              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                  <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full space-y-8">
