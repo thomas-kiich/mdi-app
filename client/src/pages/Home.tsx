@@ -916,7 +916,7 @@ export default function Home() {
              <AmbientTrainer
                trainingId="metabolic"
                duration={selectedTrainingDuration || 21}
-               audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_ddf4e371.wav"
+               audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/M36-platonischesJAHR-21min_2cd6fb4d.wav"
                onClose={() => {
                  setShowDirectTrainer(false);
                  setShowTrainingCenter(false);
@@ -927,7 +927,7 @@ export default function Home() {
              <AmbientTrainer
                trainingId="mayerwelle"
                duration={selectedTrainingDuration || 45}
-               audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/MAYERWELLE_5.5_d69e1036.wav"
+               audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/MAYERWELLE_5.5_78f9dcef.wav"
                onClose={() => {
                  setShowDirectTrainer(false);
                  setShowTrainingCenter(false);
