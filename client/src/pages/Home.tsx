@@ -27,6 +27,7 @@ import { HarmonicSpectrumChart } from "@/components/HarmonicSpectrumChart";
 import { ToneColorExplorer } from "@/components/ToneColorExplorer";
 import { Dashboard } from "@/components/Dashboard";
 import { OnboardingTour } from "@/components/OnboardingTour";
+import { PodcastFeature } from "@/components/PodcastFeature";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -358,7 +359,18 @@ export default function Home() {
     switch (currentStep) {
       case "dashboard":
         return (
-            <Dashboard 
+            <div className="space-y-8">
+              <div className="container max-w-6xl mx-auto px-4 pt-8">
+                <PodcastFeature
+                  coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/2_30109d8c.png"
+                  title="MASCHINEN ATMEN NICHT"
+                  subtitle="Die Chance auf dein selbstbestimmtes Glücklichsein"
+                  description="Ein revolutionärer Podcast über die METHODE 36 - eine 12-teilige atemgesteuerte Bewegungstechnik, die alte Weisheitslehren mit moderner Wissenschaft vereint. Entdecke, wie Bewusstsein, Kreativität und Empfindsamkeit deine wahre Natur offenbaren."
+                  youtubeUrl=""
+                  spotifyUrl=""
+                />
+              </div>
+              <Dashboard 
                 onStartAnalysis={() => setCurrentStep("intro")}
                 onOpenTraining={() => setShowTrainingCenter(true)}
                 onOpenScanner={() => setShowSpectralScanner(true)}
@@ -366,7 +378,8 @@ export default function Home() {
                 onOpenTable={() => setShowFrequencyTable(true)}
                 onOpenVital={() => setShowVitalDashboard(true)}
                 onOpenSleep={() => setShowSleepTheta(true)}
-            />
+              />
+            </div>
         );
 
       case "intro":
