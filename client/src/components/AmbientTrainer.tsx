@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+'use client';
+
+import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Pause, X } from 'lucide-react';
@@ -27,15 +29,20 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Start/Stop training
-  const togglePlayback = () => {
-    if (audioRef.current) {
+  // Toggle playback - simple and direct
+  const togglePlayback = async () => {
+    if (!audioRef.current) return;
+
+    try {
       if (isPlaying) {
+        // Stop playback
         audioRef.current.pause();
         setIsPlaying(false);
         if (timerRef.current) clearInterval(timerRef.current);
       } else {
-        audioRef.current.play();
+        // Start playback
+        audioRef.current.volume = 1.0;
+        await audioRef.current.play();
         setIsPlaying(true);
 
         // Start timer
@@ -56,20 +63,10 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
           });
         }, 1000);
       }
+    } catch (error) {
+      console.error('Playback error:', error);
     }
   };
-
-  // Set volume on mount and when playing
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = 1.0;
-      if (isPlaying) {
-        audioRef.current.play().catch(e => console.error("Audio play failed", e));
-      } else {
-        audioRef.current.pause();
-      }
-    }
-  }, [isPlaying]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -94,7 +91,7 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
 
   return (
     <>
-      {/* Audio Element - outside Card to prevent DOM removal */}
+      {/* Audio Element */}
       <audio
         ref={audioRef}
         loop
@@ -106,82 +103,81 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
       >
         <source src={audioUrl} type="audio/wav" />
       </audio>
+
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
-        <CardHeader className="relative pb-2">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
-          >
-            <X size={24} />
-          </button>
-          <CardTitle className="text-2xl font-bold text-white">
-            {trainingNames[trainingId]}
-          </CardTitle>
-          <p className="text-sm text-zinc-400 mt-2">
-            {trainingDescriptions[trainingId]}
-          </p>
-        </CardHeader>
-
-        <CardContent className="space-y-6">
-          {/* Timer Display */}
-          <div className="text-center space-y-4">
-            <div className="text-5xl font-bold text-white font-mono">
-              {formatTime(timeElapsed)}
-            </div>
-            <p className="text-zinc-400 text-sm">
-              von {duration} Minuten
-            </p>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full bg-gradient-to-r from-orange-500 to-orange-400"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.1 }}
-            />
-          </div>
-
-          {/* Controls */}
-          <div className="flex gap-3">
-            <Button
-              onClick={togglePlayback}
-              className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold"
-            >
-              {isPlaying ? (
-                <>
-                  <Pause size={20} className="mr-2" />
-                  Pausieren
-                </>
-              ) : (
-                <>
-                  <Play size={20} className="mr-2" />
-                  Starten
-                </>
-              )}
-            </Button>
-            <Button
+        <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
+          <CardHeader className="relative pb-2">
+            <button
               onClick={onClose}
-              variant="outline"
-              className="flex-1 h-12 border-zinc-700 text-zinc-400 hover:text-white"
+              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
             >
-              Beenden
-            </Button>
-          </div>
-
-
-
-          {/* Info Text */}
-          <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
-            <p className="text-xs text-zinc-400">
-              💡 Für beste Ergebnisse: Finde einen ruhigen Ort, entspanne dich und höre die Musik mit angenehmer Lautstärke.
+              <X size={24} />
+            </button>
+            <CardTitle className="text-2xl font-bold text-white">
+              {trainingNames[trainingId]}
+            </CardTitle>
+            <p className="text-sm text-zinc-400 mt-2">
+              {trainingDescriptions[trainingId]}
             </p>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+          </CardHeader>
+
+          <CardContent className="space-y-6">
+            {/* Timer Display */}
+            <div className="text-center space-y-4">
+              <div className="text-5xl font-bold text-white font-mono">
+                {formatTime(timeElapsed)}
+              </div>
+              <p className="text-zinc-400 text-sm">
+                von {duration} Minuten
+              </p>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full bg-gradient-to-r from-orange-500 to-orange-400"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.1 }}
+              />
+            </div>
+
+            {/* Controls */}
+            <div className="flex gap-3">
+              <Button
+                onClick={togglePlayback}
+                className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold"
+              >
+                {isPlaying ? (
+                  <>
+                    <Pause size={20} className="mr-2" />
+                    Pausieren
+                  </>
+                ) : (
+                  <>
+                    <Play size={20} className="mr-2" />
+                    Starten
+                  </>
+                )}
+              </Button>
+              <Button
+                onClick={onClose}
+                variant="outline"
+                className="flex-1 h-12 border-zinc-700 text-zinc-400 hover:text-white"
+              >
+                Beenden
+              </Button>
+            </div>
+
+            {/* Info Text */}
+            <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
+              <p className="text-xs text-zinc-400">
+                💡 Für beste Ergebnisse: Finde einen ruhigen Ort, entspanne dich und höre die Musik mit angenehmer Lautstärke.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }
