@@ -132,6 +132,7 @@ export default function Home() {
   const [showWurzelklangVerification, setShowWurzelklangVerification] = useState(false);
   const [wurzelklangVerified, setWurzelklangVerified] = useState(false);
   const [selectedTrainingDuration, setSelectedTrainingDuration] = useState<number>(7);
+  const [selectedTrainingItem, setSelectedTrainingItem] = useState<string | null>(null);
   const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
   const [showSleepTheta, setShowSleepTheta] = useState(false);
 
@@ -905,8 +906,15 @@ export default function Home() {
               <TrainingCategoryStructure
                 onStartTraining={(item, duration) => {
                   setSelectedTrainingDuration(duration);
+                  setSelectedTrainingItem(item.id);
                   setShowTrainingDurationSelect(false);
-                  setShowDirectTrainer(true);
+                  if (item.id === "yohn" || item.id === "interval") {
+                    setShowDirectTrainer(true);
+                  } else if (item.id === "metabolic" || item.id === "mayerwelle") {
+                    // Ambient trainings - show ambient trainer
+                    setShowDirectTrainer(false);
+                    // TODO: Implement ambient trainer
+                  }
                 }}                onOpenKnowledge={() => {
                   setShowKnowledgePool(true);
                   setShowTrainingCenter(false);
