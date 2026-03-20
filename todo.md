@@ -248,3 +248,5 @@
 
 - [x] Make AmbientTrainer waves audio-reactive using Web Audio API
 - [x] Make AmbientTrainer waves color dynamic based on user's dominant tone
+
+- [x] Fix audio playback in AmbientTrainer broken by Web Audio API CORS

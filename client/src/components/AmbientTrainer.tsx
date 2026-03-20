@@ -23,14 +23,7 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
   const [isReady, setIsReady] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [volume, setVolume] = useState(1.0);
-  const [audioLevel, setAudioLevel] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Audio Analyzer Refs
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyzerRef = useRef<AnalyserNode | null>(null);
-  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
 
   const totalSeconds = duration * 60;
   const progress = (timeElapsed / totalSeconds) * 100;
@@ -85,73 +78,14 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
     }
   };
 
-  // Initialize Audio Context and Analyzer
-  const initAudioAnalyzer = () => {
-    if (!audioRef.current || audioContextRef.current) return;
-    
-    try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioContextClass();
-      audioContextRef.current = ctx;
-      
-      const analyzer = ctx.createAnalyser();
-      analyzer.fftSize = 256;
-      analyzer.smoothingTimeConstant = 0.8;
-      analyzerRef.current = analyzer;
-      
-      const source = ctx.createMediaElementSource(audioRef.current);
-      sourceNodeRef.current = source;
-      
-      source.connect(analyzer);
-      analyzer.connect(ctx.destination);
-    } catch (err) {
-      console.error("Failed to initialize audio analyzer:", err);
-    }
-  };
-
-  // Update audio level from analyzer
-  const updateAudioLevel = () => {
-    if (!analyzerRef.current || !isPlaying) return;
-    
-    const dataArray = new Uint8Array(analyzerRef.current.frequencyBinCount);
-    analyzerRef.current.getByteFrequencyData(dataArray);
-    
-    // Calculate average volume level (0-1)
-    let sum = 0;
-    for (let i = 0; i < dataArray.length; i++) {
-      sum += dataArray[i];
-    }
-    const average = sum / dataArray.length;
-    const normalizedLevel = average / 255;
-    
-    // Smooth the level a bit for visual stability
-    setAudioLevel(prev => {
-      const smoothed = prev * 0.7 + normalizedLevel * 0.3;
-      return smoothed;
-    });
-    
-    animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
-  };
-
   // Sync volume with play state, exactly like Method36Trainer does for water sound
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        // Initialize analyzer on first play
-        if (!audioContextRef.current) {
-          initAudioAnalyzer();
-        } else if (audioContextRef.current.state === 'suspended') {
-          audioContextRef.current.resume();
-        }
-
         audioRef.current.volume = volume;
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
-          playPromise.then(() => {
-            // Start visualization loop
-            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-            updateAudioLevel();
-          }).catch(error => {
+          playPromise.catch(error => {
             console.error("Audio playback failed:", error);
             toast({
               title: "Wiedergabe blockiert",
@@ -162,11 +96,6 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
         }
       } else {
         audioRef.current.pause();
-        if (animationFrameRef.current) {
-          cancelAnimationFrame(animationFrameRef.current);
-        }
-        // Decay the audio level slowly when paused
-        setAudioLevel(0);
       }
     }
   }, [isPlaying]);
@@ -182,15 +111,8 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-      
       if (audioRef.current) {
         audioRef.current.pause();
-      }
-      
-      // Cleanup audio context
-      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
-        audioContextRef.current.close();
       }
     };
   }, []);
@@ -213,14 +135,11 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
         {isPlaying && (
           <>
             <motion.div
-              className="absolute w-[800px] h-[800px] rounded-full blur-[120px] transition-all duration-300"
-              style={{ 
-                backgroundColor: waveColors[0],
-                transform: `scale(${1 + audioLevel * 0.5})`,
-                opacity: 0.2 + audioLevel * 0.4
-              }}
+              className="absolute w-[800px] h-[800px] rounded-full blur-[120px]"
+              style={{ backgroundColor: waveColors[0] }}
               animate={{
-                scale: [1, 1.1, 1],
+                scale: [1, 1.2, 1],
+                opacity: [0.2, 0.6, 0.2],
               }}
               transition={{
                 duration: 8,
@@ -229,14 +148,11 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
               }}
             />
             <motion.div
-              className="absolute w-[600px] h-[600px] rounded-full blur-[100px] transition-all duration-200"
-              style={{ 
-                backgroundColor: waveColors[1],
-                transform: `scale(${1 + audioLevel * 0.7})`,
-                opacity: 0.3 + audioLevel * 0.5
-              }}
+              className="absolute w-[600px] h-[600px] rounded-full blur-[100px]"
+              style={{ backgroundColor: waveColors[1] }}
               animate={{
-                scale: [1, 1.2, 1],
+                scale: [1, 1.3, 1],
+                opacity: [0.3, 0.7, 0.3],
               }}
               transition={{
                 duration: 6,
@@ -246,14 +162,11 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
               }}
             />
             <motion.div
-              className="absolute w-[400px] h-[400px] rounded-full blur-[80px] transition-all duration-150"
-              style={{ 
-                backgroundColor: waveColors[2],
-                transform: `scale(${1 + audioLevel * 1.0})`,
-                opacity: 0.4 + audioLevel * 0.6
-              }}
+              className="absolute w-[400px] h-[400px] rounded-full blur-[80px]"
+              style={{ backgroundColor: waveColors[2] }}
               animate={{
-                scale: [1, 1.3, 1],
+                scale: [1, 1.4, 1],
+                opacity: [0.4, 0.8, 0.4],
               }}
               transition={{
                 duration: 4,
