@@ -59,6 +59,13 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
     }
   };
 
+  // Set volume on mount
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = 1.0;
+    }
+  }, []);
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -153,6 +160,11 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
             onEnded={() => {
               setIsPlaying(false);
               if (timerRef.current) clearInterval(timerRef.current);
+            }}
+            onLoadedMetadata={() => {
+              if (audioRef.current) {
+                audioRef.current.volume = 1.0;
+              }
             }}
           />
 
