@@ -716,10 +716,10 @@ export default function Home() {
             </div>
 
             {/* HARMONIC SPECTRUM ANALYSIS */}
-            {res && res.toneDistribution && (
+            {res && res.mdiDistribution && (
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
                     <HarmonicSpectrumChart 
-                        toneDistribution={res.toneDistribution}
+                        toneDistribution={convertMdiDistributionToToneDistribution(res.mdiDistribution)}
                         dominantToneId={mdi.id}
                     />
                 </div>
@@ -739,7 +739,7 @@ export default function Home() {
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
                     <SoundBody 
                         toneDistribution={convertMdiDistributionToToneDistribution(res.mdiDistribution)} 
-                        dominantToneName={mdi.toneRange} 
+                        dominantToneName={getToneNameFromMdiId(mdi.id)} 
                     />
                 </div>
             )}
