@@ -719,7 +719,7 @@ export default function Home() {
             {res && res.mdiDistribution && (
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
                     <HarmonicSpectrumChart 
-                        toneDistribution={convertMdiDistributionToToneDistribution(res.mdiDistribution)}
+                        toneDistribution={res.mdiDistribution}
                         dominantToneId={mdi.id}
                     />
                 </div>
@@ -877,8 +877,8 @@ export default function Home() {
             />
           ) : showTrainingCenter ? (
             <TrainingCenter
-                frequency={mdiResult?.frequency || finalResult?.fundamentalFreq || 440} // Use MDI frequency (from frequencyData)
-                toneName={finalResult?.tone?.name || "A"}
+                frequency={finalResult?.fundamentalFreq || mdiResult?.frequency || 440}
+                toneName={finalResult?.tone?.name || (mdiResult?.id ? getToneNameFromMdiId(mdiResult.id) : "A")  || "A"}
                 color={mdiResult?.hex || "#ffffff"}
                 onClose={() => setShowTrainingCenter(false)}
             />
