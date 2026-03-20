@@ -40,12 +40,9 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
       if (timerRef.current) clearInterval(timerRef.current);
     } else {
       // Play
-      audioRef.current.volume = 1.0;
+      audioRef.current.volume = 0.5;
       audioRef.current.currentTime = 0;
-      const playPromise = audioRef.current.play();
-      if (playPromise) {
-        playPromise.catch(err => console.error('Play error:', err));
-      }
+      audioRef.current.play().catch(e => console.error('Play error:', e));
       setIsPlaying(true);
 
       // Start timer
@@ -109,18 +106,14 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Hidden audio element */}
+          {/* Audio Element - Same structure as Method36Trainer */}
           <audio
             ref={audioRef}
-            src={audioUrl}
             loop
             style={{ display: 'none' }}
-            onLoadedMetadata={() => {
-              if (audioRef.current) {
-                audioRef.current.volume = 1.0;
-              }
-            }}
-          />
+          >
+            <source src={audioUrl} type="audio/wav" />
+          </audio>
 
           {/* Timer Display */}
           <div className="text-center space-y-4">
