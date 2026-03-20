@@ -32,29 +32,29 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
     name: "1 - Atemtraining",
     icon: "🫁",
     description: "Übungen in diesem Segment konzentrieren sich auf die Stärkung der Atemkompetenz mit all ihren positiven Auswirkungen auf das ganzheitliche Wohlbefinden.",
-    items: [
-      {
-        id: "yohn",
-        name: "YOHN-Atmung",
-        description: "Intervall-Training mit Wasser-Ambience",
-        durations: [7, 12, 21],
-        type: "breathing",
-      },
-      {
-        id: "interval",
-        name: "Intervall-Training",
-        description: "Strukturiertes Atemtraining mit Pausen",
-        durations: [7, 12, 21],
-        type: "breathing",
-      },
-    ],
+    items: [],
   },
   {
     id: "voice",
     name: "2 - Stimmklangtraining",
     icon: "🎵",
     description: "Übungen in diesem Segment konzentrieren sich auf die Nutzung und die Stärkung der eigenen Stimmqualität.",
-    items: [],
+    items: [
+      {
+        id: "yohn",
+        name: "YOHN-Atmung",
+        description: "Intervall-Training mit Wasser-Ambience",
+        durations: [7, 12, 21],
+        type: "voice",
+      },
+      {
+        id: "interval",
+        name: "Intervall-Training",
+        description: "Strukturiertes Atemtraining mit Pausen",
+        durations: [7, 12, 21],
+        type: "voice",
+      },
+    ],
   },
   {
     id: "movement",
