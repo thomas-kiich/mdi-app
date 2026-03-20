@@ -17,7 +17,11 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  
+  // Use global audio element from Home.tsx
+  const getAudioElement = () => {
+    return document.getElementById('ambient-audio') as HTMLAudioElement | null;
+  };
 
   const totalSeconds = duration * 60;
   const progress = (timeElapsed / totalSeconds) * 100;
@@ -31,18 +35,20 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
 
   // Toggle playback
   const togglePlayback = () => {
-    if (!audioRef.current) return;
+    const audio = getAudioElement();
+    if (!audio) return;
 
     if (isPlaying) {
       // Pause
-      audioRef.current.pause();
+      audio.pause();
       setIsPlaying(false);
       if (timerRef.current) clearInterval(timerRef.current);
     } else {
       // Play
-      audioRef.current.volume = 1.0;
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(e => console.error('Play error:', e));
+      audio.src = audioUrl;
+      audio.volume = 1.0;
+      audio.currentTime = 0;
+      audio.play().catch(e => console.error('Play error:', e));
       setIsPlaying(true);
 
       // Start timer
@@ -52,9 +58,10 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
           const newTime = prev + 1;
           if (newTime >= totalSeconds) {
             // Training complete
-            if (audioRef.current) {
-              audioRef.current.pause();
-              audioRef.current.currentTime = 0;
+            const audio = getAudioElement();
+            if (audio) {
+              audio.pause();
+              audio.currentTime = 0;
             }
             setIsPlaying(false);
             if (timerRef.current) clearInterval(timerRef.current);
@@ -70,9 +77,11 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+      const audio = getAudioElement();
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.src = '';
       }
     };
   }, []);
@@ -106,14 +115,6 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
         </CardHeader>
 
         <CardContent className="space-y-6">
-          {/* Audio Element - Same structure as Method36Trainer */}
-          <audio
-            ref={audioRef}
-            loop
-            style={{ display: 'none' }}
-          >
-            <source src={audioUrl} type="audio/wav" />
-          </audio>
 
           {/* Timer Display */}
           <div className="text-center space-y-4">
@@ -138,7 +139,10 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
           {/* Controls */}
           <div className="flex gap-3">
             <Button
-              onClick={togglePlayback}
+              onClick={(e) => {
+                e.stopPropagation();
+                togglePlayback();
+              }}
               className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold"
             >
               {isPlaying ? (

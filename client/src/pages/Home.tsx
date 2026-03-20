@@ -1015,6 +1015,12 @@ export default function Home() {
                 </div>
             </footer>
         )}
+        {/* Global Audio Element for Ambient Trainers */}
+        <audio
+          id="ambient-audio"
+          loop
+          style={{ display: 'none' }}
+        />
       </div>
     </div>
   );
