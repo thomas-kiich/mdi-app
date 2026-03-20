@@ -116,8 +116,54 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 overflow-hidden">
       
+      {/* Full-Screen Visual Feedback: Pulsating Waves */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center z-0" style={{ mixBlendMode: 'screen' }}>
+        {isPlaying && (
+          <>
+            <motion.div
+              className="absolute w-[800px] h-[800px] rounded-full bg-orange-500/20 blur-[120px]"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.2, 0.6, 0.2],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+            <motion.div
+              className="absolute w-[600px] h-[600px] rounded-full bg-amber-500/30 blur-[100px]"
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.3, 0.7, 0.3],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 2
+              }}
+            />
+            <motion.div
+              className="absolute w-[400px] h-[400px] rounded-full bg-yellow-400/40 blur-[80px]"
+              animate={{
+                scale: [1, 1.4, 1],
+                opacity: [0.4, 0.8, 0.4],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 4
+              }}
+            />
+          </>
+        )}
+      </div>
+
       {/* Audio Element */}
       <audio
         ref={audioRef}
@@ -131,60 +177,14 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
         <source src={audioUrl} />
       </audio>
 
-      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl">
-        <CardHeader className="relative pb-2">
+      <Card className="w-full max-w-md bg-zinc-900/80 border-zinc-800 shadow-2xl relative z-10 backdrop-blur-md">
+        <CardHeader className="relative pb-2 z-10">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white rounded-full hover:bg-white/10 transition-colors z-10"
+            className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white rounded-full hover:bg-white/10 transition-colors z-20"
           >
             <X size={20} />
           </button>
-          
-          {/* Visual Feedback: Pulsating Waves */}
-          <div className="absolute inset-0 overflow-hidden rounded-t-xl pointer-events-none flex items-center justify-center">
-            {isPlaying && (
-              <>
-                <motion.div
-                  className="absolute w-32 h-32 rounded-full bg-orange-500/10 blur-xl"
-                  animate={{
-                    scale: [1, 2, 1],
-                    opacity: [0.1, 0.3, 0.1],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <motion.div
-                  className="absolute w-24 h-24 rounded-full bg-amber-500/20 blur-lg"
-                  animate={{
-                    scale: [1, 1.8, 1],
-                    opacity: [0.2, 0.4, 0.2],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 1
-                  }}
-                />
-                <motion.div
-                  className="absolute w-16 h-16 rounded-full bg-orange-400/30 blur-md"
-                  animate={{
-                    scale: [1, 1.5, 1],
-                    opacity: [0.3, 0.5, 0.3],
-                  }}
-                  transition={{
-                    duration: 4,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                    delay: 2
-                  }}
-                />
-              </>
-            )}
-          </div>
 
           <div className="relative z-10">
             <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-orange-400 to-amber-600 bg-clip-text text-transparent">
@@ -196,7 +196,7 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 relative z-10">
 
           {/* Timer Display */}
           <div className="text-center space-y-4">

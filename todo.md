@@ -243,3 +243,5 @@
 
 - [x] Add visual feedback (pulsating waves) to AmbientTrainer during playback
 - [x] Add volume control slider to AmbientTrainer
+
+- [x] Fix pulsating waves visibility in AmbientTrainer
