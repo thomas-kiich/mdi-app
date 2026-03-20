@@ -13,38 +13,14 @@ interface AmbientTrainerProps {
   onClose: () => void;
 }
 
-// Global audio instance - persists outside React
-let globalAudioElement: HTMLAudioElement | null = null;
-
-function getOrCreateAudioElement(): HTMLAudioElement {
-  if (!globalAudioElement) {
-    globalAudioElement = new Audio();
-    globalAudioElement.style.display = 'none';
-    document.body.appendChild(globalAudioElement);
-  }
-  return globalAudioElement;
-}
-
 export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: AmbientTrainerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const totalSeconds = duration * 60;
   const progress = (timeElapsed / totalSeconds) * 100;
-
-  // Initialize audio element on mount
-  useEffect(() => {
-    audioRef.current = getOrCreateAudioElement();
-    audioRef.current.src = audioUrl;
-    audioRef.current.volume = 1.0;
-    audioRef.current.loop = true;
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current);
-    };
-  }, [audioUrl]);
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -57,40 +33,39 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   const togglePlayback = () => {
     if (!audioRef.current) return;
 
-    try {
-      if (isPlaying) {
-        // Stop playback
-        audioRef.current.pause();
-        setIsPlaying(false);
-        if (timerRef.current) clearInterval(timerRef.current);
-      } else {
-        // Start playback
-        audioRef.current.play().then(() => {
-          setIsPlaying(true);
-
-          // Start timer
-          timerRef.current = setInterval(() => {
-            setTimeElapsed((prev) => {
-              const newTime = prev + 1;
-              if (newTime >= totalSeconds) {
-                // Training complete
-                if (audioRef.current) {
-                  audioRef.current.pause();
-                  audioRef.current.currentTime = 0;
-                }
-                setIsPlaying(false);
-                if (timerRef.current) clearInterval(timerRef.current);
-                return totalSeconds;
-              }
-              return newTime;
-            });
-          }, 1000);
-        }).catch(error => {
-          console.error('Audio play error:', error);
-        });
+    if (isPlaying) {
+      // Pause
+      audioRef.current.pause();
+      setIsPlaying(false);
+      if (timerRef.current) clearInterval(timerRef.current);
+    } else {
+      // Play
+      audioRef.current.volume = 1.0;
+      audioRef.current.currentTime = 0;
+      const playPromise = audioRef.current.play();
+      if (playPromise) {
+        playPromise.catch(err => console.error('Play error:', err));
       }
-    } catch (error) {
-      console.error('Playback error:', error);
+      setIsPlaying(true);
+
+      // Start timer
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = setInterval(() => {
+        setTimeElapsed((prev) => {
+          const newTime = prev + 1;
+          if (newTime >= totalSeconds) {
+            // Training complete
+            if (audioRef.current) {
+              audioRef.current.pause();
+              audioRef.current.currentTime = 0;
+            }
+            setIsPlaying(false);
+            if (timerRef.current) clearInterval(timerRef.current);
+            return totalSeconds;
+          }
+          return newTime;
+        });
+      }, 1000);
     }
   };
 
@@ -98,12 +73,12 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (audioRef.current && isPlaying) {
+      if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
     };
-  }, [isPlaying]);
+  }, []);
 
   const trainingNames = {
     metabolic: 'Stoffwechsel-Atmung',
@@ -134,6 +109,19 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
         </CardHeader>
 
         <CardContent className="space-y-6">
+          {/* Hidden audio element */}
+          <audio
+            ref={audioRef}
+            src={audioUrl}
+            loop
+            style={{ display: 'none' }}
+            onLoadedMetadata={() => {
+              if (audioRef.current) {
+                audioRef.current.volume = 1.0;
+              }
+            }}
+          />
+
           {/* Timer Display */}
           <div className="text-center space-y-4">
             <div className="text-5xl font-bold text-white font-mono">
