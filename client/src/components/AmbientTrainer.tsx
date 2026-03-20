@@ -145,7 +145,7 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
             {/* Controls */}
             <div className="flex gap-3">
               <Button
-                onClick={togglePlayback}
+                onClick={() => togglePlayback()}
                 className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold"
               >
                 {isPlaying ? (
