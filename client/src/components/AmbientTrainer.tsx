@@ -7,24 +7,44 @@ import { Play, Pause, X, Volume2, VolumeX } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { Slider } from '@/components/ui/slider';
+import { TONES } from '@/lib/tones';
 
 interface AmbientTrainerProps {
   trainingId: 'metabolic' | 'mayerwelle';
   duration: number; // in minutes
   audioUrl: string;
+  baseTone?: { name: string; frequency: number };
   onClose: () => void;
 }
 
-export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: AmbientTrainerProps) {
+export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClose }: AmbientTrainerProps) {
   const { toast } = useToast();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [volume, setVolume] = useState(1.0);
+  const [audioLevel, setAudioLevel] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Audio Analyzer Refs
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyzerRef = useRef<AnalyserNode | null>(null);
+  const sourceNodeRef = useRef<MediaElementAudioSourceNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
   const totalSeconds = duration * 60;
   const progress = (timeElapsed / totalSeconds) * 100;
+
+  // Get base color from tone, default to orange if not available
+  const toneData = baseTone ? TONES.find(t => t.name === baseTone.name) : null;
+  const baseColor = toneData ? toneData.color : '#f97316';
+  
+  // Create variations of the color for the waves (using opacity)
+  const waveColors = [
+    `${baseColor}33`, // 20% opacity
+    `${baseColor}4D`, // 30% opacity
+    `${baseColor}66`, // 40% opacity
+  ];
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -65,24 +85,88 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
     }
   };
 
+  // Initialize Audio Context and Analyzer
+  const initAudioAnalyzer = () => {
+    if (!audioRef.current || audioContextRef.current) return;
+    
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      const ctx = new AudioContextClass();
+      audioContextRef.current = ctx;
+      
+      const analyzer = ctx.createAnalyser();
+      analyzer.fftSize = 256;
+      analyzer.smoothingTimeConstant = 0.8;
+      analyzerRef.current = analyzer;
+      
+      const source = ctx.createMediaElementSource(audioRef.current);
+      sourceNodeRef.current = source;
+      
+      source.connect(analyzer);
+      analyzer.connect(ctx.destination);
+    } catch (err) {
+      console.error("Failed to initialize audio analyzer:", err);
+    }
+  };
+
+  // Update audio level from analyzer
+  const updateAudioLevel = () => {
+    if (!analyzerRef.current || !isPlaying) return;
+    
+    const dataArray = new Uint8Array(analyzerRef.current.frequencyBinCount);
+    analyzerRef.current.getByteFrequencyData(dataArray);
+    
+    // Calculate average volume level (0-1)
+    let sum = 0;
+    for (let i = 0; i < dataArray.length; i++) {
+      sum += dataArray[i];
+    }
+    const average = sum / dataArray.length;
+    const normalizedLevel = average / 255;
+    
+    // Smooth the level a bit for visual stability
+    setAudioLevel(prev => {
+      const smoothed = prev * 0.7 + normalizedLevel * 0.3;
+      return smoothed;
+    });
+    
+    animationFrameRef.current = requestAnimationFrame(updateAudioLevel);
+  };
+
   // Sync volume with play state, exactly like Method36Trainer does for water sound
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
+        // Initialize analyzer on first play
+        if (!audioContextRef.current) {
+          initAudioAnalyzer();
+        } else if (audioContextRef.current.state === 'suspended') {
+          audioContextRef.current.resume();
+        }
+
         audioRef.current.volume = volume;
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
-          playPromise.catch(error => {
+          playPromise.then(() => {
+            // Start visualization loop
+            if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+            updateAudioLevel();
+          }).catch(error => {
             console.error("Audio playback failed:", error);
             toast({
-              title: "Wiedergabe-Fehler",
-              description: "Audio konnte nicht abgespielt werden. Bitte versuchen Sie es erneut.",
+              title: "Wiedergabe blockiert",
+              description: "Bitte interagieren Sie zuerst mit der Seite (z.B. durch einen Klick), bevor das Audio gestartet werden kann.",
             });
             setIsPlaying(false);
           });
         }
       } else {
         audioRef.current.pause();
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        // Decay the audio level slowly when paused
+        setAudioLevel(0);
       }
     }
   }, [isPlaying]);
@@ -98,9 +182,15 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
+      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+      
       if (audioRef.current) {
         audioRef.current.pause();
-        audioRef.current.currentTime = 0;
+      }
+      
+      // Cleanup audio context
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close();
       }
     };
   }, []);
@@ -123,10 +213,14 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
         {isPlaying && (
           <>
             <motion.div
-              className="absolute w-[800px] h-[800px] rounded-full bg-orange-500/20 blur-[120px]"
+              className="absolute w-[800px] h-[800px] rounded-full blur-[120px] transition-all duration-300"
+              style={{ 
+                backgroundColor: waveColors[0],
+                transform: `scale(${1 + audioLevel * 0.5})`,
+                opacity: 0.2 + audioLevel * 0.4
+              }}
               animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.2, 0.6, 0.2],
+                scale: [1, 1.1, 1],
               }}
               transition={{
                 duration: 8,
@@ -135,10 +229,14 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
               }}
             />
             <motion.div
-              className="absolute w-[600px] h-[600px] rounded-full bg-amber-500/30 blur-[100px]"
+              className="absolute w-[600px] h-[600px] rounded-full blur-[100px] transition-all duration-200"
+              style={{ 
+                backgroundColor: waveColors[1],
+                transform: `scale(${1 + audioLevel * 0.7})`,
+                opacity: 0.3 + audioLevel * 0.5
+              }}
               animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.3, 0.7, 0.3],
+                scale: [1, 1.2, 1],
               }}
               transition={{
                 duration: 6,
@@ -148,10 +246,14 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
               }}
             />
             <motion.div
-              className="absolute w-[400px] h-[400px] rounded-full bg-yellow-400/40 blur-[80px]"
+              className="absolute w-[400px] h-[400px] rounded-full blur-[80px] transition-all duration-150"
+              style={{ 
+                backgroundColor: waveColors[2],
+                transform: `scale(${1 + audioLevel * 1.0})`,
+                opacity: 0.4 + audioLevel * 0.6
+              }}
               animate={{
-                scale: [1, 1.4, 1],
-                opacity: [0.4, 0.8, 0.4],
+                scale: [1, 1.3, 1],
               }}
               transition={{
                 duration: 4,

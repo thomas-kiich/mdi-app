@@ -245,3 +245,6 @@
 - [x] Add volume control slider to AmbientTrainer
 
 - [x] Fix pulsating waves visibility in AmbientTrainer
+
+- [x] Make AmbientTrainer waves audio-reactive using Web Audio API
+- [x] Make AmbientTrainer waves color dynamic based on user's dominant tone

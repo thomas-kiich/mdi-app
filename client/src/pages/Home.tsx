@@ -917,6 +917,7 @@ export default function Home() {
                trainingId="metabolic"
                duration={selectedTrainingDuration || 21}
                audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/metabolic_0af5bdc2.mp3"
+               baseTone={finalResult?.tone}
                onClose={() => {
                  setShowDirectTrainer(false);
                  setShowTrainingCenter(false);
@@ -928,6 +929,7 @@ export default function Home() {
                trainingId="mayerwelle"
                duration={selectedTrainingDuration || 45}
                audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/mayerwelle_0a96a8d7.mp3"
+               baseTone={finalResult?.tone}
                onClose={() => {
                  setShowDirectTrainer(false);
                  setShowTrainingCenter(false);
