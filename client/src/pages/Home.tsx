@@ -893,15 +893,11 @@ export default function Home() {
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
               <TrainingCategoryStructure
                 onStartTraining={(item, duration) => {
-                  if (item.id === 'yohn' || item.id === 'interval') {
-                    setSelectedTrainingDuration(duration);
-                    setShowDirectTrainer(true);
-                    setShowTrainingCenter(false);
-                  } else if (item.id === 'metabolic' || item.id === 'mayerwelle') {
-                    console.log(`Starting ${item.name} for ${duration} minutes`);
-                  }
-                }}
-                onOpenKnowledge={() => {
+                  setSelectedTrainingDuration(duration);
+                  setShowTrainingDurationSelect(false);
+                  setShowDirectTrainer(true);
+                  setShowTrainingCenter(false);
+                }}                onOpenKnowledge={() => {
                   setShowKnowledgePool(true);
                   setShowTrainingCenter(false);
                 }}
