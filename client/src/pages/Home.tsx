@@ -890,7 +890,7 @@ export default function Home() {
               baseTone={finalResult.tone} 
               onClose={() => setShowIntervalTrainer(false)} 
             />
-          ) : showDirectTrainer ? (
+          ) : showDirectTrainer && selectedTrainingItem === "yohn" ? (
              <Method36Trainer
                 frequency={finalResult?.fundamentalFreq || mdiResult?.frequency || 95}
                 toneName={finalResult?.tone?.name || "F"}
@@ -899,8 +899,36 @@ export default function Home() {
                 onClose={() => {
                   setShowDirectTrainer(false);
                   setShowTrainingCenter(false);
+                  setSelectedTrainingItem(null);
                 }}
              />
+          ) : showDirectTrainer && selectedTrainingItem === "interval" ? (
+             <IntervalTrainer
+                baseTone={finalResult?.tone || { name: "F", frequency: 95 }}
+                onClose={() => {
+                  setShowDirectTrainer(false);
+                  setShowTrainingCenter(false);
+                  setSelectedTrainingItem(null);
+                }}
+             />
+          ) : showDirectTrainer && (selectedTrainingItem === "metabolic" || selectedTrainingItem === "mayerwelle") ? (
+             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+               <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full text-center space-y-4">
+                 <h2 className="text-2xl font-bold text-white">Ambient Training</h2>
+                 <p className="text-zinc-400">Dauer: {selectedTrainingDuration} Minuten</p>
+                 <p className="text-sm text-zinc-500">Audio wird abgespielt...</p>
+                 <button
+                   onClick={() => {
+                     setShowDirectTrainer(false);
+                     setShowTrainingCenter(false);
+                     setSelectedTrainingItem(null);
+                   }}
+                   className="w-full bg-orange-500 hover:bg-orange-600 text-black font-bold py-2 rounded-lg transition-colors"
+                 >
+                   Beenden
+                 </button>
+               </div>
+             </div>
           ) : showTrainingCenter ? (
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
               <TrainingCategoryStructure
