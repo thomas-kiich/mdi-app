@@ -945,8 +945,7 @@ export default function Home() {
                     setShowDirectTrainer(true);
                   } else if (item.id === "metabolic" || item.id === "mayerwelle") {
                     // Ambient trainings - show ambient trainer
-                    setShowDirectTrainer(false);
-                    // TODO: Implement ambient trainer
+                    setShowDirectTrainer(true);
                   }
                 }}                onOpenKnowledge={() => {
                   setShowKnowledgePool(true);
