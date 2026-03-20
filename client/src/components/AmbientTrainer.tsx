@@ -40,7 +40,7 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
       if (timerRef.current) clearInterval(timerRef.current);
     } else {
       // Play
-      audioRef.current.volume = 0.5;
+      audioRef.current.volume = 1.0;
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(e => console.error('Play error:', e));
       setIsPlaying(true);
