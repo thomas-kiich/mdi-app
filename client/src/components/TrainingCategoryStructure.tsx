@@ -151,7 +151,10 @@ export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: 
                             ? "bg-orange-500 border-orange-500 text-black font-bold"
                             : "hover:bg-zinc-800 hover:border-orange-500"
                         )}
-                        onClick={() => setSelectedDuration(duration)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedDuration(duration);
+                        }}
                       >
                         {duration} Min
                       </Button>
@@ -164,7 +167,9 @@ export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: 
               <Button 
                 className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={!selectedDuration}
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   if (selectedDuration && onStartTraining) {
                     onStartTraining(item, selectedDuration);
                   }
