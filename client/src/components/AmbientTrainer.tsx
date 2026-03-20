@@ -13,14 +13,38 @@ interface AmbientTrainerProps {
   onClose: () => void;
 }
 
+// Global audio instance - persists outside React
+let globalAudioElement: HTMLAudioElement | null = null;
+
+function getOrCreateAudioElement(): HTMLAudioElement {
+  if (!globalAudioElement) {
+    globalAudioElement = new Audio();
+    globalAudioElement.style.display = 'none';
+    document.body.appendChild(globalAudioElement);
+  }
+  return globalAudioElement;
+}
+
 export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: AmbientTrainerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const totalSeconds = duration * 60;
   const progress = (timeElapsed / totalSeconds) * 100;
+
+  // Initialize audio element on mount
+  useEffect(() => {
+    audioRef.current = getOrCreateAudioElement();
+    audioRef.current.src = audioUrl;
+    audioRef.current.volume = 1.0;
+    audioRef.current.loop = true;
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [audioUrl]);
 
   // Format time as MM:SS
   const formatTime = (seconds: number) => {
@@ -29,8 +53,8 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Toggle playback - simple and direct
-  const togglePlayback = async () => {
+  // Toggle playback
+  const togglePlayback = () => {
     if (!audioRef.current) return;
 
     try {
@@ -41,27 +65,29 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
         if (timerRef.current) clearInterval(timerRef.current);
       } else {
         // Start playback
-        audioRef.current.volume = 1.0;
-        await audioRef.current.play();
-        setIsPlaying(true);
+        audioRef.current.play().then(() => {
+          setIsPlaying(true);
 
-        // Start timer
-        timerRef.current = setInterval(() => {
-          setTimeElapsed((prev) => {
-            const newTime = prev + 1;
-            if (newTime >= totalSeconds) {
-              // Training complete
-              if (audioRef.current) {
-                audioRef.current.pause();
-                audioRef.current.currentTime = 0;
+          // Start timer
+          timerRef.current = setInterval(() => {
+            setTimeElapsed((prev) => {
+              const newTime = prev + 1;
+              if (newTime >= totalSeconds) {
+                // Training complete
+                if (audioRef.current) {
+                  audioRef.current.pause();
+                  audioRef.current.currentTime = 0;
+                }
+                setIsPlaying(false);
+                if (timerRef.current) clearInterval(timerRef.current);
+                return totalSeconds;
               }
-              setIsPlaying(false);
-              if (timerRef.current) clearInterval(timerRef.current);
-              return totalSeconds;
-            }
-            return newTime;
-          });
-        }, 1000);
+              return newTime;
+            });
+          }, 1000);
+        }).catch(error => {
+          console.error('Audio play error:', error);
+        });
       }
     } catch (error) {
       console.error('Playback error:', error);
@@ -72,12 +98,12 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (audioRef.current) {
+      if (audioRef.current && isPlaying) {
         audioRef.current.pause();
         audioRef.current.currentTime = 0;
       }
     };
-  }, []);
+  }, [isPlaying]);
 
   const trainingNames = {
     metabolic: 'Stoffwechsel-Atmung',
@@ -90,94 +116,79 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   };
 
   return (
-    <>
-      {/* Audio Element */}
-      <audio
-        ref={audioRef}
-        loop
-        style={{ display: 'none' }}
-        onEnded={() => {
-          setIsPlaying(false);
-          if (timerRef.current) clearInterval(timerRef.current);
-        }}
-      >
-        <source src={audioUrl} type="audio/wav" />
-      </audio>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
+        <CardHeader className="relative pb-2">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+          >
+            <X size={24} />
+          </button>
+          <CardTitle className="text-2xl font-bold text-white">
+            {trainingNames[trainingId]}
+          </CardTitle>
+          <p className="text-sm text-zinc-400 mt-2">
+            {trainingDescriptions[trainingId]}
+          </p>
+        </CardHeader>
 
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-        <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
-          <CardHeader className="relative pb-2">
-            <button
-              onClick={onClose}
-              className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
-            >
-              <X size={24} />
-            </button>
-            <CardTitle className="text-2xl font-bold text-white">
-              {trainingNames[trainingId]}
-            </CardTitle>
-            <p className="text-sm text-zinc-400 mt-2">
-              {trainingDescriptions[trainingId]}
+        <CardContent className="space-y-6">
+          {/* Timer Display */}
+          <div className="text-center space-y-4">
+            <div className="text-5xl font-bold text-white font-mono">
+              {formatTime(timeElapsed)}
+            </div>
+            <p className="text-zinc-400 text-sm">
+              von {duration} Minuten
             </p>
-          </CardHeader>
+          </div>
 
-          <CardContent className="space-y-6">
-            {/* Timer Display */}
-            <div className="text-center space-y-4">
-              <div className="text-5xl font-bold text-white font-mono">
-                {formatTime(timeElapsed)}
-              </div>
-              <p className="text-zinc-400 text-sm">
-                von {duration} Minuten
-              </p>
-            </div>
+          {/* Progress Bar */}
+          <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-gradient-to-r from-orange-500 to-orange-400"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.1 }}
+            />
+          </div>
 
-            {/* Progress Bar */}
-            <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-gradient-to-r from-orange-500 to-orange-400"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.1 }}
-              />
-            </div>
+          {/* Controls */}
+          <div className="flex gap-3">
+            <Button
+              onClick={togglePlayback}
+              className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold"
+            >
+              {isPlaying ? (
+                <>
+                  <Pause size={20} className="mr-2" />
+                  Pausieren
+                </>
+              ) : (
+                <>
+                  <Play size={20} className="mr-2" />
+                  Starten
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={onClose}
+              variant="outline"
+              className="flex-1 h-12 border-zinc-700 text-zinc-400 hover:text-white"
+            >
+              Beenden
+            </Button>
+          </div>
 
-            {/* Controls */}
-            <div className="flex gap-3">
-              <Button
-                onClick={() => togglePlayback()}
-                className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold"
-              >
-                {isPlaying ? (
-                  <>
-                    <Pause size={20} className="mr-2" />
-                    Pausieren
-                  </>
-                ) : (
-                  <>
-                    <Play size={20} className="mr-2" />
-                    Starten
-                  </>
-                )}
-              </Button>
-              <Button
-                onClick={onClose}
-                variant="outline"
-                className="flex-1 h-12 border-zinc-700 text-zinc-400 hover:text-white"
-              >
-                Beenden
-              </Button>
-            </div>
-
-            {/* Info Text */}
-            <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
-              <p className="text-xs text-zinc-400">
-                💡 Für beste Ergebnisse: Finde einen ruhigen Ort, entspanne dich und höre die Musik mit angenehmer Lautstärke.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-    </>
+          {/* Info Text */}
+          <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
+            <p className="text-xs text-zinc-400">
+              💡 Für beste Ergebnisse: Finde einen ruhigen Ort, entspanne dich und höre die Musik mit angenehmer Lautstärke.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
