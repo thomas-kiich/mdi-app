@@ -240,3 +240,6 @@
 
 - [ ] Fix the question transition in the Analysis flow: Ensure the new question appears immediately or the old one is hidden during the transition to the next recording step.
 - [ ] Restore the human silhouette in the Aura visualization (SoundBody component) to provide better context for the color aura.
+
+- [x] Add visual feedback (pulsating waves) to AmbientTrainer during playback
+- [x] Add volume control slider to AmbientTrainer

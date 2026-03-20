@@ -3,9 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Play, Pause, X } from 'lucide-react';
+import { Play, Pause, X, Volume2, VolumeX } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { Slider } from '@/components/ui/slider';
 
 interface AmbientTrainerProps {
   trainingId: 'metabolic' | 'mayerwelle';
@@ -19,6 +20,7 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [volume, setVolume] = useState(1.0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const totalSeconds = duration * 60;
@@ -67,7 +69,7 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   useEffect(() => {
     if (audioRef.current) {
       if (isPlaying) {
-        audioRef.current.volume = 1.0;
+        audioRef.current.volume = volume;
         const playPromise = audioRef.current.play();
         if (playPromise !== undefined) {
           playPromise.catch(error => {
@@ -84,6 +86,13 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
       }
     }
   }, [isPlaying]);
+
+  // Update volume when slider changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
   // Setup and cleanup
   useEffect(() => {
@@ -126,16 +135,65 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
         <CardHeader className="relative pb-2">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors"
+            className="absolute top-4 right-4 p-2 text-zinc-400 hover:text-white rounded-full hover:bg-white/10 transition-colors z-10"
           >
-            <X size={24} />
+            <X size={20} />
           </button>
-          <CardTitle className="text-2xl font-bold text-white">
-            {trainingNames[trainingId]}
-          </CardTitle>
-          <p className="text-sm text-zinc-400 mt-2">
-            {trainingDescriptions[trainingId]}
-          </p>
+          
+          {/* Visual Feedback: Pulsating Waves */}
+          <div className="absolute inset-0 overflow-hidden rounded-t-xl pointer-events-none flex items-center justify-center">
+            {isPlaying && (
+              <>
+                <motion.div
+                  className="absolute w-32 h-32 rounded-full bg-orange-500/10 blur-xl"
+                  animate={{
+                    scale: [1, 2, 1],
+                    opacity: [0.1, 0.3, 0.1],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                />
+                <motion.div
+                  className="absolute w-24 h-24 rounded-full bg-amber-500/20 blur-lg"
+                  animate={{
+                    scale: [1, 1.8, 1],
+                    opacity: [0.2, 0.4, 0.2],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 1
+                  }}
+                />
+                <motion.div
+                  className="absolute w-16 h-16 rounded-full bg-orange-400/30 blur-md"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.3, 0.5, 0.3],
+                  }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: 2
+                  }}
+                />
+              </>
+            )}
+          </div>
+
+          <div className="relative z-10">
+            <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-orange-400 to-amber-600 bg-clip-text text-transparent">
+              {trainingNames[trainingId]}
+            </CardTitle>
+            <p className="text-center text-zinc-400 mt-2 text-sm">
+              {trainingDescriptions[trainingId]}
+            </p>
+          </div>
         </CardHeader>
 
         <CardContent className="space-y-6">
@@ -158,6 +216,26 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
               animate={{ width: `${progress}%` }}
               transition={{ duration: 0.1 }}
             />
+          </div>
+
+          {/* Volume Control */}
+          <div className="flex items-center gap-4 mb-6 bg-black/20 p-4 rounded-xl border border-white/5">
+            <button 
+              onClick={() => setVolume(v => v === 0 ? 1 : 0)}
+              className="text-zinc-400 hover:text-white transition-colors"
+            >
+              {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </button>
+            <Slider
+              value={[volume * 100]}
+              max={100}
+              step={1}
+              onValueChange={(val) => setVolume(val[0] / 100)}
+              className="flex-1"
+            />
+            <span className="text-xs text-zinc-500 w-8 text-right">
+              {Math.round(volume * 100)}%
+            </span>
           </div>
 
           {/* Controls */}
