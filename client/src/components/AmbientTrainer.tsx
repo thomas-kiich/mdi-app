@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Play, Pause, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useToast } from '@/hooks/use-toast';
 
 interface AmbientTrainerProps {
   trainingId: 'metabolic' | 'mayerwelle';
@@ -14,14 +15,11 @@ interface AmbientTrainerProps {
 }
 
 export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: AmbientTrainerProps) {
+  const { toast } = useToast();
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  
-  // Use global audio element from Home.tsx
-  const getAudioElement = () => {
-    return document.getElementById('ambient-audio') as HTMLAudioElement | null;
-  };
 
   const totalSeconds = duration * 60;
   const progress = (timeElapsed / totalSeconds) * 100;
@@ -33,22 +31,19 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+
+
+  // We will put the audio element directly in this component to be like Method36Trainer
+  const audioRef = useRef<HTMLAudioElement>(null);
+  
   // Toggle playback
   const togglePlayback = () => {
-    const audio = getAudioElement();
-    if (!audio) return;
-
     if (isPlaying) {
       // Pause
-      audio.pause();
       setIsPlaying(false);
       if (timerRef.current) clearInterval(timerRef.current);
     } else {
       // Play
-      audio.src = audioUrl;
-      audio.volume = 1.0;
-      audio.currentTime = 0;
-      audio.play().catch(e => console.error('Play error:', e));
       setIsPlaying(true);
 
       // Start timer
@@ -58,11 +53,6 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
           const newTime = prev + 1;
           if (newTime >= totalSeconds) {
             // Training complete
-            const audio = getAudioElement();
-            if (audio) {
-              audio.pause();
-              audio.currentTime = 0;
-            }
             setIsPlaying(false);
             if (timerRef.current) clearInterval(timerRef.current);
             return totalSeconds;
@@ -73,15 +63,35 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
     }
   };
 
-  // Cleanup on unmount
+  // Sync volume with play state, exactly like Method36Trainer does for water sound
+  useEffect(() => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.volume = 1.0;
+        const playPromise = audioRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.error("Audio playback failed:", error);
+            toast({
+              title: "Wiedergabe-Fehler",
+              description: "Audio konnte nicht abgespielt werden. Bitte versuchen Sie es erneut.",
+            });
+            setIsPlaying(false);
+          });
+        }
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
+
+  // Setup and cleanup
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      const audio = getAudioElement();
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.src = '';
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
       }
     };
   }, []);
@@ -97,8 +107,22 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800">
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4">
+      
+      {/* Audio Element */}
+      <audio
+        ref={audioRef}
+        loop
+        preload="auto"
+        style={{ display: 'none' }}
+        onCanPlay={() => setIsReady(true)}
+        onPlay={() => console.log('Audio started playing successfully')}
+        onError={(e) => console.error('Audio element error:', e)}
+      >
+        <source src={audioUrl} />
+      </audio>
+
+      <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 shadow-2xl">
         <CardHeader className="relative pb-2">
           <button
             onClick={onClose}
@@ -145,7 +169,12 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, onClose }: Ambi
               }}
               className="flex-1 h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold"
             >
-              {isPlaying ? (
+              {!isReady && !isPlaying ? (
+                <>
+                  <Play size={20} className="mr-2" />
+                  Starten
+                </>
+              ) : isPlaying ? (
                 <>
                   <Pause size={20} className="mr-2" />
                   Pausieren
