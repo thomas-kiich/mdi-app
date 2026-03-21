@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import frequencyData from '@/lib/frequencyData.json';
 import { getToneNameFromMdiId } from '@/lib/mdiToToneMapping';
 import { colorMatrix } from '@/lib/colorMatrix';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Info } from 'lucide-react';
 
 interface ToneColorExplorerProps {
   mdiDistribution?: Record<string, number>;
@@ -11,6 +12,7 @@ interface ToneColorExplorerProps {
 
 export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
   const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
+  const [selectedSegment, setSelectedSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -91,12 +93,31 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
     stopTone();
   };
 
+  const handleSegmentClick = (id: number, intensity: number, color: string, freq: number) => {
+    const toneName = getToneNameFromMdiId(id) || "Unbekannt";
+    setSelectedSegment({ id, intensity, color, toneName, freq });
+  };
+
+  // Calculate harmony paths (Quinte = +7 semitones, Terz = +4 semitones)
+  // MDI IDs are 1-24, representing semitones across 2 octaves.
+  // Quinte (+7) -> (id + 7) % 24 (adjusted for 1-24)
+  // Terz (+4) -> (id + 4) % 24 (adjusted for 1-24)
+  const getHarmonyIds = (baseId: number) => {
+    const quinte = ((baseId - 1 + 7) % 24) + 1;
+    const grosseTerz = ((baseId - 1 + 4) % 24) + 1;
+    const kleineTerz = ((baseId - 1 + 3) % 24) + 1;
+    return { quinte, grosseTerz, kleineTerz };
+  };
+
+  const activeHarmonies = hoveredSegment ? getHarmonyIds(hoveredSegment.id) : null;
+
   // 100% at top, 25% at bottom to match typical Y-axis coordinates (or as requested)
   // The PDF shows 100% to 25% from top to bottom usually, let's match that.
   const intensities = [100, 75, 50, 25];
   const columns = Array.from({ length: 24 }, (_, i) => i + 1);
 
   return (
+    <>
     <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
@@ -136,17 +157,46 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
                   const freqItem = frequencyData.find(f => f.id === col);
                   const freq = freqItem?.frequency || 100;
                   
+                  const isHovered = hoveredSegment?.id === col && hoveredSegment?.intensity === intensity;
+                  const isQuinte = activeHarmonies?.quinte === col && hoveredSegment?.intensity === intensity;
+                  const isTerz = (activeHarmonies?.grosseTerz === col || activeHarmonies?.kleineTerz === col) && hoveredSegment?.intensity === intensity;
+                  
+                  let overlayClass = "";
+                  if (isHovered) {
+                    overlayClass = "border-2 border-white shadow-[0_0_15px_rgba(255,255,255,0.8)] z-20 scale-110";
+                  } else if (isQuinte) {
+                    overlayClass = "border-2 border-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.6)] z-10 scale-105";
+                  } else if (isTerz) {
+                    overlayClass = "border-2 border-green-400 shadow-[0_0_10px_rgba(74,222,128,0.6)] z-10 scale-105";
+                  } else if (hoveredSegment) {
+                    // Dim others slightly when hovering
+                    overlayClass = "opacity-40";
+                  }
+
                   return (
                     <div
                       key={`cell-${col}-${intensity}`}
-                      className="flex-1 h-full cursor-pointer transition-transform duration-100 hover:scale-110 hover:z-10 relative"
+                      className={`flex-1 h-full cursor-pointer transition-all duration-200 relative ${overlayClass}`}
                       style={{ backgroundColor: color }}
                       onMouseEnter={() => handleMouseEnter(col, intensity, color, freq)}
                       onMouseLeave={handleMouseLeave}
+                      onClick={() => handleSegmentClick(col, intensity, color, freq)}
                     >
                       {/* Optional: Add a subtle overlay for active/energy state if needed */}
-                      {mdiDistribution && mdiDistribution[col.toString()] > 0 && (
+                      {mdiDistribution && mdiDistribution[col.toString()] > 0 && !hoveredSegment && (
                         <div className="absolute inset-0 border-2 border-white/30 pointer-events-none" />
+                      )}
+                      
+                      {/* Show relationship label if it's a harmony */}
+                      {isQuinte && (
+                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-blue-500/80 text-white text-[10px] px-1 rounded whitespace-nowrap pointer-events-none">
+                          Quinte
+                        </div>
+                      )}
+                      {isTerz && (
+                        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-green-500/80 text-white text-[10px] px-1 rounded whitespace-nowrap pointer-events-none">
+                          Terz
+                        </div>
                       )}
                     </div>
                   );
@@ -193,5 +243,60 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
 
       </CardContent>
     </Card>
+
+    {/* Detail View Modal */}
+      <Dialog open={!!selectedSegment} onOpenChange={(open) => !open && setSelectedSegment(null)}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 text-white sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-2xl">
+              <div 
+                className="w-8 h-8 rounded shadow-lg" 
+                style={{ backgroundColor: selectedSegment?.color }}
+              />
+              Segment {selectedSegment?.id.toString().padStart(2, '0')}/{selectedSegment?.intensity}
+            </DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Detaillierte Analyse der Farb-Intensitäts-Kombination
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedSegment && (
+            <div className="space-y-6 mt-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-black/50 p-4 rounded-lg border border-zinc-800/50">
+                  <p className="text-xs text-zinc-500 mb-1">Grundton</p>
+                  <p className="text-lg font-semibold">{selectedSegment.toneName}</p>
+                </div>
+                <div className="bg-black/50 p-4 rounded-lg border border-zinc-800/50">
+                  <p className="text-xs text-zinc-500 mb-1">Frequenz</p>
+                  <p className="text-lg font-semibold">{selectedSegment.freq.toFixed(2)} Hz</p>
+                </div>
+                <div className="bg-black/50 p-4 rounded-lg border border-zinc-800/50">
+                  <p className="text-xs text-zinc-500 mb-1">Intensität</p>
+                  <p className="text-lg font-semibold">{selectedSegment.intensity}%</p>
+                </div>
+                <div className="bg-black/50 p-4 rounded-lg border border-zinc-800/50">
+                  <p className="text-xs text-zinc-500 mb-1">HEX Code</p>
+                  <p className="text-lg font-mono">{selectedSegment.color}</p>
+                </div>
+              </div>
+              
+              <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/50">
+                <h4 className="font-medium text-orange-400 mb-2 flex items-center gap-2">
+                  <Info className="w-4 h-4" /> Philosophische Deutung
+                </h4>
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                  Die Intensität von {selectedSegment.intensity}% beim Ton {selectedSegment.toneName} repräsentiert 
+                  {selectedSegment.intensity === 100 ? " die reinste, kraftvollste Ausprägung dieses Prinzips. Es steht für absolute Präsenz und ungetrübte Manifestation." : 
+                   selectedSegment.intensity === 75 ? " eine starke, bewusste Ausrichtung. Die Energie ist aktiv, lässt aber Raum für Nuancen." :
+                   selectedSegment.intensity === 50 ? " einen balancierten Zustand des Übergangs. Es ist der Bereich der Vermittlung zwischen Potenzial und Aktion." :
+                   " die subtilste, tiefste Ebene. Hier wirkt das Prinzip eher unbewusst, als feines Potenzial oder sanfter Impuls im Hintergrund."}
+                </p>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

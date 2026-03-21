@@ -256,3 +256,9 @@
 - [x] Integrate audio playback on hover with volume mapped to intensity percentage in ToneColorExplorer
 
 - [x] Debug and fix ToneColorExplorer to ensure the 24x4 matrix redesign is visible in the application
+
+- [ ] Update SpectralMatrix inside MDI Scanner to use the 24x4 grid layout with hover interactions
+
+- [ ] Implement Harmony-Paths (Quinten/Terzen) highlighting on hover in ToneColorExplorer
+- [x] Implement Detail-View Modal on click in ToneColorExplorer
+- [x] Update SpectralScanner (Frequenzlabor) to use the 24x4 grid layout
