@@ -580,9 +580,10 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
 
       {/* Main Content Area */}
       <div className="flex-1 relative bg-black overflow-hidden flex flex-col">
+          {/* We keep the canvas for audio analysis logic, but hide it visually if we want, or remove the canvas drawing logic. Wait, the old canvas is completely gone from the JSX! I replaced it with ToneColorExplorer! Oh, I see. Let's make sure the canvas is actually not in the JSX anymore. Let me check the rest of the file. */}
           <div className="flex-1 overflow-y-auto p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
-              <ToneColorExplorer />
+              <ToneColorExplorer liveFrequency={currentFreq} />
             </div>
           </div>
           

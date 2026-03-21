@@ -8,9 +8,10 @@ import { Volume2, Info } from 'lucide-react';
 
 interface ToneColorExplorerProps {
   mdiDistribution?: Record<string, number>;
+  liveFrequency?: number;
 }
 
-export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
+export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorExplorerProps) {
   const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -28,6 +29,46 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
     return () => window.removeEventListener('click', initAudio);
   }, []);
 
+  // Ref to track if we are currently hovering over the matrix container
+  const isHoveringMatrixRef = useRef(false);
+
+  // Auto-highlight based on live frequency
+  useEffect(() => {
+    if (!liveFrequency || liveFrequency <= 0) {
+      if (!isHoveringMatrixRef.current && hoveredSegment && hoveredSegment.toneName === "Live") {
+        setHoveredSegment(null);
+      }
+      return;
+    }
+
+    // Find closest frequency in our data
+    let closestDist = Infinity;
+    let closestId = 1;
+    let closestFreq = frequencyData[0].frequency;
+    
+    frequencyData.forEach(item => {
+      const dist = Math.abs(item.frequency - liveFrequency);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestId = item.id;
+        closestFreq = item.frequency;
+      }
+    });
+
+    // If we are close enough (within 10Hz), highlight it with 100% intensity
+    if (closestDist < 10 && !isHoveringMatrixRef.current) {
+      const color = colorMatrix[closestId]?.[100 as keyof typeof colorMatrix[typeof closestId]] || "#ff9900";
+      const toneName = getToneNameFromMdiId(closestId) || "Unbekannt";
+      setHoveredSegment({
+        id: closestId,
+        intensity: 100,
+        color: color || "#ff9900",
+        toneName: "Live", // Special marker
+        freq: closestFreq
+      });
+    }
+  }, [liveFrequency]);
+
   const playTone = (freq: number, intensity: number) => {
     if (!audioContextRef.current) return;
     
@@ -35,33 +76,40 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
       audioContextRef.current.resume();
     }
 
-    // Stop previous tone
-    if (oscillatorRef.current) {
-      oscillatorRef.current.stop();
-      oscillatorRef.current.disconnect();
-    }
-    if (gainNodeRef.current) {
-      gainNodeRef.current.disconnect();
-    }
-
-    const osc = audioContextRef.current.createOscillator();
-    const gain = audioContextRef.current.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, audioContextRef.current.currentTime);
+    const ctx = audioContextRef.current;
+    const currentTime = ctx.currentTime;
 
     // Map intensity (25-100) to volume (0.05 - 0.3)
-    // 25% = quiet, 100% = loud
     const maxVol = 0.3;
     const minVol = 0.02;
-    const volume = minVol + ((intensity - 25) / 75) * (maxVol - minVol);
+    const targetVolume = minVol + ((intensity - 25) / 75) * (maxVol - minVol);
 
-    // Smooth envelope to avoid clicks
-    gain.gain.setValueAtTime(0, audioContextRef.current.currentTime);
-    gain.gain.linearRampToValueAtTime(volume, audioContextRef.current.currentTime + 0.1);
+    // If we already have an oscillator, just smoothly transition frequency and volume
+    if (oscillatorRef.current && gainNodeRef.current) {
+      // Cancel any scheduled ramp downs
+      gainNodeRef.current.gain.cancelScheduledValues(currentTime);
+      
+      // Smoothly glide to new frequency
+      oscillatorRef.current.frequency.setTargetAtTime(freq, currentTime, 0.05);
+      
+      // Smoothly glide to new volume
+      gainNodeRef.current.gain.setTargetAtTime(targetVolume, currentTime, 0.05);
+      return;
+    }
+
+    // Otherwise create new oscillator
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime);
+
+    // Smooth attack envelope
+    gain.gain.setValueAtTime(0, currentTime);
+    gain.gain.setTargetAtTime(targetVolume, currentTime, 0.1);
 
     osc.connect(gain);
-    gain.connect(audioContextRef.current.destination);
+    gain.connect(ctx.destination);
 
     osc.start();
     
@@ -71,24 +119,48 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
 
   const stopTone = () => {
     if (gainNodeRef.current && audioContextRef.current) {
-      gainNodeRef.current.gain.linearRampToValueAtTime(0, audioContextRef.current.currentTime + 0.1);
+      const ctx = audioContextRef.current;
+      const currentTime = ctx.currentTime;
+      
+      // Smooth release envelope
+      gainNodeRef.current.gain.cancelScheduledValues(currentTime);
+      gainNodeRef.current.gain.setTargetAtTime(0, currentTime, 0.1);
+      
+      // Only completely stop and disconnect if we actually leave the whole matrix
+      // This allows continuous playing when moving between segments
       setTimeout(() => {
-        if (oscillatorRef.current) {
-          oscillatorRef.current.stop();
-          oscillatorRef.current.disconnect();
-          oscillatorRef.current = null;
+        if (!isHoveringMatrixRef.current && oscillatorRef.current) {
+          try {
+            oscillatorRef.current.stop();
+            oscillatorRef.current.disconnect();
+            oscillatorRef.current = null;
+            if (gainNodeRef.current) {
+              gainNodeRef.current.disconnect();
+              gainNodeRef.current = null;
+            }
+          } catch (e) {
+            // Ignore errors if already stopped
+          }
         }
-      }, 150);
+      }, 500);
     }
   };
 
   const handleMouseEnter = (id: number, intensity: number, color: string, freq: number) => {
+    isHoveringMatrixRef.current = true;
     const toneName = getToneNameFromMdiId(id) || "Unbekannt";
     setHoveredSegment({ id, intensity, color, toneName, freq });
     playTone(freq, intensity);
   };
 
   const handleMouseLeave = () => {
+    setHoveredSegment(null);
+    // We don't call stopTone here immediately for each segment leave,
+    // we handle the global stop on the container leave
+  };
+
+  const handleMatrixLeave = () => {
+    isHoveringMatrixRef.current = false;
     setHoveredSegment(null);
     stopTone();
   };
@@ -122,7 +194,7 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500" />
-          Farblichtfeld Matrix
+          LICHTKLANG MATRIX
         </CardTitle>
         <p className="text-sm text-zinc-400 mt-2">
           Erkunde die 96 Farbsegmente der MDI-Matrix. Fahre mit der Maus über ein Segment, um den Code und den entsprechenden Ton in der jeweiligen Lautstärke zu hören (25% = leise, 100% = laut).
@@ -131,7 +203,7 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
       <CardContent className="space-y-6">
         
         {/* The Matrix */}
-        <div className="w-full overflow-x-auto pb-4">
+        <div className="w-full overflow-x-auto pb-4" onMouseLeave={handleMatrixLeave}>
           <div className="min-w-[800px] flex flex-col">
             {/* Top labels (1-24) */}
             <div className="flex mb-2">
@@ -171,6 +243,12 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
                   } else if (hoveredSegment) {
                     // Dim others slightly when hovering
                     overlayClass = "opacity-40";
+                  }
+
+                  // Live frequency highlight
+                  const isLiveMatch = hoveredSegment?.toneName === "Live" && hoveredSegment.id === col && intensity === 100;
+                  if (isLiveMatch) {
+                    overlayClass = "ring-4 ring-white ring-inset shadow-[0_0_30px_rgba(255,255,255,0.8)] z-10 scale-110";
                   }
 
                   return (

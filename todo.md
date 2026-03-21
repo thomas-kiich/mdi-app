@@ -265,3 +265,7 @@
 
 - [x] Fix missing color results on the analysis page
 - [x] Update Frequenzlabor in MDI Scanner to use the new 24x4 matrix
+
+- [x] Change title to 'LICHTKLANG MATRIX' in ToneColorExplorer
+- [x] Implement sustained audio playback on hover in ToneColorExplorer
+- [x] Integrate live microphone frequency highlighting in ToneColorExplorer when used in SpectralScanner
