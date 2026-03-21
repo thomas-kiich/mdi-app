@@ -254,3 +254,5 @@
 - [x] Redesign ToneColorExplorer to a 24x4 grid layout with uniform bars and no gaps
 - [x] Implement hover interactions to display segment codes (e.g., '01/25') in ToneColorExplorer
 - [x] Integrate audio playback on hover with volume mapped to intensity percentage in ToneColorExplorer
+
+- [x] Debug and fix ToneColorExplorer to ensure the 24x4 matrix redesign is visible in the application
