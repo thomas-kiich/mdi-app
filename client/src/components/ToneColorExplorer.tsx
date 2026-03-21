@@ -4,6 +4,7 @@ import { Slider } from "@/components/ui/slider";
 import frequencyData from '@/lib/frequencyData.json';
 import { getToneNameFromMdiId } from '@/lib/mdiToToneMapping';
 import { TONES } from '@/lib/tones';
+import { colorMatrix } from '@/lib/colorMatrix';
 
 interface ToneColorExplorerProps {
   mdiDistribution?: Record<string, number>;
@@ -167,9 +168,10 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
             const toneName = getToneNameFromMdiId(mdiId);
             const toneInfo = TONES.find(t => t.name === toneName);
             
-            // Convert hex to HSL, modify saturation, convert back
-            const hsl = hexToHsl(tone.hex);
-            const modifiedHex = hslToHex(hsl.h, saturation, hsl.l);
+            // Map saturation (0-100) to intensity levels (25, 50, 75, 100)
+            const intensityLevel = Math.max(25, Math.round((saturation / 100) * 100 / 25) * 25);
+            const matrixColor = colorMatrix[mdiId]?.[intensityLevel as keyof typeof colorMatrix[typeof mdiId]] || tone.hex;
+            const modifiedHex = matrixColor;
             const description = getSaturationDescription(saturation);
 
             // Calculate energy from mdiDistribution if available

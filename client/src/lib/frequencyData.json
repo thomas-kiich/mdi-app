@@ -6,8 +6,8 @@
     "toneRange": "789.5 - 755.7 Thz",
     "frequency": 170,
     "description": "Aktivierung des Frontallappens, Ambivalenz, Unsicherheit",
-    "talent": "Unterstützung bei mystischen und esoterischen Fragestellungen",
-    "hex": "#8A2BE2"
+    "talent": "Unterst\u00fctzung bei mystischen und esoterischen Fragestellungen",
+    "hex": "#6937c4"
   },
   {
     "id": 2,
@@ -17,7 +17,7 @@
     "frequency": 163,
     "description": "Aktivierung der Epiphyse, Mystik, Zweideutigkeit",
     "talent": "Meditation und Entspannung",
-    "hex": "#EE82EE"
+    "hex": "#5c36a8"
   },
   {
     "id": 3,
@@ -25,9 +25,9 @@
     "lightRange": "414 - 431 nm",
     "toneRange": "724.6 - 696.0 Thz",
     "frequency": 156,
-    "description": "Nicht explizit in Chakra-Lehre, Rationalität, Distanz",
+    "description": "Nicht explizit in Chakra-Lehre, Rationalit\u00e4t, Distanz",
     "talent": "Analytisches Denken",
-    "hex": "#6A5ACD"
+    "hex": "#4950ad"
   },
   {
     "id": 4,
@@ -36,8 +36,8 @@
     "toneRange": "696.0 - 669.6 Thz",
     "frequency": 150,
     "description": "Aktivierung der Bindehaut, Ruhe, Sauberkeit",
-    "talent": "Unterstützung bei administrativen Aufgaben",
-    "hex": "#1E90FF"
+    "talent": "Unterst\u00fctzung bei administrativen Aufgaben",
+    "hex": "#225eaf"
   },
   {
     "id": 5,
@@ -47,7 +47,7 @@
     "frequency": 144,
     "description": "Aktivierung der Kehlkopfregion, Ordnung, Hinweis",
     "talent": "Orientierungshilfe und Gebotsbefolgung",
-    "hex": "#00BFFF"
+    "hex": "#2362db"
   },
   {
     "id": 6,
@@ -55,9 +55,9 @@
     "lightRange": "465 - 482 nm",
     "toneRange": "645.1 - 622.4 Thz",
     "frequency": 139,
-    "description": "Senkung der Herzfrequenz, Göttlichkeit, Kühle",
-    "talent": "Förderung der geistigen Klarheit",
-    "hex": "#87CEEB"
+    "description": "Senkung der Herzfrequenz, G\u00f6ttlichkeit, K\u00fchle",
+    "talent": "F\u00f6rderung der geistigen Klarheit",
+    "hex": "#2883ed"
   },
   {
     "id": 7,
@@ -65,49 +65,49 @@
     "lightRange": "482 - 499 nm",
     "toneRange": "622.4 - 601.2 Thz",
     "frequency": 134,
-    "description": "Nicht explizit in Chakra-Lehre, Neutralität",
-    "talent": "Unterstützung technischer Wahrnehmung",
-    "hex": "#00FFFF"
+    "description": "Nicht explizit in Chakra-Lehre, Neutralit\u00e4t",
+    "talent": "Unterst\u00fctzung technischer Wahrnehmung",
+    "hex": "#0599b3"
   },
   {
     "id": 8,
-    "colorName": "Türkisgrün",
+    "colorName": "T\u00fcrkisgr\u00fcn",
     "lightRange": "499 - 516 nm",
     "toneRange": "601.2 - 581.4 Thz",
     "frequency": 130,
     "description": "Aktivierung reger Zellteilung, Wachstum, Natur",
-    "talent": "Unterstützung bei Erster Hilfe",
-    "hex": "#40E0D0"
+    "talent": "Unterst\u00fctzung bei Erster Hilfe",
+    "hex": "#12b8aa"
   },
   {
     "id": 9,
-    "colorName": "Smaragdgrün",
+    "colorName": "Smaragdgr\u00fcn",
     "lightRange": "516 - 533 nm",
     "toneRange": "581.4 - 562.8 Thz",
     "frequency": 126,
-    "description": "Förderung von Empathie, Sicherheit, Hoffnung",
-    "talent": "Unterstützung bei kreativen Leistungen",
-    "hex": "#50C878"
+    "description": "F\u00f6rderung von Empathie, Sicherheit, Hoffnung",
+    "talent": "Unterst\u00fctzung bei kreativen Leistungen",
+    "hex": "#32a765"
   },
   {
     "id": 10,
-    "colorName": "Laubgrün",
+    "colorName": "Laubgr\u00fcn",
     "lightRange": "533 - 550 nm",
     "toneRange": "562.8 - 545.5 Thz",
     "frequency": 122,
-    "description": "Sicherheitsgefühl, Rettung, Fruchtbarkeit",
+    "description": "Sicherheitsgef\u00fchl, Rettung, Fruchtbarkeit",
     "talent": "Fluchtwegsorientierung",
-    "hex": "#4F7942"
+    "hex": "#7fb00a"
   },
   {
     "id": 11,
-    "colorName": "Gelbgrün",
+    "colorName": "Gelbgr\u00fcn",
     "lightRange": "550 - 567 nm",
     "toneRange": "545.5 - 529.1 Thz",
     "frequency": 118,
     "description": "Maximale Empfindlichkeit, Aufmerksamkeit, Visuelle Salienz",
     "talent": "Salienzsteigerung",
-    "hex": "#9ACD32"
+    "hex": "#79995a"
   },
   {
     "id": 12,
@@ -115,9 +115,9 @@
     "lightRange": "567 - 584 nm",
     "toneRange": "529.1 - 513.7 Thz",
     "frequency": 114,
-    "description": "Aktivierung bei saurem Geschmack, Heiterkeit, Wärme",
+    "description": "Aktivierung bei saurem Geschmack, Heiterkeit, W\u00e4rme",
     "talent": "Stimmungsaufhellung",
-    "hex": "#FFF700"
+    "hex": "#69a131"
   },
   {
     "id": 13,
@@ -127,7 +127,7 @@
     "frequency": 111,
     "description": "Arousal-Steigerung, Warnungsbereitschaft",
     "talent": "Vorbereitung auf Handlungen",
-    "hex": "#FFCC00"
+    "hex": "#96b02e"
   },
   {
     "id": 14,
@@ -136,8 +136,8 @@
     "toneRange": "499.2 - 485.4 Thz",
     "frequency": 108,
     "description": "Aktivierung des Endokrinums, Sonnigkeit, Reichtum",
-    "talent": "Unterstützung bei zeremoniellen Tätigkeiten",
-    "hex": "#FFD700"
+    "talent": "Unterst\u00fctzung bei zeremoniellen T\u00e4tigkeiten",
+    "hex": "#c5b919"
   },
   {
     "id": 15,
@@ -147,7 +147,7 @@
     "frequency": 105,
     "description": "Leichte sympathikotone Aktivierung, Mittlere Dringlichkeit",
     "talent": "Aufmerksamkeitssteuerung",
-    "hex": "#FFA500"
+    "hex": "#ffdd59"
   },
   {
     "id": 16,
@@ -155,9 +155,9 @@
     "lightRange": "635 - 652 nm",
     "toneRange": "472.4 - 460.1 Thz",
     "frequency": 102,
-    "description": "Erhöhung des Arousals, Aufdringlichkeit, Schock",
-    "talent": "Katastrophenschutz-Einsatzunterstützung",
-    "hex": "#FF8C00"
+    "description": "Erh\u00f6hung des Arousals, Aufdringlichkeit, Schock",
+    "talent": "Katastrophenschutz-Einsatzunterst\u00fctzung",
+    "hex": "#ffbd59"
   },
   {
     "id": 17,
@@ -165,9 +165,9 @@
     "lightRange": "652 - 669 nm",
     "toneRange": "460.1 - 448.4 Thz",
     "frequency": 100,
-    "description": "Adrenalinfördernd, Feuer, Energie",
+    "description": "Adrenalinf\u00f6rdernd, Feuer, Energie",
     "talent": "Warnsignalerfassung",
-    "hex": "#FF7F50"
+    "hex": "#ff924e"
   },
   {
     "id": 18,
@@ -175,9 +175,9 @@
     "lightRange": "669 - 686 nm",
     "toneRange": "448.4 - 437.3 Thz",
     "frequency": 97,
-    "description": "Aktivierung des sympathischen NS, Aggressivität, Impuls",
+    "description": "Aktivierung des sympathischen NS, Aggressivit\u00e4t, Impuls",
     "talent": "Unmittelbare Reaktionsbereitschaft",
-    "hex": "#FF4500"
+    "hex": "#ff7723"
   },
   {
     "id": 19,
@@ -187,7 +187,7 @@
     "frequency": 95,
     "description": "Anstieg der Herzfrequenz, Dominanz, Verbot",
     "talent": "Stopp-Reaktion",
-    "hex": "#FF0000"
+    "hex": "#ff5757"
   },
   {
     "id": 20,
@@ -195,9 +195,9 @@
     "lightRange": "703 - 720 nm",
     "toneRange": "426.7 - 416.7 Thz",
     "frequency": 92,
-    "description": "Höchste hormonelle Aktivierung, Gefahr, höchste Dringlichkeit",
+    "description": "H\u00f6chste hormonelle Aktivierung, Gefahr, h\u00f6chste Dringlichkeit",
     "talent": "Notfallmanagement",
-    "hex": "#FF3333"
+    "hex": "#ff3131"
   },
   {
     "id": 21,
@@ -207,7 +207,7 @@
     "frequency": 91,
     "description": "Aktivierung emotionaler Zentren, Liebe, Romantik",
     "talent": "Soziale Interaktion",
-    "hex": "#DC143C"
+    "hex": "#e50707"
   },
   {
     "id": 22,
@@ -215,9 +215,9 @@
     "lightRange": "737 - 754 nm",
     "toneRange": "407.1 - 397.9 Thz",
     "frequency": 89,
-    "description": "Nicht explizit in Chakra-Lehre, Autorität, Reichtum",
-    "talent": "Repräsentative Fähigkeiten",
-    "hex": "#BA55D3"
+    "description": "Nicht explizit in Chakra-Lehre, Autorit\u00e4t, Reichtum",
+    "talent": "Repr\u00e4sentative F\u00e4higkeiten",
+    "hex": "#cb0505"
   },
   {
     "id": 23,
@@ -225,9 +225,9 @@
     "lightRange": "754 - 771 nm",
     "toneRange": "397.9 - 389.1 Thz",
     "frequency": 86,
-    "description": "Blockierung von Melatonin, Ärger, Blut",
+    "description": "Blockierung von Melatonin, \u00c4rger, Blut",
     "talent": "Durchsetzungskraft",
-    "hex": "#CD5C5C"
+    "hex": "#bf095b"
   },
   {
     "id": 24,
@@ -235,8 +235,8 @@
     "lightRange": "771 - 780 nm",
     "toneRange": "389.1 - 384.4 Thz",
     "frequency": 85,
-    "description": "Nicht explizit in Chakra-Lehre, Wärmeempfindung",
+    "description": "Nicht explizit in Chakra-Lehre, W\u00e4rmeempfindung",
     "talent": "Thermisches Bewusstsein",
-    "hex": "#E9967A"
+    "hex": "#b80b92"
   }
 ]

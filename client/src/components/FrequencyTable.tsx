@@ -168,7 +168,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
             // Map saturation (0-100) to intensity levels (25, 50, 75, 100)
             const intensityLevel = Math.max(25, Math.round((saturation / 100) * 100 / 25) * 25);
             const matrixColor = colorMatrix[item.id]?.[intensityLevel as keyof typeof colorMatrix[typeof item.id]] || item.hex;
-            const displayColor = saturation === 100 ? matrixColor : item.hex;
+            const displayColor = matrixColor;
 
             return (
               <div
@@ -199,8 +199,8 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
                   <div className="flex-1">
                     <div className="text-xs text-zinc-500 mb-1">{saturation}%</div>
                     <div
-                      className="w-full h-12 rounded border border-white/20 shadow-md"
-                      style={{ backgroundColor: matrixColor }}
+                      className="w-full h-12 rounded border border-white/20 shadow-md transition-colors"
+                      style={{ backgroundColor: displayColor }}
                     />
                   </div>
                 </div>
