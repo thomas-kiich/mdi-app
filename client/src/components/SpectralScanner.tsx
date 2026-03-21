@@ -7,6 +7,7 @@ import { getMdiTypeFromFrequency } from "@/lib/mdi";
 import { useLocation } from 'wouter';
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCenter } from "@/components/TrainingCenter";
+import { ToneColorExplorer } from "@/components/ToneColorExplorer";
 import frequencyDataRaw from "@/lib/frequencyData.json";
 import { useToast } from "@/hooks/use-toast";
 
@@ -578,16 +579,12 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 relative bg-black cursor-crosshair overflow-hidden">
-          <canvas 
-            ref={canvasRef} 
-            width={window.innerWidth} 
-            height={window.innerHeight}
-            className="absolute inset-0 w-full h-full block"
-            onClick={handleCanvasClick}
-            onMouseMove={handleCanvasMouseMove}
-            onMouseLeave={handleCanvasLeave}
-          />
+      <div className="flex-1 relative bg-black overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-y-auto p-4 md:p-8">
+            <div className="max-w-6xl mx-auto">
+              <ToneColorExplorer />
+            </div>
+          </div>
           
           {/* Info Panel - Mobile Optimized (Bottom Sheet style) */}
           <AnimatePresence>

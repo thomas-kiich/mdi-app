@@ -116,7 +116,7 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
   const intensities = [100, 75, 50, 25];
   const columns = Array.from({ length: 24 }, (_, i) => i + 1);
 
-  return (
+    return (
     <>
     <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
       <CardHeader>
@@ -207,7 +207,7 @@ export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
         </div>
 
         {/* Info Panel */}
-        <div className="h-24 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between px-6">
+        <div className="h-24 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between px-6 mt-6">
           {hoveredSegment ? (
             <>
               <div className="flex items-center gap-6">

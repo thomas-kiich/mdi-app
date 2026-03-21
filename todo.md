@@ -262,3 +262,6 @@
 - [ ] Implement Harmony-Paths (Quinten/Terzen) highlighting on hover in ToneColorExplorer
 - [x] Implement Detail-View Modal on click in ToneColorExplorer
 - [x] Update SpectralScanner (Frequenzlabor) to use the 24x4 grid layout
+
+- [x] Fix missing color results on the analysis page
+- [x] Update Frequenzlabor in MDI Scanner to use the new 24x4 matrix
