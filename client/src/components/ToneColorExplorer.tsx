@@ -1,287 +1,196 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Slider } from "@/components/ui/slider";
 import frequencyData from '@/lib/frequencyData.json';
 import { getToneNameFromMdiId } from '@/lib/mdiToToneMapping';
-import { TONES } from '@/lib/tones';
 import { colorMatrix } from '@/lib/colorMatrix';
+import { Volume2 } from 'lucide-react';
 
 interface ToneColorExplorerProps {
   mdiDistribution?: Record<string, number>;
 }
 
-// Helper function to convert hex to HSL
-function hexToHsl(hex: string): { h: number; s: number; l: number } {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0;
-  let s = 0;
-  const l = (max + min) / 2;
-
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-
-    switch (max) {
-      case r:
-        h = ((g - b) / d + (g < b ? 6 : 0)) / 6;
-        break;
-      case g:
-        h = ((b - r) / d + 2) / 6;
-        break;
-      case b:
-        h = ((r - g) / d + 4) / 6;
-        break;
-    }
-  }
-
-  return {
-    h: Math.round(h * 360),
-    s: Math.round(s * 100),
-    l: Math.round(l * 100)
-  };
-}
-
-// Helper function to convert HSL back to hex
-function hslToHex(h: number, s: number, l: number): string {
-  s = s / 100;
-  l = l / 100;
-
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
-  const m = l - c / 2;
-
-  let r = 0;
-  let g = 0;
-  let b = 0;
-
-  if (h >= 0 && h < 60) {
-    r = c;
-    g = x;
-    b = 0;
-  } else if (h >= 60 && h < 120) {
-    r = x;
-    g = c;
-    b = 0;
-  } else if (h >= 120 && h < 180) {
-    r = 0;
-    g = c;
-    b = x;
-  } else if (h >= 180 && h < 240) {
-    r = 0;
-    g = x;
-    b = c;
-  } else if (h >= 240 && h < 300) {
-    r = x;
-    g = 0;
-    b = c;
-  } else if (h >= 300 && h < 360) {
-    r = c;
-    g = 0;
-    b = x;
-  }
-
-  const toHex = (val: number) => {
-    const hex = Math.round((val + m) * 255).toString(16);
-    return hex.length === 1 ? '0' + hex : hex;
-  };
-
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
-}
-
 export function ToneColorExplorer({ mdiDistribution }: ToneColorExplorerProps) {
-  const [saturationValues, setSaturationValues] = useState<Record<number, number>>({});
+  const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const oscillatorRef = useRef<OscillatorNode | null>(null);
+  const gainNodeRef = useRef<GainNode | null>(null);
 
-  // Initialize saturation values for all 24 tones
-  const initializeSaturation = () => {
-    const init: Record<number, number> = {};
-    for (let i = 1; i <= 24; i++) {
-      init[i] = 100; // Default to 100% saturation
+  // Initialize audio context on first interaction
+  useEffect(() => {
+    const initAudio = () => {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+    };
+    window.addEventListener('click', initAudio, { once: true });
+    return () => window.removeEventListener('click', initAudio);
+  }, []);
+
+  const playTone = (freq: number, intensity: number) => {
+    if (!audioContextRef.current) return;
+    
+    if (audioContextRef.current.state === 'suspended') {
+      audioContextRef.current.resume();
     }
-    return init;
+
+    // Stop previous tone
+    if (oscillatorRef.current) {
+      oscillatorRef.current.stop();
+      oscillatorRef.current.disconnect();
+    }
+    if (gainNodeRef.current) {
+      gainNodeRef.current.disconnect();
+    }
+
+    const osc = audioContextRef.current.createOscillator();
+    const gain = audioContextRef.current.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, audioContextRef.current.currentTime);
+
+    // Map intensity (25-100) to volume (0.05 - 0.3)
+    // 25% = quiet, 100% = loud
+    const maxVol = 0.3;
+    const minVol = 0.02;
+    const volume = minVol + ((intensity - 25) / 75) * (maxVol - minVol);
+
+    // Smooth envelope to avoid clicks
+    gain.gain.setValueAtTime(0, audioContextRef.current.currentTime);
+    gain.gain.linearRampToValueAtTime(volume, audioContextRef.current.currentTime + 0.1);
+
+    osc.connect(gain);
+    gain.connect(audioContextRef.current.destination);
+
+    osc.start();
+    
+    oscillatorRef.current = osc;
+    gainNodeRef.current = gain;
   };
 
-  const satValues = useMemo(() => {
-    if (Object.keys(saturationValues).length === 0) {
-      return initializeSaturation();
-    }
-    return saturationValues;
-  }, [saturationValues]);
-
-  const handleSaturationChange = (mdiId: number, value: number[]) => {
-    setSaturationValues(prev => ({
-      ...prev,
-      [mdiId]: value[0]
-    }));
-  };
-
-  // Get saturation descriptions
-  const getSaturationDescription = (saturation: number): { intense: string; delicate: string } => {
-    if (saturation >= 90) {
-      return {
-        intense: "Intensiv & Kraftvoll",
-        delicate: "Kräftig & Präsent"
-      };
-    } else if (saturation >= 70) {
-      return {
-        intense: "Lebendig & Präsent",
-        delicate: "Harmonisch & Ausgewogen"
-      };
-    } else if (saturation >= 50) {
-      return {
-        intense: "Sanft & Ausgewogen",
-        delicate: "Zart & Beruhigend"
-      };
-    } else if (saturation >= 30) {
-      return {
-        intense: "Subtil & Elegant",
-        delicate: "Himmlisch & Zart"
-      };
-    } else {
-      return {
-        intense: "Hauch & Essenz",
-        delicate: "Luft & Geist"
-      };
+  const stopTone = () => {
+    if (gainNodeRef.current && audioContextRef.current) {
+      gainNodeRef.current.gain.linearRampToValueAtTime(0, audioContextRef.current.currentTime + 0.1);
+      setTimeout(() => {
+        if (oscillatorRef.current) {
+          oscillatorRef.current.stop();
+          oscillatorRef.current.disconnect();
+          oscillatorRef.current = null;
+        }
+      }, 150);
     }
   };
+
+  const handleMouseEnter = (id: number, intensity: number, color: string, freq: number) => {
+    const toneName = getToneNameFromMdiId(id) || "Unbekannt";
+    setHoveredSegment({ id, intensity, color, toneName, freq });
+    playTone(freq, intensity);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredSegment(null);
+    stopTone();
+  };
+
+  // 100% at top, 25% at bottom to match typical Y-axis coordinates (or as requested)
+  // The PDF shows 100% to 25% from top to bottom usually, let's match that.
+  const intensities = [100, 75, 50, 25];
+  const columns = Array.from({ length: 24 }, (_, i) => i + 1);
 
   return (
     <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500" />
-          Farbsättigung erkunden
+          Farblichtfeld Matrix
         </CardTitle>
         <p className="text-sm text-zinc-400 mt-2">
-          Jeder Ton trägt verschiedene Sättigungsgrade. Verschiebe den Regler, um die emotionale Qualität der Farbe zu erkunden.
+          Erkunde die 96 Farbsegmente der MDI-Matrix. Fahre mit der Maus über ein Segment, um den Code und den entsprechenden Ton in der jeweiligen Lautstärke zu hören (25% = leise, 100% = laut).
         </p>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-h-[800px] overflow-y-auto pr-2">
-          {frequencyData.map((tone) => {
-            const mdiId = tone.id;
-            const saturation = satValues[mdiId] || 100;
-            const toneName = getToneNameFromMdiId(mdiId);
-            const toneInfo = TONES.find(t => t.name === toneName);
-            
-            // Map saturation (0-100) to intensity levels (25, 50, 75, 100)
-            const intensityLevel = Math.max(25, Math.round((saturation / 100) * 100 / 25) * 25);
-            const matrixColor = colorMatrix[mdiId]?.[intensityLevel as keyof typeof colorMatrix[typeof mdiId]] || tone.hex;
-            const modifiedHex = matrixColor;
-            const description = getSaturationDescription(saturation);
-
-            // Calculate energy from mdiDistribution if available
-            const energy = mdiDistribution ? (mdiDistribution[mdiId.toString()] || 0) : 0;
-            const hasEnergy = energy > 0;
-
-            return (
-              <div
-                key={mdiId}
-                className={`p-4 rounded-lg border transition-all ${
-                  hasEnergy
-                    ? 'border-white/30 bg-zinc-800/50'
-                    : 'border-zinc-700/50 bg-zinc-900/30 opacity-60'
-                }`}
-              >
-                {/* Tone Header */}
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <div className="text-sm font-semibold text-white">
-                      TYP {mdiId}: {tone.colorName}
-                    </div>
-                    {toneName && (
-                      <div className="text-xs text-zinc-400 mt-1">
-                        Ton: <span className="font-medium">{toneName}</span>
-                      </div>
-                    )}
-                  </div>
-                  {hasEnergy && (
-                    <div className="text-right">
-                      <div className="text-xs text-zinc-500">Energie</div>
-                      <div className="text-sm font-bold text-orange-400">
-                        {energy.toFixed(1)}%
-                      </div>
-                    </div>
-                  )}
+        
+        {/* The Matrix */}
+        <div className="w-full overflow-x-auto pb-4">
+          <div className="min-w-[800px] flex flex-col">
+            {/* Top labels (1-24) */}
+            <div className="flex mb-2">
+              <div className="w-12 shrink-0"></div> {/* Spacer for Y-axis labels */}
+              {columns.map(col => (
+                <div key={`label-${col}`} className="flex-1 text-center text-xs text-zinc-500 font-mono">
+                  {col}
                 </div>
+              ))}
+            </div>
 
-                {/* Color Preview */}
-                <div className="flex gap-3 mb-4">
-                  {/* Original Color */}
-                  <div className="flex-1">
-                    <div className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">
-                      100% Sättigung
-                    </div>
+            {/* Rows */}
+            {intensities.map(intensity => (
+              <div key={`row-${intensity}`} className="flex h-16 md:h-20 w-full group/row">
+                {/* Y-axis label */}
+                <div className="w-12 shrink-0 flex items-center justify-end pr-3 text-xs text-zinc-500 font-mono">
+                  {intensity}%
+                </div>
+                
+                {/* Cells */}
+                {columns.map(col => {
+                  const color = colorMatrix[col]?.[intensity as keyof typeof colorMatrix[typeof col]] || "#000000";
+                  const freqItem = frequencyData.find(f => f.id === col);
+                  const freq = freqItem?.frequency || 100;
+                  
+                  return (
                     <div
-                      className="w-full h-16 rounded-lg border border-white/20 shadow-lg"
-                      style={{ backgroundColor: tone.hex }}
-                      title="Volle Sättigung"
-                    />
-                  </div>
-
-                  {/* Modified Color */}
-                  <div className="flex-1">
-                    <div className="text-xs text-zinc-500 mb-1 uppercase tracking-wider">
-                      {saturation}% Sättigung
+                      key={`cell-${col}-${intensity}`}
+                      className="flex-1 h-full cursor-pointer transition-transform duration-100 hover:scale-110 hover:z-10 relative"
+                      style={{ backgroundColor: color }}
+                      onMouseEnter={() => handleMouseEnter(col, intensity, color, freq)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      {/* Optional: Add a subtle overlay for active/energy state if needed */}
+                      {mdiDistribution && mdiDistribution[col.toString()] > 0 && (
+                        <div className="absolute inset-0 border-2 border-white/30 pointer-events-none" />
+                      )}
                     </div>
-                    <div
-                      className="w-full h-16 rounded-lg border border-white/20 shadow-lg"
-                      style={{ backgroundColor: modifiedHex }}
-                      title={`${saturation}% Sättigung`}
-                    />
-                  </div>
-                </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
 
-                {/* Saturation Slider */}
-                <div className="space-y-2 mb-4">
-                  <div className="flex justify-between items-center">
-                    <label className="text-xs uppercase tracking-wider text-zinc-400">
-                      Sättigung
-                    </label>
-                    <span className="text-sm font-bold text-white">{saturation}%</span>
+        {/* Info Panel */}
+        <div className="h-24 bg-zinc-950 rounded-xl border border-zinc-800 flex items-center justify-between px-6">
+          {hoveredSegment ? (
+            <>
+              <div className="flex items-center gap-6">
+                <div 
+                  className="w-12 h-12 rounded-full shadow-lg border border-white/20"
+                  style={{ backgroundColor: hoveredSegment.color }}
+                />
+                <div>
+                  <div className="text-2xl font-bold text-white font-mono tracking-wider">
+                    {hoveredSegment.id.toString().padStart(2, '0')} / {hoveredSegment.intensity}%
                   </div>
-                  <Slider
-                    value={[saturation]}
-                    onValueChange={(value) => handleSaturationChange(mdiId, value)}
-                    min={0}
-                    max={100}
-                    step={5}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-zinc-500">
-                    <span>Zart</span>
-                    <span>Intensiv</span>
-                  </div>
-                </div>
-
-                {/* Description */}
-                <div className="bg-black/30 rounded-lg p-3 border border-zinc-700/50">
-                  <div className="text-xs text-zinc-400 uppercase tracking-wider mb-1">
-                    Wirkung bei dieser Sättigung:
-                  </div>
-                  <div className="text-sm text-white font-medium">
-                    {saturation >= 50 ? description.intense : description.delicate}
+                  <div className="text-sm text-zinc-400">
+                    Ton: <span className="text-orange-400 font-medium">{hoveredSegment.toneName}</span> ({hoveredSegment.freq} Hz)
                   </div>
                 </div>
               </div>
-            );
-          })}
+              <div className="flex items-center gap-3 text-zinc-500">
+                <Volume2 className="w-5 h-5" />
+                <div className="w-32 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-orange-500 transition-all duration-300"
+                    style={{ width: `${hoveredSegment.intensity}%` }}
+                  />
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="w-full text-center text-zinc-500 italic">
+              Fahre über ein Segment, um Details anzuzeigen
+            </div>
+          )}
         </div>
 
-        {/* Info Box */}
-        <div className="mt-6 pt-6 border-t border-zinc-700/50 bg-zinc-900/30 rounded-lg p-4">
-          <div className="text-xs text-zinc-400 uppercase tracking-wider mb-2">
-            💡 Tipp für die Praxis
-          </div>
-          <p className="text-sm text-zinc-300 leading-relaxed">
-            Wähle für deine tägliche Praxis die Sättigung, die sich für deine aktuelle Lebenssituation richtig anfühlt. 
-            Intensive Farben (80-100%) eignen sich für Aktivierung und Energie. Zarte Farben (20-50%) unterstützen Entspannung und innere Ruhe.
-          </p>
-        </div>
       </CardContent>
     </Card>
   );

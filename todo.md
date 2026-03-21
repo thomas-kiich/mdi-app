@@ -250,3 +250,7 @@
 - [x] Make AmbientTrainer waves color dynamic based on user's dominant tone
 
 - [x] Fix audio playback in AmbientTrainer broken by Web Audio API CORS
+
+- [x] Redesign ToneColorExplorer to a 24x4 grid layout with uniform bars and no gaps
+- [x] Implement hover interactions to display segment codes (e.g., '01/25') in ToneColorExplorer
+- [x] Integrate audio playback on hover with volume mapped to intensity percentage in ToneColorExplorer
