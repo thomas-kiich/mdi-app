@@ -321,3 +321,8 @@
 
 - [ ] Change main title to "METHODE 36 von Thomas Chochola" in Dashboard.tsx
 - [ ] Replace subtitle text with "GRUNDLAGEN..." in Dashboard.tsx
+
+- [ ] Update GRUNDLAGEN text in Dashboard.tsx
+
+- [ ] Make "von Thomas Chochola" a smaller subtitle under "METHODE 36"
+- [ ] Update GRUNDLAGEN text with the new scientific explanation

@@ -55,13 +55,16 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                         alt="METHODE 36 Logo" 
                         className="h-24 md:h-32 mx-auto mb-6 drop-shadow-lg"
                     />
-                    <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter mb-4">
-                        METHODE 36 von Thomas Chochola
+                    <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter mb-1">
+                        METHODE 36
                     </h1>
+                    <p className="text-lg md:text-xl text-zinc-400 mb-6">
+                        von Thomas Chochola
+                    </p>
                     <div className="text-sm md:text-base text-zinc-400 max-w-4xl mx-auto text-left leading-relaxed space-y-2">
                         <p className="font-bold text-zinc-300">GRUNDLAGEN</p>
                         <p>
-                            Die methodischen Grundlagen von M36 basieren auf dem Zusammenhang zwischen Atemrhythmik und der Beeinflussung der Stoffwechselfunktionalität im Menschen. Es scheint abseits der individuellen Stoffwechseldynamik im Menschen eine optimale natürliche Qualität in der Wahl der Anzahl von Atemzyklen je Minute zu bestehen. Dabei hat sich 6-maliges Atmen je Minute als signifikant vorteilhaft für die Unterstützung vieler Stoffwechselprozesse im Körper erwiesen. Auf dieser Basis hat der Autor das grundlegende M36 konzept entwickelt.
+                            Die methodischen Grundlagen von M36 basieren auf dem wissenschaftlichen Zusammenhang zwischen Atemrhythmik und der Optimierung der Stoffwechselfunktionalität im Menschen. Auf dieser Basis hat der Autor das grundlegende M36 konzept entwickelt. Im Zusammenspiel mit der Einzigartigkeit der menschlichen Stimme ergibt sich ein aussergewöhnlich wirksames Trainingsangebot zur Reinigung und Aktivierung. M 36 ist ohne Vorkenntnisse nutzbar und für jeden Alterstyp geeignet.
                         </p>
                     </div>
                 </motion.div>
