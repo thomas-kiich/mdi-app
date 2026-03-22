@@ -21,18 +21,18 @@ export function Impressum() {
           <section>
             <h2 className="text-white text-xl font-medium mb-4">Betreiber der Website</h2>
             <p>
-              [Ihr Vorname] [Ihr Nachname]<br />
-              [Straße] [Hausnummer]<br />
-              [PLZ] [Ort]<br />
-              [Land]
+              Ing. Thomas Chochola<br />
+              Lindacher Weg 17<br />
+              D-93128 Regenstauf<br />
+              Deutschland
             </p>
           </section>
 
           <section>
             <h2 className="text-white text-xl font-medium mb-4">Kontakt</h2>
             <p>
-              Telefon: [Ihre Telefonnummer]<br />
-              E-Mail: [Ihre E-Mail-Adresse]
+              Telefon: 0049 151 23040661<br />
+              E-Mail: lkrforschung@gmail.com
             </p>
           </section>
 
@@ -40,9 +40,9 @@ export function Impressum() {
             <h2 className="text-white text-xl font-medium mb-4">Verantwortlich für den Inhalt</h2>
             <p className="text-sm text-zinc-400 mb-2">nach § 55 Abs. 2 RStV:</p>
             <p>
-              [Ihr Vorname] [Ihr Nachname]<br />
-              [Straße] [Hausnummer]<br />
-              [PLZ] [Ort]
+              Ing. Thomas Chochola<br />
+              Lindacher Weg 17<br />
+              D-93128 Regenstauf
             </p>
           </section>
 

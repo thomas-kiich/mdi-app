@@ -336,3 +336,5 @@
 - [ ] Update podcast description in Home.tsx to reflect the new "Hörbuch im Podcast-Format" concept
 
 - [ ] Update podcast description to include "KI-generierter Kompetenz"
+
+- [ ] Update Impressum with user data
