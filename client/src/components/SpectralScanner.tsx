@@ -675,7 +675,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
       </div>
 
       {/* Footer Controls */}
-      <div className="h-20 bg-zinc-950 border-t border-zinc-900 flex items-center justify-center px-6 z-10">
+      <div className="h-20 bg-zinc-950 border-t border-zinc-900 flex items-center justify-center gap-4 px-6 z-10">
          <Button 
             size="lg"
             onClick={toggleAudio}
@@ -684,6 +684,24 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
              {isListening ? <Mic className="mr-2 h-5 w-5 animate-pulse" /> : <MicOff className="mr-2 h-5 w-5" />}
              {isListening ? "SCANNER" : "START"}
          </Button>
+         
+         {isListening && currentFreq > 0 && (
+            <Button
+              size="lg"
+              onClick={() => {
+                // Freeze the current frequency by finding the closest match in frequencyData
+                const closest = frequencyData.reduce((prev, curr) => {
+                  return (Math.abs(curr.frequency - currentFreq) < Math.abs(prev.frequency - currentFreq) ? curr : prev);
+                });
+                setSelectedInfo(closest);
+                stopAudio();
+              }}
+              className="rounded-full px-8 text-lg font-bold transition-all bg-orange-600 hover:bg-orange-500 text-white shadow-[0_0_20px_rgba(234,88,12,0.4)]"
+            >
+              <Zap className="mr-2 h-5 w-5 fill-current" />
+              DIESEN TON VERWENDEN
+            </Button>
+         )}
       </div>
     </div>
   );

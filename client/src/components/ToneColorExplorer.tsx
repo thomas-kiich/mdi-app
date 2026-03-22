@@ -4,7 +4,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import frequencyData from '@/lib/frequencyData.json';
 import { getToneNameFromMdiId } from '@/lib/mdiToToneMapping';
 import { colorMatrix } from '@/lib/colorMatrix';
-import { Volume2, Info } from 'lucide-react';
+import { Volume2, Info, Zap } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Method36Trainer } from "@/components/Method36Trainer";
+import { AnimatePresence } from 'framer-motion';
 
 interface ToneColorExplorerProps {
   mdiDistribution?: Record<string, number>;
@@ -14,6 +17,7 @@ interface ToneColorExplorerProps {
 export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorExplorerProps) {
   const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
+  const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string, duration?: number } | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -177,18 +181,7 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
     setSelectedSegment({ id, intensity, color, toneName, freq });
   };
 
-  // Calculate harmony paths (Quinte = +7 semitones, Terz = +4 semitones)
-  // MDI IDs are 1-24, representing semitones across 2 octaves.
-  // Quinte (+7) -> (id + 7) % 24 (adjusted for 1-24)
-  // Terz (+4) -> (id + 4) % 24 (adjusted for 1-24)
-  const getHarmonyIds = (baseId: number) => {
-    const quinte = ((baseId - 1 + 7) % 24) + 1;
-    const grosseTerz = ((baseId - 1 + 4) % 24) + 1;
-    const kleineTerz = ((baseId - 1 + 3) % 24) + 1;
-    return { quinte, grosseTerz, kleineTerz };
-  };
-
-  const activeHarmonies = hoveredSegment ? getHarmonyIds(hoveredSegment.id) : null;
+  // Interval markers removed per user request
 
   // 100% at top, 25% at bottom to match typical Y-axis coordinates (or as requested)
   // The PDF shows 100% to 25% from top to bottom usually, let's match that.
@@ -203,9 +196,20 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
           <div className="w-4 h-4 rounded bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500" />
           LICHTKLANG MATRIX
         </CardTitle>
-        <p className="text-sm text-zinc-400 mt-2">
-          Erkunde die 96 Farbsegmente der MDI-Matrix. Fahre mit der Maus über ein Segment, um den Code und den entsprechenden Ton in der jeweiligen Lautstärke zu hören (25% = leise, 100% = laut).
-        </p>
+        <div className="text-sm text-zinc-400 mt-2 space-y-2">
+          <p>
+            Erkunde die 96 Farbsegmente der MDI-Matrix. Fahre mit der Maus über ein Segment, um den Code und den entsprechenden Ton in der jeweiligen Lautstärke zu hören (25% = leise, 100% = laut).
+          </p>
+          <div className="bg-zinc-800/50 p-3 rounded-lg border border-zinc-700/50">
+            <h4 className="font-semibold text-orange-400 mb-1">So arbeitest du mit der Matrix:</h4>
+            <ol className="list-decimal list-inside space-y-1">
+              <li>Starte den Scanner (unten), um deine Stimme live in der Matrix sichtbar zu machen.</li>
+              <li>Singe einen Ton. Das entsprechende Segment in der Matrix leuchtet rot auf.</li>
+              <li>Klicke auf <strong>"DIESEN TON VERWENDEN"</strong>, um den aktuell erfassten Ton einzufrieren.</li>
+              <li>Klicke auf das markierte Segment, um die Details zu öffnen und direkt in das YOHN-Training mit diesem Ton zu starten.</li>
+            </ol>
+          </div>
+        </div>
       </CardHeader>
       <CardContent className="space-y-6">
         
@@ -237,16 +241,9 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                   const freq = freqItem?.frequency || 100;
                   
                   const isHovered = hoveredSegment?.id === col && hoveredSegment?.intensity === intensity;
-                  const isQuinte = activeHarmonies?.quinte === col && hoveredSegment?.intensity === intensity;
-                  const isTerz = (activeHarmonies?.grosseTerz === col || activeHarmonies?.kleineTerz === col) && hoveredSegment?.intensity === intensity;
-                  
                   let overlayClass = "";
                   if (isHovered) {
                     overlayClass = "border-2 border-white shadow-[0_0_15px_rgba(255,255,255,0.8)] z-20 scale-110";
-                  } else if (isQuinte) {
-                    overlayClass = "border-2 border-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.6)] z-10 scale-105";
-                  } else if (isTerz) {
-                    overlayClass = "border-2 border-green-400 shadow-[0_0_10px_rgba(74,222,128,0.6)] z-10 scale-105";
                   } else if (hoveredSegment) {
                     // Dim others slightly when hovering
                     overlayClass = "opacity-40";
@@ -272,17 +269,7 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                         <div className="absolute inset-0 border-2 border-white/30 pointer-events-none" />
                       )}
                       
-                      {/* Show relationship label if it's a harmony */}
-                      {isQuinte && (
-                        <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-blue-500/80 text-white text-[10px] px-1 rounded whitespace-nowrap pointer-events-none">
-                          Quinte
-                        </div>
-                      )}
-                      {isTerz && (
-                        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-green-500/80 text-white text-[10px] px-1 rounded whitespace-nowrap pointer-events-none">
-                          Terz
-                        </div>
-                      )}
+
                     </div>
                   );
                 })}
@@ -378,10 +365,42 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                    " die subtilste, tiefste Ebene. Hier wirkt das Prinzip eher unbewusst, als feines Potenzial oder sanfter Impuls im Hintergrund."}
                 </p>
               </div>
+
+              <Button 
+                size="lg" 
+                className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold h-12 text-xs"
+                onClick={() => {
+                  setTrainingMode({
+                    freq: selectedSegment.freq,
+                    tone: selectedSegment.toneName,
+                    color: selectedSegment.color,
+                    duration: 12
+                  });
+                  setSelectedSegment(null);
+                }}
+              >
+                <Zap className="mr-2 h-4 w-4 fill-current shrink-0" />
+                HIER KLICKEN - zum YOHNTRAINING mit deinem LEBENSKLANG
+              </Button>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Training Overlay */}
+      <AnimatePresence>
+          {trainingMode && (
+              <div className="fixed inset-0 z-[100] bg-black">
+                  <Method36Trainer 
+                    frequency={trainingMode.freq}
+                    toneName={trainingMode.tone}
+                    color={trainingMode.color}
+                    duration={trainingMode.duration}
+                    onClose={() => setTrainingMode(null)}
+                  />
+              </div>
+          )}
+      </AnimatePresence>
     </>
   );
 }

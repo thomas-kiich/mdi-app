@@ -269,3 +269,8 @@
 - [x] Change title to 'LICHTKLANG MATRIX' in ToneColorExplorer
 - [x] Implement sustained audio playback on hover in ToneColorExplorer
 - [x] Integrate live microphone frequency highlighting in ToneColorExplorer when used in SpectralScanner
+
+- [ ] Remove interval markers (Terz/Quinte) from ToneColorExplorer.tsx
+- [ ] Add 'DIESEN TON VERWENDEN' button to freeze live tone in ToneColorExplorer.tsx
+- [ ] Add link to YOHN training from the frozen tone in ToneColorExplorer.tsx
+- [ ] Add instructions text to the ToneColorExplorer.tsx
