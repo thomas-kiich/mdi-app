@@ -670,7 +670,7 @@ export default function Home() {
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2 text-white">
                       <Sparkles className="w-5 h-5 text-orange-500" />
-                      Wirkung & Talent
+                      Qualität & Synonyme
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -679,7 +679,7 @@ export default function Home() {
                         <p className="text-zinc-300">{mdi.description}</p>
                     </div>
                     <div>
-                        <h4 className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Talent</h4>
+                        <h4 className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Synonyme</h4>
                         <p className="text-zinc-300">{mdi.talent}</p>
                     </div>
                   </CardContent>

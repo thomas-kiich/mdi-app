@@ -189,7 +189,7 @@ export function CertificateView({ mdiResult, toneDistribution, onClose }: Certif
                         </p>
                     </div>
                     <div className="bg-zinc-900/50 p-6 rounded-xl border border-white/5">
-                        <h3 className="text-orange-500 text-xs uppercase tracking-widest mb-3 font-semibold">Talent & Potenzial</h3>
+                        <h3 className="text-orange-500 text-xs uppercase tracking-widest mb-3 font-semibold">Synonyme</h3>
                         <p className="text-sm text-zinc-300 leading-relaxed">
                             {mdiResult.talent}
                         </p>

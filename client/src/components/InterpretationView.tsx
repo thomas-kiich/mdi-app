@@ -164,7 +164,7 @@ export function InterpretationView({ mdiResult, onClose }: InterpretationViewPro
                             </p>
                         </div>
                         <div>
-                            <h4 className="text-orange-500 font-semibold mb-2 uppercase text-xs tracking-wider">Talent & Potenzial</h4>
+                            <h4 className="text-orange-500 font-semibold mb-2 uppercase text-xs tracking-wider">Synonyme</h4>
                             <p className="text-zinc-300 leading-relaxed text-lg">
                                 {mdiResult.talent}
                             </p>

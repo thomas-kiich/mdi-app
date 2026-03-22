@@ -296,3 +296,8 @@
 - [ ] Parse PDF data into JSON format
 - [ ] Update frequencyData.json with new descriptions (Short: Typ + Metaphorik, Detailed: Qualitäten + Synonyme)
 - [ ] Update UI components to reflect the new data structure
+
+- [ ] Update exact frequency values in frequencyData.json
+- [ ] Update column titles in FrequencyTable.tsx (TYP, LICHT, KLANG, QUALITÄT, SYNONYME)
+- [ ] Remove color text from Licht column in FrequencyTable.tsx
+- [ ] Update labels in Home.tsx and CertificateView.tsx to match "Qualität" and "Synonyme"

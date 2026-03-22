@@ -99,7 +99,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
   };
 
   const handleDownloadPDF = () => {
-    const headers = ["ID", "Farbe", "Frequenz (Hz)", "Licht (nm)", "Klang (Thz)", "Wirkung", "Talent"];
+    const headers = ["TYP", "Licht", "Klang (Hz)", "Licht (nm)", "Klang (Thz)", "Qualität", "Synonyme"];
     const rows = frequencyData.map(item => [
       item.id,
       item.colorName,
@@ -244,13 +244,13 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
             <Table>
               <TableHeader className="bg-zinc-900">
                 <TableRow className="border-zinc-800 hover:bg-zinc-900">
-                  <TableHead className="w-[50px] text-zinc-400">ID</TableHead>
-                  <TableHead className="w-[150px] text-zinc-400">Farbe</TableHead>
-                  <TableHead className="text-zinc-400">Frequenz</TableHead>
+                  <TableHead className="w-[50px] text-zinc-400">TYP</TableHead>
+                  <TableHead className="w-[80px] text-zinc-400">LICHT</TableHead>
+                  <TableHead className="text-zinc-400">KLANG</TableHead>
                   <TableHead className="text-zinc-400">Licht (nm)</TableHead>
                   <TableHead className="text-zinc-400">Klang (Thz)</TableHead>
-                  <TableHead className="hidden md:table-cell text-zinc-400">Wirkung</TableHead>
-                  <TableHead className="hidden lg:table-cell text-zinc-400">Talent</TableHead>
+                  <TableHead className="hidden md:table-cell text-zinc-400">QUALITÄT</TableHead>
+                  <TableHead className="hidden lg:table-cell text-zinc-400">SYNONYME</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -258,12 +258,11 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
                   <TableRow key={item.id} className="border-zinc-800 hover:bg-zinc-800/50 transition-colors">
                     <TableCell className="font-mono text-zinc-500">{item.id}</TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center justify-center">
                         <div 
                           className="w-6 h-6 rounded-full border border-white/10 shadow-sm" 
                           style={{ backgroundColor: item.hex }}
                         />
-                        <span className="font-medium">{item.colorName}</span>
                       </div>
                     </TableCell>
                     <TableCell className="font-mono text-orange-400">{item.frequency} Hz</TableCell>
