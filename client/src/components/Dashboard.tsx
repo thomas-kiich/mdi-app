@@ -62,7 +62,6 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                         von Thomas Chochola
                     </p>
                     <div className="text-sm md:text-base text-zinc-400 max-w-4xl mx-auto text-left leading-relaxed space-y-2">
-                        <p className="font-bold text-zinc-300">GRUNDLAGEN</p>
                         <p>
                             Die methodischen Grundlagen von M36 basieren auf dem wissenschaftlichen Zusammenhang zwischen Atemrhythmik und der Optimierung der Stoffwechselfunktionalität im Menschen. Auf dieser Basis hat der Autor das grundlegende M36 konzept entwickelt. Im Zusammenspiel mit der Einzigartigkeit der menschlichen Stimme ergibt sich ein aussergewöhnlich wirksames Trainingsangebot zur Reinigung und Aktivierung. M 36 ist ohne Vorkenntnisse nutzbar und für jeden Alterstyp geeignet.
                         </p>

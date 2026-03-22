@@ -328,3 +328,5 @@
 - [ ] Update GRUNDLAGEN text with the new scientific explanation
 
 - [ ] Create a manual backup checkpoint of the current stable state
+
+- [ ] Remove "GRUNDLAGEN" from Dashboard.tsx
