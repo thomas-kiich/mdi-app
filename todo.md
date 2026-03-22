@@ -330,3 +330,5 @@
 - [ ] Create a manual backup checkpoint of the current stable state
 
 - [ ] Remove "GRUNDLAGEN" from Dashboard.tsx
+
+- [ ] Insert author description in 'MASCHINEN ATMEN NICHT' section in Dashboard.tsx

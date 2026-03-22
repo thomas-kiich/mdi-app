@@ -8,7 +8,7 @@ interface PodcastFeatureProps {
   coverImage: string;
   title: string;
   subtitle: string;
-  description: string;
+  description: React.ReactNode;
 }
 
 export function PodcastFeature({
