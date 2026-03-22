@@ -284,3 +284,15 @@
 - [ ] Integrate Analysis History into Dashboard
 
 - [ ] Remove "only possible once" text near download button in Home.tsx / CertificateView.tsx
+
+- [ ] Read data from Google Sheet: https://docs.google.com/spreadsheets/d/1z-CFsye-So7tAtxmmFYX6hRRe8zw7YOjQKtducZMeEI/edit?usp=sharing
+- [ ] Integrate data into the app (e.g., update frequencyData.json or Wissenspool)
+
+- [ ] Parse Google Sheet data for the 24 MDI types
+- [ ] Update frequencyData.json with new descriptions (Short: Typ + Metaphorik, Detailed: Qualitäten + Synonyme)
+- [ ] Update UI components to reflect the new data structure
+
+- [ ] Extract data from uploaded PDF: /home/ubuntu/upload/frequenztafelMETHODE36-Table1.pdf
+- [ ] Parse PDF data into JSON format
+- [ ] Update frequencyData.json with new descriptions (Short: Typ + Metaphorik, Detailed: Qualitäten + Synonyme)
+- [ ] Update UI components to reflect the new data structure

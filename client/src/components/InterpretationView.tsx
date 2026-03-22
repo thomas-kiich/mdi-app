@@ -158,7 +158,7 @@ export function InterpretationView({ mdiResult, onClose }: InterpretationViewPro
                 <div className="bg-zinc-900/50 rounded-xl p-8 border border-zinc-800 w-full mt-4">
                     <div className="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h4 className="text-orange-500 font-semibold mb-2 uppercase text-xs tracking-wider">Psychophysiologische Wirkung</h4>
+                            <h4 className="text-orange-500 font-semibold mb-2 uppercase text-xs tracking-wider">Detailbeschreibung</h4>
                             <p className="text-zinc-300 leading-relaxed text-lg">
                                 {mdiResult.description}
                             </p>

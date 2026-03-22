@@ -183,7 +183,7 @@ export function CertificateView({ mdiResult, toneDistribution, onClose }: Certif
                 {/* Attributes Grid */}
                 <div className="grid grid-cols-2 gap-8">
                     <div className="bg-zinc-900/50 p-6 rounded-xl border border-white/5">
-                        <h3 className="text-orange-500 text-xs uppercase tracking-widest mb-3 font-semibold">Psychophysiologische Wirkung</h3>
+                        <h3 className="text-orange-500 text-xs uppercase tracking-widest mb-3 font-semibold">Detailbeschreibung</h3>
                         <p className="text-sm text-zinc-300 leading-relaxed">
                             {mdiResult.description}
                         </p>

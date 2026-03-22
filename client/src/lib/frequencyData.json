@@ -5,9 +5,10 @@
     "lightRange": "380 - 397 nm",
     "toneRange": "789.5 - 755.7 Thz",
     "frequency": 170,
-    "description": "Aktivierung des Frontallappens, Ambivalenz, Unsicherheit",
-    "talent": "Unterst\u00fctzung bei mystischen und esoterischen Fragestellungen",
-    "hex": "#6937c4"
+    "description": "Die Fähigkeit, Dahinterliegendes wahrzunehmen",
+    "talent": "VERGANGEHIT | KARMA | ERINNERUNG | ALTLASTEN | GEBUNDEHEIT | ANHAFTUNG | VERDECKTHEIT | ÜBERGANG | TOD | PATHOLOGIE | UNDURCHSICHTIGKEIT | TRADITION | HERKUNFT | NEBEL | HISTORIE",
+    "hex": "#6937c4",
+    "metaphor": "DAS ERBE"
   },
   {
     "id": 2,
@@ -15,9 +16,10 @@
     "lightRange": "397 - 414 nm",
     "toneRange": "755.7 - 724.6 Thz",
     "frequency": 163,
-    "description": "Aktivierung der Epiphyse, Mystik, Zweideutigkeit",
-    "talent": "Meditation und Entspannung",
-    "hex": "#5c36a8"
+    "description": "Die Fähigkeit, Verstrickungen vergangener Handlungen aufzudecken",
+    "talent": "VERGANGEHIT | KARMA | ERINNERUNG | ALTLASTEN | GEBUNDEHEIT | ANHAFTUNG | VERDECKTHEIT | ÜBERGANG | TOD | PATHOLOGIE | UNDURCHSICHTIGKEIT | TRADITION | HERKUNFT | NEBEL | HISTORIE | ESOTERIK",
+    "hex": "#5c36a8",
+    "metaphor": "DER ERHABENE MYSTIKER"
   },
   {
     "id": 3,
@@ -25,9 +27,10 @@
     "lightRange": "414 - 431 nm",
     "toneRange": "724.6 - 696.0 Thz",
     "frequency": 156,
-    "description": "Nicht explizit in Chakra-Lehre, Rationalit\u00e4t, Distanz",
-    "talent": "Analytisches Denken",
-    "hex": "#4950ad"
+    "description": "DIe Fähigkeit, emotionsfrei zu agieren",
+    "talent": "STRUKTUR | DURCHALTEVERMÖGEN | FORSCHERGEIST | EMOTIONSFREIHEIT | RATIONALITÄT | AUSDAUER | KOMPROMISSLOSIGKEIT | UNBEIRRBARKEIT | NOTFALLMANAGEMENT",
+    "hex": "#4950ad",
+    "metaphor": "DIE KÜHLE KONSEQUENZ"
   },
   {
     "id": 4,
@@ -35,9 +38,10 @@
     "lightRange": "431 - 448 nm",
     "toneRange": "696.0 - 669.6 Thz",
     "frequency": 150,
-    "description": "Aktivierung der Bindehaut, Ruhe, Sauberkeit",
-    "talent": "Unterst\u00fctzung bei administrativen Aufgaben",
-    "hex": "#225eaf"
+    "description": "Die Fähigkeit zu konsequenter Umsetzung",
+    "talent": "STRUKTUR | DURCHALTEVERMÖGEN | FORSCHERGEIST | EMOTIONSFREIHEIT | RATIONALITÄT | AUSDAUER | KOMPROMISSLOSIGKEIT | UNBEIRRBARKEIT | NOTFALLMANAGEMENT",
+    "hex": "#225eaf",
+    "metaphor": "DER NACHHALTIGE FORSCHERGEIST"
   },
   {
     "id": 5,
@@ -45,9 +49,10 @@
     "lightRange": "448 - 465 nm",
     "toneRange": "669.6 - 645.1 Thz",
     "frequency": 144,
-    "description": "Aktivierung der Kehlkopfregion, Ordnung, Hinweis",
-    "talent": "Orientierungshilfe und Gebotsbefolgung",
-    "hex": "#2362db"
+    "description": "Die Fähigkeit, Potentiale zu nützen",
+    "talent": "PRAGMATIKER | REALIST | UMSETZER | SOZIAL | FÖRDERER | MENSCHENFREUND",
+    "hex": "#2362db",
+    "metaphor": "DER PRAKTIKER"
   },
   {
     "id": 6,
@@ -55,9 +60,10 @@
     "lightRange": "465 - 482 nm",
     "toneRange": "645.1 - 622.4 Thz",
     "frequency": 139,
-    "description": "Senkung der Herzfrequenz, G\u00f6ttlichkeit, K\u00fchle",
-    "talent": "F\u00f6rderung der geistigen Klarheit",
-    "hex": "#2883ed"
+    "description": "Die Fähigkeit zu sachlicher, konkreter Hilfeleistung",
+    "talent": "PRAGMATIKER | REALIST | UMSETZER | SOZIAL | FÖRDERER | MENSCHENFREUND",
+    "hex": "#2883ed",
+    "metaphor": "DER REALIST"
   },
   {
     "id": 7,
@@ -65,49 +71,54 @@
     "lightRange": "482 - 499 nm",
     "toneRange": "622.4 - 601.2 Thz",
     "frequency": 134,
-    "description": "Nicht explizit in Chakra-Lehre, Neutralit\u00e4t",
-    "talent": "Unterst\u00fctzung technischer Wahrnehmung",
-    "hex": "#0599b3"
+    "description": "Die Fähigkeit zu spiritueller Kreativität",
+    "talent": "RÜCKVERBINDUNG | URSPRUNG | FRAGILITÄT | EMPFINDLICHKEIT | KREATIVITÄT | INTROVERSION | HÖHERE WELTEN | INSPIRATION | EMPFINDSAMKEIT",
+    "hex": "#0599b3",
+    "metaphor": "DER FANTAST"
   },
   {
     "id": 8,
-    "colorName": "T\u00fcrkisgr\u00fcn",
+    "colorName": "Türkisgrün",
     "lightRange": "499 - 516 nm",
     "toneRange": "601.2 - 581.4 Thz",
     "frequency": 130,
-    "description": "Aktivierung reger Zellteilung, Wachstum, Natur",
-    "talent": "Unterst\u00fctzung bei Erster Hilfe",
-    "hex": "#12b8aa"
+    "description": "Die Fähigkeit, die unsichtbaren Fäden der höheren Ebenen zu orten",
+    "talent": "RÜCKVERBINDUNG | URSPRUNG | FRAGILITÄT | EMPFINDLICHKEIT | KREATIVITÄT | INTROVERSION | HÖHERE WELTEN | INSPIRATION | EMPFINDSAMKEIT",
+    "hex": "#12b8aa",
+    "metaphor": "DER ZERBRECHLICHE"
   },
   {
     "id": 9,
-    "colorName": "Smaragdgr\u00fcn",
+    "colorName": "Smaragdgrün",
     "lightRange": "516 - 533 nm",
     "toneRange": "581.4 - 562.8 Thz",
     "frequency": 126,
-    "description": "F\u00f6rderung von Empathie, Sicherheit, Hoffnung",
-    "talent": "Unterst\u00fctzung bei kreativen Leistungen",
-    "hex": "#32a765"
+    "description": "Die Fähigkeit zur Nächstenliebe",
+    "talent": "FÜRSORGLICHKEIT | EMPATHIE | ZURÜCKNAHME | AUFOPRFERUNG | HILFSBEREITSCHAFT | NÄCHSTENLIEBE | MITEINANDER | ZUSAMMENHALT | GEMEINSCHAFT",
+    "hex": "#32a765",
+    "metaphor": "DER EMPATHISCHE"
   },
   {
     "id": 10,
-    "colorName": "Laubgr\u00fcn",
+    "colorName": "Laubgrün",
     "lightRange": "533 - 550 nm",
     "toneRange": "562.8 - 545.5 Thz",
     "frequency": 122,
-    "description": "Sicherheitsgef\u00fchl, Rettung, Fruchtbarkeit",
-    "talent": "Fluchtwegsorientierung",
-    "hex": "#7fb00a"
+    "description": "Die Fähigkeit zur Aufopferung für Andere",
+    "talent": "FÜRSORGLICHKEIT | EMPATHIE | ZURÜCKNAHME | AUFOPRFERUNG | HILFSBEREITSCHAFT | NÄCHSTENLIEBE | MITEINANDER | ZUSAMMENHALT | GEMEINSCHAFT",
+    "hex": "#7fb00a",
+    "metaphor": "DER FÜRSORGLICHE"
   },
   {
     "id": 11,
-    "colorName": "Gelbgr\u00fcn",
+    "colorName": "Gelbgrün",
     "lightRange": "550 - 567 nm",
     "toneRange": "545.5 - 529.1 Thz",
     "frequency": 118,
-    "description": "Maximale Empfindlichkeit, Aufmerksamkeit, Visuelle Salienz",
-    "talent": "Salienzsteigerung",
-    "hex": "#79995a"
+    "description": "Die Fähigkeit zu höchster Überwindung",
+    "talent": "VERSTECK | GEHEIMNIS | ÜBERFORDERUNG | LOGIK | UNTERSCHEIDBARKEIT | DISZIPLIN | POKERSPIEL | FORDERUNG | ÜBERZEUGTHEIT | ÜBERFORDERUNG | INTELLIGENZ | EXTREMITÄT | DOGMA",
+    "hex": "#79995a",
+    "metaphor": "DER MÄCHTIGE"
   },
   {
     "id": 12,
@@ -115,9 +126,10 @@
     "lightRange": "567 - 584 nm",
     "toneRange": "529.1 - 513.7 Thz",
     "frequency": 114,
-    "description": "Aktivierung bei saurem Geschmack, Heiterkeit, W\u00e4rme",
-    "talent": "Stimmungsaufhellung",
-    "hex": "#69a131"
+    "description": "Die Fähigkeit zur Aussergewöhnlichkeit",
+    "talent": "VERSTECK | GEHEIMNIS | ÜBERFORDERUNG | LOGIK | UNTERSCHEIDBARKEIT | DISZIPLIN | POKERSPIEL | FORDERUNG | ÜBERZEUGTHEIT | ÜBERFORDERUNG | INTELLIGENZ | EXTREMITÄT | DOGMA",
+    "hex": "#69a131",
+    "metaphor": "DER AUSERKORENE"
   },
   {
     "id": 13,
@@ -125,9 +137,10 @@
     "lightRange": "584 - 601 nm",
     "toneRange": "513.7 - 499.2 Thz",
     "frequency": 111,
-    "description": "Arousal-Steigerung, Warnungsbereitschaft",
-    "talent": "Vorbereitung auf Handlungen",
-    "hex": "#96b02e"
+    "description": "Die Fähigkeit zur Besonderheit",
+    "talent": "INTELLEKT | ANALYTIK | LOGIK | KRITIK | BESONDERHEIT | DENKEN | VERSTAND | AKADEMIE | STATUS | ANSPRUCH | ELITÄR | KONKURRENZ | UNTERSCHEIDEND | GRENZE | SPEZIALIST | STRUKTUR | SICHERHEIT | ABSOLUTHEIT",
+    "hex": "#96b02e",
+    "metaphor": "DER INTELLEKTUELLE"
   },
   {
     "id": 14,
@@ -135,9 +148,10 @@
     "lightRange": "601 - 618 nm",
     "toneRange": "499.2 - 485.4 Thz",
     "frequency": 108,
-    "description": "Aktivierung des Endokrinums, Sonnigkeit, Reichtum",
-    "talent": "Unterst\u00fctzung bei zeremoniellen T\u00e4tigkeiten",
-    "hex": "#c5b919"
+    "description": "Die Fähigkeit des Anspruchs",
+    "talent": "INTELLEKT | ANALYTIK | LOGIK | KRITIK | BESONDERHEIT | DENKEN | VERSTAND | AKADEMIE | STATUS | ANSPRUCH | ELITÄR | KONKURRENZ | UNTERSCHEIDEND | GRENZE | SPEZIALIST | ABSOLUTHEIT | SICHERHEIT",
+    "hex": "#c5b919",
+    "metaphor": "DER BESONDERE"
   },
   {
     "id": 15,
@@ -145,9 +159,10 @@
     "lightRange": "618 - 635 nm",
     "toneRange": "485.4 - 472.4 Thz",
     "frequency": 105,
-    "description": "Leichte sympathikotone Aktivierung, Mittlere Dringlichkeit",
-    "talent": "Aufmerksamkeitssteuerung",
-    "hex": "#ffdd59"
+    "description": "Die Fähigkeit zur Monetarisierung",
+    "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
+    "hex": "#ffdd59",
+    "metaphor": "DER FORMIERNDE"
   },
   {
     "id": 16,
@@ -155,9 +170,10 @@
     "lightRange": "635 - 652 nm",
     "toneRange": "472.4 - 460.1 Thz",
     "frequency": 102,
-    "description": "Erh\u00f6hung des Arousals, Aufdringlichkeit, Schock",
-    "talent": "Katastrophenschutz-Einsatzunterst\u00fctzung",
-    "hex": "#ffbd59"
+    "description": "Die Fähigkeit zur Strukturierung",
+    "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
+    "hex": "#ffbd59",
+    "metaphor": "DER ANALYTIKER"
   },
   {
     "id": 17,
@@ -165,9 +181,10 @@
     "lightRange": "652 - 669 nm",
     "toneRange": "460.1 - 448.4 Thz",
     "frequency": 100,
-    "description": "Adrenalinf\u00f6rdernd, Feuer, Energie",
-    "talent": "Warnsignalerfassung",
-    "hex": "#ff924e"
+    "description": "Die Fähigkeit zur differenzierten Erkenntnis",
+    "talent": "TECHNIK | DETAILKRAFT | KRITISCHES WAHRNEHMEN | FAKTENOBRIGKEIT | NÜCHTERNHEIT | FEINABSTIMMUNG | GETRENNTHEIT | UNTERSCHEIDUNGSKRAFT | GENAUIGKEIT",
+    "hex": "#ff924e",
+    "metaphor": "DER DETAILGENAUE"
   },
   {
     "id": 18,
@@ -175,9 +192,10 @@
     "lightRange": "669 - 686 nm",
     "toneRange": "448.4 - 437.3 Thz",
     "frequency": 97,
-    "description": "Aktivierung des sympathischen NS, Aggressivit\u00e4t, Impuls",
-    "talent": "Unmittelbare Reaktionsbereitschaft",
-    "hex": "#ff7723"
+    "description": "Die Fähigkeit zur Gründlichkeit",
+    "talent": "TECHNIK | DETAILKRAFT | KRITISCHES WAHRNEHMEN | FAKTENOBRIGKEIT | NÜCHTERNHEIT | FEINABSTIMMUNG | GETRENNTHEIT | UNTERSCHEIDUNGSKRAFT | GENAUIGKEIT",
+    "hex": "#ff7723",
+    "metaphor": "DER KRITISCHE"
   },
   {
     "id": 19,
@@ -185,9 +203,10 @@
     "lightRange": "686 - 703 nm",
     "toneRange": "437.3 - 426.7 Thz",
     "frequency": 95,
-    "description": "Anstieg der Herzfrequenz, Dominanz, Verbot",
-    "talent": "Stopp-Reaktion",
-    "hex": "#ff5757"
+    "description": "Die Fähigkeit zur Führerschaft",
+    "talent": "HARMONIKER | FÜHER | CHARISMATIKER | LEHER | IDEALIST | INSPIRATOR < VERMITTLER",
+    "hex": "#ff5757",
+    "metaphor": "DER CHARISMAT"
   },
   {
     "id": 20,
@@ -195,9 +214,10 @@
     "lightRange": "703 - 720 nm",
     "toneRange": "426.7 - 416.7 Thz",
     "frequency": 92,
-    "description": "H\u00f6chste hormonelle Aktivierung, Gefahr, h\u00f6chste Dringlichkeit",
-    "talent": "Notfallmanagement",
-    "hex": "#ff3131"
+    "description": "Die Fähigkeit zur Gesamtschau",
+    "talent": "HARMONIKER | FÜHER | CHARISMATIKER | LEHER | IDEALIST | INSPIRATOR < VERMITTLER",
+    "hex": "#ff3131",
+    "metaphor": "DER HARMONIKER"
   },
   {
     "id": 21,
@@ -205,9 +225,10 @@
     "lightRange": "720 - 737 nm",
     "toneRange": "416.7 - 407.1 Thz",
     "frequency": 91,
-    "description": "Aktivierung emotionaler Zentren, Liebe, Romantik",
-    "talent": "Soziale Interaktion",
-    "hex": "#e50707"
+    "description": "Die Fähigkeit zur Offenheit für das Neue",
+    "talent": "BEWEGLICHKEIT | KREATIVITÄT | OFFENHEIT | LERNEN | KINDLICHKEIT | FERTIGKEIT | VIELSEITIGKEIT | ABWECHSLUNG | SPASS | FREUDE | VERWIRKLICHUNG | SPIELEN | VIELFALT | FLEXIBILITÄT | INSTINKT | UNBESTÄNDIGKEIT",
+    "hex": "#e50707",
+    "metaphor": "DAS INSTINKTBEGABTE"
   },
   {
     "id": 22,
@@ -215,9 +236,10 @@
     "lightRange": "737 - 754 nm",
     "toneRange": "407.1 - 397.9 Thz",
     "frequency": 89,
-    "description": "Nicht explizit in Chakra-Lehre, Autorit\u00e4t, Reichtum",
-    "talent": "Repr\u00e4sentative F\u00e4higkeiten",
-    "hex": "#cb0505"
+    "description": "Die Fähigkeit zur unbefleckten Kreativität",
+    "talent": "BEWEGLICHKEIT | KREATIVITÄT | OFFENHEIT | LERNEN | KINDLICHKEIT | FERTIGKEIT | VIELSEITIGKEIT | ABWECHSLUNG | SPASS | FREUDE | VERWIRKLICHUNG | SPIELEN | FLEXIBILITÄT | INSTINKT",
+    "hex": "#cb0505",
+    "metaphor": "DER AUTODIDAKT"
   },
   {
     "id": 23,
@@ -225,9 +247,10 @@
     "lightRange": "754 - 771 nm",
     "toneRange": "397.9 - 389.1 Thz",
     "frequency": 86,
-    "description": "Blockierung von Melatonin, \u00c4rger, Blut",
-    "talent": "Durchsetzungskraft",
-    "hex": "#bf095b"
+    "description": "Die Fähigkeit zur intuitiven Erkenntnis",
+    "talent": "INTUITION | HEILUNG | FEINSTOFFLICHKEIT | ZEITLOSIGKEIT | EINHEIT | SENSORIK DES UNSICHTBAREN | HYPNOSE | METAPHYSIK | ASTROLOGIE | NATUR | EINKLANG",
+    "hex": "#bf095b",
+    "metaphor": "DER INTUITIVE"
   },
   {
     "id": 24,
@@ -235,8 +258,9 @@
     "lightRange": "771 - 780 nm",
     "toneRange": "389.1 - 384.4 Thz",
     "frequency": 85,
-    "description": "Nicht explizit in Chakra-Lehre, W\u00e4rmeempfindung",
-    "talent": "Thermisches Bewusstsein",
-    "hex": "#b80b92"
+    "description": "Die Fähigkeit zur Einheitsschau",
+    "talent": "INTUITION | HEILUNG | FEINSTOFFLICHKEIT | ZEITLOSIGKEIT | EINHEIT | SENSORIK DES UNSICHTBAREN | HYPNOSE | METAPHYSIK | ASTROLOGIE | NATUR | EINKLANG",
+    "hex": "#b80b92",
+    "metaphor": "QUELLE"
   }
 ]

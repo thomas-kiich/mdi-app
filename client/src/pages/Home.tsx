@@ -675,7 +675,7 @@ export default function Home() {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                        <h4 className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Psychophysiologische Wirkung</h4>
+                        <h4 className="text-xs text-zinc-500 uppercase tracking-wider mb-1">Detailbeschreibung</h4>
                         <p className="text-zinc-300">{mdi.description}</p>
                     </div>
                     <div>
