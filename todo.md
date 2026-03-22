@@ -334,3 +334,5 @@
 - [ ] Insert author description in 'MASCHINEN ATMEN NICHT' section in Dashboard.tsx
 
 - [ ] Update podcast description in Home.tsx to reflect the new "Hörbuch im Podcast-Format" concept
+
+- [ ] Update podcast description to include "KI-generierter Kompetenz"
