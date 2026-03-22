@@ -88,7 +88,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     if (direction === -1) {
         // UP (Head): Ascending.
         // Since the list is Descending, we need to traverse it BACKWARDS to get Ascending order.
-        // Start at domIndex, then domIndex-1, domIndex-2...
+        // Start at domIndex (which is at the navel), then domIndex-1, domIndex-2...
         
         for (let i = 0; i < numPoints; i++) {
             let idx = domIndex - i;
@@ -98,7 +98,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     } else {
         // DOWN (Feet): Descending.
         // Since the list is Descending, we traverse it FORWARDS.
-        // Start at domIndex, then domIndex+1, domIndex+2...
+        // Start at domIndex (which is at the navel), then domIndex+1, domIndex+2...
         
         for (let i = 0; i < numPoints; i++) {
             let idx = (domIndex + i) % numPoints; // Wrap around
@@ -213,10 +213,10 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   };
 
   // Precise Anatomical Heights relative to Navel (0,0)
-  // Head/Pineal: Navel to Nose Root (~260px in this scale)
-  const headHeight = 260; 
-  // Feet/Soles: Navel to Soles (~370px in this scale)
-  const feetHeight = 370; 
+  // Center is now at y=420. Head is around y=130. 420 - 130 = 290
+  const headHeight = 290; 
+  // Feet/Soles: Navel to Soles. Soles are around y=750. 750 - 420 = 330
+  const feetHeight = 330; 
   const maxWidth = 160;   // Max width of the aura
 
   // Determine what to render based on viewMode
@@ -383,12 +383,12 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     </linearGradient>
                 </defs>
 
-                {/* Center Group at Navel (200, 380) */}
-                <g transform="translate(200, 380)">
+                {/* Center Group at Navel (200, 420) - adjusted from 380 to be lower, closer to actual navel/sacral area */}
+                <g transform="translate(200, 420)">
                     
                     {/* VISION MODE BACKGROUND (Full Screen Energy) */}
                     {isVisionMode && (
-                        <rect x="-200" y="-380" width="400" height="800" fill="url(#artBlur)" opacity="0.8" />
+                        <rect x="-200" y="-420" width="400" height="800" fill="url(#artBlur)" opacity="0.8" />
                     )}
 
                     <AnimatePresence>
@@ -439,20 +439,22 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 {/* Head */}
                 <circle cx="200" cy="130" r="30" fill="none" stroke="white" strokeWidth="1.5" />
                 {/* Spine/Chakra Line */}
-                <path d="M 200 160 L 200 380" stroke="white" strokeWidth="1" strokeDasharray="2 4" opacity="0.5" />
+                <path d="M 200 160 L 200 420" stroke="white" strokeWidth="1" strokeDasharray="2 4" opacity="0.5" />
                 {/* Shoulders */}
                 <path d="M 160 170 Q 200 160 240 170" fill="none" stroke="white" strokeWidth="1.5" />
                 {/* Arms */}
                 <path d="M 160 170 L 140 300" stroke="white" strokeWidth="1" opacity="0.8" />
                 <path d="M 240 170 L 260 300" stroke="white" strokeWidth="1" opacity="0.8" />
                 {/* Torso Sides */}
-                <path d="M 160 170 Q 150 280 165 380" fill="none" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                <path d="M 240 170 Q 250 280 235 380" fill="none" stroke="white" strokeWidth="0.5" opacity="0.5" />
-                {/* Hips */}
-                <path d="M 165 380 L 235 380" stroke="white" strokeWidth="1" opacity="0.5" />
+                <path d="M 160 170 Q 150 295 165 420" fill="none" stroke="white" strokeWidth="0.5" opacity="0.5" />
+                <path d="M 240 170 Q 250 295 235 420" fill="none" stroke="white" strokeWidth="0.5" opacity="0.5" />
+                {/* Hips / Navel Area */}
+                <path d="M 165 420 L 235 420" stroke="white" strokeWidth="1" opacity="0.5" />
+                {/* Navel Point */}
+                <circle cx="200" cy="420" r="3" fill="white" opacity="0.8" />
                 {/* Legs */}
-                <line x1="180" y1="380" x2="170" y2="750" stroke="white" strokeWidth="1" opacity="0.8" />
-                <line x1="220" y1="380" x2="230" y2="750" stroke="white" strokeWidth="1" opacity="0.8" />
+                <line x1="180" y1="420" x2="170" y2="750" stroke="white" strokeWidth="1" opacity="0.8" />
+                <line x1="220" y1="420" x2="230" y2="750" stroke="white" strokeWidth="1" opacity="0.8" />
              </svg>
           </div>
       )}

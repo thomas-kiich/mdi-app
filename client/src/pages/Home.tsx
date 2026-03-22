@@ -710,11 +710,16 @@ export default function Home() {
                     </Button>
                     <Button 
                       variant="outline" 
-                      className="border-zinc-800 hover:bg-zinc-800 hover:border-zinc-600 cursor-pointer transition-all"
-                      onClick={() => setShowTrainingCenter(true)}
+                      className="border-zinc-800 hover:bg-zinc-800 hover:border-zinc-600 cursor-pointer transition-all text-xs"
+                      onClick={() => {
+                        setShowTrainingCenter(false);
+                        setSelectedTrainingItem("yohn");
+                        setSelectedTrainingDuration(12); // Default to 12 minutes
+                        setShowDirectTrainer(true);
+                      }}
                     >
-                      <Music2 className="mr-2 h-4 w-4" />
-                      Training
+                      <Music2 className="mr-2 h-4 w-4 shrink-0" />
+                      HIER KLICKEN - zum YOHNTRAINING mit deinem LEBENSKLANG
                     </Button>
                   </div>
                   

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info, Music2, History as HistoryIcon } from "lucide-react";
@@ -8,19 +8,25 @@ import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { TrainingHistory } from "@/components/TrainingHistory";
 import { TONES } from "@/lib/tones";
 
+type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL' | 'HISTORY';
+
 interface TrainingCenterProps {
     frequency: number;
     toneName: string;
     color: string;
     onClose: () => void;
+    initialMode?: TrainingMode;
 }
 
-type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL' | 'HISTORY';
-
-export function TrainingCenter({ frequency, toneName, color, onClose }: TrainingCenterProps) {
-    const [mode, setMode] = useState<TrainingMode>('SELECTION');
+export function TrainingCenter({ frequency, toneName, color, onClose, initialMode = 'SELECTION' }: TrainingCenterProps) {
+    const [mode, setMode] = useState<TrainingMode>(initialMode);
     const [selectedDuration, setSelectedDuration] = useState<number>(7);
     const [selectedAudioModule, setSelectedAudioModule] = useState<'7min' | '21min' | '21min-loop'>('7min');
+
+    useEffect(() => {
+        console.log("TrainingCenter initialized with mode:", initialMode);
+        setMode(initialMode);
+    }, [initialMode]);
 
     // If a specific trainer is active, render it
     if (mode === 'YOHN') {
@@ -30,7 +36,13 @@ export function TrainingCenter({ frequency, toneName, color, onClose }: Training
                 toneName={toneName}
                 color={color}
                 duration={selectedDuration}
-                onClose={() => setMode('SELECTION')}
+                onClose={() => {
+                    if (initialMode === 'YOHN') {
+                        onClose();
+                    } else {
+                        setMode('SELECTION');
+                    }
+                }}
             />
         );
     }

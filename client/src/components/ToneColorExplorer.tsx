@@ -55,16 +55,23 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
       }
     });
 
-    // If we are close enough (within 10Hz), highlight it with 100% intensity
-    if (closestDist < 10 && !isHoveringMatrixRef.current) {
+    // We map the raw frequency directly since it is normalized to the octave in SpectralScanner
+    // Wir können sehr großzügig sein mit der Distanz, da wir *immer* einen Ton anzeigen wollen, 
+    // wenn das Mikrofon etwas aufnimmt (liveFrequency > 0).
+    // Da die Oktave von ca. 88 bis 170 geht, sind 40Hz Distanz manchmal schon zu knapp am Rand.
+    // Wir nehmen einfach immer den nächsten Ton, wenn liveFrequency > 0 ist.
+    if (!isHoveringMatrixRef.current) {
       const color = colorMatrix[closestId]?.[100 as keyof typeof colorMatrix[typeof closestId]] || "#ff9900";
-      const toneName = getToneNameFromMdiId(closestId) || "Unbekannt";
-      setHoveredSegment({
-        id: closestId,
-        intensity: 100,
-        color: color || "#ff9900",
-        toneName: "Live", // Special marker
-        freq: closestFreq
+      // Only update if it actually changed to prevent too many re-renders
+      setHoveredSegment(prev => {
+          if (prev && prev.id === closestId && prev.toneName === "Live") return prev;
+          return {
+            id: closestId,
+            intensity: 100,
+            color: color || "#ff9900",
+            toneName: "Live", // Special marker
+            freq: closestFreq
+          };
       });
     }
   }, [liveFrequency]);
@@ -248,7 +255,7 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                   // Live frequency highlight
                   const isLiveMatch = hoveredSegment?.toneName === "Live" && hoveredSegment.id === col && intensity === 100;
                   if (isLiveMatch) {
-                    overlayClass = "ring-4 ring-white ring-inset shadow-[0_0_30px_rgba(255,255,255,0.8)] z-10 scale-110";
+                    overlayClass = "ring-4 ring-red-500 ring-inset shadow-[0_0_50px_rgba(239,68,68,1)] z-50 scale-125 border-2 border-white animate-pulse";
                   }
 
                   return (
