@@ -597,12 +597,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
               )}
           </AnimatePresence>
 
-          {/* Current Frequency Display (Live Mic) */}
-          {currentFreq > 0 && (
-              <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-red-500/90 px-4 py-1 rounded-full text-white font-mono shadow-[0_0_20px_rgba(239,68,68,0.6)] z-20 animate-pulse">
-                   LIVE: {currentFreq.toFixed(1)} Hz
-              </div>
-          )}
+          {/* Current Frequency Display (Live Mic) removed per user request */}
           
           {/* Duration Selection Overlay */}
           <AnimatePresence>

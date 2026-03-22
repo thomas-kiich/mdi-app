@@ -274,3 +274,7 @@
 - [ ] Add 'DIESEN TON VERWENDEN' button to freeze live tone in ToneColorExplorer.tsx
 - [ ] Add link to YOHN training from the frozen tone in ToneColorExplorer.tsx
 - [ ] Add instructions text to the ToneColorExplorer.tsx
+
+- [ ] Remove live Hz indicator from SpectralScanner.tsx
+- [ ] Update instructions text in ToneColorExplorer.tsx
+- [ ] Check if analysis results are saved for later viewing

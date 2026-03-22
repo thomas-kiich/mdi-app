@@ -196,18 +196,21 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
           <div className="w-4 h-4 rounded bg-gradient-to-r from-red-500 via-yellow-500 to-blue-500" />
           LICHTKLANG MATRIX
         </CardTitle>
-        <div className="text-sm text-zinc-400 mt-2 space-y-2">
-          <p>
-            Erkunde die 96 Farbsegmente der MDI-Matrix. Fahre mit der Maus über ein Segment, um den Code und den entsprechenden Ton in der jeweiligen Lautstärke zu hören (25% = leise, 100% = laut).
-          </p>
-          <div className="bg-zinc-800/50 p-3 rounded-lg border border-zinc-700/50">
-            <h4 className="font-semibold text-orange-400 mb-1">So arbeitest du mit der Matrix:</h4>
-            <ol className="list-decimal list-inside space-y-1">
-              <li>Starte den Scanner (unten), um deine Stimme live in der Matrix sichtbar zu machen.</li>
-              <li>Singe einen Ton. Das entsprechende Segment in der Matrix leuchtet rot auf.</li>
-              <li>Klicke auf <strong>"DIESEN TON VERWENDEN"</strong>, um den aktuell erfassten Ton einzufrieren.</li>
-              <li>Klicke auf das markierte Segment, um die Details zu öffnen und direkt in das YOHN-Training mit diesem Ton zu starten.</li>
-            </ol>
+        <div className="text-sm text-zinc-400 mt-4 space-y-4">
+          <p className="font-medium text-white">Du hast zwei Möglichkeiten mit der LKM zu arbeiten:</p>
+          
+          <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/50">
+            <h4 className="font-semibold text-orange-400 mb-2">1) Matrix direkt erkunden</h4>
+            <p className="leading-relaxed">
+              Du kannst direkt mit dem Cursor alle 24 Frequenzen abhören. Lasse einen Klang mit seiner exakt synchronisierten Lichtfarbe intuitiv auf dich einwirken. Es erscheint ein Infofeld mit dem zentralen Begriff und den Codedaten. Wichtig ist für dich die Typnummer, weil du diese deiner Stimmklangaura zuordnen kannst (sofern du deinen Stimmklang schon analysiert hast). Wenn du mit dieser Frequenz arbeiten möchtest, klickst du dieses Feld an und es erscheint eine detailgenaue Beschreibung dazu. Du kannst sogar sofort in das YOHN-Training mit deiner gewählten Lichtklangfrequenz (LKF) einsteigen und dich mit dieser Frequenz aktivieren.
+            </p>
+          </div>
+
+          <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/50">
+            <h4 className="font-semibold text-orange-400 mb-2">2) Live-Scanner nutzen</h4>
+            <p className="leading-relaxed">
+              Du kannst auf den START-Button klicken und einen Ton summen – der Scanner zeigt dir exakt die Lichtklangfrequenz an. Wenn du den Button <strong>"DIESEN TON VERWENDEN"</strong> drückst, erscheint wiederum das detaillierte Arbeitsfeld mit den Optionen.
+            </p>
           </div>
         </div>
       </CardHeader>
