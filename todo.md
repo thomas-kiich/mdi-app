@@ -308,3 +308,7 @@
 - [ ] Change frequency text color to white in FrequencyTable.tsx
 
 - [ ] Implement post-training feedback survey in Method36Trainer.tsx
+
+- [ ] Change "Frequenzanalyse" to "Stimmklanganalyse" on Dashboard
+- [ ] Update description for Stimmklanganalyse on Dashboard
+- [ ] Update description for Trainingscenter on Dashboard

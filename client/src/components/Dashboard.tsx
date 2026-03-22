@@ -82,9 +82,9 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                                 <Mic className="w-7 h-7" />
                             </div>
                             
-                            <h2 className="text-2xl font-bold text-white mb-2">Frequenz-Analyse</h2>
+                            <h2 className="text-2xl font-bold text-white mb-2">Stimmklanganalyse</h2>
                             <p className="text-zinc-400 mb-8 leading-relaxed">
-                                Bestimme deine energetische Signatur durch deine Stimme. Finde deinen Grundton.
+                                Erforsche deinen LEBENSKLANG und die einzigartige Lichtsignatur deines Körpers.
                             </p>
 
                             <div className="mt-auto">
@@ -114,7 +114,7 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                             
                             <h2 className="text-2xl font-bold text-white mb-2">Trainings-Center</h2>
                             <p className="text-zinc-400 mb-8 leading-relaxed">
-                                Aktive und passive Atemtechniken zur Harmonisierung. YOHN & Stoffwechsel.
+                                Rhythmische Atem- und Bewegungstechniken auf Basis der METHODE 36.
                             </p>
 
                             <div className="mt-auto">
