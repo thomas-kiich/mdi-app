@@ -483,13 +483,64 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                             </p>
                         </div>
 
-                        <div className="flex flex-col gap-4 mt-8">
+                        {/* Feedback Section */}
+                        <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 mt-8">
+                            <h3 className="text-lg font-medium text-white mb-4">Wie fühlst du dich nach dem Training?</h3>
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <Button 
+                                    variant="outline" 
+                                    className="border-zinc-700 hover:bg-orange-500/20 hover:text-orange-400 hover:border-orange-500/50 h-auto py-3 flex flex-col gap-2"
+                                    onClick={() => {
+                                        toast({ title: "Feedback gespeichert", description: "Danke für deine Rückmeldung! (Entspannt)" });
+                                        setTimeout(onClose, 1500);
+                                    }}
+                                >
+                                    <span className="text-2xl">😌</span>
+                                    <span className="text-xs">Entspannt</span>
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    className="border-zinc-700 hover:bg-orange-500/20 hover:text-orange-400 hover:border-orange-500/50 h-auto py-3 flex flex-col gap-2"
+                                    onClick={() => {
+                                        toast({ title: "Feedback gespeichert", description: "Danke für deine Rückmeldung! (Klar)" });
+                                        setTimeout(onClose, 1500);
+                                    }}
+                                >
+                                    <span className="text-2xl">✨</span>
+                                    <span className="text-xs">Klar</span>
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    className="border-zinc-700 hover:bg-orange-500/20 hover:text-orange-400 hover:border-orange-500/50 h-auto py-3 flex flex-col gap-2"
+                                    onClick={() => {
+                                        toast({ title: "Feedback gespeichert", description: "Danke für deine Rückmeldung! (Energetisiert)" });
+                                        setTimeout(onClose, 1500);
+                                    }}
+                                >
+                                    <span className="text-2xl">⚡</span>
+                                    <span className="text-xs">Energetisiert</span>
+                                </Button>
+                                <Button 
+                                    variant="outline" 
+                                    className="border-zinc-700 hover:bg-orange-500/20 hover:text-orange-400 hover:border-orange-500/50 h-auto py-3 flex flex-col gap-2"
+                                    onClick={() => {
+                                        toast({ title: "Feedback gespeichert", description: "Danke für deine Rückmeldung! (Zentriert)" });
+                                        setTimeout(onClose, 1500);
+                                    }}
+                                >
+                                    <span className="text-2xl">🎯</span>
+                                    <span className="text-xs">Zentriert</span>
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-4 mt-6">
                             <Button 
-                                size="lg" 
-                                className="bg-white text-black hover:bg-zinc-200 rounded-full px-8 py-6 text-lg w-full"
+                                variant="ghost"
+                                className="text-zinc-400 hover:text-white"
                                 onClick={onClose}
                             >
-                                Zurück zur Übersicht
+                                Überspringen & Zurück
                             </Button>
                         </div>
                     </div>

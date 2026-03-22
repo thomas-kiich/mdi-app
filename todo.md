@@ -306,3 +306,5 @@
 - [ ] Add 'TON' field to frequencyData.json based on PDF
 - [ ] Update FrequencyTable.tsx to include 'TON' column
 - [ ] Change frequency text color to white in FrequencyTable.tsx
+
+- [ ] Implement post-training feedback survey in Method36Trainer.tsx
