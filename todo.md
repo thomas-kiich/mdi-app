@@ -315,3 +315,6 @@
 
 - [ ] Change "Stimmklanganalyse" to "Stimmklang -<br/>Analyse" in Dashboard.tsx
 - [ ] Change "Analyse Starten" button style to match others (outline, text-white, border-zinc-700)
+
+- [ ] Change "Schlaf" text to "Schlaf -<br/>Optimierung" in Dashboard.tsx
+- [ ] Change "Session starten" button style to match others (outline, text-white, border-zinc-700) in Dashboard.tsx

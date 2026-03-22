@@ -234,14 +234,16 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                                 <Moon className="w-7 h-7" />
                             </div>
                             
-                            <h2 className="text-2xl font-bold text-white mb-2">Schlaf & Theta</h2>
+                            <h2 className="text-2xl font-bold text-white mb-2 leading-tight">
+                                Schlaf -<br/>Optimierung
+                            </h2>
                             <p className="text-zinc-400 mb-8 leading-relaxed">
                                 Affirmationen & Umprogrammierung im Theta-Zustand. Schlaf mit Intention.
                             </p>
 
                             <div className="mt-auto">
-                                <Button className="w-full bg-white text-black hover:bg-zinc-200 h-12 text-lg group-hover:translate-x-1 transition-transform">
-                                    Schlaf-Session Starten <ArrowRight className="ml-2 w-4 h-4" />
+                                <Button variant="outline" className="w-full border-zinc-700 text-white hover:bg-zinc-800 h-12 text-lg group-hover:translate-x-1 transition-transform">
+                                    Session starten <ArrowRight className="ml-2 w-4 h-4" />
                                 </Button>
                             </div>
                         </CardContent>
