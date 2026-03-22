@@ -99,7 +99,7 @@ export function AnalysisHistory() {
                       // For a simple history, we might just show an alert or a simplified view.
                       // Since we can't easily re-render the whole complex Home state here without refactoring,
                       // we'll guide the user to the current result if it's the latest.
-                      alert("Um das Zertifikat erneut herunterzuladen, führe bitte eine neue Analyse durch oder nutze den Download-Button direkt nach der Messung.");
+                      alert("Diese Funktion (Zertifikat aus Historie herunterladen) wird in einem kommenden Update verfügbar sein. Bitte nutze vorerst den Download-Button direkt nach deiner Messung.");
                     }}
                   >
                     <Download className="w-3 h-3 mr-2" /> Info

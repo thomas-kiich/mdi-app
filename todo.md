@@ -282,3 +282,5 @@
 - [ ] Add download reminder to results page
 - [ ] Create Analysis History Component to view past results
 - [ ] Integrate Analysis History into Dashboard
+
+- [ ] Remove "only possible once" text near download button in Home.tsx / CertificateView.tsx
