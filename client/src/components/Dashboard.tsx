@@ -14,9 +14,10 @@ interface DashboardProps {
     onOpenTable: () => void;
     onOpenVital: () => void;
     onOpenSleep: () => void;
+    onOpenHistory: () => void;
 }
 
-export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOpenKnowledge, onOpenTable, onOpenVital, onOpenSleep }: DashboardProps) {
+export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOpenKnowledge, onOpenTable, onOpenVital, onOpenSleep, onOpenHistory }: DashboardProps) {
     const [streak, setStreak] = useState(0);
 
     useEffect(() => {
@@ -245,11 +246,41 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                     </Card>
                 </motion.div>
 
-                 {/* Pillar 7: Frequency Table (To balance the grid 3x2) */}
+                 {/* Pillar 7: Analysis History */}
                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.7 }}
+                >
+                    <Card 
+                        className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-cyan-500/50 transition-all cursor-pointer group h-full relative overflow-hidden min-h-[320px]"
+                        onClick={onOpenHistory}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <CardContent className="p-8 flex flex-col h-full relative z-10">
+                            <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 flex items-center justify-center mb-6 text-cyan-500 group-hover:scale-110 transition-transform">
+                                <Activity className="w-7 h-7" />
+                            </div>
+                            
+                            <h2 className="text-2xl font-bold text-white mb-2">Meine Analysen</h2>
+                            <p className="text-zinc-400 mb-8 leading-relaxed">
+                                Deine bisherigen Messungen, Aura-Bilder und Zertifikate im Überblick.
+                            </p>
+
+                            <div className="mt-auto">
+                                <Button variant="outline" className="w-full border-zinc-700 text-white hover:bg-zinc-800 h-12 text-lg group-hover:translate-x-1 transition-transform">
+                                    Historie Ansehen <ArrowRight className="ml-2 w-4 h-4" />
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+
+                 {/* Pillar 8: Frequency Table */}
+                 <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.8 }}
                 >
                     <Card 
                         className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-cyan-500/50 transition-all cursor-pointer group h-full relative overflow-hidden min-h-[320px]"

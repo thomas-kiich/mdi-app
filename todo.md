@@ -278,3 +278,7 @@
 - [ ] Remove live Hz indicator from SpectralScanner.tsx
 - [ ] Update instructions text in ToneColorExplorer.tsx
 - [ ] Check if analysis results are saved for later viewing
+
+- [ ] Add download reminder to results page
+- [ ] Create Analysis History Component to view past results
+- [ ] Integrate Analysis History into Dashboard

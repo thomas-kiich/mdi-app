@@ -26,6 +26,7 @@ import { WurzelklangVerification } from "@/components/WurzelklangVerification";
 import { HarmonicSpectrumChart } from "@/components/HarmonicSpectrumChart";
 import { ToneColorExplorer } from "@/components/ToneColorExplorer";
 import { Dashboard } from "@/components/Dashboard";
+import { AnalysisHistory } from "@/components/AnalysisHistory";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { PodcastFeature } from "@/components/PodcastFeature";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
@@ -136,6 +137,7 @@ export default function Home() {
   const [selectedTrainingItem, setSelectedTrainingItem] = useState<string | null>(null);
   const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
   const [showSleepTheta, setShowSleepTheta] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
 
   // Show onboarding tour on first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -380,6 +382,7 @@ export default function Home() {
                 onOpenTable={() => setShowFrequencyTable(true)}
                 onOpenVital={() => setShowVitalDashboard(true)}
                 onOpenSleep={() => setShowSleepTheta(true)}
+                onOpenHistory={() => setShowHistory(true)}
               />
             </div>
         );
@@ -723,14 +726,19 @@ export default function Home() {
                     </Button>
                   </div>
                   
-                  <Button 
-                      variant="ghost" 
-                      className="text-zinc-500 hover:text-white cursor-pointer transition-colors"
-                      onClick={handleDownloadResult}
-                    >
-                      <Download className="mr-2 h-4 w-4" />
-                      Zertifikat erstellen
+                  <div className="flex flex-col items-center gap-2">
+                    <Button 
+                        variant="ghost" 
+                        className="text-zinc-500 hover:text-white cursor-pointer transition-colors w-full border border-dashed border-zinc-800"
+                        onClick={handleDownloadResult}
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        Zertifikat als PDF speichern
                     </Button>
+                    <p className="text-[10px] text-zinc-500 text-center px-4">
+                      Tipp: Lade dein Zertifikat herunter, um deine detaillierten Ergebnisse (inkl. Aura-Bild) dauerhaft zu sichern.
+                    </p>
+                  </div>
                 </div>
 
               </div>
@@ -878,7 +886,19 @@ export default function Home() {
         )}
 
         <main>
-          {showSleepTheta ? (
+          {showHistory ? (
+             <div className="fixed inset-0 z-50 bg-black overflow-y-auto pt-24">
+                <div className="container max-w-4xl mx-auto px-4 py-8 relative">
+                  <button
+                    onClick={() => setShowHistory(false)}
+                    className="absolute top-4 right-4 z-50 p-2 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-orange-500 text-zinc-400 hover:text-orange-500 transition-colors"
+                  >
+                    ✕
+                  </button>
+                  <AnalysisHistory />
+                </div>
+             </div>
+          ) : showSleepTheta ? (
             <SleepTheta onClose={() => setShowSleepTheta(false)} />
           ) : showKnowledgePool ? (
             <KnowledgePool onClose={() => setShowKnowledgePool(false)} />
