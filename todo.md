@@ -312,3 +312,6 @@
 - [ ] Change "Frequenzanalyse" to "Stimmklanganalyse" on Dashboard
 - [ ] Update description for Stimmklanganalyse on Dashboard
 - [ ] Update description for Trainingscenter on Dashboard
+
+- [ ] Change "Stimmklanganalyse" to "Stimmklang -<br/>Analyse" in Dashboard.tsx
+- [ ] Change "Analyse Starten" button style to match others (outline, text-white, border-zinc-700)

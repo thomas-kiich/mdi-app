@@ -82,13 +82,15 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                                 <Mic className="w-7 h-7" />
                             </div>
                             
-                            <h2 className="text-2xl font-bold text-white mb-2">Stimmklanganalyse</h2>
+                            <h2 className="text-2xl font-bold text-white mb-2 leading-tight">
+                                Stimmklang -<br/>Analyse
+                            </h2>
                             <p className="text-zinc-400 mb-8 leading-relaxed">
                                 Erforsche deinen LEBENSKLANG und die einzigartige Lichtsignatur deines Körpers.
                             </p>
 
                             <div className="mt-auto">
-                                <Button className="w-full bg-white text-black hover:bg-zinc-200 h-12 text-lg group-hover:translate-x-1 transition-transform">
+                                <Button variant="outline" className="w-full border-zinc-700 text-white hover:bg-zinc-800 h-12 text-lg group-hover:translate-x-1 transition-transform">
                                     Analyse Starten <ArrowRight className="ml-2 w-4 h-4" />
                                 </Button>
                             </div>
