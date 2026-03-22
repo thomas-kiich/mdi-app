@@ -318,3 +318,6 @@
 
 - [ ] Change "Schlaf" text to "Schlaf -<br/>Optimierung" in Dashboard.tsx
 - [ ] Change "Session starten" button style to match others (outline, text-white, border-zinc-700) in Dashboard.tsx
+
+- [ ] Change main title to "METHODE 36 von Thomas Chochola" in Dashboard.tsx
+- [ ] Replace subtitle text with "GRUNDLAGEN..." in Dashboard.tsx
