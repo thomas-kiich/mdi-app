@@ -301,3 +301,8 @@
 - [ ] Update column titles in FrequencyTable.tsx (TYP, LICHT, KLANG, QUALITÄT, SYNONYME)
 - [ ] Remove color text from Licht column in FrequencyTable.tsx
 - [ ] Update labels in Home.tsx and CertificateView.tsx to match "Qualität" and "Synonyme"
+
+- [ ] Fix typos in frequencyData.json (VERGANGENHEIT)
+- [ ] Add 'TON' field to frequencyData.json based on PDF
+- [ ] Update FrequencyTable.tsx to include 'TON' column
+- [ ] Change frequency text color to white in FrequencyTable.tsx

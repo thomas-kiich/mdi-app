@@ -183,7 +183,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
                   </div>
                   <div className="text-right">
                     <div className="text-xs text-zinc-500">Frequenz</div>
-                    <div className="text-sm font-mono text-orange-400">{item.frequency} Hz</div>
+                    <div className="text-sm font-mono text-white">{item.frequency} Hz</div>
                   </div>
                 </div>
 
@@ -247,6 +247,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
                   <TableHead className="w-[50px] text-zinc-400">TYP</TableHead>
                   <TableHead className="w-[80px] text-zinc-400">LICHT</TableHead>
                   <TableHead className="text-zinc-400">KLANG</TableHead>
+                  <TableHead className="text-zinc-400">TON</TableHead>
                   <TableHead className="text-zinc-400">Licht (nm)</TableHead>
                   <TableHead className="text-zinc-400">Klang (Thz)</TableHead>
                   <TableHead className="hidden md:table-cell text-zinc-400">QUALITÄT</TableHead>
@@ -265,7 +266,8 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="font-mono text-orange-400">{item.frequency} Hz</TableCell>
+                    <TableCell className="font-mono text-white">{item.frequency} Hz</TableCell>
+                    <TableCell className="font-mono text-white">{(item as any).tone}</TableCell>
                     <TableCell className="font-mono text-xs text-zinc-400">{item.lightRange}</TableCell>
                     <TableCell className="font-mono text-xs text-zinc-400">{item.toneRange}</TableCell>
                     <TableCell className="hidden md:table-cell text-sm text-zinc-300 max-w-[200px] truncate" title={item.description}>

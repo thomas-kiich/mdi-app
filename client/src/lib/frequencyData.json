@@ -6,9 +6,10 @@
     "toneRange": "789.5 - 755.7 Thz",
     "frequency": 162,
     "description": "Die Fähigkeit, Dahinterliegendes wahrzunehmen",
-    "talent": "VERGANGEHIT | KARMA | ERINNERUNG | ALTLASTEN | GEBUNDEHEIT | ANHAFTUNG | VERDECKTHEIT | ÜBERGANG | TOD | PATHOLOGIE | UNDURCHSICHTIGKEIT | TRADITION | HERKUNFT | NEBEL | HISTORIE",
+    "talent": "VERGANGENHEIT | KARMA | ERINNERUNG | ALTLASTEN | GEBUNDENHEIT | ANHAFTUNG | VERDECKTHEIT | ÜBERGANG | TOD | PATHOLOGIE | UNDURCHSICHTIGKEIT | TRADITION | HERKUNFT | NEBEL | HISTORIE",
     "hex": "#6937c4",
-    "metaphor": "DAS ERBE"
+    "metaphor": "DAS ERBE",
+    "tone": "E"
   },
   {
     "id": 2,
@@ -17,9 +18,10 @@
     "toneRange": "755.7 - 724.6 Thz",
     "frequency": 157,
     "description": "Die Fähigkeit, Verstrickungen vergangener Handlungen aufzudecken",
-    "talent": "VERGANGEHIT | KARMA | ERINNERUNG | ALTLASTEN | GEBUNDEHEIT | ANHAFTUNG | VERDECKTHEIT | ÜBERGANG | TOD | PATHOLOGIE | UNDURCHSICHTIGKEIT | TRADITION | HERKUNFT | NEBEL | HISTORIE | ESOTERIK",
+    "talent": "VERGANGENHEIT | KARMA | ERINNERUNG | ALTLASTEN | GEBUNDENHEIT | ANHAFTUNG | VERDECKTHEIT | ÜBERGANG | TOD | PATHOLOGIE | UNDURCHSICHTIGKEIT | TRADITION | HERKUNFT | NEBEL | HISTORIE | ESOTERIK",
     "hex": "#5c36a8",
-    "metaphor": "DER ERHABENE MYSTIKER"
+    "metaphor": "DER ERHABENE MYSTIKER",
+    "tone": "E+"
   },
   {
     "id": 3,
@@ -30,7 +32,8 @@
     "description": "DIe Fähigkeit, emotionsfrei zu agieren",
     "talent": "STRUKTUR | DURCHALTEVERMÖGEN | FORSCHERGEIST | EMOTIONSFREIHEIT | RATIONALITÄT | AUSDAUER | KOMPROMISSLOSIGKEIT | UNBEIRRBARKEIT | NOTFALLMANAGEMENT",
     "hex": "#4950ad",
-    "metaphor": "DIE KÜHLE KONSEQUENZ"
+    "metaphor": "DIE KÜHLE KONSEQUENZ",
+    "tone": "DIS"
   },
   {
     "id": 4,
@@ -41,7 +44,8 @@
     "description": "Die Fähigkeit zu konsequenter Umsetzung",
     "talent": "STRUKTUR | DURCHALTEVERMÖGEN | FORSCHERGEIST | EMOTIONSFREIHEIT | RATIONALITÄT | AUSDAUER | KOMPROMISSLOSIGKEIT | UNBEIRRBARKEIT | NOTFALLMANAGEMENT",
     "hex": "#225eaf",
-    "metaphor": "DER NACHHALTIGE FORSCHERGEIST"
+    "metaphor": "DER NACHHALTIGE FORSCHERGEIST",
+    "tone": "DIS+"
   },
   {
     "id": 5,
@@ -52,7 +56,8 @@
     "description": "Die Fähigkeit, Potentiale zu nützen",
     "talent": "PRAGMATIKER | REALIST | UMSETZER | SOZIAL | FÖRDERER | MENSCHENFREUND",
     "hex": "#2362db",
-    "metaphor": "DER PRAKTIKER"
+    "metaphor": "DER PRAKTIKER",
+    "tone": "D"
   },
   {
     "id": 6,
@@ -63,7 +68,8 @@
     "description": "Die Fähigkeit zu sachlicher, konkreter Hilfeleistung",
     "talent": "PRAGMATIKER | REALIST | UMSETZER | SOZIAL | FÖRDERER | MENSCHENFREUND",
     "hex": "#2883ed",
-    "metaphor": "DER REALIST"
+    "metaphor": "DER REALIST",
+    "tone": "D+"
   },
   {
     "id": 7,
@@ -74,7 +80,8 @@
     "description": "Die Fähigkeit zu spiritueller Kreativität",
     "talent": "RÜCKVERBINDUNG | URSPRUNG | FRAGILITÄT | EMPFINDLICHKEIT | KREATIVITÄT | INTROVERSION | HÖHERE WELTEN | INSPIRATION | EMPFINDSAMKEIT",
     "hex": "#0599b3",
-    "metaphor": "DER FANTAST"
+    "metaphor": "DER FANTAST",
+    "tone": "CIS"
   },
   {
     "id": 8,
@@ -85,7 +92,8 @@
     "description": "Die Fähigkeit, die unsichtbaren Fäden der höheren Ebenen zu orten",
     "talent": "RÜCKVERBINDUNG | URSPRUNG | FRAGILITÄT | EMPFINDLICHKEIT | KREATIVITÄT | INTROVERSION | HÖHERE WELTEN | INSPIRATION | EMPFINDSAMKEIT",
     "hex": "#12b8aa",
-    "metaphor": "DER ZERBRECHLICHE"
+    "metaphor": "DER ZERBRECHLICHE",
+    "tone": "CIS+"
   },
   {
     "id": 9,
@@ -96,7 +104,8 @@
     "description": "Die Fähigkeit zur Nächstenliebe",
     "talent": "FÜRSORGLICHKEIT | EMPATHIE | ZURÜCKNAHME | AUFOPRFERUNG | HILFSBEREITSCHAFT | NÄCHSTENLIEBE | MITEINANDER | ZUSAMMENHALT | GEMEINSCHAFT",
     "hex": "#32a765",
-    "metaphor": "DER EMPATHISCHE"
+    "metaphor": "DER EMPATHISCHE",
+    "tone": "C"
   },
   {
     "id": 10,
@@ -107,7 +116,8 @@
     "description": "Die Fähigkeit zur Aufopferung für Andere",
     "talent": "FÜRSORGLICHKEIT | EMPATHIE | ZURÜCKNAHME | AUFOPRFERUNG | HILFSBEREITSCHAFT | NÄCHSTENLIEBE | MITEINANDER | ZUSAMMENHALT | GEMEINSCHAFT",
     "hex": "#7fb00a",
-    "metaphor": "DER FÜRSORGLICHE"
+    "metaphor": "DER FÜRSORGLICHE",
+    "tone": "C+"
   },
   {
     "id": 11,
@@ -118,7 +128,8 @@
     "description": "Die Fähigkeit zu höchster Überwindung",
     "talent": "VERSTECK | GEHEIMNIS | ÜBERFORDERUNG | LOGIK | UNTERSCHEIDBARKEIT | DISZIPLIN | POKERSPIEL | FORDERUNG | ÜBERZEUGTHEIT | ÜBERFORDERUNG | INTELLIGENZ | EXTREMITÄT | DOGMA",
     "hex": "#79995a",
-    "metaphor": "DER MÄCHTIGE"
+    "metaphor": "DER MÄCHTIGE",
+    "tone": "H"
   },
   {
     "id": 12,
@@ -129,7 +140,8 @@
     "description": "Die Fähigkeit zur Aussergewöhnlichkeit",
     "talent": "VERSTECK | GEHEIMNIS | ÜBERFORDERUNG | LOGIK | UNTERSCHEIDBARKEIT | DISZIPLIN | POKERSPIEL | FORDERUNG | ÜBERZEUGTHEIT | ÜBERFORDERUNG | INTELLIGENZ | EXTREMITÄT | DOGMA",
     "hex": "#69a131",
-    "metaphor": "DER AUSERKORENE"
+    "metaphor": "DER AUSERKORENE",
+    "tone": "H+"
   },
   {
     "id": 13,
@@ -140,7 +152,8 @@
     "description": "Die Fähigkeit zur Besonderheit",
     "talent": "INTELLEKT | ANALYTIK | LOGIK | KRITIK | BESONDERHEIT | DENKEN | VERSTAND | AKADEMIE | STATUS | ANSPRUCH | ELITÄR | KONKURRENZ | UNTERSCHEIDEND | GRENZE | SPEZIALIST | STRUKTUR | SICHERHEIT | ABSOLUTHEIT",
     "hex": "#96b02e",
-    "metaphor": "DER INTELLEKTUELLE"
+    "metaphor": "DER INTELLEKTUELLE",
+    "tone": "AIS"
   },
   {
     "id": 14,
@@ -151,7 +164,8 @@
     "description": "Die Fähigkeit des Anspruchs",
     "talent": "INTELLEKT | ANALYTIK | LOGIK | KRITIK | BESONDERHEIT | DENKEN | VERSTAND | AKADEMIE | STATUS | ANSPRUCH | ELITÄR | KONKURRENZ | UNTERSCHEIDEND | GRENZE | SPEZIALIST | ABSOLUTHEIT | SICHERHEIT",
     "hex": "#c5b919",
-    "metaphor": "DER BESONDERE"
+    "metaphor": "DER BESONDERE",
+    "tone": "AIS+"
   },
   {
     "id": 15,
@@ -162,7 +176,8 @@
     "description": "Die Fähigkeit zur Monetarisierung",
     "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
     "hex": "#ffdd59",
-    "metaphor": "DER FORMIERNDE"
+    "metaphor": "DER FORMIERNDE",
+    "tone": "A"
   },
   {
     "id": 16,
@@ -173,7 +188,8 @@
     "description": "Die Fähigkeit zur Strukturierung",
     "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
     "hex": "#ffbd59",
-    "metaphor": "DER ANALYTIKER"
+    "metaphor": "DER ANALYTIKER",
+    "tone": "A+"
   },
   {
     "id": 17,
@@ -184,7 +200,8 @@
     "description": "Die Fähigkeit zur differenzierten Erkenntnis",
     "talent": "TECHNIK | DETAILKRAFT | KRITISCHES WAHRNEHMEN | FAKTENOBRIGKEIT | NÜCHTERNHEIT | FEINABSTIMMUNG | GETRENNTHEIT | UNTERSCHEIDUNGSKRAFT | GENAUIGKEIT",
     "hex": "#ff924e",
-    "metaphor": "DER DETAILGENAUE"
+    "metaphor": "DER DETAILGENAUE",
+    "tone": "GIS"
   },
   {
     "id": 18,
@@ -195,7 +212,8 @@
     "description": "Die Fähigkeit zur Gründlichkeit",
     "talent": "TECHNIK | DETAILKRAFT | KRITISCHES WAHRNEHMEN | FAKTENOBRIGKEIT | NÜCHTERNHEIT | FEINABSTIMMUNG | GETRENNTHEIT | UNTERSCHEIDUNGSKRAFT | GENAUIGKEIT",
     "hex": "#ff7723",
-    "metaphor": "DER KRITISCHE"
+    "metaphor": "DER KRITISCHE",
+    "tone": "GIS+"
   },
   {
     "id": 19,
@@ -206,7 +224,8 @@
     "description": "Die Fähigkeit zur Führerschaft",
     "talent": "HARMONIKER | FÜHER | CHARISMATIKER | LEHER | IDEALIST | INSPIRATOR < VERMITTLER",
     "hex": "#ff5757",
-    "metaphor": "DER CHARISMAT"
+    "metaphor": "DER CHARISMAT",
+    "tone": "G"
   },
   {
     "id": 20,
@@ -217,7 +236,8 @@
     "description": "Die Fähigkeit zur Gesamtschau",
     "talent": "HARMONIKER | FÜHER | CHARISMATIKER | LEHER | IDEALIST | INSPIRATOR < VERMITTLER",
     "hex": "#ff3131",
-    "metaphor": "DER HARMONIKER"
+    "metaphor": "DER HARMONIKER",
+    "tone": "G+"
   },
   {
     "id": 21,
@@ -228,7 +248,8 @@
     "description": "Die Fähigkeit zur Offenheit für das Neue",
     "talent": "BEWEGLICHKEIT | KREATIVITÄT | OFFENHEIT | LERNEN | KINDLICHKEIT | FERTIGKEIT | VIELSEITIGKEIT | ABWECHSLUNG | SPASS | FREUDE | VERWIRKLICHUNG | SPIELEN | VIELFALT | FLEXIBILITÄT | INSTINKT | UNBESTÄNDIGKEIT",
     "hex": "#e50707",
-    "metaphor": "DAS INSTINKTBEGABTE"
+    "metaphor": "DAS INSTINKTBEGABTE",
+    "tone": "FIS"
   },
   {
     "id": 22,
@@ -239,7 +260,8 @@
     "description": "Die Fähigkeit zur unbefleckten Kreativität",
     "talent": "BEWEGLICHKEIT | KREATIVITÄT | OFFENHEIT | LERNEN | KINDLICHKEIT | FERTIGKEIT | VIELSEITIGKEIT | ABWECHSLUNG | SPASS | FREUDE | VERWIRKLICHUNG | SPIELEN | FLEXIBILITÄT | INSTINKT",
     "hex": "#cb0505",
-    "metaphor": "DER AUTODIDAKT"
+    "metaphor": "DER AUTODIDAKT",
+    "tone": "FIS+"
   },
   {
     "id": 23,
@@ -250,7 +272,8 @@
     "description": "Die Fähigkeit zur intuitiven Erkenntnis",
     "talent": "INTUITION | HEILUNG | FEINSTOFFLICHKEIT | ZEITLOSIGKEIT | EINHEIT | SENSORIK DES UNSICHTBAREN | HYPNOSE | METAPHYSIK | ASTROLOGIE | NATUR | EINKLANG",
     "hex": "#bf095b",
-    "metaphor": "DER INTUITIVE"
+    "metaphor": "DER INTUITIVE",
+    "tone": "F"
   },
   {
     "id": 24,
@@ -261,6 +284,7 @@
     "description": "Die Fähigkeit zur Einheitsschau",
     "talent": "INTUITION | HEILUNG | FEINSTOFFLICHKEIT | ZEITLOSIGKEIT | EINHEIT | SENSORIK DES UNSICHTBAREN | HYPNOSE | METAPHYSIK | ASTROLOGIE | NATUR | EINKLANG",
     "hex": "#b80b92",
-    "metaphor": "QUELLE"
+    "metaphor": "QUELLE",
+    "tone": "F+"
   }
 ]
