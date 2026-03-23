@@ -77,15 +77,15 @@ export function KnowledgePool({ onClose }: KnowledgePoolProps) {
 
   const renderFrequenciesSection = () => (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
-      {/* Tone List */}
-      <div className="md:col-span-1 space-y-2 overflow-y-auto pr-2 max-h-[60vh] md:max-h-full">
-        {TONES.map((tone) => (
+      {/* Type List */}
+      <div className="md:col-span-1 space-y-2 overflow-y-auto pr-2 max-h-[60vh] md:max-h-[70vh]">
+        {frequencyData.map((type) => (
           <button
-            key={tone.name}
-            onClick={() => setSelectedTone(tone.name)}
+            key={type.id}
+            onClick={() => setSelectedTone(type.id.toString())}
             className={cn(
               "w-full text-left p-3 rounded-lg border transition-all flex items-center justify-between group",
-              selectedTone === tone.name 
+              selectedTone === type.id.toString() 
                 ? "bg-zinc-800 border-orange-500/50" 
                 : "bg-zinc-900/30 border-zinc-800 hover:bg-zinc-800/50"
             )}
@@ -93,33 +93,31 @@ export function KnowledgePool({ onClose }: KnowledgePoolProps) {
             <div className="flex items-center gap-3">
               <div 
                 className="w-4 h-4 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]"
-                style={{ backgroundColor: tone.color }}
+                style={{ backgroundColor: type.hex }}
               />
-              <span className={cn(
-                "font-medium",
-                selectedTone === tone.name ? "text-white" : "text-zinc-400 group-hover:text-zinc-200"
-              )}>
-                {tone.name}
-              </span>
+              <div className="flex flex-col">
+                  <span className={cn(
+                    "font-medium text-sm",
+                    selectedTone === type.id.toString() ? "text-white" : "text-zinc-400 group-hover:text-zinc-200"
+                  )}>
+                    Typ {type.id} - {type.tone}
+                  </span>
+                  <span className="text-[10px] text-zinc-500 uppercase tracking-wider">{type.metaphor}</span>
+              </div>
             </div>
-            <span className="text-xs text-zinc-600 font-mono">{tone.frequency} Hz</span>
+            <span className="text-xs text-zinc-600 font-mono">{type.frequency} Hz</span>
           </button>
         ))}
       </div>
 
-      {/* Tone Details */}
+      {/* Type Details */}
       <div className="md:col-span-2">
         <AnimatePresence mode="wait">
           {selectedTone ? (
             (() => {
-              const toneInfo = TONES.find(t => t.name === selectedTone);
-              // Find corresponding MDI data. Note: frequencyData uses IDs like 1, 2, etc. 
-              // We need to match based on Tone Name if possible, or assume order.
-              // frequencyData.json has "toneRange" e.g. "C - D".
-              // Let's try to find a match.
-              const mdiInfo = frequencyData.find(f => f.toneRange.includes(selectedTone) || f.toneRange.split(' - ')[0] === selectedTone);
+              const mdiInfo = frequencyData.find(f => f.id.toString() === selectedTone);
               
-              if (!toneInfo) return null;
+              if (!mdiInfo) return null;
 
               return (
                 <motion.div
@@ -127,48 +125,60 @@ export function KnowledgePool({ onClose }: KnowledgePoolProps) {
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
-                  className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 h-full"
+                  className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 h-full overflow-y-auto max-h-[60vh] md:max-h-[70vh]"
                 >
                   <div className="flex items-start justify-between mb-6">
                     <div>
-                      <h2 className="text-3xl font-bold text-white mb-1 flex items-center gap-3">
-                        {toneInfo.name} 
-                        <span className="text-lg font-normal text-zinc-500">({toneInfo.frequency} Hz)</span>
-                      </h2>
-                      <p className="text-orange-500 font-medium">
-                        {mdiInfo?.colorName || "Farbe"}
+                      <div className="flex items-center gap-3 mb-1">
+                          <span className="bg-black/30 text-zinc-400 px-2 py-1 rounded text-xs font-mono border border-zinc-800">TYP {mdiInfo.id}</span>
+                          <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+                            Ton {mdiInfo.tone} 
+                            <span className="text-lg font-normal text-zinc-500">({mdiInfo.frequency} Hz)</span>
+                          </h2>
+                      </div>
+                      <p className="text-orange-500 font-medium text-lg mt-2">
+                        {mdiInfo.metaphor}
+                      </p>
+                      <p className="text-zinc-400 text-sm">
+                        {mdiInfo.colorName}
                       </p>
                     </div>
                     <div 
-                      className="w-16 h-16 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] border-4 border-zinc-900"
-                      style={{ backgroundColor: toneInfo.color }}
+                      className="w-16 h-16 rounded-full shadow-[0_0_30px_rgba(0,0,0,0.3)] border-4 border-zinc-900 shrink-0"
+                      style={{ backgroundColor: mdiInfo.hex }}
                     />
                   </div>
 
                   <div className="space-y-6">
                     <div>
-                      <h3 className="text-sm uppercase tracking-wider text-zinc-500 mb-2">Wirkung</h3>
-                      <p className="text-zinc-200 leading-relaxed">
-                        {mdiInfo?.description || "Keine Beschreibung verfügbar."}
+                      <h3 className="text-sm uppercase tracking-wider text-zinc-500 mb-2">Bedeutung</h3>
+                      <p className="text-zinc-200 leading-relaxed text-lg">
+                        {mdiInfo.description}
                       </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
-                      <div className="p-4 bg-black/20 rounded-lg">
+                      <div className="p-4 bg-black/20 rounded-lg border border-zinc-800/50">
                         <h4 className="text-xs uppercase text-zinc-500 mb-1">Licht-Spektrum</h4>
-                        <p className="text-white font-medium">{mdiInfo?.lightRange || "-"}</p>
+                        <p className="text-white font-mono text-sm">{mdiInfo.lightRange}</p>
                       </div>
-                      <div className="p-4 bg-black/20 rounded-lg">
+                      <div className="p-4 bg-black/20 rounded-lg border border-zinc-800/50">
                         <h4 className="text-xs uppercase text-zinc-500 mb-1">Klang-Spektrum</h4>
-                        <p className="text-white font-medium">{mdiInfo?.toneRange || "-"}</p>
+                        <p className="text-white font-mono text-sm">{mdiInfo.toneRange}</p>
                       </div>
                     </div>
 
                     <div>
-                      <h3 className="text-sm uppercase tracking-wider text-zinc-500 mb-2">Talent & Potenzial</h3>
-                      <p className="text-zinc-300 text-sm leading-relaxed">
-                        {mdiInfo?.talent || "Keine Beschreibung verfügbar."}
-                      </p>
+                      <h3 className="text-sm uppercase tracking-wider text-zinc-500 mb-2 flex items-center gap-2">
+                          <Activity className="w-4 h-4" /> Assoziationen & Synonyme
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                          {mdiInfo.talent.split('|').map((word, i) => (
+                              <span key={i} className="bg-zinc-800/50 text-zinc-300 px-3 py-1.5 rounded-full text-xs border border-zinc-700/50">
+                                  {word.trim()}
+                              </span>
+                          ))}
+                      </div>
                     </div>
                   </div>
                 </motion.div>
@@ -177,7 +187,7 @@ export function KnowledgePool({ onClose }: KnowledgePoolProps) {
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-zinc-500 p-8 text-center border border-dashed border-zinc-800 rounded-xl">
               <Info className="w-12 h-12 mb-4 opacity-20" />
-              <p>Wähle einen Ton aus der Liste, um mehr über seine Bedeutung und Wirkung zu erfahren.</p>
+              <p>Wähle einen der 24 Typen aus der Liste, um mehr über seine spezifische Bedeutung, Metaphorik und Wirkung zu erfahren.</p>
             </div>
           )}
         </AnimatePresence>
