@@ -383,8 +383,7 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                   setTrainingMode({
                     freq: selectedSegment.freq,
                     tone: selectedSegment.toneName,
-                    color: selectedSegment.color,
-                    duration: 12
+                    color: selectedSegment.color
                   });
                   setSelectedSegment(null);
                 }}

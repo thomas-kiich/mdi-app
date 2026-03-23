@@ -33,6 +33,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
     const [phase, setPhase] = useState<Phase>('HOLD_EMPTY');
     const [cycleCount, setCycleCount] = useState(0);
     const [isHighOctave, setIsHighOctave] = useState(false); // Default to Low Octave (Base Frequency)
+    const [selectedDuration, setSelectedDuration] = useState<number | null>(duration || null);
     const [timeLeft, setTimeLeft] = useState<number | null>(duration ? duration * 60 : null);
     const [showLog, setShowLog] = useState(false);
     const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
@@ -86,23 +87,23 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
 
     // Calculate total cycles if duration is set
     // 1 cycle = 6 beats * 1.666s = 10 seconds
-    const totalCycles = duration ? duration * 6 : null;
+    const totalCycles = selectedDuration ? selectedDuration * 6 : null;
 
     // Save log when session completes
     const saveSessionLog = () => {
-        if (!duration) return;
+        if (!selectedDuration) return;
         
         saveTrainingSession({
             type: 'methode36',
-            duration: duration,
+            duration: selectedDuration,
             tone: toneName,
             frequency: frequency,
-            notes: `Methode 36 - ${duration} Min`
+            notes: `Methode 36 - ${selectedDuration} Min`
         });
         
         toast({
             title: "Training abgeschlossen",
-            description: `${duration} Min. Session im Logbuch gespeichert.`,
+            description: `${selectedDuration} Min. Session im Logbuch gespeichert.`,
         });
     };
 
