@@ -15,7 +15,7 @@ interface ToneColorExplorerProps {
 }
 
 export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorExplorerProps) {
-  const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
+  const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number, metaphor: string } | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
   const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string, duration?: number } | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
@@ -74,7 +74,8 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
             intensity: 100,
             color: color || "#ff9900",
             toneName: "Live", // Special marker
-            freq: closestFreq
+            freq: closestFreq,
+            metaphor: frequencyData.find(f => f.id === closestId)?.metaphor || ""
           };
       });
     }
@@ -159,8 +160,10 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
 
   const handleMouseEnter = (id: number, intensity: number, color: string, freq: number) => {
     isHoveringMatrixRef.current = true;
-    const toneName = getToneNameFromMdiId(id) || "Unbekannt";
-    setHoveredSegment({ id, intensity, color, toneName, freq });
+    const freqItem = frequencyData.find(f => f.id === id);
+    const toneName = freqItem?.tone || getToneNameFromMdiId(id) || "Unbekannt";
+    const metaphor = freqItem?.metaphor || "";
+    setHoveredSegment({ id, intensity, color, toneName, freq, metaphor });
     playTone(freq, intensity);
   };
 
@@ -177,7 +180,8 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
   };
 
   const handleSegmentClick = (id: number, intensity: number, color: string, freq: number) => {
-    const toneName = getToneNameFromMdiId(id) || "Unbekannt";
+    const freqItem = frequencyData.find(f => f.id === id);
+    const toneName = freqItem?.tone || getToneNameFromMdiId(id) || "Unbekannt";
     setSelectedSegment({ id, intensity, color, toneName, freq });
   };
 
@@ -296,6 +300,9 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                   </div>
                   <div className="text-sm text-zinc-400">
                     Ton: <span className="text-orange-400 font-medium">{hoveredSegment.toneName}</span> ({hoveredSegment.freq} Hz)
+                    {hoveredSegment.metaphor && (
+                      <span className="ml-2 text-zinc-300">| <span className="italic">"{hoveredSegment.metaphor}"</span></span>
+                    )}
                   </div>
                 </div>
               </div>
