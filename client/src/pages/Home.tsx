@@ -142,12 +142,7 @@ export default function Home() {
   // Show onboarding tour on first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
 
-  useEffect(() => {
-      const hasSeenTour = localStorage.getItem('mdi_onboarding_completed');
-      if (!hasSeenTour) {
-          setShowOnboarding(true);
-      }
-  }, []);
+  // useEffect removed to disable the onboarding tour popup
 
   const handleStartRecording = async () => {
     await startRecording();
