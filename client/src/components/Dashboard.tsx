@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame, Moon } from "lucide-react";
+import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame, Moon, Lock } from "lucide-react";
 import { calculateStreak } from "@/lib/training";
 import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
 import { ThemeToggle } from "./ThemeToggle";
+import { useToast } from "@/hooks/use-toast";
 
 interface DashboardProps {
     onStartAnalysis: () => void;
@@ -19,10 +20,20 @@ interface DashboardProps {
 
 export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOpenKnowledge, onOpenTable, onOpenVital, onOpenSleep, onOpenHistory }: DashboardProps) {
     const [streak, setStreak] = useState(0);
+    const { toast } = useToast();
 
     useEffect(() => {
         setStreak(calculateStreak());
     }, []);
+
+    const handlePremiumClick = (callback: () => void, moduleName: string) => {
+        toast({
+            title: "Premium Modul",
+            description: `Das Modul "${moduleName}" wird in der finalen Version kostenpflichtig sein. Für diesen Test ist es jedoch freigeschaltet.`,
+        });
+        // Slight delay to allow user to read the toast before navigating
+        setTimeout(callback, 500);
+    };
 
     return (
         <div className="min-h-[80vh] flex flex-col justify-center animate-in fade-in duration-700 py-12 pt-48 relative">
@@ -141,12 +152,18 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                 >
                     <Card 
                         className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-red-500/50 transition-all cursor-pointer group h-full relative overflow-hidden min-h-[320px]"
-                        onClick={onOpenVital}
+                        onClick={() => handlePremiumClick(onOpenVital, "Vital Monitor")}
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CardContent className="p-8 flex flex-col h-full relative z-10">
-                            <div className="w-14 h-14 rounded-2xl bg-red-500/20 flex items-center justify-center mb-6 text-red-500 group-hover:scale-110 transition-transform">
-                                <HeartPulse className="w-7 h-7" />
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="w-14 h-14 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
+                                    <HeartPulse className="w-7 h-7" />
+                                </div>
+                                <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                    <Lock className="w-3 h-3" />
+                                    <span>Premium</span>
+                                </div>
                             </div>
                             
                             <h2 className="text-2xl font-bold text-white mb-2">Vital Monitor</h2>
@@ -231,12 +248,18 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                 >
                     <Card 
                         className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-purple-500/50 transition-all cursor-pointer group h-full relative overflow-hidden min-h-[320px]"
-                        onClick={onOpenSleep}
+                        onClick={() => handlePremiumClick(onOpenSleep, "Schlaf-Optimierung")}
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CardContent className="p-8 flex flex-col h-full relative z-10">
-                            <div className="w-14 h-14 rounded-2xl bg-purple-500/20 flex items-center justify-center mb-6 text-purple-500 group-hover:scale-110 transition-transform">
-                                <Moon className="w-7 h-7" />
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="w-14 h-14 rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                                    <Moon className="w-7 h-7" />
+                                </div>
+                                <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                    <Lock className="w-3 h-3" />
+                                    <span>Premium</span>
+                                </div>
                             </div>
                             
                             <h2 className="text-2xl font-bold text-white mb-2 leading-tight">
@@ -263,12 +286,18 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                 >
                     <Card 
                         className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-cyan-500/50 transition-all cursor-pointer group h-full relative overflow-hidden min-h-[320px]"
-                        onClick={onOpenHistory}
+                        onClick={() => handlePremiumClick(onOpenHistory, "Meine Analysen")}
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CardContent className="p-8 flex flex-col h-full relative z-10">
-                            <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 flex items-center justify-center mb-6 text-cyan-500 group-hover:scale-110 transition-transform">
-                                <Activity className="w-7 h-7" />
+                            <div className="flex justify-between items-start mb-6">
+                                <div className="w-14 h-14 rounded-2xl bg-cyan-500/20 flex items-center justify-center text-cyan-500 group-hover:scale-110 transition-transform">
+                                    <Activity className="w-7 h-7" />
+                                </div>
+                                <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                    <Lock className="w-3 h-3" />
+                                    <span>Premium</span>
+                                </div>
                             </div>
                             
                             <h2 className="text-2xl font-bold text-white mb-2">Meine Analysen</h2>
