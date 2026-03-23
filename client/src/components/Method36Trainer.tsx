@@ -89,6 +89,8 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     // Calculate total cycles if duration is set
     // 1 cycle = 6 beats * 1.666s = 10 seconds
     const totalCycles = selectedDuration ? selectedDuration * 6 : null;
+    // For visual display: cycleCount vs totalCycles
+    // If we want to show it, we can compute it here or just use cycleCount / totalCycles in the UI.
 
     // Save log when session completes
     const saveSessionLog = () => {
@@ -386,14 +388,14 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
             requestRef.current = requestAnimationFrame(updateLoop);
             // Water sound is now handled by separate useEffect
 
-            // Start Timer if duration is set
-            if (duration) {
-                setTimeLeft(duration * 60);
+            // Start Timer if duration is set (use selectedDuration instead of duration prop)
+            if (selectedDuration) {
+                setTimeLeft(selectedDuration * 60);
                 if (timerIntervalRef.current) clearInterval(timerIntervalRef.current);
                 
                 timerIntervalRef.current = setInterval(() => {
                     setTimeLeft(prev => {
-                        if (prev === null || prev <= 0) {
+                        if (prev === null || prev <= 1) { // Stop at 1 to ensure it hits 0 exactly
                             // Timer finished
                             setIsPlaying(false);
                             playGong('end');
@@ -664,6 +666,12 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                         {typeId && (
                             <span className="mt-4 text-sm font-mono bg-black/20 px-3 py-1 rounded-full">
                                 TYP {typeId}
+                            </span>
+                        )}
+                        {/* Display cycle counter if playing and totalCycles exists */}
+                        {isPlaying && totalCycles && (
+                            <span className="mt-2 text-xs font-mono opacity-80">
+                                RUNDE {Math.min(cycleCount, totalCycles)} / {totalCycles}
                             </span>
                         )}
                     </div>
