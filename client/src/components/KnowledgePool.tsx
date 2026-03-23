@@ -136,7 +136,7 @@ export function KnowledgePool({ onClose }: KnowledgePoolProps) {
                             <span className="text-lg font-normal text-zinc-500">({mdiInfo.frequency} Hz)</span>
                           </h2>
                       </div>
-                      <p className="text-orange-500 font-medium text-lg mt-2">
+                      <p className="font-medium text-lg mt-2 drop-shadow-md" style={{ color: mdiInfo.hex }}>
                         {mdiInfo.metaphor}
                       </p>
                       <p className="text-zinc-400 text-sm">
