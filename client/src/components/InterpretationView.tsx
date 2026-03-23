@@ -146,28 +146,34 @@ export function InterpretationView({ mdiResult, onClose }: InterpretationViewPro
 
                 {/* Title & Color Name */}
                 <div className="text-center space-y-2">
-                    <h2 className="text-4xl font-bold text-white">{mdiResult.colorName}</h2>
-                    <div className="flex items-center justify-center gap-4 text-zinc-400 text-sm">
-                        <span>Licht: {mdiResult.lightRange}</span>
+                    <h2 className="text-4xl font-bold text-white">{mdiResult.tone} - {mdiResult.colorName}</h2>
+                    <p className="text-2xl font-bold drop-shadow-md" style={{ color: mdiResult.hex }}>
+                        {mdiResult.metaphor}
+                    </p>
+                    <div className="flex items-center justify-center gap-4 text-zinc-400 text-sm mt-2">
+                        <span className="font-mono">Licht: {mdiResult.lightRange}</span>
                         <span>•</span>
-                        <span>Ton: {mdiResult.toneRange}</span>
+                        <span className="font-mono">Ton: {mdiResult.toneRange}</span>
                     </div>
                 </div>
 
                 {/* Description Box */}
-                <div className="bg-zinc-900/50 rounded-xl p-8 border border-zinc-800 w-full mt-4">
-                    <div className="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 className="text-orange-500 font-semibold mb-2 uppercase text-xs tracking-wider">Detailbeschreibung</h4>
-                            <p className="text-zinc-300 leading-relaxed text-lg">
-                                {mdiResult.description}
-                            </p>
-                        </div>
-                        <div>
-                            <h4 className="text-orange-500 font-semibold mb-2 uppercase text-xs tracking-wider">Synonyme</h4>
-                            <p className="text-zinc-300 leading-relaxed text-lg">
-                                {mdiResult.talent}
-                            </p>
+                <div className="bg-zinc-900/50 rounded-xl p-8 border border-zinc-800 w-full mt-4 space-y-8">
+                    <div>
+                        <h4 className="text-zinc-500 font-semibold mb-3 uppercase text-xs tracking-wider border-b border-zinc-800 pb-2">Bedeutung & Wirkung</h4>
+                        <p className="text-zinc-200 leading-relaxed text-lg">
+                            {mdiResult.description}
+                        </p>
+                    </div>
+                    
+                    <div>
+                        <h4 className="text-zinc-500 font-semibold mb-3 uppercase text-xs tracking-wider border-b border-zinc-800 pb-2">Assoziationen & Synonyme</h4>
+                        <div className="flex flex-wrap gap-2">
+                            {mdiResult.talent.split('|').map((word, i) => (
+                                <span key={i} className="bg-zinc-800/50 text-zinc-300 px-4 py-2 rounded-full text-sm border border-zinc-700/50">
+                                    {word.trim()}
+                                </span>
+                            ))}
                         </div>
                     </div>
                 </div>
