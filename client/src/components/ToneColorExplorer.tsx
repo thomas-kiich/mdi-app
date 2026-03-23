@@ -16,7 +16,7 @@ interface ToneColorExplorerProps {
 
 export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorExplorerProps) {
   const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number, metaphor: string } | null>(null);
-  const [selectedSegment, setSelectedSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
+  const [selectedSegment, setSelectedSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number, metaphor: string } | null>(null);
   const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string, typeId?: number, duration?: number } | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
@@ -182,7 +182,8 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
   const handleSegmentClick = (id: number, intensity: number, color: string, freq: number) => {
     const freqItem = frequencyData.find(f => f.id === id);
     const toneName = freqItem?.tone || getToneNameFromMdiId(id) || "Unbekannt";
-    setSelectedSegment({ id, intensity, color, toneName, freq });
+    const metaphor = freqItem?.metaphor || "";
+    setSelectedSegment({ id, intensity, color, toneName, freq, metaphor });
   };
 
   // Interval markers removed per user request
@@ -363,10 +364,16 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                 </div>
               </div>
               
+              {selectedSegment.metaphor && (
+                <div className="text-center bg-black/30 py-3 rounded-lg border border-zinc-800/50">
+                  <span className="text-sm text-zinc-500 uppercase tracking-widest block mb-1">Metaphorik</span>
+                  <span className="text-xl font-bold" style={{ color: selectedSegment.color, textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>
+                    {selectedSegment.metaphor}
+                  </span>
+                </div>
+              )}
+
               <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/50">
-                <h4 className="font-medium text-orange-400 mb-2 flex items-center gap-2">
-                  <Info className="w-4 h-4" /> Philosophische Deutung
-                </h4>
                 <p className="text-sm text-zinc-300 leading-relaxed">
                   Die Intensität von {selectedSegment.intensity}% beim Ton {selectedSegment.toneName} repräsentiert 
                   {selectedSegment.intensity === 100 ? " die reinste, kraftvollste Ausprägung dieses Prinzips. Es steht für absolute Präsenz und ungetrübte Manifestation." : 
