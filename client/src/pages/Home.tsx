@@ -921,6 +921,7 @@ export default function Home() {
                 frequency={finalResult?.fundamentalFreq || mdiResult?.frequency || 95}
                 toneName={finalResult?.tone?.name || "F"}
                 color={mdiResult?.hex || "#FF4444"}
+                typeId={mdiResult?.id}
                 duration={selectedTrainingDuration || 7}
                 onClose={() => {
                   setShowDirectTrainer(false);

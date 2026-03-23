@@ -17,7 +17,7 @@ interface ToneColorExplorerProps {
 export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorExplorerProps) {
   const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number, metaphor: string } | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number } | null>(null);
-  const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string, duration?: number } | null>(null);
+  const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string, typeId?: number, duration?: number } | null>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gainNodeRef = useRef<GainNode | null>(null);
@@ -383,7 +383,8 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                   setTrainingMode({
                     freq: selectedSegment.freq,
                     tone: selectedSegment.toneName,
-                    color: selectedSegment.color
+                    color: selectedSegment.color,
+                    typeId: selectedSegment.id
                   });
                   setSelectedSegment(null);
                 }}
@@ -404,6 +405,7 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
                     frequency={trainingMode.freq}
                     toneName={trainingMode.tone}
                     color={trainingMode.color}
+                    typeId={trainingMode.typeId}
                     duration={trainingMode.duration}
                     onClose={() => setTrainingMode(null)}
                   />

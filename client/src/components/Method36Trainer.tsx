@@ -10,6 +10,7 @@ interface Method36TrainerProps {
     frequency: number;
     toneName: string;
     color: string;
+    typeId?: number; // Type ID for display
     duration?: number; // Duration in minutes
     onClose: () => void;
 }
@@ -25,7 +26,7 @@ interface SessionLog {
     toneName: string;
 }
 
-export function Method36Trainer({ frequency, toneName, color, duration, onClose }: Method36TrainerProps) {
+export function Method36Trainer({ frequency, toneName, color, typeId, duration, onClose }: Method36TrainerProps) {
     const { toast } = useToast();
     const waterAudioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -660,6 +661,11 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                         <span className="text-xs md:text-sm mt-2 opacity-70 uppercase tracking-widest">
                             {phase === 'IN' ? 'Energie aufnehmen' : phase === 'TONE' ? 'Frequenz senden' : 'Stille'}
                         </span>
+                        {typeId && (
+                            <span className="mt-4 text-sm font-mono bg-black/20 px-3 py-1 rounded-full">
+                                TYP {typeId}
+                            </span>
+                        )}
                     </div>
                 </motion.div>
 
@@ -751,25 +757,28 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                     <div className="flex items-center gap-3 bg-zinc-900/50 p-3 rounded-lg border border-white/20 backdrop-blur-md w-full justify-center flex-wrap">
                         <Button 
                             size="sm" 
-                            variant={duration === 7 ? "default" : "ghost"}
+                            variant={selectedDuration === 7 ? "default" : "ghost"}
                             disabled={isPlaying}
-                            className={duration === 7 ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
+                            onClick={() => { setSelectedDuration(7); setTimeLeft(7 * 60); }}
+                            className={selectedDuration === 7 ? "bg-orange-500 text-white hover:bg-orange-600 rounded-full px-6 py-2 font-bold shadow-[0_0_15px_rgba(249,115,22,0.5)] border border-orange-400 scale-105 transition-all" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2 transition-all"}
                         >
                             7 Min
                         </Button>
                         <Button 
                             size="sm" 
-                            variant={duration === 12 ? "default" : "ghost"}
+                            variant={selectedDuration === 12 ? "default" : "ghost"}
                             disabled={isPlaying}
-                            className={duration === 12 ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
+                            onClick={() => { setSelectedDuration(12); setTimeLeft(12 * 60); }}
+                            className={selectedDuration === 12 ? "bg-orange-500 text-white hover:bg-orange-600 rounded-full px-6 py-2 font-bold shadow-[0_0_15px_rgba(249,115,22,0.5)] border border-orange-400 scale-105 transition-all" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2 transition-all"}
                         >
                             12 Min
                         </Button>
                         <Button 
                             size="sm" 
-                            variant={duration === 21 ? "default" : "ghost"}
+                            variant={selectedDuration === 21 ? "default" : "ghost"}
                             disabled={isPlaying}
-                            className={duration === 21 ? "bg-white text-black hover:bg-zinc-200 rounded-full px-5 py-2 font-semibold shadow-lg" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2"}
+                            onClick={() => { setSelectedDuration(21); setTimeLeft(21 * 60); }}
+                            className={selectedDuration === 21 ? "bg-orange-500 text-white hover:bg-orange-600 rounded-full px-6 py-2 font-bold shadow-[0_0_15px_rgba(249,115,22,0.5)] border border-orange-400 scale-105 transition-all" : "text-zinc-300 hover:text-white hover:bg-white/10 rounded-full px-5 py-2 transition-all"}
                         >
                             21 Min
                         </Button>
@@ -808,7 +817,7 @@ export function Method36Trainer({ frequency, toneName, color, duration, onClose 
                 style={{ display: 'none' }}
             >
                 <source
-                    src={duration === 7 ? 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/BjSApDsrGEcfxBra.wav' : duration === 12 ? 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/RAAdVvMIZOzqXesH.wav' : 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/iRBqzrwZzszWLqcR.wav'}
+                    src={selectedDuration === 7 ? 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/BjSApDsrGEcfxBra.wav' : selectedDuration === 12 ? 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/RAAdVvMIZOzqXesH.wav' : 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/iRBqzrwZzszWLqcR.wav'}
                     type="audio/wav"
                 />
             </audio>
