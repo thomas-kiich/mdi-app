@@ -86,13 +86,6 @@ export function PodcastFeature({
               )}
             </div>
 
-            {/* Info Box */}
-            <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 mt-4">
-              <p className="text-xs text-zinc-400">
-                💡 <strong>Hinweis:</strong> Dieser Podcast ist eine KI-interpretierte Fassung des Buches "Maschinen atmen NICHT". 
-                Erlebe die Ideen der METHODE 36 in einer neuen, unterhaltsamen Form.
-              </p>
-            </div>
           </div>
         </div>
       </CardContent>

@@ -387,4 +387,5 @@
 - [x] Swap the order of SoundBody and HarmonicSpectrumChart in Home.tsx
 - [x] Edit HarmonicSpectrumChart to use metaphor terms instead of color names
 - [x] Restore the click functionality in the HarmonicSpectrumChart to open the KnowledgePool
+- [x] Remove the hint under 'Maschinen atmen nicht' on the start page
 - [ ] Generate and integrate voice guidance for voice analysis steps
