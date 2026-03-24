@@ -338,3 +338,7 @@
 - [ ] Update podcast description to include "KI-generierter Kompetenz"
 
 - [ ] Update Impressum with user data
+
+- [ ] Fix typo in Type 19 synonyms: FÜHRE -> FÜHRER
+- [ ] Fix typo in Type 29 (or 20/other type) synonyms: LEHRE -> LEHRER
+- [ ] Replace all arrows (-> or similar) with vertical bars (|) before the last term in synonyms for all types

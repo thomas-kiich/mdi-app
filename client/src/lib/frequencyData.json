@@ -222,7 +222,7 @@
     "toneRange": "437.3 - 426.7 Thz",
     "frequency": 97.2,
     "description": "Die Fähigkeit zur Führerschaft",
-    "talent": "HARMONIKER | FÜHER | CHARISMATIKER | LEHER | IDEALIST | INSPIRATOR < VERMITTLER",
+    "talent": "HARMONIKER | FÜHRER | CHARISMATIKER | LEHRER | IDEALIST | INSPIRATOR | VERMITTLER",
     "hex": "#ff5757",
     "metaphor": "DER CHARISMAT",
     "tone": "G"
@@ -234,7 +234,7 @@
     "toneRange": "426.7 - 416.7 Thz",
     "frequency": 93.6,
     "description": "Die Fähigkeit zur Gesamtschau",
-    "talent": "HARMONIKER | FÜHER | CHARISMATIKER | LEHER | IDEALIST | INSPIRATOR < VERMITTLER",
+    "talent": "HARMONIKER | FÜHRER | CHARISMATIKER | LEHRER | IDEALIST | INSPIRATOR | VERMITTLER",
     "hex": "#ff3131",
     "metaphor": "DER HARMONIKER",
     "tone": "G+"
