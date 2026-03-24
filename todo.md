@@ -386,4 +386,5 @@
 - [x] Update Home.tsx to pass the correct ID to SoundBody
 - [x] Swap the order of SoundBody and HarmonicSpectrumChart in Home.tsx
 - [x] Edit HarmonicSpectrumChart to use metaphor terms instead of color names
+- [x] Restore the click functionality in the HarmonicSpectrumChart to open the KnowledgePool
 - [ ] Generate and integrate voice guidance for voice analysis steps

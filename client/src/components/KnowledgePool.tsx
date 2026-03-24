@@ -11,10 +11,14 @@ import { cn } from "@/lib/utils";
 
 interface KnowledgePoolProps {
   onClose: () => void;
+  initialTab?: string;
+  initialToneId?: number;
 }
 
-export function KnowledgePool({ onClose }: KnowledgePoolProps) {
-  const [selectedTone, setSelectedTone] = useState<string | null>(null);
+export function KnowledgePool({ onClose, initialTab = "method", initialToneId }: KnowledgePoolProps) {
+  const [selectedTone, setSelectedTone] = useState<string | null>(
+    initialToneId ? initialToneId.toString() : null
+  );
 
   // Filter frequency data to get only the 12 main tones (if frequencyData contains more)
   // Actually frequencyData contains 12 items, one for each tone.
@@ -263,7 +267,7 @@ export function KnowledgePool({ onClose }: KnowledgePoolProps) {
 
       {/* Content */}
       <div className="flex-1 overflow-hidden p-6 max-w-7xl mx-auto w-full">
-        <Tabs defaultValue="method" className="h-full flex flex-col">
+        <Tabs defaultValue={initialTab} className="h-full flex flex-col">
           <TabsList className="bg-zinc-900 border border-zinc-800 p-1 mb-6 w-full max-w-md mx-auto grid grid-cols-3">
             <TabsTrigger value="method">Die Methode</TabsTrigger>
             <TabsTrigger value="frequencies">Frequenzen</TabsTrigger>

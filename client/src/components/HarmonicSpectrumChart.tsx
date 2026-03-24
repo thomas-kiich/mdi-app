@@ -5,11 +5,13 @@ import frequencyData from "@/lib/frequencyData.json";
 interface HarmonicSpectrumChartProps {
   toneDistribution: Record<string, number>;
   dominantToneId?: number;
+  onToneClick?: (toneId: number) => void;
 }
 
 export function HarmonicSpectrumChart({ 
   toneDistribution, 
-  dominantToneId 
+  dominantToneId,
+  onToneClick
 }: HarmonicSpectrumChartProps) {
   
   // Calculate percentage distribution for all 24 tones
@@ -48,7 +50,11 @@ export function HarmonicSpectrumChart({
       <CardContent className="space-y-4">
         <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
           {sortedSpectrum.map((tone, index) => (
-            <div key={tone.id} className="space-y-1">
+            <div 
+              key={tone.id} 
+              className="space-y-1 cursor-pointer hover:bg-zinc-800/30 p-2 rounded-lg transition-colors"
+              onClick={() => onToneClick && onToneClick(tone.id)}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3 flex-1">
                   <div className="flex-1">

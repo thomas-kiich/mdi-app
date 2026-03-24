@@ -123,6 +123,8 @@ export default function Home() {
   const [showInterpretation, setShowInterpretation] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
   const [showKnowledgePool, setShowKnowledgePool] = useState(false);
+  const [knowledgePoolInitialTab, setKnowledgePoolInitialTab] = useState<string>("method");
+  const [knowledgePoolInitialToneId, setKnowledgePoolInitialToneId] = useState<number | undefined>(undefined);
   const [showStory, setShowStory] = useState(false);
   const [showSpectralScanner, setShowSpectralScanner] = useState(false);
   const [showVitalDashboard, setShowVitalDashboard] = useState(false);
@@ -756,6 +758,11 @@ export default function Home() {
                     <HarmonicSpectrumChart 
                         toneDistribution={res.mdiDistribution}
                         dominantToneId={mdi.id}
+                        onToneClick={(toneId) => {
+                          setKnowledgePoolInitialTab("frequencies");
+                          setKnowledgePoolInitialToneId(toneId);
+                          setShowKnowledgePool(true);
+                        }}
                     />
                 </div>
             )}
@@ -888,7 +895,16 @@ export default function Home() {
           ) : showSleepTheta ? (
             <SleepTheta onClose={() => setShowSleepTheta(false)} />
           ) : showKnowledgePool ? (
-            <KnowledgePool onClose={() => setShowKnowledgePool(false)} />
+            <KnowledgePool 
+              onClose={() => {
+                setShowKnowledgePool(false);
+                // Reset to defaults when closing
+                setKnowledgePoolInitialTab("method");
+                setKnowledgePoolInitialToneId(undefined);
+              }} 
+              initialTab={knowledgePoolInitialTab}
+              initialToneId={knowledgePoolInitialToneId}
+            />
           ) : showStory ? (
             <ConnectionStory onClose={() => setShowStory(false)} />
           ) : showSpectralScanner ? (
