@@ -318,7 +318,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
       </div>
 
       <div className="relative w-full h-[600px] flex justify-center items-center overflow-hidden bg-black/20 rounded-lg border border-white/5">
-            {/* SVG Visualization */}
+            {/* MAIN SVG CONTAINER (Image + Aura Waves) */}
             <motion.svg
                 viewBox="0 0 400 800" // Standardize viewport for body silhouette
                 className="w-full h-full max-h-[800px] z-10"
@@ -326,6 +326,19 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 animate={{ opacity: 1 }}
                 transition={{ duration: 1 }}
             >
+                {/* BACKGROUND IMAGE - Rendered inside SVG to guarantee coordinate alignment */}
+                {!isVisionMode && (
+                    <image 
+                        href="/menschskizze.png" 
+                        x="0" 
+                        y="0" 
+                        width="400" 
+                        height="800" 
+                        preserveAspectRatio="xMidYMid meet"
+                        opacity="0.6"
+                        style={{ mixBlendMode: 'screen' }}
+                    />
+                )}
                 <defs>
                     <filter id="auraGlow">
                         <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
@@ -413,19 +426,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 </g>
             </motion.svg>
 
-      {/* HUMAN BODY SILHOUETTE OVERLAY - Hidden in Vision Mode */}
-      {!isVisionMode && (
-          <div className="absolute inset-0 pointer-events-none flex justify-center items-start opacity-100">
-             <div className="relative w-[400px] h-[800px]">
-                 <img 
-                     src="/menschskizze.png" 
-                     alt="Anatomical Sketch" 
-                     className="absolute top-0 left-0 w-full h-full object-contain opacity-60 mix-blend-screen"
-                 />
-                 {/* Removed duplicate SVG labels and markers, as they are now in the image */}
-             </div>
-          </div>
-      )}
+      {/* The background image is now rendered directly inside the SVG above to guarantee perfect coordinate alignment */}
 
       {/* VISION MODE INTERFACE */}
       {isVisionMode && (

@@ -370,4 +370,6 @@
 - [x] Adjust wave logic to use exactly 25 points for a full 24-frequency octave
 - [x] Write and run a script to extract exact Y-coordinates of the grey wave lines from the image
 - [x] Apply the exact coordinates to SoundBody.tsx
+- [x] Refactor SoundBody.tsx to include the background image directly inside the main SVG
+- [x] Adjust wave coordinates to match the image's internal coordinate system
 - [ ] Generate and integrate voice guidance for voice analysis steps
