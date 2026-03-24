@@ -21,6 +21,7 @@ export function HarmonicSpectrumChart({
     return {
       id: tone.id,
       colorName: tone.colorName,
+      metaphor: tone.metaphor,
       hex: tone.hex,
       percentage,
       energy
@@ -52,7 +53,7 @@ export function HarmonicSpectrumChart({
                 <div className="flex items-center gap-3 flex-1">
                   <div className="flex-1">
                     <div className="text-sm font-medium text-white">
-                      TYP {tone.id}: {tone.colorName}
+                      TYP {tone.id}: {tone.metaphor}
                     </div>
                   </div>
                 </div>

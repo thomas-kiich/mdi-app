@@ -739,24 +739,22 @@ export default function Home() {
               </div>
             </div>
 
-            {/* HARMONIC SPECTRUM ANALYSIS */}
+            {/* AURA VISUALIZATION (Restored) */}
             {res && res.mdiDistribution && (
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
-                    <HarmonicSpectrumChart 
-                        toneDistribution={res.mdiDistribution}
+                    <SoundBody 
+                        toneDistribution={convertMdiDistributionToToneDistribution(res.mdiDistribution)} 
+                        dominantToneName={getToneNameFromMdiId(mdi.id)}
                         dominantToneId={mdi.id}
                     />
                 </div>
             )}
 
-
-
-            {/* AURA VISUALIZATION (Restored) */}
+            {/* HARMONIC SPECTRUM ANALYSIS */}
             {res && res.mdiDistribution && (
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
-                    <SoundBody 
-                        toneDistribution={convertMdiDistributionToToneDistribution(res.mdiDistribution)} 
-                        dominantToneName={getToneNameFromMdiId(mdi.id)}
+                    <HarmonicSpectrumChart 
+                        toneDistribution={res.mdiDistribution}
                         dominantToneId={mdi.id}
                     />
                 </div>

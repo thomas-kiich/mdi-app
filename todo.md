@@ -384,4 +384,6 @@
 - [x] Update mdiToToneMapping.ts with the correct mapping
 - [x] Refactor SoundBody.tsx to use a 24-element array and accept dominantToneId
 - [x] Update Home.tsx to pass the correct ID to SoundBody
+- [x] Swap the order of SoundBody and HarmonicSpectrumChart in Home.tsx
+- [x] Edit HarmonicSpectrumChart to use metaphor terms instead of color names
 - [ ] Generate and integrate voice guidance for voice analysis steps
