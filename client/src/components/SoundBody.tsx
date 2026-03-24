@@ -81,14 +81,14 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     
     // User requirement:
     // Only UP (Head): Ascending Scale. Start at Nabelpunkt, end exactly one octave higher exactly at Zirbeldrüse.
-    // Since we have 24 frequencies, a full octave means we need exactly 25 points (the base tone + 24 steps = the octave tone again).
+    // The scale has 12 basic tones. An octave spans exactly 13 points (the base tone + 12 semitones = the octave tone again).
     
     let directionalData: typeof sortedData = [];
 
     if (direction === -1) {
         // UP (Head): Ascending.
-        // We need 25 points to complete the 24-frequency octave
-        const octavePoints = 25;
+        // We need 13 points to complete the octave
+        const octavePoints = 13;
         for (let i = 0; i < octavePoints; i++) {
             let idx = domIndex - i;
             // Handle negative indices by wrapping around
@@ -208,13 +208,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
   // Precise Anatomical Heights relative to Nabelpunkt (0,0)
   // New SVG Coordinates (based on image):
-  // Zirbeldrüse line is around cy=110
-  // Herzpunkt line is around cy=250
-  // Nabel line is around cy=390
+  // Zirbeldrüse line is exactly at cy=68 (based on the wavy line in the sketch)
+  // Herzpunkt line is exactly at cy=245 (based on the wavy line in the sketch)
+  // Nabel line is exactly at cy=395 (based on the wavy line in the sketch)
   
-  // The wave should span from Nabelpunkt (390) to Zirbeldrüse (110).
-  // Distance = 390 - 110 = 280.
-  const waveHeight = 280; 
+  // The wave should span from Nabelpunkt (395) to Zirbeldrüse (68).
+  // Distance = 395 - 68 = 327.
+  const waveHeight = 327; 
   const headHeight = waveHeight; 
   
   // We no longer render the feet part, but keep a variable for safety
@@ -370,8 +370,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     </linearGradient>
                 </defs>
 
-                {/* Center Group at Nabelpunkt (200, 390) to match new SVG */}
-                <g transform="translate(200, 390)">
+                {/* Center Group at Nabelpunkt (200, 395) to match new SVG */}
+                <g transform="translate(200, 395)">
                     
                     {/* VISION MODE BACKGROUND (Full Screen Energy) */}
                     {isVisionMode && (
