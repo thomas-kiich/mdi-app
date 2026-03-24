@@ -207,14 +207,14 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   };
 
   // Precise Anatomical Heights relative to Nabelpunkt (0,0)
-  // New SVG Coordinates (based on image):
-  // Zirbeldrüse line is exactly at cy=68 (based on the wavy line in the sketch)
-  // Herzpunkt line is exactly at cy=245 (based on the wavy line in the sketch)
-  // Nabel line is exactly at cy=395 (based on the wavy line in the sketch)
+  // New SVG Coordinates (based on script analyzing image pixels):
+  // Zirbeldrüse line is exactly at cy=91.5
+  // Herzpunkt line is exactly at cy=219.2
+  // Nabel line is exactly at cy=325.4
   
-  // The wave should span from Nabelpunkt (395) to Zirbeldrüse (68).
-  // Distance = 395 - 68 = 327.
-  const waveHeight = 327; 
+  // The wave should span from Nabelpunkt (325.4) to Zirbeldrüse (91.5).
+  // Distance = 325.4 - 91.5 = 233.9
+  const waveHeight = 233.9; 
   const headHeight = waveHeight; 
   
   // We no longer render the feet part, but keep a variable for safety
@@ -370,8 +370,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     </linearGradient>
                 </defs>
 
-                {/* Center Group at Nabelpunkt (200, 395) to match new SVG */}
-                <g transform="translate(200, 395)">
+                {/* Center Group at Nabelpunkt (200, 325.4) to match new SVG */}
+                <g transform="translate(200, 325.4)">
                     
                     {/* VISION MODE BACKGROUND (Full Screen Energy) */}
                     {isVisionMode && (

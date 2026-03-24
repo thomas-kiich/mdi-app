@@ -368,6 +368,6 @@
 - [x] Remove duplicate SVG labels and markers in SoundBody.tsx
 - [x] Align wave origin to Nabel line and span to Zirbeldrüse line
 - [x] Adjust wave logic to use exactly 25 points for a full 24-frequency octave
-- [x] Revert wave logic to 13 points for a single octave in SoundBody.tsx
-- [x] Fine-tune Y-coordinates for Nabel and Zirbeldrüse to match the image lines exactly
+- [x] Write and run a script to extract exact Y-coordinates of the grey wave lines from the image
+- [x] Apply the exact coordinates to SoundBody.tsx
 - [ ] Generate and integrate voice guidance for voice analysis steps
