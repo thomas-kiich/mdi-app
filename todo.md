@@ -353,5 +353,7 @@
 - [x] Remove remaining Lichtklang Matrix from voice analysis results
 - [x] Add Nabelpunkt, Herzpunkt, and Zirbeldrüse markers and labels to Aura visualization
 
-- [ ] Fix Nabelpunkt position in Aura visualization (move it up)
+- [x] Fix Nabelpunkt position in Aura visualization (move it up)
+- [x] Move Herzpunkt and Nabelpunkt up by half their distance in SoundBody.tsx
+- [x] Thicken the outline of the human silhouette in SoundBody.tsx
 - [ ] Generate and integrate voice guidance for voice analysis steps
