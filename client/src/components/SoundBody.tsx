@@ -134,19 +134,19 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
           normalizedW = Math.min(val * 5.0, 100); 
           
           // Ensure there's a minimum width so the wave doesn't disappear completely on 0%
-          if (normalizedW < 5) normalizedW = 5;
+          if (normalizedW < 2) normalizedW = 2; // reduced minimum to avoid distortion
           
           const x = (normalizedW / 100) * width * side;
-          return { x, y, color: d.color, tone: d.name };
+          return { x, y, color: d.color, tone: d.name, percentage: val };
       } else {
           // OUTER FIELD (Key-Lock)
           // It should match the inner field's wave shape exactly, but be the "hole".
           let innerVal = Math.min(d.percentage * 5.0, 100);
-          if (innerVal < 5) innerVal = 5;
+          if (innerVal < 2) innerVal = 2;
           
           const x = (innerVal / 100) * width * side;
           
-          return { x, y, color: d.color, tone: d.name };
+          return { x, y, color: d.color, tone: d.name, percentage: val };
       }
     });
 
@@ -158,7 +158,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
         path = `M ${startX} 0`;
         
         if (points.length > 0) {
-            path += ` L ${points[0].x} ${points[0].y}`;
+            // Force the first point to start exactly at y=0 (Nabelpunkt)
+            path += ` L ${points[0].x} 0`;
             for (let i = 0; i < points.length - 1; i++) {
                 const p0 = points[i];
                 const p1 = points[i + 1];
@@ -181,8 +182,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
         
         // Start at inner wave top (Navel)
         if (points.length > 0) {
-            // Start at the first point of the wave (Navel area)
-            path = `M ${points[0].x} ${points[0].y}`;
+            // Start at the first point of the wave (Navel area) - force y=0
+            path = `M ${points[0].x} 0`;
             
             // Draw the wave (Inner Edge)
             for (let i = 0; i < points.length - 1; i++) {

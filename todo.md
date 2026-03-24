@@ -376,4 +376,6 @@
 - [x] Adjust logic to shift the frequency array so the Lebensklang is at index 0
 - [x] Inspect SoundBody.tsx to check how percentage values are mapped to width
 - [x] Fix the mapping logic to ensure width corresponds to the correct tone percentage
+- [x] Inspect SoundBody.tsx to trace why the base tone position shifted
+- [x] Fix the logic to guarantee the Lebensklang is exactly at index 0 (Nabelpunkt) with correct width and color
 - [ ] Generate and integrate voice guidance for voice analysis steps
