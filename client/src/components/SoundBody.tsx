@@ -120,30 +120,30 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
       // to ensure the Key-Lock fit (Outer starts where Inner ends).
       
       // Scale factor:
-      // Inner: val * 3 (so 33% fills the width)
-      // Outer: val is large, so we scale it differently to fit nicely
+      // The percentage 'val' is usually between 0 and 20% in a 12-tone distribution.
+      // We want the width to visually reflect these percentages accurately.
+      // If the max expected percentage is around 20-25%, a factor of 4 or 5 makes sense
+      // so that 20% * 5 = 100% of the max width.
       let normalizedW = 0;
-      let offset = 0; // Key-Lock gap
 
       if (!isOuterField) {
           // INNER FIELD
           // Scale intensity to width. 
-          // Max intensity (usually around 30-40%) should fill significant width.
-          // Let's say 40% -> 100% width. Factor 2.5
-          normalizedW = Math.min(val * 3.5, 100); 
+          // We use a higher multiplier so small percentage differences are clearly visible.
+          // e.g. 15% * 5 = 75% width.
+          normalizedW = Math.min(val * 5.0, 100); 
+          
+          // Ensure there's a minimum width so the wave doesn't disappear completely on 0%
+          if (normalizedW < 5) normalizedW = 5;
           
           const x = (normalizedW / 100) * width * side;
           return { x, y, color: d.color, tone: d.name };
       } else {
           // OUTER FIELD (Key-Lock)
-          // The wave is the INNER edge. The outer edge is straight.
-          // We calculate the inner edge X position.
           // It should match the inner field's wave shape exactly, but be the "hole".
-          // Inner field x = (val * 3.5 / 100) * width
-          // So Outer field inner edge starts there.
+          let innerVal = Math.min(d.percentage * 5.0, 100);
+          if (innerVal < 5) innerVal = 5;
           
-          // We use the same calculation as Inner Field to get the boundary line
-          const innerVal = Math.min(d.percentage * 3.5, 100);
           const x = (innerVal / 100) * width * side;
           
           return { x, y, color: d.color, tone: d.name };

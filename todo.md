@@ -374,4 +374,6 @@
 - [x] Adjust wave coordinates to match the image's internal coordinate system
 - [x] Inspect SoundBody.tsx to understand how colors/frequencies are mapped to the wave points
 - [x] Adjust logic to shift the frequency array so the Lebensklang is at index 0
+- [x] Inspect SoundBody.tsx to check how percentage values are mapped to width
+- [x] Fix the mapping logic to ensure width corresponds to the correct tone percentage
 - [ ] Generate and integrate voice guidance for voice analysis steps
