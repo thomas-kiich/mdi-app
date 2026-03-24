@@ -356,4 +356,7 @@
 - [x] Fix Nabelpunkt position in Aura visualization (move it up)
 - [x] Move Herzpunkt and Nabelpunkt up by half their distance in SoundBody.tsx
 - [x] Thicken the outline of the human silhouette in SoundBody.tsx
+- [x] Fix human silhouette proportions (hips, legs, torso) in SoundBody.tsx
+- [x] Align wave origin to Nabelpunkt and span exactly one octave to Zirbeldrüse
+- [x] Remove lower wave and update gradients
 - [ ] Generate and integrate voice guidance for voice analysis steps

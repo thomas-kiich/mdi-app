@@ -80,39 +80,33 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     // Or E -> Dis is descending.
     
     // User requirement:
-    // UP (Head): Ascending Scale (F -> Fis -> G...)
-    // DOWN (Feet): Descending Scale (F -> E -> Dis...)
+    // Only UP (Head): Ascending Scale. Start at Nabelpunkt, end exactly one octave higher at Zirbeldrüse.
+    // That means we need exactly 13 points (the base tone + 12 semitones = the octave tone again).
     
     let directionalData: typeof sortedData = [];
 
     if (direction === -1) {
         // UP (Head): Ascending.
-        // Since the list is Descending, we need to traverse it BACKWARDS to get Ascending order.
-        // Start at domIndex (which is at the navel), then domIndex-1, domIndex-2...
-        
-        for (let i = 0; i < numPoints; i++) {
+        // We need 13 points to complete the octave (e.g. F -> Fis -> G ... -> F)
+        const octavePoints = 13;
+        for (let i = 0; i < octavePoints; i++) {
             let idx = domIndex - i;
-            if (idx < 0) idx += numPoints; // Wrap around
-            directionalData.push(sortedData[idx]);
+            // Handle negative indices by wrapping around
+            while (idx < 0) idx += numPoints;
+            directionalData.push(sortedData[idx % numPoints]);
         }
     } else {
-        // DOWN (Feet): Descending.
-        // Since the list is Descending, we traverse it FORWARDS.
-        // Start at domIndex (which is at the navel), then domIndex+1, domIndex+2...
-        
-        for (let i = 0; i < numPoints; i++) {
-            let idx = (domIndex + i) % numPoints; // Wrap around
-            directionalData.push(sortedData[idx]);
-        }
+        // We no longer render the downward wave, but keep this for safety
+        directionalData = [];
     }
 
     // Now map this directional spectrum from Navel (y=0 relative) to Head/Feet
     // We need points for the path.
+    const numActualPoints = directionalData.length;
     const points = directionalData.map((d, i) => {
       // Linear interpolation for y: 0 (Navel) to height (Head/Feet)
-      // For Upper Wave (invertY=true), we go from 0 to -height
-      // For Lower Wave (invertY=false), we go from 0 to +height
-      const rawY = (i / (numPoints - 1)) * height;
+      // We use numActualPoints - 1 so the last point hits exactly the top height
+      const rawY = numActualPoints > 1 ? (i / (numActualPoints - 1)) * height : 0;
       const y = rawY * direction;
       
       let val = d.percentage;
@@ -212,11 +206,12 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     return { path, points };
   };
 
-  // Precise Anatomical Heights relative to Navel (0,0)
-  // Center is now at y=420. Head is around y=130. 420 - 130 = 290
-  const headHeight = 290; 
-  // Feet/Soles: Navel to Soles. Soles are around y=750. 750 - 420 = 330
-  const feetHeight = 330; 
+  // Precise Anatomical Heights relative to Nabelpunkt (0,0)
+  // Nabelpunkt is at y=290 (was 420). Zirbeldrüse is at y=125.
+  // Distance from Nabelpunkt to Zirbeldrüse = 290 - 125 = 165
+  const headHeight = 165; 
+  // We no longer render the feet part, but keep a variable for safety
+  const feetHeight = 0; 
   const maxWidth = 160;   // Max width of the aura
 
   // Determine what to render based on viewMode
@@ -225,23 +220,19 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   const isArtMode = viewMode === 'art';
   const isVisionMode = viewMode === 'vision';
 
-  // Generate paths for INNER Field
+  // Generate paths for INNER Field (Only UP)
   const innerUpperRight = generateVerticalPath(maxWidth, headHeight, false, -1, 1);
   const innerUpperLeft = generateVerticalPath(maxWidth, headHeight, false, -1, -1);
-  const innerLowerRight = generateVerticalPath(maxWidth, feetHeight, false, 1, 1);
-  const innerLowerLeft = generateVerticalPath(maxWidth, feetHeight, false, 1, -1);
 
-  // Generate paths for OUTER Field
+  // Generate paths for OUTER Field (Only UP)
   const outerUpperRight = generateVerticalPath(maxWidth, headHeight, true, -1, 1);
   const outerUpperLeft = generateVerticalPath(maxWidth, headHeight, true, -1, -1);
-  const outerLowerRight = generateVerticalPath(maxWidth, feetHeight, true, 1, 1);
-  const outerLowerLeft = generateVerticalPath(maxWidth, feetHeight, true, 1, -1);
 
   // Use the appropriate path for the main "isOuter" check in gradients if only one is shown,
   // but for "both", we need separate gradients.
   // We will define gradients for both Inner and Outer.
   
-  if (!innerUpperRight.path || !innerLowerRight.path) return null;
+  if (!innerUpperRight.path) return null;
 
   return (
     <div className="w-full bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-6 mt-8 flex flex-col items-center transition-colors duration-500">
@@ -364,27 +355,16 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                              <stop key={i} offset={`${(i / (Math.max(1, innerUpperRight.points.length - 1))) * 100}%`} stopColor={p.color} stopOpacity={0.6} />
                         ))}
                     </linearGradient>
-                    <linearGradient id="innerGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
-                         {innerLowerRight.points.map((p, i) => (
-                             <stop key={i} offset={`${(i / (Math.max(1, innerLowerRight.points.length - 1))) * 100}%`} stopColor={p.color} stopOpacity={0.6} />
-                        ))}
-                    </linearGradient>
-
                     {/* OUTER FIELD GRADIENTS */}
                     <linearGradient id="outerGradientUp" x1="0%" y1="100%" x2="0%" y2="0%">
                         {outerUpperRight.points.map((p, i) => (
                              <stop key={i} offset={`${(i / (Math.max(1, outerUpperRight.points.length - 1))) * 100}%`} stopColor={getComplementaryColor(p.color)} stopOpacity={0.5} />
                         ))}
                     </linearGradient>
-                    <linearGradient id="outerGradientDown" x1="0%" y1="0%" x2="0%" y2="100%">
-                         {outerLowerRight.points.map((p, i) => (
-                             <stop key={i} offset={`${(i / (Math.max(1, outerLowerRight.points.length - 1))) * 100}%`} stopColor={getComplementaryColor(p.color)} stopOpacity={0.5} />
-                        ))}
-                    </linearGradient>
                 </defs>
 
-                {/* Center Group at Navel (200, 420) - adjusted from 380 to be lower, closer to actual navel/sacral area */}
-                <g transform="translate(200, 420)">
+                {/* Center Group at Nabelpunkt (200, 290) */}
+                <g transform="translate(200, 290)">
                     
                     {/* VISION MODE BACKGROUND (Full Screen Energy) */}
                     {isVisionMode && (
@@ -398,9 +378,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                             {/* UPPER */}
                             <motion.path key="outerUR" d={outerUpperRight.path} fill="url(#outerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
                             <motion.path key="outerUL" d={outerUpperLeft.path} fill="url(#outerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
-                            {/* LOWER */}
-                            <motion.path key="outerLR" d={outerLowerRight.path} fill="url(#outerGradientDown)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
-                            <motion.path key="outerLL" d={outerLowerLeft.path} fill="url(#outerGradientDown)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.3)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: isArtMode ? 0.8 : 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+
                         </>
                     )}
 
@@ -410,9 +388,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                             {/* UPPER */}
                             <motion.path key="innerUR" d={innerUpperRight.path} fill="url(#innerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
                             <motion.path key="innerUL" d={innerUpperLeft.path} fill="url(#innerGradientUp)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
-                            {/* LOWER */}
-                            <motion.path key="innerLR" d={innerLowerRight.path} fill="url(#innerGradientDown)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
-                            <motion.path key="innerLL" d={innerLowerLeft.path} fill="url(#innerGradientDown)" stroke={isArtMode ? "none" : "rgba(255,255,255,0.5)"} strokeWidth="1" filter={isArtMode ? "url(#artBlur)" : "url(#auraGlow)"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }} />
+
                         </>
                     )}
                     </AnimatePresence>
@@ -423,8 +399,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                              {/* Re-draw the wave line with brighter stroke to highlight the meeting point */}
                              <motion.path d={innerUpperRight.path} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" filter="url(#auraGlow)" />
                              <motion.path d={innerUpperLeft.path} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" filter="url(#auraGlow)" />
-                             <motion.path d={innerLowerRight.path} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" filter="url(#auraGlow)" />
-                             <motion.path d={innerLowerLeft.path} fill="none" stroke="rgba(255,255,255,0.8)" strokeWidth="1.5" filter="url(#auraGlow)" />
+
                         </>
                     )}
 
@@ -439,17 +414,17 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 {/* Head */}
                 <circle cx="200" cy="130" r="30" fill="none" stroke="white" strokeWidth="2.5" />
                 {/* Spine/Chakra Line */}
-                <path d="M 200 160 L 200 420" stroke="white" strokeWidth="1.5" strokeDasharray="2 4" opacity="0.6" />
+                <path d="M 200 160 L 200 370" stroke="white" strokeWidth="1.5" strokeDasharray="2 4" opacity="0.6" />
                 {/* Shoulders */}
                 <path d="M 160 170 Q 200 160 240 170" fill="none" stroke="white" strokeWidth="2.5" />
                 {/* Arms */}
                 <path d="M 160 170 L 140 300" stroke="white" strokeWidth="2" opacity="0.9" />
                 <path d="M 240 170 L 260 300" stroke="white" strokeWidth="2" opacity="0.9" />
                 {/* Torso Sides */}
-                <path d="M 160 170 Q 150 295 165 420" fill="none" stroke="white" strokeWidth="1.5" opacity="0.7" />
-                <path d="M 240 170 Q 250 295 235 420" fill="none" stroke="white" strokeWidth="1.5" opacity="0.7" />
+                <path d="M 160 170 Q 150 270 165 370" fill="none" stroke="white" strokeWidth="1.5" opacity="0.7" />
+                <path d="M 240 170 Q 250 270 235 370" fill="none" stroke="white" strokeWidth="1.5" opacity="0.7" />
                 {/* Hips / Navel Area */}
-                <path d="M 165 420 L 235 420" stroke="white" strokeWidth="2" opacity="0.7" />
+                <path d="M 165 370 L 235 370" stroke="white" strokeWidth="2" opacity="0.7" />
                 
                 {/* Energy Centers (Chakras/Points) */}
                 {/* Zirbeldrüse (Pineal Gland) - roughly center of head */}
@@ -477,8 +452,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 </g>
 
                 {/* Legs */}
-                <line x1="180" y1="420" x2="170" y2="750" stroke="white" strokeWidth="2" opacity="0.9" />
-                <line x1="220" y1="420" x2="230" y2="750" stroke="white" strokeWidth="2" opacity="0.9" />
+                <line x1="180" y1="370" x2="170" y2="700" stroke="white" strokeWidth="2" opacity="0.9" />
+                <line x1="220" y1="370" x2="230" y2="700" stroke="white" strokeWidth="2" opacity="0.9" />
              </svg>
           </div>
       )}
