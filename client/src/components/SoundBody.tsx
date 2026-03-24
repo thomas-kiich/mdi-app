@@ -81,14 +81,14 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     
     // User requirement:
     // Only UP (Head): Ascending Scale. Start at Nabelpunkt, end exactly one octave higher exactly at Zirbeldrüse.
-    // That means we need exactly 13 points (the base tone + 12 semitones = the octave tone again).
+    // Since we have 24 frequencies, a full octave means we need exactly 25 points (the base tone + 24 steps = the octave tone again).
     
     let directionalData: typeof sortedData = [];
 
     if (direction === -1) {
         // UP (Head): Ascending.
-        // We need 13 points to complete the octave (e.g. F -> Fis -> G ... -> F)
-        const octavePoints = 13;
+        // We need 25 points to complete the 24-frequency octave
+        const octavePoints = 25;
         for (let i = 0; i < octavePoints; i++) {
             let idx = domIndex - i;
             // Handle negative indices by wrapping around
@@ -208,13 +208,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
   // Precise Anatomical Heights relative to Nabelpunkt (0,0)
   // New SVG Coordinates (based on image):
-  // Zirbeldrüse: cy=80
-  // Herzpunkt: cy=200
-  // Nabelpunkt: cy=320
+  // Zirbeldrüse line is around cy=110
+  // Herzpunkt line is around cy=250
+  // Nabel line is around cy=390
   
-  // The wave should span from Nabelpunkt (320) to Zirbeldrüse (80).
-  // Distance = 320 - 80 = 240.
-  const waveHeight = 240; 
+  // The wave should span from Nabelpunkt (390) to Zirbeldrüse (110).
+  // Distance = 390 - 110 = 280.
+  const waveHeight = 280; 
   const headHeight = waveHeight; 
   
   // We no longer render the feet part, but keep a variable for safety
@@ -370,8 +370,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     </linearGradient>
                 </defs>
 
-                {/* Center Group at Nabelpunkt (200, 320) to match new SVG */}
-                <g transform="translate(200, 320)">
+                {/* Center Group at Nabelpunkt (200, 390) to match new SVG */}
+                <g transform="translate(200, 390)">
                     
                     {/* VISION MODE BACKGROUND (Full Screen Energy) */}
                     {isVisionMode && (
@@ -422,36 +422,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                      alt="Anatomical Sketch" 
                      className="absolute top-0 left-0 w-full h-full object-contain opacity-60 mix-blend-screen"
                  />
-                 {/* Energy Centers Overlay */}
-                 <svg width="400" height="800" viewBox="0 0 400 800" className="absolute top-0 left-0">
-                    {/* Spine/Central Axis */}
-                    <line x1="200" y1="120" x2="200" y2="350" stroke="white" strokeWidth="1" strokeDasharray="2 4" opacity="0.4" />
-                    
-                    {/* Energy Centers (Chakras/Points) */}
-                    {/* Zirbeldrüse (Pineal Gland) - matched to image head */}
-                    <g className="opacity-100">
-                        <circle cx="200" cy="80" r="4" fill="#fff" />
-                        <circle cx="200" cy="80" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
-                        <line x1="208" y1="80" x2="270" y2="80" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
-                        <text x="275" y="83" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">ZIRBELDRÜSE</text>
-                    </g>
-
-                    {/* Herzpunkt (Heart Center) - matched to image chest */}
-                    <g className="opacity-100">
-                        <circle cx="200" cy="200" r="4" fill="#fff" />
-                        <circle cx="200" cy="200" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
-                        <line x1="208" y1="200" x2="270" y2="200" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
-                        <text x="275" y="203" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">HERZPUNKT</text>
-                    </g>
-
-                    {/* Nabelpunkt (Navel Center) - matched to image navel */}
-                    <g className="opacity-100">
-                        <circle cx="200" cy="320" r="4" fill="#fff" />
-                        <circle cx="200" cy="320" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
-                        <line x1="208" y1="320" x2="270" y2="320" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
-                        <text x="275" y="323" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">NABELPUNKT</text>
-                    </g>
-                 </svg>
+                 {/* Removed duplicate SVG labels and markers, as they are now in the image */}
              </div>
           </div>
       )}

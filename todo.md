@@ -365,4 +365,7 @@
 - [x] Copy provided sketch image to project public directory
 - [x] Update SoundBody.tsx to use the image as background
 - [x] Adjust wave logic to span exactly from Nabel to Zirbeldrüse line
+- [x] Remove duplicate SVG labels and markers in SoundBody.tsx
+- [x] Align wave origin to Nabel line and span to Zirbeldrüse line
+- [x] Adjust wave logic to use exactly 25 points for a full 24-frequency octave
 - [ ] Generate and integrate voice guidance for voice analysis steps
