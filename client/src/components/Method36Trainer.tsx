@@ -196,7 +196,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     // Handle water sound playback when training starts/stops
     useEffect(() => {
         if (waterAudioRef.current) {
-            waterAudioRef.current.volume = 0.1; // 10% volume for very subtle background ambience
+            waterAudioRef.current.volume = 0.03; // Reduced volume for very subtle background ambience
             if (isPlaying && isStreamSoundEnabled) {
                 waterAudioRef.current.play().catch(e => console.error("Water sound play failed", e));
             } else {
@@ -210,7 +210,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
         const newState = !isStreamSoundEnabled;
         setIsStreamSoundEnabled(newState);
         if (waterSoundRef.current) {
-            waterSoundRef.current.setVolume(newState && isPlaying ? 0.15 : 0);
+            waterSoundRef.current.setVolume(newState && isPlaying ? 0.05 : 0);
         }
     };
 

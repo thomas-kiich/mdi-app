@@ -92,8 +92,8 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
     const currentTime = ctx.currentTime;
 
     // Map intensity (25-100) to volume (0.05 - 0.3)
-    const maxVol = 0.3;
-    const minVol = 0.02;
+    const maxVol = 0.8; // Increased from 0.3
+    const minVol = 0.2; // Increased from 0.02
     const targetVolume = minVol + ((intensity - 25) / 75) * (maxVol - minVol);
 
     // If we already have an oscillator, just smoothly transition frequency and volume

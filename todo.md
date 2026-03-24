@@ -339,6 +339,11 @@
 
 - [ ] Update Impressum with user data
 
-- [ ] Fix typo in Type 19 synonyms: FÜHRE -> FÜHRER
-- [ ] Fix typo in Type 29 (or 20/other type) synonyms: LEHRE -> LEHRER
-- [ ] Replace all arrows (-> or similar) with vertical bars (|) before the last term in synonyms for all types
+- [x] Fix typo in Type 19 synonyms: FÜHRE -> FÜHRER
+- [x] Fix typo in Type 29 (or 20/other type) synonyms: LEHRE -> LEHRER
+- [x] Replace all arrows (-> or similar) with vertical bars (|) before the last term in synonyms for all types
+
+- [ ] Reduce volume of background water sound in YOHN trainer (Method36Trainer)
+- [ ] Remove Lichtklang Matrix (ToneColorExplorer) from Voice Analysis Result (InterpretationView)
+
+- [ ] Increase the volume of the sound played when clicking a segment in ToneColorExplorer
