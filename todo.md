@@ -372,4 +372,6 @@
 - [x] Apply the exact coordinates to SoundBody.tsx
 - [x] Refactor SoundBody.tsx to include the background image directly inside the main SVG
 - [x] Adjust wave coordinates to match the image's internal coordinate system
+- [x] Inspect SoundBody.tsx to understand how colors/frequencies are mapped to the wave points
+- [x] Adjust logic to shift the frequency array so the Lebensklang is at index 0
 - [ ] Generate and integrate voice guidance for voice analysis steps

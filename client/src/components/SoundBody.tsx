@@ -76,12 +76,14 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
     // Determine spectral direction based on body part (UP/DOWN)
     // The list 'sortedData' is ordered: E, Dis, D, Cis, C, H, Ais, A, Gis, G, Fis, F.
-    // This is a DESCENDING chromatic scale (e.g. F -> E is a descending step if wrapping).
-    // Or E -> Dis is descending.
+    // This is a DESCENDING chromatic scale.
     
     // User requirement:
-    // Only UP (Head): Ascending Scale. Start at Nabelpunkt, end exactly one octave higher exactly at Zirbeldrüse.
-    // The scale has 12 basic tones. An octave spans exactly 13 points (the base tone + 12 semitones = the octave tone again).
+    // Start at Nabelpunkt (index 0 of the generated path) with the user's specific Lebensklang (domIndex).
+    // End exactly one octave higher at Zirbeldrüse (the same tone, so 13 points for a 12-tone scale, or 25 points for 24-tone).
+    // The user previously mentioned "24 frequenzen". If we use 25 points, it spans 2 octaves in a 12-tone system, 
+    // but the user clarified "jetzt sind es 2 oktaven...". 
+    // We stick to 13 points for exactly ONE octave in a 12-tone system.
     
     let directionalData: typeof sortedData = [];
 
@@ -90,6 +92,10 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
         // We need 13 points to complete the octave
         const octavePoints = 13;
         for (let i = 0; i < octavePoints; i++) {
+            // Ascending in pitch means moving BACKWARDS in the descending SPECTRAL_ORDER array.
+            // Wait, SPECTRAL_ORDER is: E, Dis, D, Cis, C, H, Ais, A, Gis, G, Fis, F.
+            // If domIndex is C, the next ascending tone is Cis. 
+            // C is index 4. Cis is index 3. So we subtract 'i'.
             let idx = domIndex - i;
             // Handle negative indices by wrapping around
             while (idx < 0) idx += numPoints;
