@@ -343,7 +343,10 @@
 - [x] Fix typo in Type 29 (or 20/other type) synonyms: LEHRE -> LEHRER
 - [x] Replace all arrows (-> or similar) with vertical bars (|) before the last term in synonyms for all types
 
-- [ ] Reduce volume of background water sound in YOHN trainer (Method36Trainer)
-- [ ] Remove Lichtklang Matrix (ToneColorExplorer) from Voice Analysis Result (InterpretationView)
+-- [x] Reduce volume of background water sound in YOHN trainer (Method36Trainer)
+- [x] Remove Lichtklang Matrix (ToneColorExplorer) from Voice Analysis Result (InterpretationView)
+- [x] Increase the volume of the sound played when clicking a segment in ToneColorExplorer
 
-- [ ] Increase the volume of the sound played when clicking a segment in ToneColorExplorer
+- [ ] Hide duration selection bar in YOHN trainer when training is active
+
+- [ ] Set MDI logo as PWA app icon

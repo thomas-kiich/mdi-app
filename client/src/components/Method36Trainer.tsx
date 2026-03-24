@@ -760,6 +760,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                 </div>
 
                 {/* Audio Module Selection */}
+                {!isPlaying && (
                 <div className="flex flex-col items-center gap-3 w-full">
                     <div className="text-xs text-zinc-500 font-mono uppercase tracking-widest">Musik-Modul</div>
                     <div className="flex items-center gap-3 bg-zinc-900/50 p-3 rounded-lg border border-white/20 backdrop-blur-md w-full justify-center flex-wrap">
@@ -792,6 +793,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                         </Button>
                     </div>
                 </div>
+                )}
 
                 {/* Main Play Button */}
                 <Button 
