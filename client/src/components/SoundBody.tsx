@@ -32,6 +32,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   const [visionPrompt, setVisionPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   
+  console.log("SoundBody render:", { dominantToneName, toneDistribution });
+  
   // Prepare data sorted by SPECTRAL_ORDER
   const sortedData = useMemo(() => {
     return SPECTRAL_ORDER.map(toneName => {
@@ -64,11 +66,14 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     // Handle ranges like "C - D" by taking the first part
     const cleanDominantName = dominantToneName.split(' - ')[0].split('/')[0].trim();
     
+    // Wir müssen exakt nach dem Namen suchen (z.B. "E", "Dis")
     let domIndex = sortedData.findIndex(d => d.name === cleanDominantName);
     
     // Fallback: if still not found, try to find a partial match or default to first
     if (domIndex === -1) {
-        domIndex = sortedData.findIndex(d => dominantToneName.includes(d.name));
+        // Achtung: includes() kann bei "Dis" auch "D" finden!
+        // Wir suchen lieber nach exakter Übereinstimmung in den ersten Buchstaben
+        domIndex = sortedData.findIndex(d => cleanDominantName.startsWith(d.name) && (cleanDominantName.length === d.name.length || cleanDominantName[d.name.length] === ' '));
     }
     
     // Last resort: default to 0 (E) if nothing matches, to ensure visualization always appears
@@ -101,6 +106,13 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
             while (idx < 0) idx += numPoints;
             directionalData.push(sortedData[idx % numPoints]);
         }
+        console.log("SoundBody generated points:", {
+            dominantToneName,
+            cleanDominantName,
+            domIndex,
+            firstPoint: directionalData[0]?.name,
+            lastPoint: directionalData[directionalData.length - 1]?.name
+        });
     } else {
         // We no longer render the downward wave, but keep this for safety
         directionalData = [];
