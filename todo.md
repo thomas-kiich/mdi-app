@@ -350,5 +350,8 @@
 -- [x] Hide duration selection bar in YOHN trainer when training is active
 - [x] Set MDI logo as PWA app icon
 
-- [ ] Remove remaining Lichtklang Matrix from voice analysis results
-- [ ] Add Nabelpunkt, Herzpunkt, and Zirbeldrüse markers and labels to Aura visualization
+- [x] Remove remaining Lichtklang Matrix from voice analysis results
+- [x] Add Nabelpunkt, Herzpunkt, and Zirbeldrüse markers and labels to Aura visualization
+
+- [ ] Fix Nabelpunkt position in Aura visualization (move it up)
+- [ ] Generate and integrate voice guidance for voice analysis steps

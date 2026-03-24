@@ -468,12 +468,12 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     <text x="245" y="243" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">HERZPUNKT</text>
                 </g>
 
-                {/* Nabelpunkt (Navel Center) */}
+                {/* Nabelpunkt (Navel Center) - moved up to approx. belly button area */}
                 <g className="opacity-100">
-                    <circle cx="200" cy="420" r="4" fill="#fff" />
-                    <circle cx="200" cy="420" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
-                    <line x1="208" y1="420" x2="240" y2="420" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
-                    <text x="245" y="423" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">NABELPUNKT</text>
+                    <circle cx="200" cy="340" r="4" fill="#fff" />
+                    <circle cx="200" cy="340" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="208" y1="340" x2="240" y2="340" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
+                    <text x="245" y="343" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">NABELPUNKT</text>
                 </g>
 
                 {/* Legs */}
