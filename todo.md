@@ -359,4 +359,7 @@
 - [x] Fix human silhouette proportions (hips, legs, torso) in SoundBody.tsx
 - [x] Align wave origin to Nabelpunkt and span exactly one octave to Zirbeldrüse
 - [x] Remove lower wave and update gradients
+- [x] Replace simple human sketch with an anatomical SVG silhouette in SoundBody.tsx
+- [x] Position and label Nabel, Herz, and Zirbeldrüse markers accurately on the new silhouette
+- [x] Adjust wave logic to span exactly from Nabel to the midpoint between Nabel and Zirbeldrüse (Herzpunkt)
 - [ ] Generate and integrate voice guidance for voice analysis steps

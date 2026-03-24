@@ -80,7 +80,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
     // Or E -> Dis is descending.
     
     // User requirement:
-    // Only UP (Head): Ascending Scale. Start at Nabelpunkt, end exactly one octave higher at Zirbeldrüse.
+    // Only UP (Head): Ascending Scale. Start at Nabelpunkt, end exactly one octave higher exactly between Nabel and Zirbeldrüse (Herzpunkt).
     // That means we need exactly 13 points (the base tone + 12 semitones = the octave tone again).
     
     let directionalData: typeof sortedData = [];
@@ -207,9 +207,16 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
   };
 
   // Precise Anatomical Heights relative to Nabelpunkt (0,0)
-  // Nabelpunkt is at y=290 (was 420). Zirbeldrüse is at y=125.
-  // Distance from Nabelpunkt to Zirbeldrüse = 290 - 125 = 165
-  const headHeight = 165; 
+  // New SVG Coordinates:
+  // Zirbeldrüse: cy=100
+  // Herzpunkt: cy=200
+  // Nabelpunkt: cy=300
+  
+  // The wave should span from Nabelpunkt (300) to Herzpunkt (200).
+  // Distance = 300 - 200 = 100.
+  const waveHeight = 100; 
+  const headHeight = waveHeight; 
+  
   // We no longer render the feet part, but keep a variable for safety
   const feetHeight = 0; 
   const maxWidth = 160;   // Max width of the aura
@@ -363,8 +370,8 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                     </linearGradient>
                 </defs>
 
-                {/* Center Group at Nabelpunkt (200, 290) */}
-                <g transform="translate(200, 290)">
+                {/* Center Group at Nabelpunkt (224, 300) to match new SVG */}
+                <g transform="translate(224, 300)">
                     
                     {/* VISION MODE BACKGROUND (Full Screen Energy) */}
                     {isVisionMode && (
@@ -409,51 +416,56 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
       {/* HUMAN BODY SILHOUETTE OVERLAY - Hidden in Vision Mode */}
       {!isVisionMode && (
           <div className="absolute inset-0 pointer-events-none flex justify-center items-start opacity-100">
-             {/* Simple SVG Silhouette */}
-             <svg width="400" height="800" viewBox="0 0 400 800" className="opacity-80">
-                {/* Head */}
-                <circle cx="200" cy="130" r="30" fill="none" stroke="white" strokeWidth="2.5" />
-                {/* Spine/Chakra Line */}
-                <path d="M 200 160 L 200 370" stroke="white" strokeWidth="1.5" strokeDasharray="2 4" opacity="0.6" />
-                {/* Shoulders */}
-                <path d="M 160 170 Q 200 160 240 170" fill="none" stroke="white" strokeWidth="2.5" />
-                {/* Arms */}
-                <path d="M 160 170 L 140 300" stroke="white" strokeWidth="2" opacity="0.9" />
-                <path d="M 240 170 L 260 300" stroke="white" strokeWidth="2" opacity="0.9" />
-                {/* Torso Sides */}
-                <path d="M 160 170 Q 150 270 165 370" fill="none" stroke="white" strokeWidth="1.5" opacity="0.7" />
-                <path d="M 240 170 Q 250 270 235 370" fill="none" stroke="white" strokeWidth="1.5" opacity="0.7" />
-                {/* Hips / Navel Area */}
-                <path d="M 165 370 L 235 370" stroke="white" strokeWidth="2" opacity="0.7" />
+             {/* Anatomical Human Silhouette SVG */}
+             <svg width="400" height="800" viewBox="0 0 400 800" className="opacity-40">
+                <g transform="translate(100, 80) scale(1.5)">
+                    {/* Head */}
+                    <path d="M66.5 12c0-8.8 7.2-16 16-16s16 7.2 16 16c0 6.6-4 12.3-9.7 14.7-1.4 3.5-3.3 6.3-6.3 6.3s-4.9-2.8-6.3-6.3C70.5 24.3 66.5 18.6 66.5 12z" fill="none" stroke="white" strokeWidth="1.5" />
+                    
+                    {/* Neck and Shoulders */}
+                    <path d="M78 33v8c-10 2-25 5-32 12-4 4-6 10-6 16v12h10V69c0-4 2-8 5-10 6-5 16-8 23-9h8c7 1 17 4 23 9 3 2 5 6 5 10v12h10V69c0-6-2-12-6-16-7-7-22-10-32-12v-8h-8z" fill="none" stroke="white" strokeWidth="1.5" />
+                    
+                    {/* Torso */}
+                    <path d="M56 69v60c0 15 10 25 15 30v20c-5-2-10-5-15-10v-30c-5-5-10-15-10-30V69h10z" fill="none" stroke="white" strokeWidth="1.5" />
+                    <path d="M109 69v60c0 15-10 25-15 30v20c5-2 10-5 15-10v-30c5-5 10-15 10-30V69h-10z" fill="none" stroke="white" strokeWidth="1.5" />
+                    <path d="M71 179v-20c-5-5-15-15-15-30V69h53v60c0 15-10 25-15 30v20h-23z" fill="none" stroke="white" strokeWidth="1.5" />
+                    
+                    {/* Arms */}
+                    <path d="M40 69v60c0 10 5 20 10 25v30c0 5-2 10-5 15-2 3-5 5-10 5s-8-2-10-5c-3-5-5-10-5-15V69h20z" fill="none" stroke="white" strokeWidth="1.5" />
+                    <path d="M125 69v60c0 10-5 20-10 25v30c0 5 2 10 5 15 2 3 5 5 10 5s8-2 10-5c3-5 5-10 5-15V69h-20z" fill="none" stroke="white" strokeWidth="1.5" />
+                    
+                    {/* Legs */}
+                    <path d="M71 179v100c0 10-5 20-10 25v50c0 5-2 10-5 15-2 3-5 5-10 5s-8-2-10-5c-3-5-5-10-5-15v-50c0-10 5-20 10-25v-80h30z" fill="none" stroke="white" strokeWidth="1.5" />
+                    <path d="M94 179v100c0 10 5 20 10 25v50c0 5 2 10 5 15 2 3 5 5 10 5s8-2 10-5c3-5 5-10 5-15v-50c0-10-5-20-10-25v-80h-30z" fill="none" stroke="white" strokeWidth="1.5" />
+                </g>
+                
+                {/* Spine/Central Axis */}
+                <line x1="224" y1="120" x2="224" y2="350" stroke="white" strokeWidth="1" strokeDasharray="2 4" opacity="0.4" />
                 
                 {/* Energy Centers (Chakras/Points) */}
                 {/* Zirbeldrüse (Pineal Gland) - roughly center of head */}
                 <g className="opacity-100">
-                    <circle cx="200" cy="125" r="4" fill="#fff" />
-                    <circle cx="200" cy="125" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
-                    <line x1="208" y1="125" x2="240" y2="125" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
-                    <text x="245" y="128" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">ZIRBELDRÜSE</text>
+                    <circle cx="224" cy="100" r="4" fill="#fff" />
+                    <circle cx="224" cy="100" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="232" y1="100" x2="270" y2="100" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
+                    <text x="275" y="103" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">ZIRBELDRÜSE</text>
                 </g>
 
-                {/* Herzpunkt (Heart Center) - moved up by half distance (50px) */}
+                {/* Herzpunkt (Heart Center) - middle of chest */}
                 <g className="opacity-100">
-                    <circle cx="200" cy="190" r="4" fill="#fff" />
-                    <circle cx="200" cy="190" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
-                    <line x1="208" y1="190" x2="240" y2="190" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
-                    <text x="245" y="193" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">HERZPUNKT</text>
+                    <circle cx="224" cy="200" r="4" fill="#fff" />
+                    <circle cx="224" cy="200" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="232" y1="200" x2="270" y2="200" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
+                    <text x="275" y="203" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">HERZPUNKT</text>
                 </g>
 
-                {/* Nabelpunkt (Navel Center) - moved up by half distance (50px) */}
+                {/* Nabelpunkt (Navel Center) - belly area */}
                 <g className="opacity-100">
-                    <circle cx="200" cy="290" r="4" fill="#fff" />
-                    <circle cx="200" cy="290" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
-                    <line x1="208" y1="290" x2="240" y2="290" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
-                    <text x="245" y="293" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">NABELPUNKT</text>
+                    <circle cx="224" cy="300" r="4" fill="#fff" />
+                    <circle cx="224" cy="300" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="232" y1="300" x2="270" y2="300" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
+                    <text x="275" y="303" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">NABELPUNKT</text>
                 </g>
-
-                {/* Legs */}
-                <line x1="180" y1="370" x2="170" y2="700" stroke="white" strokeWidth="2" opacity="0.9" />
-                <line x1="220" y1="370" x2="230" y2="700" stroke="white" strokeWidth="2" opacity="0.9" />
              </svg>
           </div>
       )}
