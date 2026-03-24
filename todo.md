@@ -362,4 +362,7 @@
 - [x] Replace simple human sketch with an anatomical SVG silhouette in SoundBody.tsx
 - [x] Position and label Nabel, Herz, and Zirbeldrüse markers accurately on the new silhouette
 - [x] Adjust wave logic to span exactly from Nabel to the midpoint between Nabel and Zirbeldrüse (Herzpunkt)
+- [x] Copy provided sketch image to project public directory
+- [x] Update SoundBody.tsx to use the image as background
+- [x] Adjust wave logic to span exactly from Nabel to Zirbeldrüse line
 - [ ] Generate and integrate voice guidance for voice analysis steps
