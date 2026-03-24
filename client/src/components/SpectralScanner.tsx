@@ -7,7 +7,7 @@ import { getMdiTypeFromFrequency } from "@/lib/mdi";
 import { useLocation } from 'wouter';
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCenter } from "@/components/TrainingCenter";
-import { ToneColorExplorer } from "@/components/ToneColorExplorer";
+
 import frequencyDataRaw from "@/lib/frequencyData.json";
 import { useToast } from "@/hooks/use-toast";
 
@@ -406,11 +406,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
 
       {/* Main Content Area */}
       <div className="flex-1 relative bg-black overflow-hidden flex flex-col">
-          <div className="flex-1 overflow-y-auto p-4 md:p-8 relative z-10">
-            <div className="max-w-6xl mx-auto">
-              <ToneColorExplorer liveFrequency={currentFreq} />
-            </div>
-          </div>
+
           <canvas 
               ref={canvasRef} 
               className="absolute inset-0 w-full h-full pointer-events-none opacity-0 z-0"

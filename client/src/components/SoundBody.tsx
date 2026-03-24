@@ -450,8 +450,32 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
                 <path d="M 240 170 Q 250 295 235 420" fill="none" stroke="white" strokeWidth="0.5" opacity="0.5" />
                 {/* Hips / Navel Area */}
                 <path d="M 165 420 L 235 420" stroke="white" strokeWidth="1" opacity="0.5" />
-                {/* Navel Point */}
-                <circle cx="200" cy="420" r="3" fill="white" opacity="0.8" />
+                
+                {/* Energy Centers (Chakras/Points) */}
+                {/* Zirbeldrüse (Pineal Gland) - roughly center of head */}
+                <g className="opacity-100">
+                    <circle cx="200" cy="125" r="4" fill="#fff" />
+                    <circle cx="200" cy="125" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="208" y1="125" x2="240" y2="125" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
+                    <text x="245" y="128" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">ZIRBELDRÜSE</text>
+                </g>
+
+                {/* Herzpunkt (Heart Center) - middle of chest */}
+                <g className="opacity-100">
+                    <circle cx="200" cy="240" r="4" fill="#fff" />
+                    <circle cx="200" cy="240" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="208" y1="240" x2="240" y2="240" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
+                    <text x="245" y="243" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">HERZPUNKT</text>
+                </g>
+
+                {/* Nabelpunkt (Navel Center) */}
+                <g className="opacity-100">
+                    <circle cx="200" cy="420" r="4" fill="#fff" />
+                    <circle cx="200" cy="420" r="8" fill="none" stroke="#fff" strokeWidth="0.5" opacity="0.5" />
+                    <line x1="208" y1="420" x2="240" y2="420" stroke="white" strokeWidth="0.5" strokeDasharray="1 2" />
+                    <text x="245" y="423" fill="white" fontSize="10" fontFamily="monospace" letterSpacing="1">NABELPUNKT</text>
+                </g>
+
                 {/* Legs */}
                 <line x1="180" y1="420" x2="170" y2="750" stroke="white" strokeWidth="1" opacity="0.8" />
                 <line x1="220" y1="420" x2="230" y2="750" stroke="white" strokeWidth="1" opacity="0.8" />

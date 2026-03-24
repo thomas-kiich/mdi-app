@@ -749,14 +749,7 @@ export default function Home() {
                 </div>
             )}
 
-            {/* TONE COLOR EXPLORER - Saturation Exploration */}
-            {res && res.mdiDistribution && (
-                <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
-                    <ToneColorExplorer 
-                        mdiDistribution={res.mdiDistribution}
-                    />
-                </div>
-            )}
+
 
             {/* AURA VISUALIZATION (Restored) */}
             {res && res.mdiDistribution && (

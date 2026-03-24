@@ -347,6 +347,8 @@
 - [x] Remove Lichtklang Matrix (ToneColorExplorer) from Voice Analysis Result (InterpretationView)
 - [x] Increase the volume of the sound played when clicking a segment in ToneColorExplorer
 
-- [ ] Hide duration selection bar in YOHN trainer when training is active
+-- [x] Hide duration selection bar in YOHN trainer when training is active
+- [x] Set MDI logo as PWA app icon
 
-- [ ] Set MDI logo as PWA app icon
+- [ ] Remove remaining Lichtklang Matrix from voice analysis results
+- [ ] Add Nabelpunkt, Herzpunkt, and Zirbeldrüse markers and labels to Aura visualization
