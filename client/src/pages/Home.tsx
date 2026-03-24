@@ -756,7 +756,8 @@ export default function Home() {
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-700">
                     <SoundBody 
                         toneDistribution={convertMdiDistributionToToneDistribution(res.mdiDistribution)} 
-                        dominantToneName={getToneNameFromMdiId(mdi.id)} 
+                        dominantToneName={getToneNameFromMdiId(mdi.id)}
+                        dominantToneId={mdi.id}
                     />
                 </div>
             )}

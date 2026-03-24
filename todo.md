@@ -380,4 +380,8 @@
 - [x] Fix the logic to guarantee the Lebensklang is exactly at index 0 (Nabelpunkt) with correct width and color
 - [x] Inspect SoundBody.tsx to trace how domIndex is calculated and applied
 - [x] Fix the array shifting logic to correctly position the Lebensklang at index 0
+- [x] Read frequencyData.json to extract the correct mapping of MDI IDs (1-24) to Tone names
+- [x] Update mdiToToneMapping.ts with the correct mapping
+- [x] Refactor SoundBody.tsx to use a 24-element array and accept dominantToneId
+- [x] Update Home.tsx to pass the correct ID to SoundBody
 - [ ] Generate and integrate voice guidance for voice analysis steps

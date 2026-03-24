@@ -8,42 +8,68 @@ import { getComplementaryColor } from "@/lib/colors";
 interface SoundBodyProps {
   toneDistribution: Record<string, number>;
   dominantToneName: string;
+  dominantToneId?: number; // MDI ID 1-24
 }
 
 // User Requirement:
 // E-blauviolett / DIS Schwarzblau / D königsblau / CIS trükis / C grün / H olive / AIS gelbgrün / A gelb / Gis gelborange / G rotorange / FIS rot / F magenta
-const SPECTRAL_ORDER = [
-  "E",   // Blauviolett
-  "Dis", // Schwarzblau
-  "D",   // Königsblau
-  "Cis", // Türkis
-  "C",   // Grün
-  "H",   // Olive
-  "Ais", // Gelbgrün
-  "A",   // Gelb
-  "Gis", // Gelborange
-  "G",   // Rotorange
-  "Fis", // Rot
-  "F"    // Magenta
+// The 24-tone spectral order according to frequencyData.json
+const SPECTRAL_ORDER_24 = [
+  "E",     // 1: Blauviolett
+  "E+",    // 2: Violett
+  "Dis",   // 3: Violettblau
+  "Dis+",  // 4: Dunkelblau
+  "D",     // 5: Signalblau
+  "D+",    // 6: Himmelblau
+  "Cis",   // 7: Cyan
+  "Cis+",  // 8: Türkisgrün
+  "C",     // 9: Smaragdgrün
+  "C+",    // 10: Laubgrün
+  "H",     // 11: Gelbgrün
+  "H+",    // 12: Zitronengelb
+  "Ais",   // 13: Signalgelb
+  "Ais+",  // 14: Goldgelb
+  "A",     // 15: Hellorange
+  "A+",    // 16: Reinorange
+  "Gis",   // 17: Leuchtorange
+  "Gis+",  // 18: Orangerot
+  "G",     // 19: Feuerrot
+  "G+",    // 20: Signalrot
+  "Fis",   // 21: Karminrot
+  "Fis+",  // 22: Purpur
+  "F",     // 23: Tiefrot
+  "F+"     // 24: Infrarotgrenze
 ];
 
-export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps) {
+export function SoundBody({ toneDistribution, dominantToneName, dominantToneId }: SoundBodyProps) {
   const [viewMode, setViewMode] = useState<'inner' | 'outer' | 'both' | 'art' | 'vision'>('inner');
   const [visionPrompt, setVisionPrompt] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   
-  console.log("SoundBody render:", { dominantToneName, toneDistribution });
+  console.log("SoundBody render:", { dominantToneName, dominantToneId, toneDistribution });
   
-  // Prepare data sorted by SPECTRAL_ORDER
+  // Prepare data sorted by SPECTRAL_ORDER_24
   const sortedData = useMemo(() => {
-    return SPECTRAL_ORDER.map(toneName => {
-      const toneInfo = TONES.find(t => t.name === toneName);
-      const percentage = toneDistribution[toneName] || 0;
+    return SPECTRAL_ORDER_24.map((toneName, index) => {
+      // Map 24 tones to their corresponding 12 tone colors/percentages
+      // We strip the '+' to get the base tone name for lookup in TONES and toneDistribution
+      const baseToneName = toneName.replace('+', '');
+      const toneInfo = TONES.find(t => t.name === baseToneName);
+      
+      // If the tone is an exact match (e.g., 'E'), it gets the full percentage.
+      // If it's a '+' tone (e.g., 'E+'), it gets the same percentage for now.
+      // In a true 24-tone system, toneDistribution should have 24 entries.
+      const percentage = toneDistribution[baseToneName] || 0;
+      
+      // Temporary fallback for colors until TONES is updated with 24 colors
+      let color = toneInfo?.color || "#666";
       
       return {
+        id: index + 1,
         name: toneName,
+        baseName: baseToneName,
         percentage,
-        color: toneInfo?.color || "#666",
+        color: color,
       };
     });
   }, [toneDistribution]);
@@ -62,45 +88,40 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
 
     const numPoints = sortedData.length;
     
-    // Find index of dominant tone
-    // Handle ranges like "C - D" by taking the first part
-    const cleanDominantName = dominantToneName.split(' - ')[0].split('/')[0].trim();
+    // Find index of dominant tone using dominantToneId if available
+    let domIndex = 0;
     
-    // Wir müssen exakt nach dem Namen suchen (z.B. "E", "Dis")
-    let domIndex = sortedData.findIndex(d => d.name === cleanDominantName);
-    
-    // Fallback: if still not found, try to find a partial match or default to first
-    if (domIndex === -1) {
-        // Achtung: includes() kann bei "Dis" auch "D" finden!
-        // Wir suchen lieber nach exakter Übereinstimmung in den ersten Buchstaben
-        domIndex = sortedData.findIndex(d => cleanDominantName.startsWith(d.name) && (cleanDominantName.length === d.name.length || cleanDominantName[d.name.length] === ' '));
+    if (dominantToneId && dominantToneId >= 1 && dominantToneId <= 24) {
+        // ID is 1-based, array is 0-based
+        domIndex = dominantToneId - 1;
+    } else {
+        // Fallback to name-based lookup
+        const cleanDominantName = dominantToneName.split(' - ')[0].split('/')[0].trim();
+        domIndex = sortedData.findIndex(d => d.name === cleanDominantName);
+        
+        if (domIndex === -1) {
+            domIndex = sortedData.findIndex(d => cleanDominantName.startsWith(d.baseName));
+        }
+        
+        if (domIndex === -1) domIndex = 0;
     }
-    
-    // Last resort: default to 0 (E) if nothing matches, to ensure visualization always appears
-    if (domIndex === -1) domIndex = 0;
 
     // Determine spectral direction based on body part (UP/DOWN)
-    // The list 'sortedData' is ordered: E, Dis, D, Cis, C, H, Ais, A, Gis, G, Fis, F.
+    // The list 'sortedData' is ordered: E, E+, Dis, Dis+, D, D+, Cis, Cis+, C, C+, H, H+, Ais, Ais+, A, A+, Gis, Gis+, G, G+, Fis, Fis+, F, F+.
     // This is a DESCENDING chromatic scale.
     
     // User requirement:
     // Start at Nabelpunkt (index 0 of the generated path) with the user's specific Lebensklang (domIndex).
-    // End exactly one octave higher at Zirbeldrüse (the same tone, so 13 points for a 12-tone scale, or 25 points for 24-tone).
-    // The user previously mentioned "24 frequenzen". If we use 25 points, it spans 2 octaves in a 12-tone system, 
-    // but the user clarified "jetzt sind es 2 oktaven...". 
-    // We stick to 13 points for exactly ONE octave in a 12-tone system.
+    // End exactly one octave higher at Zirbeldrüse (the same tone, so 25 points for a 24-tone scale).
     
     let directionalData: typeof sortedData = [];
 
     if (direction === -1) {
         // UP (Head): Ascending.
-        // We need 13 points to complete the octave
-        const octavePoints = 13;
+        // We need 25 points to complete the octave in a 24-tone system
+        const octavePoints = 25;
         for (let i = 0; i < octavePoints; i++) {
-            // Ascending in pitch means moving BACKWARDS in the descending SPECTRAL_ORDER array.
-            // Wait, SPECTRAL_ORDER is: E, Dis, D, Cis, C, H, Ais, A, Gis, G, Fis, F.
-            // If domIndex is C, the next ascending tone is Cis. 
-            // C is index 4. Cis is index 3. So we subtract 'i'.
+            // Ascending in pitch means moving BACKWARDS in the descending SPECTRAL_ORDER_24 array.
             let idx = domIndex - i;
             // Handle negative indices by wrapping around
             while (idx < 0) idx += numPoints;
@@ -108,7 +129,7 @@ export function SoundBody({ toneDistribution, dominantToneName }: SoundBodyProps
         }
         console.log("SoundBody generated points:", {
             dominantToneName,
-            cleanDominantName,
+            dominantToneId,
             domIndex,
             firstPoint: directionalData[0]?.name,
             lastPoint: directionalData[directionalData.length - 1]?.name

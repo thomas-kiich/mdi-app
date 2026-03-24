@@ -5,29 +5,29 @@
 
 export const MDI_TO_TONE_NAME: Record<number, string> = {
   1: "E",      // Blauviolett
-  2: "Dis",    // Violett
-  3: "D",      // Violettblau
-  4: "Cis",    // Dunkelblau
-  5: "C",      // Signalblau
-  6: "H",      // Himmelblau
-  7: "Ais",    // Cyan
-  8: "A",      // Türkisgrün
-  9: "Gis",    // Smaragdgrün
-  10: "G",     // Laubgrün
-  11: "Fis",   // Gelbgrün
-  12: "F",     // Zitronengelb
-  13: "E",     // Signalgelb (repeats E in higher octave)
-  14: "Dis",   // Goldgelb (repeats Dis)
-  15: "D",     // Hellorange (repeats D)
-  16: "Cis",   // Reinorange (repeats Cis)
-  17: "C",     // Leuchtorange (repeats C)
-  18: "H",     // Orangerot (repeats H)
-  19: "Ais",   // Feuerrot (repeats Ais)
-  20: "A",     // Signalrot (repeats A)
-  21: "Gis",   // Karminrot (repeats Gis)
-  22: "G",     // Purpur (repeats G)
-  23: "Fis",   // Tiefrot (repeats Fis)
-  24: "F"      // Infrarotgrenze (repeats F)
+  2: "E+",     // Violett
+  3: "Dis",    // Violettblau
+  4: "Dis+",   // Dunkelblau
+  5: "D",      // Signalblau
+  6: "D+",     // Himmelblau
+  7: "Cis",    // Cyan
+  8: "Cis+",   // Türkisgrün
+  9: "C",      // Smaragdgrün
+  10: "C+",    // Laubgrün
+  11: "H",     // Gelbgrün
+  12: "H+",    // Zitronengelb
+  13: "Ais",   // Signalgelb
+  14: "Ais+",  // Goldgelb
+  15: "A",     // Hellorange
+  16: "A+",    // Reinorange
+  17: "Gis",   // Leuchtorange
+  18: "Gis+",  // Orangerot
+  19: "G",     // Feuerrot
+  20: "G+",    // Signalrot
+  21: "Fis",   // Karminrot
+  22: "Fis+",  // Purpur
+  23: "F",     // Tiefrot
+  24: "F+"     // Infrarotgrenze
 };
 
 /**
