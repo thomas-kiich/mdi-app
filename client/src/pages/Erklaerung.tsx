@@ -11,7 +11,7 @@ export default function Erklaerung() {
         <header className="space-y-6">
           <Link href="/" className="inline-flex items-center text-zinc-400 hover:text-white transition-colors group">
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-            Zurück zur Startseite
+            ZUR HAUPTSEITE
           </Link>
           <h1 className="text-4xl md:text-5xl font-light tracking-tight text-white">
             Deine Reise zur <span className="text-orange-500">wahren Frequenz</span>

@@ -94,7 +94,7 @@ export function CertificateView({ mdiResult, toneDistribution, onClose }: Certif
                 className="text-zinc-400 border-zinc-700 hover:text-white hover:bg-zinc-800"
             >
                 <ArrowLeft className="w-4 h-4 mr-2" />
-                Zurück zur Analyse
+                ZUR HAUPTSEITE
             </Button>
         </div>
 

@@ -808,7 +808,7 @@ export default function Home() {
                     className="text-zinc-500 hover:text-white"
                     onClick={() => setCurrentStep("dashboard")}
                 >
-                    Zurück zum Dashboard
+                    ZUR HAUPTSEITE
                 </Button>
             </div>
 

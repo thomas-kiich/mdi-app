@@ -134,7 +134,7 @@ export function OnboardingTour() {
                 className="flex-1 border-zinc-800 hover:bg-zinc-900"
                 onClick={() => setStep(step - 1)}
               >
-                Zurück
+                ZURÜCK
               </Button>
             )}
             <Button 

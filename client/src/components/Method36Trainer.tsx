@@ -544,7 +544,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                                 className="text-zinc-400 hover:text-white"
                                 onClick={onClose}
                             >
-                                Überspringen & Zurück
+                                Überspringen & ZUR HAUPTSEITE
                             </Button>
                         </div>
                     </div>
@@ -600,7 +600,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                                 onClick={onClose} 
                                 className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
                             >
-                                <X className="mr-2 h-4 w-4" /> Schließen
+                                <X className="mr-2 h-4 w-4" /> ZUR HAUPTSEITE
                             </Button>
                         </div>
                 </div>

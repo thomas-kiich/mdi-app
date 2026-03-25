@@ -271,7 +271,7 @@ export function WurzelklangVerification({ analyzedToneId, onClose, onVerificatio
           className="text-zinc-400 hover:text-white mb-8"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
-          Zurück
+          ZUR HAUPTSEITE
         </Button>
 
         {step === 'register' && (

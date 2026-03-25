@@ -8,7 +8,7 @@ export function Impressum() {
       <div className="max-w-3xl mx-auto space-y-12">
         <Link href="/">
           <Button variant="ghost" className="text-zinc-500 hover:text-white pl-0 gap-2">
-            <ArrowLeft className="w-4 h-4" /> Zurück
+            <ArrowLeft className="w-4 h-4" /> ZUR HAUPTSEITE
           </Button>
         </Link>
 

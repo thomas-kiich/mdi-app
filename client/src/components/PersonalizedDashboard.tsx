@@ -24,7 +24,7 @@ export function PersonalizedDashboard({
       <div className="p-6 text-center">
         <p className="text-red-500">Ton nicht gefunden</p>
         <Button onClick={onBack} className="mt-4">
-          Zurück
+          ZUR HAUPTSEITE
         </Button>
       </div>
     );
@@ -58,7 +58,7 @@ export function PersonalizedDashboard({
             className="text-zinc-400 hover:text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Zurück
+            ZUR HAUPTSEITE
           </Button>
           <h1 className="text-3xl font-bold text-white">Dein Frequenz-Profil</h1>
           <div className="w-10" />

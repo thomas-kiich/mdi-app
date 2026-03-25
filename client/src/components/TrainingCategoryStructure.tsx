@@ -123,7 +123,7 @@ export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: 
                 setSelectedDuration(null);
               }}
             >
-              ← Zurück zu {category?.name}
+              ← ZUR HAUPTSEITE
             </Button>
           </div>
 
@@ -205,7 +205,7 @@ export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: 
               className="text-zinc-500 hover:text-white"
               onClick={() => setSelectedCategory(null)}
             >
-              ← Zurück zum Trainings-Center
+              ← ZUR HAUPTSEITE
             </Button>
           </div>
 

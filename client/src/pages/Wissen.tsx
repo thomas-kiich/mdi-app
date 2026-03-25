@@ -45,7 +45,7 @@ export default function Wissen() {
         <header className="flex justify-between items-center mb-12">
           <Link href="/">
             <Button variant="ghost" className="text-zinc-400 hover:text-white pl-0">
-              <ArrowLeft className="mr-2 h-4 w-4" /> Zurück zur Analyse
+              <ArrowLeft className="mr-2 h-4 w-4" /> ZUR HAUPTSEITE
             </Button>
           </Link>
           

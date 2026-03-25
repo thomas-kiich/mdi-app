@@ -384,7 +384,7 @@ export function ConnectionStory({ onClose }: { onClose: () => void }) {
                   onClick={onClose} 
                   className="bg-white text-black hover:bg-gray-200 w-full sm:w-auto font-medium"
                 >
-                  Zurück zur Analyse <ArrowRight className="ml-2 h-4 w-4" />
+                  ZUR HAUPTSEITE <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
             </motion.div>
@@ -408,7 +408,7 @@ export function ConnectionStory({ onClose }: { onClose: () => void }) {
           onClick={onClose} 
           className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
         >
-          Zur Übersicht
+          ZUR HAUPTSEITE
         </Button>
       </div>
       

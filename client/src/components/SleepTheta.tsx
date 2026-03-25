@@ -208,7 +208,7 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
             className="text-zinc-400 hover:text-white mb-8"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            Zurück
+            ZUR HAUPTSEITE
           </Button>
 
           <div className="flex-1 flex flex-col justify-center">
@@ -291,7 +291,7 @@ export function SleepTheta({ onClose }: SleepThetaProps) {
             className="text-zinc-400 hover:text-white mb-4"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
-            Zurück
+            ZUR HAUPTSEITE
           </Button>
           <h2 className="text-3xl font-bold text-white">Schlaf & Theta-Wellen</h2>
           <div className="w-24" /> {/* Spacer for alignment */}

@@ -136,7 +136,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
             onClick={onClose}
             className="text-zinc-400 hover:text-white hover:bg-zinc-800"
           >
-            <ArrowLeft className="mr-2 h-4 w-4" /> Zurück
+            <ArrowLeft className="mr-2 h-4 w-4" /> ZUR HAUPTSEITE
           </Button>
           
           <h1 className="text-xl font-bold flex items-center gap-2">

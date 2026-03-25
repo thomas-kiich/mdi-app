@@ -400,7 +400,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                   <Camera className="mr-2 h-4 w-4" /> Snapshot
               </Button>
               <Button variant="outline" onClick={onClose} className="rounded-full border-white/20 text-white hover:bg-white/10 ml-2">
-                  <X className="mr-2 h-4 w-4" /> Zur Übersicht
+                  <X className="mr-2 h-4 w-4" /> ZUR HAUPTSEITE
               </Button>
           </div>
       </div>
@@ -590,7 +590,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                                   <Download className="mr-2 h-4 w-4" /> Speichern
                               </Button>
                               <Button variant="outline" className="flex-1 border-zinc-700 text-white" onClick={() => setShowShareCard(false)}>
-                                  Schließen
+                                  ZUR HAUPTSEITE
                               </Button>
                           </div>
                       </motion.div>

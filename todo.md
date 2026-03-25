@@ -391,4 +391,5 @@
 - [x] Remove 'dein' from the headline 'Die Chance auf dein selbstbestimmtes Dasein' on the start page
 - [x] Fix the issue where the Lichtklangmatrix is not visible in the Frequenzlabor
 - [x] Update the instruction texts in the Frequenzlabor (Lichtklangmatrix)
+- [x] Unify the return to home/main page button across all views to use 'ZUR HAUPTSEITE'
 - [ ] Generate and integrate voice guidance for voice analysis steps

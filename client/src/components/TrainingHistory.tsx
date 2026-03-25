@@ -62,7 +62,7 @@ export function TrainingHistory({ onClose }: TrainingHistoryProps) {
                         className="text-zinc-400 hover:text-white"
                     >
                         <ArrowLeft className="w-5 h-5 mr-2" />
-                        Zurück
+                        ZUR HAUPTSEITE
                     </Button>
                     <h2 className="text-2xl font-bold text-white">Trainings-Verlauf</h2>
                     {history.length > 0 && (
