@@ -252,11 +252,11 @@ export function KnowledgePool({ onClose, initialTab = "method", initialToneId }:
         <div className="flex items-center gap-4">
           <Button 
             variant="ghost" 
-            size="icon" 
             onClick={onClose}
-            className="rounded-full hover:bg-zinc-800 text-zinc-400 hover:text-white"
+            className="hover:bg-zinc-800 text-zinc-400 hover:text-white px-4"
           >
-            <ArrowLeft className="w-6 h-6" />
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            ZUR HAUPTSEITE
           </Button>
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight">Wissenspool</h1>

@@ -847,7 +847,7 @@ export default function Home() {
               <div className="flex gap-2">
                  {/* Back to Dashboard if not on dashboard */}
                  <Button variant="ghost" size="sm" className="text-zinc-500 hover:text-white" onClick={() => setCurrentStep("dashboard")}>
-                     <ArrowLeft className="mr-2 w-4 h-4" /> Dashboard
+                     <ArrowLeft className="mr-2 w-4 h-4" /> ZUR HAUPTSEITE
                  </Button>
               </div>
               <div className="flex gap-2">

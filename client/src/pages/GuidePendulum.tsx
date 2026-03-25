@@ -12,11 +12,11 @@ export function GuidePendulum() {
         <h1 className="text-2xl font-light tracking-wider">ANLEITUNG</h1>
         <Button 
           variant="ghost" 
-          size="icon"
           onClick={() => setLocation('/')}
           className="text-white/70 hover:text-white hover:bg-white/10"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-5 h-5 mr-2" />
+          ZUR HAUPTSEITE
         </Button>
       </header>
 
