@@ -392,4 +392,5 @@
 - [x] Fix the issue where the Lichtklangmatrix is not visible in the Frequenzlabor
 - [x] Update the instruction texts in the Frequenzlabor (Lichtklangmatrix)
 - [x] Unify the return to home/main page button across all views to use 'ZUR HAUPTSEITE'
+- [x] Change 'Neuer Podcast' to 'DAS HÖRBUCH' on the start page
 - [ ] Generate and integrate voice guidance for voice analysis steps

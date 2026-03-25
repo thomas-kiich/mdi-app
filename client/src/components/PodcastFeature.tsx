@@ -41,7 +41,7 @@ export function PodcastFeature({
           <div className="md:col-span-2 p-6 space-y-4">
             <div>
               <p className="text-sm font-mono text-red-500 uppercase tracking-widest mb-2">
-                📚 Neuer Podcast
+                📚 DAS HÖRBUCH
               </p>
               <h2 className="text-3xl md:text-4xl font-bold mb-2">
                 <span className="text-red-500">{title.split(" ")[0]}</span>
