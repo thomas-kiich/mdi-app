@@ -970,6 +970,7 @@ export default function Home() {
           ) : showTrainingCenter ? (
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
               <TrainingCategoryStructure
+                onClose={() => setShowTrainingCenter(false)}
                 onStartTraining={(item, duration) => {
                   setSelectedTrainingDuration(duration);
                   setSelectedTrainingItem(item.id);
@@ -985,12 +986,6 @@ export default function Home() {
                   setShowTrainingCenter(false);
                 }}
               />
-              <button
-                onClick={() => setShowTrainingCenter(false)}
-                className="fixed top-4 right-4 z-50 p-2 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-orange-500 text-zinc-400 hover:text-orange-500 transition-colors"
-              >
-                ✕
-              </button>
             </div>
           ) : showTrainingDurationSelect ? (
              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronRight, AlertCircle, BookOpen } from "lucide-react";
+import { ChevronRight, AlertCircle, BookOpen, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface TrainingItem {
@@ -24,6 +24,7 @@ interface TrainingCategory {
 interface TrainingCategoryStructureProps {
   onStartTraining?: (item: TrainingItem, duration: number) => void;
   onOpenKnowledge?: () => void;
+  onClose?: () => void;
 }
 
 const TRAINING_CATEGORIES: TrainingCategory[] = [
@@ -94,7 +95,11 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
   },
 ];
 
-export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: TrainingCategoryStructureProps = {}) {
+export function TrainingCategoryStructure({ 
+  onStartTraining,
+  onOpenKnowledge,
+  onClose
+}: TrainingCategoryStructureProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
@@ -251,9 +256,19 @@ export function TrainingCategoryStructure({ onStartTraining, onOpenKnowledge }: 
   // Layer 1: Main Training Center
   return (
     <div className="min-h-screen bg-black text-foreground">
-      <div className="container max-w-4xl mx-auto px-4 py-8">
+      <div className="container max-w-4xl mx-auto px-4 pt-24 pb-8">
         {/* Header */}
         <div className="mb-12">
+          {onClose && (
+            <Button 
+              variant="ghost" 
+              onClick={onClose}
+              className="text-zinc-400 hover:text-white mb-8 -ml-4"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              ZUR HAUPTSEITE
+            </Button>
+          )}
           <h1 className="text-5xl font-bold mb-8">Trainings-Center</h1>
           
           {/* Intro Text */}
