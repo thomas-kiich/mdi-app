@@ -10,6 +10,7 @@ import { TrainingCenter } from "@/components/TrainingCenter";
 
 import frequencyDataRaw from "@/lib/frequencyData.json";
 import { useToast } from "@/hooks/use-toast";
+import { ToneColorExplorer } from "@/components/ToneColorExplorer";
 
 // Define FrequencyDataItem locally to avoid import issues
 interface FrequencyDataItem {
@@ -411,6 +412,10 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
               ref={canvasRef} 
               className="absolute inset-0 w-full h-full pointer-events-none opacity-0 z-0"
           />
+          
+          <div className="absolute inset-0 z-10 flex flex-col pt-8 px-4">
+              <ToneColorExplorer liveFrequency={currentFreq} />
+          </div>
           
           {/* Info Panel - Mobile Optimized (Bottom Sheet style) */}
           <AnimatePresence>

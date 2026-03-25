@@ -389,4 +389,5 @@
 - [x] Restore the click functionality in the HarmonicSpectrumChart to open the KnowledgePool
 - [x] Remove the hint under 'Maschinen atmen nicht' on the start page
 - [x] Remove 'dein' from the headline 'Die Chance auf dein selbstbestimmtes Dasein' on the start page
+- [x] Fix the issue where the Lichtklangmatrix is not visible in the Frequenzlabor
 - [ ] Generate and integrate voice guidance for voice analysis steps
