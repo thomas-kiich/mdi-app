@@ -399,4 +399,6 @@
 - [x] Add the 'ZUR HAUPTSEITE' button to the main selection view of the TrainingCenter
 - [x] Add top padding to the TrainingCenter main view so the header is not stuck to the top edge
 - [x] Fix the missing 'ZUR HAUPTSEITE' button and top padding in the actual component rendered for the TrainingCenter overview
+- [x] Add a button 'Hier die App auf dein Handy laden' on the start page
+- [x] Create a modal with instructions on how to install the PWA on iOS and Android
 - [ ] Generate and integrate voice guidance for voice analysis steps

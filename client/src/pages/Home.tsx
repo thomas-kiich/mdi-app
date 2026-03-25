@@ -30,8 +30,9 @@ import { AnalysisHistory } from "@/components/AnalysisHistory";
 import { OnboardingTour } from "@/components/OnboardingTour";
 import { PodcastFeature } from "@/components/PodcastFeature";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
+import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
@@ -140,6 +141,7 @@ export default function Home() {
   const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
   const [showSleepTheta, setShowSleepTheta] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
 
   // Show onboarding tour on first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -370,6 +372,15 @@ export default function Home() {
                   youtubeUrl=""
                   spotifyUrl=""
                 />
+              </div>
+              <div className="container max-w-6xl mx-auto px-4 flex justify-center mb-4">
+                <button
+                  onClick={() => setShowAppInstallGuide(true)}
+                  className="flex items-center gap-2 px-6 py-3 bg-zinc-800/50 hover:bg-zinc-800 border border-zinc-700/50 hover:border-orange-500/50 rounded-full text-zinc-300 hover:text-white transition-all group"
+                >
+                  <Smartphone className="w-5 h-5 text-orange-500 group-hover:scale-110 transition-transform" />
+                  <span>Hier die App auf dein Handy laden</span>
+                </button>
               </div>
               <Dashboard 
                 onStartAnalysis={() => setCurrentStep("intro")}
@@ -1043,6 +1054,10 @@ export default function Home() {
                 </div>
             </footer>
         )}
+        {showAppInstallGuide && (
+          <AppInstallGuide onClose={() => setShowAppInstallGuide(false)} />
+        )}
+
         {/* Global Audio Element for Ambient Trainers */}
         <audio
           id="ambient-audio"
