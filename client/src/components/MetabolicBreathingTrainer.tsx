@@ -147,12 +147,11 @@ export function MetabolicBreathingTrainer({ frequency, toneName, color, audioMod
                         <span className="text-blue-500 font-mono text-sm tracking-widest uppercase">Stoffwechsel-Atmung</span>
                     </div>
                     <Button 
-                        variant="ghost" 
-                        size="icon"
+                        variant="outline" 
                         onClick={onClose}
-                        className="text-zinc-500 hover:text-white hover:bg-white/10 rounded-full"
+                        className="rounded-full border-white/20 text-white hover:bg-white/10 hover:text-white"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="mr-2 h-4 w-4" /> ZUR HAUPTSEITE
                     </Button>
                 </div>
 

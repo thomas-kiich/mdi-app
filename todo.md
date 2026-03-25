@@ -395,4 +395,5 @@
 - [x] Change 'Neuer Podcast' to 'DAS HÖRBUCH' on the start page
 - [x] Ensure ALL 'return to main page' buttons across the entire app are unified to 'ZUR HAUPTSEITE'
 - [x] Add 'ZUR HAUPTSEITE' return buttons to the TrainingCenter and TrainingHistory components
+- [x] Ensure 'ZUR HAUPTSEITE' buttons are present and visible in all sub-views of the TrainingCenter (Method36Trainer, MetabolicBreathingTrainer, IntervalTrainer)
 - [ ] Generate and integrate voice guidance for voice analysis steps

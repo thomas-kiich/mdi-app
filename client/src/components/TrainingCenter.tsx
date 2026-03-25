@@ -36,13 +36,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
                 toneName={toneName}
                 color={color}
                 duration={selectedDuration}
-                onClose={() => {
-                    if (initialMode === 'YOHN') {
-                        onClose();
-                    } else {
-                        setMode('SELECTION');
-                    }
-                }}
+                onClose={onClose}
             />
         );
     }
@@ -54,7 +48,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
                 toneName={toneName}
                 color={color}
                 audioModule={selectedAudioModule}
-                onClose={() => setMode('SELECTION')}
+                onClose={onClose}
             />
         );
     }
@@ -65,7 +59,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
         return (
             <IntervalTrainer 
                 baseTone={toneObj}
-                onClose={() => setMode('SELECTION')}
+                onClose={onClose}
             />
         );
     }
@@ -73,7 +67,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
     if (mode === 'HISTORY') {
         return (
             <TrainingHistory 
-                onClose={() => setMode('SELECTION')}
+                onClose={onClose}
             />
         );
     }

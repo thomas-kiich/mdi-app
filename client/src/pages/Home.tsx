@@ -883,12 +883,14 @@ export default function Home() {
           {showHistory ? (
              <div className="fixed inset-0 z-50 bg-black overflow-y-auto pt-24">
                 <div className="container max-w-4xl mx-auto px-4 py-8 relative">
-                  <button
-                    onClick={() => setShowHistory(false)}
-                    className="absolute top-4 right-4 z-50 p-2 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-orange-500 text-zinc-400 hover:text-orange-500 transition-colors"
-                  >
-                    ✕
-                  </button>
+	                  <Button
+	                    variant="ghost"
+	                    onClick={() => setShowHistory(false)}
+	                    className="absolute top-4 left-4 z-50 text-zinc-400 hover:text-white"
+	                  >
+	                    <ArrowLeft className="w-5 h-5 mr-2" />
+	                    ZUR HAUPTSEITE
+	                  </Button>
                   <AnalysisHistory />
                 </div>
              </div>
