@@ -390,4 +390,5 @@
 - [x] Remove the hint under 'Maschinen atmen nicht' on the start page
 - [x] Remove 'dein' from the headline 'Die Chance auf dein selbstbestimmtes Dasein' on the start page
 - [x] Fix the issue where the Lichtklangmatrix is not visible in the Frequenzlabor
+- [x] Update the instruction texts in the Frequenzlabor (Lichtklangmatrix)
 - [ ] Generate and integrate voice guidance for voice analysis steps

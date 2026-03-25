@@ -202,19 +202,26 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
           LICHTKLANG MATRIX
         </CardTitle>
         <div className="text-sm text-zinc-400 mt-4 space-y-4">
-          <p className="font-medium text-white">Du hast zwei Möglichkeiten mit der LKM zu arbeiten:</p>
+          <p className="font-medium text-white">DU hast drei Möglichkeiten mit der LKM zu arbeiten:</p>
           
           <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/50">
-            <h4 className="font-semibold text-orange-400 mb-2">1) Matrix direkt erkunden</h4>
+            <h4 className="font-semibold text-orange-400 mb-2">1 - DIE MATRIX INTUITIV ERFORSCHEN</h4>
             <p className="leading-relaxed">
-              Du kannst direkt mit dem Cursor alle 24 Frequenzen abhören. Lasse einen Klang mit seiner exakt synchronisierten Lichtfarbe intuitiv auf dich einwirken. Es erscheint ein Infofeld mit dem zentralen Begriff und den Codedaten. Wichtig ist für dich die Typnummer, weil du diese deiner Stimmklangaura zuordnen kannst (sofern du deinen Stimmklang schon analysiert hast). Wenn du mit dieser Frequenz arbeiten möchtest, klickst du dieses Feld an und es erscheint eine detailgenaue Beschreibung dazu. Du kannst sogar sofort in das YOHN-Training mit deiner gewählten Lichtklangfrequenz (LKF) einsteigen und dich mit dieser Frequenz aktivieren.
+              Lass dich inspirieren indem du die 96 Segmente der Matrix auf dich wirken lässt. Wenn du über einem Segment innehältst (Curser oder Fingertip) hörst du den Klang der Farbe dazu. Wenn du dieses Feld anklickst erhältst du weitere Informationen dazu. Zudem kannst du mit dem gewählten Lichtklang direkt in das YOHNtraining einsteigen.
             </p>
           </div>
 
           <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/50">
-            <h4 className="font-semibold text-orange-400 mb-2">2) Live-Scanner nutzen</h4>
+            <h4 className="font-semibold text-orange-400 mb-2">2 - MEIN LEBENSKLANG</h4>
             <p className="leading-relaxed">
-              Du kannst auf den START-Button klicken und einen Ton summen – der Scanner zeigt dir exakt die Lichtklangfrequenz an. Wenn du den Button <strong>"DIESEN TON VERWENDEN"</strong> drückst, erscheint wiederum das detaillierte Arbeitsfeld mit den Optionen.
+              Wenn du deinen LEBENSKLANG schon kennst (aus der Stimmklanganalyse) kannst du das entsprechende Segment in der LKM wählen und direkt zum YOHNtraining wechseln.
+            </p>
+          </div>
+
+          <div className="bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/50">
+            <h4 className="font-semibold text-orange-400 mb-2">3 - LIVE SCANNER</h4>
+            <p className="leading-relaxed">
+              Wenn du den START button unterhalb der LKM drückst und einen Ton summst zeigt dir die LKM welchen Lichtklang du in deinem Körper aktivierst. Wenn du auf den Button DIESEN TON VERWENDEN drückst, erscheint weitere Information und die Möglichkeit ein YOHNtraining mit diesem Lichtklang zu absolvieren.
             </p>
           </div>
         </div>
