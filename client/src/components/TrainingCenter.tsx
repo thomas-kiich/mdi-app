@@ -98,7 +98,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
                         className="text-zinc-400 hover:text-white"
                     >
                         <HistoryIcon className="w-5 h-5 mr-2" />
-                        Verlauf
+                        MEINE ANALYSEN
                     </Button>
                 </div>
 

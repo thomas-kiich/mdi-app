@@ -394,4 +394,5 @@
 - [x] Unify the return to home/main page button across all views to use 'ZUR HAUPTSEITE'
 - [x] Change 'Neuer Podcast' to 'DAS HÖRBUCH' on the start page
 - [x] Ensure ALL 'return to main page' buttons across the entire app are unified to 'ZUR HAUPTSEITE'
+- [x] Add 'ZUR HAUPTSEITE' return buttons to the TrainingCenter and TrainingHistory components
 - [ ] Generate and integrate voice guidance for voice analysis steps
