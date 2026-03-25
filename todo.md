@@ -397,4 +397,5 @@
 - [x] Add 'ZUR HAUPTSEITE' return buttons to the TrainingCenter and TrainingHistory components
 - [x] Ensure 'ZUR HAUPTSEITE' buttons are present and visible in all sub-views of the TrainingCenter (Method36Trainer, MetabolicBreathingTrainer, IntervalTrainer)
 - [x] Add the 'ZUR HAUPTSEITE' button to the main selection view of the TrainingCenter
+- [x] Add top padding to the TrainingCenter main view so the header is not stuck to the top edge
 - [ ] Generate and integrate voice guidance for voice analysis steps

@@ -74,7 +74,7 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
 
     return (
         <div className="fixed inset-0 z-50 bg-black overflow-y-auto p-4 animate-in fade-in duration-300">
-            <div className="w-full max-w-6xl mx-auto py-8">
+            <div className="w-full max-w-6xl mx-auto pt-24 pb-12">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-12">
                     <Button 
