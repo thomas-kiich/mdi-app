@@ -401,4 +401,5 @@
 - [x] Fix the missing 'ZUR HAUPTSEITE' button and top padding in the actual component rendered for the TrainingCenter overview
 - [x] Add a button 'Hier die App auf dein Handy laden' on the start page
 - [x] Create a modal with instructions on how to install the PWA on iOS and Android
+- [x] Implement automatic update mechanism (cache-busting/service worker update) for the mobile PWA
 - [ ] Generate and integrate voice guidance for voice analysis steps
