@@ -118,13 +118,23 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
   }, []);
 
   const trainingNames = {
-    metabolic: 'Stoffwechsel-Atmung',
-    mayerwelle: 'MAYERWELLE 5.5'
+    metabolic: 'STOFFWECHSELATMUNG',
+    mayerwelle: 'MAYERWELLE 5,5 / MW'
   };
 
-  const trainingDescriptions = {
-    metabolic: 'Harmonisierende Hintergrundmusik für optimale Stoffwechselaktivierung',
-    mayerwelle: 'Langform-Beschallung für tiefe Entspannung und Raumenergieaktivierung'
+  const trainingDetails = {
+    metabolic: {
+      optimaleNutzung: 'Verwende die SWA als Hintergrundsound um ein harmonisches Umfeld zu unterstützen und deinen Atemzyklus auf die optimale Rhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).',
+      wirkung: 'Dein Unterbewusstsein beginnt, den optimalen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du wirst zunehmend ruhiger und beginnst tief zu regenerieren. Ideal für echte Erholungsphasen zwischendurch oder zur Stimulierung einer meditativen Raumatmosphäre.',
+      anwendung: 'Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = AUSatmen (höre genau hin, das Gongsignal ist sanft in die Musik eingebettet).',
+      wichtig: 'Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !'
+    },
+    mayerwelle: {
+      optimaleNutzung: 'Verwende die MW als Hintergrundsound um ein regenerierendes Umfeld zu unterstützen und deinen Atemzyklus auf eine optimale Atemrhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).',
+      wirkung: 'Dein Unterbewusstsein beginnt, einen förderlichen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du bleibst entspannter und gleichzeitig erfrischt (Wasserrauschen) während deiner aktiven Tätigkeiten.',
+      anwendung: 'Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = HALTEN / dritter Gong = AUSatmen.',
+      wichtig: 'Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !'
+    }
   };
 
   return (
@@ -205,9 +215,6 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
             <CardTitle className="text-2xl font-bold text-center bg-gradient-to-r from-orange-400 to-amber-600 bg-clip-text text-transparent">
               {trainingNames[trainingId]}
             </CardTitle>
-            <p className="text-center text-zinc-400 mt-2 text-sm">
-              {trainingDescriptions[trainingId]}
-            </p>
           </div>
         </CardHeader>
 
@@ -288,10 +295,19 @@ export function AmbientTrainer({ trainingId, duration, audioUrl, baseTone, onClo
             </Button>
           </div>
 
-          {/* Info Text */}
-          <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4">
-            <p className="text-xs text-zinc-400">
-              💡 Für beste Ergebnisse: Finde einen ruhigen Ort, entspanne dich und höre die Musik mit angenehmer Lautstärke.
+          {/* Detailed Info */}
+          <div className="bg-zinc-800/40 border border-zinc-700/50 rounded-lg p-4 space-y-3 text-left max-h-48 overflow-y-auto custom-scrollbar">
+            <p className="text-xs text-zinc-300 leading-relaxed">
+              <strong className="text-orange-400">OPTIMALE NUTZUNG:</strong> {trainingDetails[trainingId].optimaleNutzung}
+            </p>
+            <p className="text-xs text-zinc-300 leading-relaxed">
+              <strong className="text-orange-400">WIRKUNG:</strong> {trainingDetails[trainingId].wirkung}
+            </p>
+            <p className="text-xs text-zinc-300 leading-relaxed">
+              <strong className="text-orange-400">ANWENDUNG:</strong> {trainingDetails[trainingId].anwendung}
+            </p>
+            <p className="text-xs text-zinc-300 leading-relaxed">
+              <strong className="text-orange-400">WICHTIG:</strong> {trainingDetails[trainingId].wichtig}
             </p>
           </div>
         </CardContent>

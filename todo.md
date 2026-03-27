@@ -403,3 +403,13 @@
 - [x] Create a modal with instructions on how to install the PWA on iOS and Android
 - [x] Implement automatic update mechanism (cache-busting/service worker update) for the mobile PWA
 - [ ] Generate and integrate voice guidance for voice analysis steps
+
+
+## Text Updates for Training Center
+- [x] Update Stoffwechselatmung (SWA) component
+  - Remove exclamation mark button ("Für beste Ergebnisse...") and its follow-up text.
+  - Update headline to "STOFFWECHSELATMUNG"
+  - Update texts for OPTIMALE NUTZUNG, WIRKUNG, ANWENDUNG, WICHTIG.
+- [x] Update Mayerwelle 5,5 (MW) component
+  - Update headline to "MAYERWELLE 5,5 / MW"
+  - Update texts for OPTIMALE NUTZUNG, WIRKUNG, ANWENDUNG, WICHTIG.

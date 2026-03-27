@@ -72,8 +72,8 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
     items: [
       {
         id: "metabolic",
-        name: "Stoffwechselatmung",
-        description: "Hintergrundmusik zur Stoffwechseloptimierung",
+        name: "STOFFWECHSELATMUNG",
+        description: "OPTIMALE NUTZUNG: Verwende die SWA als Hintergrundsound um ein harmonisches Umfeld zu unterstützen und deinen Atemzyklus auf die optimale Rhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).\n\nWIRKUNG: Dein Unterbewusstsein beginnt, den optimalen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du wirst zunehmend ruhiger und beginnst tief zu regenerieren. Ideal für echte Erholungsphasen zwischendurch oder zur Stimulierung einer meditativen Raumatmosphäre.\n\nANWENDUNG: Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = AUSatmen (höre genau hin, das Gongsignal ist sanft in die Musik eingebettet).\n\nWICHTIG: Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !",
         durations: [7, 21],
         audioUrls: {
           7: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/platonischesJAHR_7min.wav",
@@ -83,8 +83,8 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
       },
       {
         id: "mayerwelle",
-        name: "MAYERWELLE 5.5",
-        description: "Langbeschallung für tiefe Entspannung und Harmonisierung",
+        name: "MAYERWELLE 5,5 / MW",
+        description: "OPTIMALE NUTZUNG: Verwende die MW als Hintergrundsound um ein regenerierendes Umfeld zu unterstützen und deinen Atemzyklus auf eine optimale Atemrhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).\n\nWIRKUNG: Dein Unterbewusstsein beginnt, einen förderlichen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du bleibst entspannter und gleichzeitig erfrischt (Wasserrauschen) während deiner aktiven Tätigkeiten.\n\nANWENDUNG: Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = HALTEN / dritter Gong = AUSatmen.\n\nWICHTIG: Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !",
         durations: [45],
         audioUrls: {
           45: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/llGeZhyAsOhattjj.wav",
@@ -136,7 +136,7 @@ export function TrainingCategoryStructure({
           <Card className="bg-zinc-900/50 border-zinc-800">
             <CardHeader>
               <CardTitle className="text-2xl">{item.name}</CardTitle>
-              <p className="text-zinc-400 mt-2">{item.description}</p>
+              <div className="text-zinc-400 mt-2 whitespace-pre-wrap">{item.description}</div>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Duration Selection */}
@@ -183,13 +183,7 @@ export function TrainingCategoryStructure({
                 {selectedDuration ? `Training starten (${selectedDuration} Min)` : "Dauer wählen"}
               </Button>
 
-              {/* Info Box */}
-              <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 flex gap-3">
-                <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-zinc-300">
-                  Stelle sicher, dass du in einer ruhigen Umgebung bist und dich wohlfühlst, bevor du das Training startest.
-                </p>
-              </div>
+
             </CardContent>
           </Card>
         </div>
@@ -233,7 +227,7 @@ export function TrainingCategoryStructure({
                 <CardContent className="p-6 flex items-center justify-between">
                   <div className="flex-1">
                     <h3 className="text-lg font-semibold mb-1">{item.name}</h3>
-                    <p className="text-sm text-zinc-400">{item.description}</p>
+                    <p className="text-sm text-zinc-400 line-clamp-2">{item.description}</p>
                   </div>
                   <ChevronRight className="w-5 h-5 text-zinc-500 flex-shrink-0" />
                 </CardContent>
