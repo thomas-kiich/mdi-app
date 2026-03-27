@@ -934,10 +934,10 @@ export default function Home() {
             />
           ) : showDirectTrainer && selectedTrainingItem === "yohn" ? (
              <Method36Trainer
-                frequency={finalResult?.fundamentalFreq || mdiResult?.frequency || 95}
-                toneName={finalResult?.tone?.name || "F"}
-                color={mdiResult?.hex || "#FF4444"}
-                typeId={mdiResult?.id}
+                frequency={finalResult?.fundamentalFreq || mdiResult?.frequency || 97.2}
+                toneName={finalResult?.tone?.name || "G"}
+                color={mdiResult?.hex || "#ff5757"}
+                typeId={mdiResult?.id || 19}
                 duration={selectedTrainingDuration || 7}
                 onClose={() => {
                   setShowDirectTrainer(false);

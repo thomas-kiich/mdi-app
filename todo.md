@@ -413,3 +413,5 @@
 - [x] Update Mayerwelle 5,5 (MW) component
   - Update headline to "MAYERWELLE 5,5 / MW"
   - Update texts for OPTIMALE NUTZUNG, WIRKUNG, ANWENDUNG, WICHTIG.
+
+- [x] Set default tone for YOHN-Atemtraining to TYP 19 when accessed directly.
