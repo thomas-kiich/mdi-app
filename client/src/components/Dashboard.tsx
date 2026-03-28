@@ -102,7 +102,7 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                                 Stimmklang -<br/>Analyse
                             </h2>
                             <p className="text-zinc-400 mb-8 leading-relaxed">
-                                Erforsche und nütze deinen LEBENSKLANG und die einzigartige LICHTSIGNATUR deines Körpers.
+                                Erforsche deinen LEBENSKLANG und die einzigartige Lichtsignatur deines Körpers.
                             </p>
 
                             <div className="mt-auto">
