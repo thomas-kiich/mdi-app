@@ -418,3 +418,5 @@
 
 -- [x] Update STIMMKLANGANALYSE text on homepage to: "Erforsche und nütze deinen LEBENSKLANG und die einzigartige LICHTSIGNATUR deines Körpers."
 - [x] Remove METHOD 36 intro page from Stimmklanganalyse flow.
+
+- [x] Implement PWA auto-update mechanism or update notification to ensure users get new versions easily.

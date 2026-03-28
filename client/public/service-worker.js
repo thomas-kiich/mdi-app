@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mdi-system-v2'; // Bumped version for auto-update
+const CACHE_NAME = 'mdi-system-v3';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -6,13 +6,19 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
-  self.skipWaiting(); // Force the waiting service worker to become the active service worker
+  // Wait for manual skipWaiting to avoid disrupting the user
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
         return cache.addAll(urlsToCache);
       })
   );
+});
+
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 self.addEventListener('activate', event => {
@@ -26,12 +32,11 @@ self.addEventListener('activate', event => {
           }
         })
       );
-    }).then(() => self.clients.claim()) // Take control of all clients immediately
+    }).then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', event => {
-  // Use Network First strategy for HTML documents to ensure the latest version is loaded
   if (event.request.mode === 'navigate') {
     event.respondWith(
       fetch(event.request).catch(() => caches.match(event.request))
@@ -39,12 +44,10 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Stale-While-Revalidate or Cache First strategy for other assets
   event.respondWith(
     caches.match(event.request)
       .then(response => {
         if (response) {
-          // Fetch the latest version in the background to keep cache fresh
           fetch(event.request).then(res => {
             if (res && res.status === 200) {
               caches.open(CACHE_NAME).then(cache => cache.put(event.request, res));
