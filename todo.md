@@ -415,3 +415,6 @@
   - Update texts for OPTIMALE NUTZUNG, WIRKUNG, ANWENDUNG, WICHTIG.
 
 - [x] Set default tone for YOHN-Atemtraining to TYP 19 when accessed directly.
+
+-- [x] Update STIMMKLANGANALYSE text on homepage to: "Erforsche und nütze deinen LEBENSKLANG und die einzigartige LICHTSIGNATUR deines Körpers."
+- [x] Remove METHOD 36 intro page from Stimmklanganalyse flow.
