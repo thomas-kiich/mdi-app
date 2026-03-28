@@ -420,3 +420,6 @@
 - [x] Remove METHOD 36 intro page from Stimmklanganalyse flow.
 
 - [x] Implement PWA auto-update mechanism or update notification to ensure users get new versions easily.
+
+- [x] Increase YOHN sound volume relative to water sound in YOHN training.
+- [x] Stop the full circle from pulsating and keep it stable and large in YOHN training.
