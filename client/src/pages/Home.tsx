@@ -56,7 +56,6 @@ import {
 // Define the steps of the wizard
 type WizardStep = 
   | "dashboard" // New start step
-  | "intro" 
   | "preparation" 
   | "question1" 
   | "question2" 
@@ -177,8 +176,7 @@ export default function Home() {
 
   // CORRECT NAVIGATION LOGIC
   const advanceStep = () => {
-      if (currentStep === "intro") setCurrentStep("preparation");
-      else if (currentStep === "preparation") setCurrentStep("question1");
+      if (currentStep === "preparation") setCurrentStep("question1");
       else if (currentStep === "question1") setCurrentStep("question2");
       else if (currentStep === "question2") setCurrentStep("question3");
       else if (currentStep === "question3") {
@@ -383,7 +381,7 @@ export default function Home() {
                 </button>
               </div>
               <Dashboard 
-                onStartAnalysis={() => setCurrentStep("intro")}
+                onStartAnalysis={() => setCurrentStep("preparation")}
                 onOpenTraining={() => setShowTrainingCenter(true)}
                 onOpenScanner={() => setShowSpectralScanner(true)}
                 onOpenKnowledge={() => setShowKnowledgePool(true)}
@@ -393,49 +391,6 @@ export default function Home() {
                 onOpenHistory={() => setShowHistory(true)}
               />
             </div>
-        );
-
-      case "intro":
-        return (
-          <div className="flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in duration-700">
-            
-            <div className="mb-8 relative">
-                 {/* Logo Container */}
-                 <div className="w-48 h-48 rounded-full bg-black border border-zinc-800 flex items-center justify-center relative overflow-hidden shadow-[0_0_50px_rgba(249,115,22,0.2)]">
-                     {/* Inner Glow */}
-                     <div className="absolute inset-0 bg-gradient-to-tr from-orange-500/20 to-transparent opacity-50" />
-                     
-                     {/* Logo Image - Adjusted Size and Position */}
-                     <img 
-                        src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/mdi_logo_neu_b556f8e7.jpg" 
-                        alt="MDI Logo" 
-                        className="w-40 h-40 object-contain relative z-10 translate-y-2" 
-                     />
-                 </div>
-            </div>
-
-            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tighter">
-              METHODE 36
-            </h1>
-            
-            <p className="text-xl text-zinc-400 max-w-2xl mb-12 leading-relaxed">
-              Entdecke deine wahre Frequenz und bringe Körper & Geist in Einklang.
-              <br/>
-              <span className="text-sm text-zinc-500 mt-4 block">
-                Schön, dass du da bist! Diese App hilft dir, deine energetische Signatur zu finden und zu harmonisieren.
-              </span>
-            </p>
-
-            <Button onClick={advanceStep} size="lg" className="rounded-full w-48 h-14 text-lg bg-white text-black hover:bg-zinc-200 transition-all hover:scale-105">
-              Weiter <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
-            
-            <div className="mt-16 flex gap-2 justify-center">
-                {[0, 1, 2, 3].map((_, i) => (
-                    <div key={i} className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-white' : 'bg-zinc-800'}`} />
-                ))}
-            </div>
-          </div>
         );
 
       case "preparation":

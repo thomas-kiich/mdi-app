@@ -276,8 +276,8 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
 
         const toneGain = ctx.createGain();
         toneGain.gain.setValueAtTime(0, ctx.currentTime);
-        // INCREASED TONE VOLUME (from 0.6 to 0.75 to cut through water sound)
-        toneGain.gain.linearRampToValueAtTime(0.75, ctx.currentTime + 0.5); 
+        // INCREASED TONE VOLUME (from 0.6 to 1.5 to cut through water sound)
+        toneGain.gain.linearRampToValueAtTime(1.5, ctx.currentTime + 0.5); 
         // Connect to Filter instead of Master directly
         toneGain.connect(filterRef.current); 
         toneGainRef.current = toneGain;
@@ -645,8 +645,8 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                     variants={{
                         IN: { scale: 1.0, opacity: 1, backgroundColor: color },
                         HOLD_FULL: { scale: 1.0, opacity: 0.9, backgroundColor: color },
-                        TONE: { scale: 0.35, opacity: 0.8, backgroundColor: color }, // Shrink
-                        HOLD_EMPTY: { scale: 0.35, opacity: 0.5, backgroundColor: color }
+                        TONE: { scale: 1.0, opacity: 0.8, backgroundColor: color }, // Keep large
+                        HOLD_EMPTY: { scale: 1.0, opacity: 0.5, backgroundColor: color } // Keep large
                     }}
                     transition={{ 
                         duration: phase === 'TONE' ? BEAT_DURATION * 3 : BEAT_DURATION, 
