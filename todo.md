@@ -415,3 +415,20 @@
   - Update texts for OPTIMALE NUTZUNG, WIRKUNG, ANWENDUNG, WICHTIG.
 
 - [x] Set default tone for YOHN-Atemtraining to TYP 19 when accessed directly.
+
+- [ ] Investigate and fix the error during the evaluation (Auswertung) phase of the voice analysis.
+
+- [x] Add expandable "Mehr lesen..." button to `PodcastFeature` component for long descriptions.
+- [x] Keep the title and subtitle visible.
+- [x] Verify the change looks good on both mobile and desktop.
+
+- [x] Reduce spacing between "Hier die App auf dein Handy laden" button and Logo/Header on Startseite.
+
+- [x] Apply 'Mehr lesen...' functionality to the description text under the 'METHODE 36' logo on the start page, keeping the first sentence visible.
+
+- [x] Update title to "LICHTKLANG Tabelle" and description to "Übersicht zu den 24 LICHTKLÄNGEN und deren Wirkungen." on the start page.
+
+- [x] Make dashboard cards more compact and change click area to a small orange text link.
+
+- [x] Verify that recent changes (Mehr lesen, spacing, card updates) are present in Dashboard.tsx and Home.tsx.
+- [x] Restart the development server to clear cache and ensure latest version is served.

@@ -1,6 +1,7 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Play, Music, BookOpen, ExternalLink } from "lucide-react";
+import { Play, Music, BookOpen, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 
 interface PodcastFeatureProps {
   youtubeUrl?: string;
@@ -19,6 +20,8 @@ export function PodcastFeature({
   subtitle,
   description,
 }: PodcastFeatureProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
     <Card className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border-red-800/50 overflow-hidden">
       <CardContent className="p-0">
@@ -49,7 +52,21 @@ export function PodcastFeature({
                 <span className="text-white">{title.split(" ").slice(1).join(" ")}</span>
               </h2>
               <p className="text-lg text-orange-400 font-semibold mb-4">{subtitle}</p>
-              <p className="text-zinc-300 leading-relaxed max-w-lg">{description}</p>
+              <div className="relative">
+                <div className={`text-zinc-300 leading-relaxed max-w-lg transition-all duration-300 ${!isExpanded ? 'line-clamp-4' : ''}`}>
+                  {description}
+                </div>
+                <button 
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="text-orange-400 hover:text-orange-300 text-sm font-medium flex items-center mt-2 transition-colors"
+                >
+                  {isExpanded ? (
+                    <><ChevronUp className="w-4 h-4 mr-1" /> Weniger anzeigen</>
+                  ) : (
+                    <><ChevronDown className="w-4 h-4 mr-1" /> Mehr lesen...</>
+                  )}
+                </button>
+              </div>
             </div>
 
             {/* Action Buttons */}

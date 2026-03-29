@@ -245,13 +245,21 @@ export default function Home() {
       }
     }
     
+    // Fallback if no audio was detected at all
+    if (!dominantMdiId) {
+        dominantMdiId = "1"; // Default to ID 1
+        combinedMdiDistribution["1"] = 100;
+        combinedDistribution["1"] = 100;
+    }
+    
     // If we have a winner, construct the final result
     if (dominantMdiId) {
       // Find the MDI data
       const mdiData = frequencyData.find(f => f.id === parseInt(dominantMdiId));
       // Use the mapping to get the actual tone name (E, Dis, D, etc.)
       const dominantToneName = getToneNameFromMdiId(dominantMdiId);
-      const toneData = TONES.find(t => t.name === dominantToneName);
+      const baseToneName = dominantToneName.replace('+', '');
+      const toneData = TONES.find(t => t.name === baseToneName);
       
       if (toneData && mdiData && dominantToneName) {
         // Determine the "Final Hz" for the result.
@@ -267,7 +275,7 @@ export default function Home() {
             // Check if this session's FUNDAMENTAL tone matches our dominant tone
             const fundCheck = getToneFromFrequency(res.fundamentalFreq);
             
-            if (fundCheck.tone.name === dominantToneName) {
+            if (fundCheck.tone.name === baseToneName) {
                 // This session actually measured our dominant tone as the fundamental!
                 // We prefer this real measurement.
                 if (mdiData && res.toneDistribution) {
@@ -570,7 +578,27 @@ export default function Home() {
         const res = isStudyComplete ? studyResult : finalResult;
         const mdi = isStudyComplete ? studyMdiResult : mdiResult;
 
-        if (!res || !mdi) return <div>Fehler bei der Auswertung.</div>;
+        if (!res || !mdi) return (
+            <div className="text-white p-8 pt-48 text-center">
+                <h2 className="text-2xl font-bold text-red-500 mb-4">Fehler bei der Auswertung.</h2>
+                <pre className="text-xs text-left bg-zinc-900 p-4 rounded-lg inline-block overflow-auto max-w-full">
+{`Debug Info:
+res: ${res ? 'ok' : 'missing'}
+mdi: ${mdi ? 'ok' : 'missing'}
+isStudyComplete: ${isStudyComplete ? 'yes' : 'no'}
+finalResult: ${finalResult ? 'ok' : 'missing'}
+mdiResult: ${mdiResult ? 'ok' : 'missing'}
+studyResult: ${studyResult ? 'ok' : 'missing'}
+studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
+`}
+                </pre>
+                <div className="mt-8">
+                    <Button onClick={() => window.location.reload()} variant="outline">
+                        Neu starten
+                    </Button>
+                </div>
+            </div>
+        );
 
         const handleDownloadResult = () => {
              setShowCertificate(true);
