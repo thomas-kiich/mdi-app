@@ -383,16 +383,19 @@ export default function Home() {
                   spotifyUrl=""
                   audioUrl="" // Platzhalter für die Podcast-Audiodatei
                   customAction={
-                    <button 
-                      onClick={() => setShowPodcast(true)}
-                      className="group flex items-center gap-3 bg-gradient-to-r from-orange-500/20 to-orange-600/20 hover:from-orange-500/30 hover:to-orange-600/30 border border-orange-500/30 px-6 py-3 rounded-full transition-all duration-300"
-                    >
-                      <div className="bg-orange-500/20 p-2 rounded-full group-hover:scale-110 transition-transform duration-300">
-                        <Headphones className="w-5 h-5 text-orange-400" />
-                      </div>
-                      <span className="font-bold text-orange-100 tracking-wide">SZENARIO 2026 PODCAST</span>
-                      <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
-                    </button>
+                    <div className="flex flex-col items-center gap-3 mt-2">
+                      <span className="text-orange-200/80 text-sm uppercase tracking-widest font-medium">Hier geht's zum...</span>
+                      <button 
+                        onClick={() => setShowPodcast(true)}
+                        className="group flex items-center gap-3 bg-gradient-to-r from-orange-500/20 to-orange-600/20 hover:from-orange-500/30 hover:to-orange-600/30 border border-orange-500/30 px-6 py-3 rounded-full transition-all duration-300"
+                      >
+                        <div className="bg-orange-500/20 p-2 rounded-full group-hover:scale-110 transition-transform duration-300">
+                          <Headphones className="w-5 h-5 text-orange-400" />
+                        </div>
+                        <span className="font-bold text-orange-100 tracking-wide">SZENARIO 2026 PODCAST</span>
+                        <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                    </div>
                   }
                 />
               </div>
