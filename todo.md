@@ -472,3 +472,6 @@
 - [ ] Notify user to test and publish
 
 - [x] Fix audio player type to support WAV in PodcastFeature component
+
+- [x] Convert WAV to MP3 and upload to CDN
+- [x] Update Home.tsx with the new MP3 URL
