@@ -168,7 +168,7 @@ export function FrequencyTable({ onClose }: FrequencyTableProps) {
             // Map saturation (0-100) to intensity levels (25, 50, 75, 100)
             const intensityLevel = Math.max(25, Math.round((saturation / 100) * 100 / 25) * 25);
             const matrixColor = colorMatrix[item.id]?.[intensityLevel as keyof typeof colorMatrix[typeof item.id]] || item.hex;
-            const displayColor = matrixColor;
+            const displayColor = saturation === 0 ? '#000000' : matrixColor;
 
             return (
               <div

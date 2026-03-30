@@ -432,3 +432,5 @@
 
 - [x] Verify that recent changes (Mehr lesen, spacing, card updates) are present in Dashboard.tsx and Home.tsx.
 - [x] Restart the development server to clear cache and ensure latest version is served.
+
+- [x] Update the frequency table so that when a slider value is 0%, the corresponding color block becomes black.
