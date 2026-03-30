@@ -104,7 +104,11 @@ export function Dashboard({
                         className="h-24 md:h-32 mx-auto mb-6 drop-shadow-lg cursor-pointer"
                         onClick={handleLogoClick}
                     />
-                    <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter mb-1">
+                    <h1 
+                        className="text-4xl md:text-6xl font-bold text-white tracking-tighter mb-1 cursor-pointer"
+                        onClick={handleLogoClick}
+                        title="Geheimer Premium-Schalter (5x klicken)"
+                    >
                         METHODE 36
                     </h1>
                     <p className="text-lg md:text-xl text-zinc-400 mb-6">
