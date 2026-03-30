@@ -437,3 +437,6 @@
 
 - [x] Update text for "Umfeldaktivierung" in Training Center: change to "...unterbewusste Beeinflussung wegnehmen und austauschen gegen Regulation..." and add "Zudem motivieren die eingearbeiteten Pulsationen zu einem optimalen Atemrhythmus."
 - [x] Remove text for "Stoffwechselatmung" and "Mayerwelle 5,5" in the Training Center main view.
+
+- [x] Remove the sentence starting with "Sie dienen..." from the "Umfeldaktivierung" description.
+- [x] Remove the last sentence starting with "Nutzen sie..." from the Training Center introduction text.

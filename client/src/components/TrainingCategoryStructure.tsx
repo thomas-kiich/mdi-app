@@ -68,7 +68,7 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
     id: "ambient",
     name: "4 - Umfeldaktivierung",
     icon: "✨",
-    description: "Übungen in diesem Segment dienen der Regulation des Umfelds durch sanfte Hintergrundkompositionen. Sie dienen der Harmonisierung, feinstofflichen Reinigung und Aktivierung der Raumenergien. Zudem motivieren die eingearbeiteten Pulsationen zu einem optimalen Atemrhythmus.",
+    description: "Übungen in diesem Segment dienen der Regulation des Umfelds durch sanfte Hintergrundkompositionen. Zudem motivieren die eingearbeiteten Pulsationen zu einem optimalen Atemrhythmus.",
     items: [
       {
         id: "metabolic",
@@ -287,11 +287,7 @@ export function TrainingCategoryStructure({
                     </span>
                   </p>
                 </div>
-                <div className="pt-4">
-                  <p>
-                    Nutzen Sie die umfassenden Angebote aus dem WISSENSPOOL für weiterführende Informationen über die natürlichen Qualitäten einer gesunden Atemkompetenz.
-                  </p>
-                </div>
+
               </div>
             </CardContent>
           </Card>
