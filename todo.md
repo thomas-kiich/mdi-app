@@ -440,3 +440,6 @@
 
 - [x] Remove the sentence starting with "Sie dienen..." from the "Umfeldaktivierung" description.
 - [x] Remove the last sentence starting with "Nutzen sie..." from the Training Center introduction text.
+
+- [x] Restore detailed descriptions for "Stoffwechselatmung" and "Mayerwelle 5,5" in the `TRAINING_CATEGORIES` array.
+- [x] Hide the descriptions for these two items only in the category list view (Layer 2) in `TrainingCategoryStructure.tsx`.
