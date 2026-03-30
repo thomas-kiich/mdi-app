@@ -77,7 +77,7 @@ export function PodcastFeature({
             {audioUrl && (
               <div className="pt-2">
                 <audio controls className="w-full h-12 rounded-md bg-zinc-900/50">
-                  <source src={audioUrl} type="audio/mpeg" />
+                  <source src={audioUrl} />
                   Dein Browser unterstützt das Audio-Element nicht.
                 </audio>
               </div>

@@ -470,3 +470,5 @@
 - [x] Update Wissenspool component to focus on Episode 01 and mark future chapters as "Demnächst verfügbar"
 - [ ] Save checkpoint
 - [ ] Notify user to test and publish
+
+- [x] Fix audio player type to support WAV in PodcastFeature component
