@@ -11,6 +11,7 @@ interface PodcastFeatureProps {
   title: string;
   subtitle: string;
   description: React.ReactNode;
+  customAction?: React.ReactNode;
 }
 
 export function PodcastFeature({
@@ -21,6 +22,7 @@ export function PodcastFeature({
   title,
   subtitle,
   description,
+  customAction,
 }: PodcastFeatureProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -108,11 +110,12 @@ export function PodcastFeature({
                   </a>
                 </Button>
               )}
-              {!youtubeUrl && !spotifyUrl && (
+              {!youtubeUrl && !spotifyUrl && !customAction && (
                 <div className="text-sm text-zinc-500 italic">
                   Links folgen in Kürze...
                 </div>
               )}
+              {customAction && customAction}
             </div>
 
           </div>

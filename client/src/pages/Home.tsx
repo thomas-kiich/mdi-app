@@ -32,7 +32,7 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
 import { SleepTheta } from "@/components/SleepTheta";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone, Headphones } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
@@ -382,6 +382,18 @@ export default function Home() {
                   youtubeUrl=""
                   spotifyUrl=""
                   audioUrl="" // Platzhalter für die Podcast-Audiodatei
+                  customAction={
+                    <button 
+                      onClick={() => setShowPodcast(true)}
+                      className="group flex items-center gap-3 bg-gradient-to-r from-orange-500/20 to-orange-600/20 hover:from-orange-500/30 hover:to-orange-600/30 border border-orange-500/30 px-6 py-3 rounded-full transition-all duration-300"
+                    >
+                      <div className="bg-orange-500/20 p-2 rounded-full group-hover:scale-110 transition-transform duration-300">
+                        <Headphones className="w-5 h-5 text-orange-400" />
+                      </div>
+                      <span className="font-bold text-orange-100 tracking-wide">SZENARIO 2026 PODCAST</span>
+                      <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  }
                 />
               </div>
               <div className="container max-w-6xl mx-auto px-4 flex justify-center mb-4">
@@ -401,8 +413,7 @@ export default function Home() {
                 onOpenTable={() => setShowFrequencyTable(true)}
                 onOpenVital={() => setShowVitalDashboard(true)}
                 onOpenSleep={() => setShowSleepTheta(true)}
-                onOpenHistory={() => setShowHistory(true)}
-                onOpenPodcast={() => setShowPodcast(true)}
+                onOpenHistory={() => {}}
                 isPremium={isPremium}
                 onTogglePremium={() => setIsPremium(!isPremium)}
               />
