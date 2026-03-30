@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronRight, AlertCircle, BookOpen, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { BasicColorSelector } from "@/components/BasicColorSelector";
 
 interface TrainingItem {
   id: string;
@@ -23,11 +24,19 @@ interface TrainingCategory {
 
 interface TrainingCategoryStructureProps {
   onStartTraining?: (item: TrainingItem, duration: number) => void;
+  onStartBasicTraining?: (freq: number, tone: string, color: string, typeId: number) => void;
   onOpenKnowledge?: () => void;
   onClose?: () => void;
 }
 
 const TRAINING_CATEGORIES: TrainingCategory[] = [
+  {
+    id: "befindlichkeit",
+    name: "BEFINDLICHKEITSTRAINING",
+    icon: "🌈",
+    description: "Wähle intuitiv deine momentane Stimmung und aktiviere dein Potential.",
+    items: [],
+  },
   {
     id: "breathing",
     name: "1 - Atemtraining",
@@ -97,6 +106,7 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
 
 export function TrainingCategoryStructure({ 
   onStartTraining,
+  onStartBasicTraining,
   onOpenKnowledge,
   onClose
 }: TrainingCategoryStructureProps) {
@@ -192,6 +202,41 @@ export function TrainingCategoryStructure({
   }
 
   if (category) {
+    if (category.id === "befindlichkeit") {
+      return (
+        <div className="min-h-screen bg-black text-foreground">
+          <div className="container max-w-6xl mx-auto px-4 py-8">
+            {/* Back Navigation */}
+            <div className="flex gap-2 mb-8">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-zinc-500 hover:text-white"
+                onClick={() => setSelectedCategory(null)}
+              >
+                ← ZUR HAUPTSEITE
+              </Button>
+            </div>
+            
+            <div className="mb-8 max-w-3xl mx-auto text-center">
+              <h1 className="text-4xl font-bold mb-4">{category.name}</h1>
+              <p className="text-zinc-300 text-lg leading-relaxed">
+                {category.description}
+              </p>
+            </div>
+
+            <BasicColorSelector 
+              onStartTraining={(freq, tone, color, typeId) => {
+                if (onStartBasicTraining) {
+                  onStartBasicTraining(freq, tone, color, typeId);
+                }
+              }} 
+            />
+          </div>
+        </div>
+      );
+    }
+
     // Layer 2: Category with Items
     return (
       <div className="min-h-screen bg-black text-foreground">

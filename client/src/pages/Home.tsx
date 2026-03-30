@@ -142,7 +142,7 @@ export default function Home() {
   const [showSleepTheta, setShowSleepTheta] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
-  const [showBasicColorSelector, setShowBasicColorSelector] = useState(false);
+
   const [basicTrainingData, setBasicTrainingData] = useState<{freq: number, tone: string, color: string, typeId: number} | null>(null);
 
   // Show onboarding tour on first visit
@@ -394,7 +394,7 @@ export default function Home() {
               </div>
               <Dashboard 
                 onStartAnalysis={() => setCurrentStep("preparation")}
-                onOpenTraining={() => setShowBasicColorSelector(true)}
+                onOpenTraining={() => setShowTrainingCenter(true)}
                 onOpenScanner={() => setShowSpectralScanner(true)}
                 onOpenKnowledge={() => setShowKnowledgePool(true)}
                 onOpenTable={() => setShowFrequencyTable(true)}
@@ -971,27 +971,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                  setSelectedTrainingItem(null);
                }}
              />
-          ) : showBasicColorSelector ? (
-            <div className="fixed inset-0 z-50 bg-black overflow-y-auto pt-24 pb-12 px-4">
-              <div className="max-w-6xl mx-auto">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => setShowBasicColorSelector(false)}
-                  className="text-zinc-400 hover:text-white mb-8"
-                >
-                  <ArrowLeft className="w-5 h-5 mr-2" />
-                  ZUR HAUPTSEITE
-                </Button>
-                <BasicColorSelector 
-                  onStartTraining={(freq, tone, color, typeId) => {
-                    setBasicTrainingData({freq, tone, color, typeId});
-                    setShowBasicColorSelector(false);
-                    setSelectedTrainingItem("yohn");
-                    setShowDirectTrainer(true);
-                  }} 
-                />
-              </div>
-            </div>
           ) : showTrainingCenter ? (
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
               <TrainingCategoryStructure
@@ -1006,6 +985,11 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     // Ambient trainings - show ambient trainer
                     setShowDirectTrainer(true);
                   }
+                }}
+                onStartBasicTraining={(freq, tone, color, typeId) => {
+                  setBasicTrainingData({freq, tone, color, typeId});
+                  setSelectedTrainingItem("yohn");
+                  setShowDirectTrainer(true);
                 }}
                 onOpenKnowledge={() => {
                   setShowKnowledgePool(true);
@@ -1058,7 +1042,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
         </main>
         
         {/* Footer */}
-        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && !showBasicColorSelector && currentStep === 'dashboard' && (
+        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && currentStep === 'dashboard' && (
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
                 <div>
                     &copy; {new Date().getFullYear()} MDI System.
