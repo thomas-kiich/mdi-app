@@ -19,9 +19,9 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
-import { TrainingCenter } from "@/components/TrainingCenter";
 import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
-import { SleepTheta } from "@/components/SleepTheta";
+import { AppInstallGuide } from "@/components/AppInstallGuide";
+import { PodcastFeature } from "@/components/PodcastFeature";
 import { WurzelklangVerification } from "@/components/WurzelklangVerification";
 import { HarmonicSpectrumChart } from "@/components/HarmonicSpectrumChart";
 import { ToneColorExplorer } from "@/components/ToneColorExplorer";
@@ -29,9 +29,8 @@ import { BasicColorSelector } from "@/components/BasicColorSelector";
 import { Dashboard } from "@/components/Dashboard";
 import { AnalysisHistory } from "@/components/AnalysisHistory";
 import { OnboardingTour } from "@/components/OnboardingTour";
-import { PodcastFeature } from "@/components/PodcastFeature";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
-import { AppInstallGuide } from "@/components/AppInstallGuide";
+import { SleepTheta } from "@/components/SleepTheta";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
@@ -143,6 +142,7 @@ export default function Home() {
   const [showHistory, setShowHistory] = useState(false);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
+  const [showPodcast, setShowPodcast] = useState(false);
 
   const [basicTrainingData, setBasicTrainingData] = useState<{freq: number, tone: string, color: string, typeId: number} | null>(null);
 
@@ -402,6 +402,7 @@ export default function Home() {
                 onOpenVital={() => setShowVitalDashboard(true)}
                 onOpenSleep={() => setShowSleepTheta(true)}
                 onOpenHistory={() => setShowHistory(true)}
+                onOpenPodcast={() => setShowPodcast(true)}
                 isPremium={isPremium}
                 onTogglePremium={() => setIsPremium(!isPremium)}
               />
@@ -881,6 +882,39 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
         )}
 
         <main>
+          {showPodcast && (
+            <div className="fixed inset-0 z-50 bg-black/95 overflow-y-auto p-4 md:p-8 flex items-center justify-center">
+              <div className="w-full max-w-4xl relative">
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="absolute -top-12 right-0 text-white hover:bg-white/20 z-50"
+                  onClick={() => setShowPodcast(false)}
+                >
+                  <X className="w-6 h-6" />
+                </Button>
+                <PodcastFeature 
+                  title="Szenario 2026 - Episode 01"
+                  subtitle="Die Reise beginnt: Eine Einführung in die multidimensionale Identität"
+                  coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
+                  description={
+                    <div className="space-y-4">
+                      <p>
+                        In dieser ersten Episode tauchen wir ein in die Grundlagen der Methode 36. 
+                        Erfahren Sie, wie Frequenzen, Lichtklänge und die menschliche Stimme zusammenwirken, 
+                        um Ihr volles Potenzial zu entfalten.
+                      </p>
+                      <p>
+                        Thomas Chochola erklärt die wissenschaftlichen Hintergründe und führt Sie durch 
+                        die ersten Schritte der multidimensionalen Identitätsentwicklung.
+                      </p>
+                    </div>
+                  }
+                />
+              </div>
+            </div>
+          )}
+
           {showHistory ? (
              <div className="fixed inset-0 z-50 bg-black overflow-y-auto pt-24">
                 <div className="container max-w-4xl mx-auto px-4 py-8 relative">

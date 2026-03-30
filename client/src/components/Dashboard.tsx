@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame, Moon, Lock, ChevronDown, ChevronUp } from "lucide-react";
+import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame, Moon, Lock, ChevronDown, ChevronUp, Headphones } from "lucide-react";
 import { calculateStreak } from "@/lib/training";
 import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
@@ -16,6 +16,7 @@ interface DashboardProps {
     onOpenVital: () => void;
     onOpenSleep: () => void;
     onOpenHistory: () => void;
+    onOpenPodcast: () => void;
     isPremium: boolean;
     onTogglePremium: () => void;
 }
@@ -29,6 +30,7 @@ export function Dashboard({
     onOpenVital,
     onOpenSleep,
     onOpenHistory,
+    onOpenPodcast,
     isPremium,
     onTogglePremium
 }: DashboardProps) {
@@ -114,6 +116,19 @@ export function Dashboard({
                     <p className="text-lg md:text-xl text-zinc-400 mb-6">
                         von Thomas Chochola
                     </p>
+                    
+                    <div className="flex justify-center mb-8">
+                        <button 
+                            onClick={onOpenPodcast}
+                            className="group flex items-center gap-3 bg-gradient-to-r from-orange-500/20 to-orange-600/20 hover:from-orange-500/30 hover:to-orange-600/30 border border-orange-500/30 px-6 py-3 rounded-full transition-all duration-300"
+                        >
+                            <div className="bg-orange-500/20 p-2 rounded-full group-hover:scale-110 transition-transform duration-300">
+                                <Headphones className="w-5 h-5 text-orange-400" />
+                            </div>
+                            <span className="font-bold text-orange-100 tracking-wide">SZENARIO 2026 PODCAST</span>
+                            <ArrowRight className="w-4 h-4 text-orange-400 group-hover:translate-x-1 transition-transform" />
+                        </button>
+                    </div>
                     <div className="text-sm md:text-base text-zinc-400 max-w-4xl mx-auto text-left leading-relaxed">
                         <p>
                             Die methodischen Grundlagen von M36 basieren auf dem wissenschaftlichen Zusammenhang zwischen Atemrhythmik und der Optimierung der Stoffwechselfunktionalität im Menschen.
