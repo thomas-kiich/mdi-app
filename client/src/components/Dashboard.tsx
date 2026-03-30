@@ -105,7 +105,7 @@ export function Dashboard({
                         onClick={handleLogoClick}
                     />
                     <h1 
-                        className="text-4xl md:text-6xl font-bold text-white tracking-tighter mb-1 cursor-pointer"
+                        className="text-3xl md:text-4xl font-bold text-white tracking-tight mb-1 cursor-pointer"
                         onClick={handleLogoClick}
                         title="Geheimer Premium-Schalter (5x klicken)"
                     >
