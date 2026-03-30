@@ -434,3 +434,6 @@
 - [x] Restart the development server to clear cache and ensure latest version is served.
 
 - [x] Update the frequency table so that when a slider value is 0%, the corresponding color block becomes black.
+
+- [x] Update text for "Umfeldaktivierung" in Training Center: change to "...unterbewusste Beeinflussung wegnehmen und austauschen gegen Regulation..." and add "Zudem motivieren die eingearbeiteten Pulsationen zu einem optimalen Atemrhythmus."
+- [x] Remove text for "Stoffwechselatmung" and "Mayerwelle 5,5" in the Training Center main view.

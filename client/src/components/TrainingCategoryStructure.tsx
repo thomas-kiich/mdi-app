@@ -68,12 +68,12 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
     id: "ambient",
     name: "4 - Umfeldaktivierung",
     icon: "✨",
-    description: "Übungen in diesem Segment dienen der unterbewussten Beeinflussung des Umfelds durch sanfte Hintergrundkompositionen. Sie dienen der Harmonisierung, feinstofflichen Reinigung und Aktivierung der Raumenergien.",
+    description: "Übungen in diesem Segment dienen der Regulation des Umfelds durch sanfte Hintergrundkompositionen. Sie dienen der Harmonisierung, feinstofflichen Reinigung und Aktivierung der Raumenergien. Zudem motivieren die eingearbeiteten Pulsationen zu einem optimalen Atemrhythmus.",
     items: [
       {
         id: "metabolic",
         name: "STOFFWECHSELATMUNG",
-        description: "OPTIMALE NUTZUNG: Verwende die SWA als Hintergrundsound um ein harmonisches Umfeld zu unterstützen und deinen Atemzyklus auf die optimale Rhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).\n\nWIRKUNG: Dein Unterbewusstsein beginnt, den optimalen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du wirst zunehmend ruhiger und beginnst tief zu regenerieren. Ideal für echte Erholungsphasen zwischendurch oder zur Stimulierung einer meditativen Raumatmosphäre.\n\nANWENDUNG: Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = AUSatmen (höre genau hin, das Gongsignal ist sanft in die Musik eingebettet).\n\nWICHTIG: Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !",
+        description: "",
         durations: [7, 21],
         audioUrls: {
           7: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/platonischesJAHR_7min.wav",
@@ -84,7 +84,7 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
       {
         id: "mayerwelle",
         name: "MAYERWELLE 5,5 / MW",
-        description: "OPTIMALE NUTZUNG: Verwende die MW als Hintergrundsound um ein regenerierendes Umfeld zu unterstützen und deinen Atemzyklus auf eine optimale Atemrhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).\n\nWIRKUNG: Dein Unterbewusstsein beginnt, einen förderlichen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du bleibst entspannter und gleichzeitig erfrischt (Wasserrauschen) während deiner aktiven Tätigkeiten.\n\nANWENDUNG: Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = HALTEN / dritter Gong = AUSatmen.\n\nWICHTIG: Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !",
+        description: "",
         durations: [45],
         audioUrls: {
           45: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/llGeZhyAsOhattjj.wav",
