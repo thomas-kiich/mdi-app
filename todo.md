@@ -457,3 +457,10 @@
 
 - [ ] Identify the voice used for the congratulation screen
 - [ ] Plan integration of "Moderatorenstimme" for mediating app offers
+
+- [ ] Advise user on episodic release strategy for the audiobook
+
+- [ ] Prepare Thursday morning launch (Episode 01 + app-BASIC)
+
+- [ ] Create 12-color selection component for app-BASIC using odd types (1-23)
+- [ ] Ensure selected color links to correct frequency in YOHN training

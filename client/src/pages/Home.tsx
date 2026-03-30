@@ -25,6 +25,7 @@ import { SleepTheta } from "@/components/SleepTheta";
 import { WurzelklangVerification } from "@/components/WurzelklangVerification";
 import { HarmonicSpectrumChart } from "@/components/HarmonicSpectrumChart";
 import { ToneColorExplorer } from "@/components/ToneColorExplorer";
+import { BasicColorSelector } from "@/components/BasicColorSelector";
 import { Dashboard } from "@/components/Dashboard";
 import { AnalysisHistory } from "@/components/AnalysisHistory";
 import { OnboardingTour } from "@/components/OnboardingTour";
@@ -141,6 +142,8 @@ export default function Home() {
   const [showSleepTheta, setShowSleepTheta] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
+  const [showBasicColorSelector, setShowBasicColorSelector] = useState(false);
+  const [basicTrainingData, setBasicTrainingData] = useState<{freq: number, tone: string, color: string, typeId: number} | null>(null);
 
   // Show onboarding tour on first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -391,7 +394,7 @@ export default function Home() {
               </div>
               <Dashboard 
                 onStartAnalysis={() => setCurrentStep("preparation")}
-                onOpenTraining={() => setShowTrainingCenter(true)}
+                onOpenTraining={() => setShowBasicColorSelector(true)}
                 onOpenScanner={() => setShowSpectralScanner(true)}
                 onOpenKnowledge={() => setShowKnowledgePool(true)}
                 onOpenTable={() => setShowFrequencyTable(true)}
@@ -918,15 +921,16 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
             />
           ) : showDirectTrainer && selectedTrainingItem === "yohn" ? (
              <Method36Trainer
-                frequency={finalResult?.fundamentalFreq || mdiResult?.frequency || 97.2}
-                toneName={finalResult?.tone?.name || "G"}
-                color={mdiResult?.hex || "#ff5757"}
-                typeId={mdiResult?.id || 19}
+                frequency={basicTrainingData?.freq || finalResult?.fundamentalFreq || mdiResult?.frequency || 97.2}
+                toneName={basicTrainingData?.tone || finalResult?.tone?.name || "G"}
+                color={basicTrainingData?.color || mdiResult?.hex || "#ff5757"}
+                typeId={basicTrainingData?.typeId || mdiResult?.id || 19}
                 duration={selectedTrainingDuration || 7}
                 onClose={() => {
                   setShowDirectTrainer(false);
                   setShowTrainingCenter(false);
                   setSelectedTrainingItem(null);
+                  setBasicTrainingData(null);
                 }}
              />
           ) : showDirectTrainer && selectedTrainingItem === "interval" ? (
@@ -967,6 +971,27 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                  setSelectedTrainingItem(null);
                }}
              />
+          ) : showBasicColorSelector ? (
+            <div className="fixed inset-0 z-50 bg-black overflow-y-auto pt-24 pb-12 px-4">
+              <div className="max-w-6xl mx-auto">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => setShowBasicColorSelector(false)}
+                  className="text-zinc-400 hover:text-white mb-8"
+                >
+                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  ZUR HAUPTSEITE
+                </Button>
+                <BasicColorSelector 
+                  onStartTraining={(freq, tone, color, typeId) => {
+                    setBasicTrainingData({freq, tone, color, typeId});
+                    setShowBasicColorSelector(false);
+                    setSelectedTrainingItem("yohn");
+                    setShowDirectTrainer(true);
+                  }} 
+                />
+              </div>
+            </div>
           ) : showTrainingCenter ? (
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
               <TrainingCategoryStructure
@@ -981,9 +1006,10 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     // Ambient trainings - show ambient trainer
                     setShowDirectTrainer(true);
                   }
-                }}                onOpenKnowledge={() => {
+                }}
+                onOpenKnowledge={() => {
                   setShowKnowledgePool(true);
-                  setShowTrainingCenter(false);
+                  setKnowledgePoolInitialTab("method");
                 }}
               />
             </div>
@@ -1032,7 +1058,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
         </main>
         
         {/* Footer */}
-        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && currentStep === 'dashboard' && (
+        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && !showBasicColorSelector && currentStep === 'dashboard' && (
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
                 <div>
                     &copy; {new Date().getFullYear()} MDI System.
