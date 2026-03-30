@@ -909,19 +909,16 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 </Button>
                 <PodcastFeature 
                   title="Szenario 2026 - Episode 01"
-                  subtitle="Wer lenkt dein Leben im Agentenzeitalter?"
+                  subtitle="Wer lenkt mein Leben im Agentenzeitalter?"
                   coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
                   audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast_01_8f2ce81d.mp3"
                   description={
                     <div className="space-y-4">
                       <p>
-                        In dieser ersten Episode tauchen wir ein in die Grundlagen der Methode 36. 
-                        Erfahren Sie, wie Frequenzen, Lichtklänge und die menschliche Stimme zusammenwirken, 
-                        um Ihr volles Potenzial zu entfalten.
+                        Willkommen zur Hörbuchserie MASCHINEN ATMEN NICHT von Thomas Chochola. Wir schreiben das Jahr 2026. Wenn es nach dem Autor geht, startet die Menschheit gerade in ein nie dagewesenes Abenteuer von Lebensqualität. Allerdings ist diese Qualität zweischneidig. Fremd- oder selbstbestimmt in einem Zeitalter mit schier unbegrenzten Möglichkeiten der Lebensentfaltung – das ist die entscheidende Frage, die es zu beantworten gilt.
                       </p>
                       <p>
-                        Thomas Chochola erklärt die wissenschaftlichen Hintergründe und führt Sie durch 
-                        die ersten Schritte der multidimensionalen Identitätsentwicklung.
+                        Tauche bewusst ein in das Szenario, in dem du dich bereits befindest, und erkenne Lösungen, wie du dein Leben optimal inszenierst, in einer Zeit, die niemals wiederkommt und noch nie da war. Lausche Episode 01 mit dem Titel: Wer lenkt mein Leben im Agentenzeitalter?
                       </p>
                     </div>
                   }

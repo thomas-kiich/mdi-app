@@ -475,3 +475,6 @@
 
 - [x] Convert WAV to MP3 and upload to CDN
 - [x] Update Home.tsx with the new MP3 URL
+
+- [x] Update PodcastFeature description with intro text
+- [x] Change 'dein' to 'mein' in the podcast subtitle
