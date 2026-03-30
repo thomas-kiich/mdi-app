@@ -989,6 +989,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 onStartBasicTraining={(freq, tone, color, typeId) => {
                   setBasicTrainingData({freq, tone, color, typeId});
                   setSelectedTrainingItem("yohn");
+                  setSelectedTrainingDuration(7);
                   setShowDirectTrainer(true);
                 }}
                 onOpenKnowledge={() => {

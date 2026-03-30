@@ -90,7 +90,7 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
                 className="w-full sm:w-auto bg-white text-black hover:bg-zinc-200 transition-colors"
               >
                 <Play className="w-5 h-5 mr-2" />
-                Mit YOHN tönen
+                Training starten (7 Min)
               </Button>
             </motion.div>
           )}
