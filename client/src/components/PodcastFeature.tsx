@@ -10,8 +10,9 @@ interface PodcastFeatureProps {
   coverImage: string;
   title: string;
   subtitle: string;
-  description: React.ReactNode;
+  description?: React.ReactNode;
   customAction?: React.ReactNode;
+  underCoverContent?: React.ReactNode;
 }
 
 export function PodcastFeature({
@@ -23,6 +24,7 @@ export function PodcastFeature({
   subtitle,
   description,
   customAction,
+  underCoverContent,
 }: PodcastFeatureProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -42,47 +44,49 @@ export function PodcastFeature({
                 <Play className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
             </div>
+            {underCoverContent && (
+              <div className="mt-4">
+                {underCoverContent}
+              </div>
+            )}
           </div>
 
           {/* Content */}
           <div className="md:col-span-2 p-6 space-y-4">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <p className="text-sm font-mono text-red-500 uppercase tracking-widest">
-                  DIE HÖRBUCHSERIE
-                </p>
-                <span className="px-2 py-0.5 text-[10px] font-medium bg-red-500/10 text-red-400 rounded-full border border-red-500/20 uppercase tracking-wider">
-                  Jede Woche neu
-                </span>
-              </div>
+              <p className="text-sm font-mono text-red-500 uppercase tracking-widest mb-2">
+                📚 DAS HÖRBUCH
+              </p>
               <h2 className="text-3xl md:text-4xl font-bold mb-2">
                 <span className="text-red-500">{title.split(" ")[0]}</span>
                 <br />
                 <span className="text-white">{title.split(" ").slice(1).join(" ")}</span>
               </h2>
               <p className="text-lg text-orange-400 font-semibold mb-4">{subtitle}</p>
-              <div className="relative">
-                <div className={`text-zinc-300 leading-relaxed max-w-lg transition-all duration-300 ${!isExpanded ? 'line-clamp-4' : ''}`}>
-                  {description}
+              {description && (
+                <div className="relative">
+                  <div className={`text-zinc-300 leading-relaxed max-w-lg transition-all duration-300 ${!isExpanded ? 'line-clamp-4' : ''}`}>
+                    {description}
+                  </div>
+                  <button 
+                    onClick={() => setIsExpanded(!isExpanded)}
+                    className="text-orange-400 hover:text-orange-300 text-sm font-medium flex items-center mt-2 transition-colors"
+                  >
+                    {isExpanded ? (
+                      <><ChevronUp className="w-4 h-4 mr-1" /> Weniger anzeigen</>
+                    ) : (
+                      <><ChevronDown className="w-4 h-4 mr-1" /> Mehr lesen...</>
+                    )}
+                  </button>
                 </div>
-                <button 
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="text-orange-400 hover:text-orange-300 text-sm font-medium flex items-center mt-2 transition-colors"
-                >
-                  {isExpanded ? (
-                    <><ChevronUp className="w-4 h-4 mr-1" /> Weniger anzeigen</>
-                  ) : (
-                    <><ChevronDown className="w-4 h-4 mr-1" /> Mehr lesen...</>
-                  )}
-                </button>
-              </div>
+              )}
             </div>
 
             {/* Embedded Audio Player */}
             {audioUrl && (
               <div className="pt-2">
                 <audio controls className="w-full h-12 rounded-md bg-zinc-900/50">
-                  <source src={audioUrl} />
+                  <source src={audioUrl} type="audio/mpeg" />
                   Dein Browser unterstützt das Audio-Element nicht.
                 </audio>
               </div>

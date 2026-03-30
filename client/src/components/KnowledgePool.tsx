@@ -267,56 +267,26 @@ export function KnowledgePool({ onClose, initialTab = "method", initialToneId }:
 
       {/* Content */}
       <div className="flex-1 overflow-hidden p-6 max-w-7xl mx-auto w-full">
-        <Tabs defaultValue="ep01" className="h-full flex flex-col">
-          <TabsList className="bg-zinc-900 border border-zinc-800 p-1 mb-6 w-full max-w-2xl mx-auto grid grid-cols-3">
-            <TabsTrigger value="ep01">Episode 01</TabsTrigger>
-            <TabsTrigger value="ep02">Episode 02</TabsTrigger>
-            <TabsTrigger value="ep03">Episode 03</TabsTrigger>
+        <Tabs defaultValue={initialTab} className="h-full flex flex-col">
+          <TabsList className="bg-zinc-900 border border-zinc-800 p-1 mb-6 w-full max-w-md mx-auto grid grid-cols-3">
+            <TabsTrigger value="method">Die Methode</TabsTrigger>
+            <TabsTrigger value="frequencies">Frequenzen</TabsTrigger>
+            <TabsTrigger value="instructions">Anleitung</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="ep01" className="flex-1 overflow-hidden flex flex-col mt-0">
-            <Tabs defaultValue={initialTab} className="h-full flex flex-col">
-              <TabsList className="bg-zinc-900/50 border border-zinc-800 p-1 mb-6 w-full max-w-md mx-auto grid grid-cols-3">
-                <TabsTrigger value="method">Die Methode</TabsTrigger>
-                <TabsTrigger value="frequencies">Frequenzen</TabsTrigger>
-                <TabsTrigger value="instructions">Anleitung</TabsTrigger>
-              </TabsList>
-
-              <ScrollArea className="flex-1 pr-4">
-                <TabsContent value="method" className="mt-0 pb-20">
-                  {renderMethodSection()}
-                </TabsContent>
-                
-                <TabsContent value="frequencies" className="mt-0 pb-20 h-full">
-                  {renderFrequenciesSection()}
-                </TabsContent>
-                
-                <TabsContent value="instructions" className="mt-0 pb-20">
-                  {renderInstructionsSection()}
-                </TabsContent>
-              </ScrollArea>
-            </Tabs>
-          </TabsContent>
-
-          <TabsContent value="ep02" className="flex-1 mt-0 flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-zinc-900/50 border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-zinc-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-white">Episode 02</h2>
-              <p className="text-zinc-400">Demnächst verfügbar</p>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="ep03" className="flex-1 mt-0 flex items-center justify-center">
-            <div className="text-center space-y-4">
-              <div className="w-16 h-16 bg-zinc-900/50 border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <BookOpen className="w-8 h-8 text-zinc-600" />
-              </div>
-              <h2 className="text-2xl font-bold text-white">Episode 03</h2>
-              <p className="text-zinc-400">Demnächst verfügbar</p>
-            </div>
-          </TabsContent>
+          <ScrollArea className="flex-1 pr-4">
+            <TabsContent value="method" className="mt-0 pb-20">
+              {renderMethodSection()}
+            </TabsContent>
+            
+            <TabsContent value="frequencies" className="mt-0 pb-20 h-full">
+              {renderFrequenciesSection()}
+            </TabsContent>
+            
+            <TabsContent value="instructions" className="mt-0 pb-20">
+              {renderInstructionsSection()}
+            </TabsContent>
+          </ScrollArea>
         </Tabs>
       </div>
     </div>

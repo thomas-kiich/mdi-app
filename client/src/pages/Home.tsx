@@ -32,7 +32,7 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
 import { SleepTheta } from "@/components/SleepTheta";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone, Headphones } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, ChevronUp, ChevronDown, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone, Headphones } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
@@ -143,6 +143,7 @@ export default function Home() {
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [showPodcast, setShowPodcast] = useState(false);
+  const [showAuthorText, setShowAuthorText] = useState(false);
 
   const [basicTrainingData, setBasicTrainingData] = useState<{freq: number, tone: string, color: string, typeId: number} | null>(null);
 
@@ -378,13 +379,25 @@ export default function Home() {
                   coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/2_30109d8c.png"
                   title="MASCHINEN ATMEN NICHT"
                   subtitle="Die Chance auf selbstbestimmtes Glücklichsein"
-                  description={<>Der Autor ist kein Physiker, Mediziner oder Programmierexperte. Vielmehr baut er sein Weltbild kontrovers aus der Sicht eines Brückenbauingenieurs, Musikers und Atemexperten auf. Diese drei Fähigkeiten vereint das Naturgesetz der Harmonie. Ein lebendiges System fordert ein harmonisches, sich selbst regulierendes Tun als Existenzgrundlage ein. Genau hier zieht der Autor die Trennlinie zwischen Mensch und Maschine. Die fundamentale Fähigkeit des ATMENS wird dabei als entscheidender Qualitätsunterschied bestätigt. In beeindruckender Weise komprimiert der Autor wissenschaftlich-philosophische Darlegungen zu einer einfach zugänglichen Alltagspraxis, der METHODE 36.<br/><br/>Ein revolutionäres Hörbuch im Podcast-Format. Es verwebt die Originaltexte des Autors mit kontroversen Reflexionen KI-generierter Kompetenz zu einem lebendigen Dialog. Diese innovative Form bereitet anspruchsvolle wissenschaftliche und philosophische Themen leicht verständlich auf – um dich zu inspirieren und direkt in dein eigenes, selbstbestimmtes Tun mit der METHODE 36 zu führen.</>}
+                  description={showAuthorText ? <>Der Autor ist kein Physiker, Mediziner oder Programmierexperte. Vielmehr baut er sein Weltbild kontrovers aus der Sicht eines Brückenbauingenieurs, Musikers und Atemexperten auf. Diese drei Fähigkeiten vereint das Naturgesetz der Harmonie. Ein lebendiges System fordert ein harmonisches, sich selbst regulierendes Tun als Existenzgrundlage ein. Genau hier zieht der Autor die Trennlinie zwischen Mensch und Maschine. Die fundamentale Fähigkeit des ATMENS wird dabei als entscheidender Qualitätsunterschied bestätigt. In beeindruckender Weise komprimiert der Autor wissenschaftlich-philosophische Darlegungen zu einer einfach zugänglichen Alltagspraxis, der METHODE 36.<br/><br/>Ein revolutionäres Hörbuch im Podcast-Format. Es verwebt die Originaltexte des Autors mit kontroversen Reflexionen KI-generierter Kompetenz zu einem lebendigen Dialog. Diese innovative Form bereitet anspruchsvolle wissenschaftliche und philosophische Themen leicht verständlich auf – um dich zu inspirieren und direkt in dein eigenes, selbstbestimmtes Tun mit der METHODE 36 zu führen.</> : undefined}
+                  underCoverContent={
+                    <button 
+                      onClick={() => setShowAuthorText(!showAuthorText)}
+                      className="text-orange-400 hover:text-orange-300 text-sm font-medium flex items-center transition-colors w-full justify-center"
+                    >
+                      {showAuthorText ? (
+                        <><ChevronUp className="w-4 h-4 mr-1" /> Autor-Info ausblenden</>
+                      ) : (
+                        <><ChevronDown className="w-4 h-4 mr-1" /> Über den Autor und seine Intention...</>
+                      )}
+                    </button>
+                  }
                   youtubeUrl=""
                   spotifyUrl=""
                   audioUrl="" // Platzhalter für die Podcast-Audiodatei
                   customAction={
                     <div className="flex flex-col items-center gap-3 mt-2">
-                      <span className="text-orange-200/80 text-sm uppercase tracking-widest font-medium">Hier geht's zum...</span>
+                      <span className="text-orange-200/80 text-sm uppercase tracking-widest font-medium">HIER GEHT'S ZUM WÖCHENTLICHEN PODCAST</span>
                       <button 
                         onClick={() => setShowPodcast(true)}
                         className="group flex items-center gap-3 bg-gradient-to-r from-orange-500/20 to-orange-600/20 hover:from-orange-500/30 hover:to-orange-600/30 border border-orange-500/30 px-6 py-3 rounded-full transition-all duration-300"
@@ -909,16 +922,18 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 </Button>
                 <PodcastFeature 
                   title="Szenario 2026 - Episode 01"
-                  subtitle="Wer lenkt mein Leben im Agentenzeitalter?"
+                  subtitle="Die Reise beginnt: Eine Einführung in die multidimensionale Identität"
                   coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
-                  audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast_01_8f2ce81d.mp3"
                   description={
                     <div className="space-y-4">
                       <p>
-                        Willkommen zur Hörbuchserie MASCHINEN ATMEN NICHT von Thomas Chochola. Wir schreiben das Jahr 2026. Wenn es nach dem Autor geht, startet die Menschheit gerade in ein nie dagewesenes Abenteuer von Lebensqualität. Allerdings ist diese Qualität zweischneidig. Fremd- oder selbstbestimmt in einem Zeitalter mit schier unbegrenzten Möglichkeiten der Lebensentfaltung – das ist die entscheidende Frage, die es zu beantworten gilt.
+                        In dieser ersten Episode tauchen wir ein in die Grundlagen der Methode 36. 
+                        Erfahren Sie, wie Frequenzen, Lichtklänge und die menschliche Stimme zusammenwirken, 
+                        um Ihr volles Potenzial zu entfalten.
                       </p>
                       <p>
-                        Tauche bewusst ein in das Szenario, in dem du dich bereits befindest, und erkenne Lösungen, wie du dein Leben optimal inszenierst, in einer Zeit, die niemals wiederkommt und noch nie da war. Lausche Episode 01 mit dem Titel: Wer lenkt mein Leben im Agentenzeitalter?
+                        Thomas Chochola erklärt die wissenschaftlichen Hintergründe und führt Sie durch 
+                        die ersten Schritte der multidimensionalen Identitätsentwicklung.
                       </p>
                     </div>
                   }

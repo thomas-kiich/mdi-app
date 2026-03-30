@@ -465,19 +465,6 @@
 - [ ] Create 12-color selection component for app-BASIC using odd types (1-23)
 - [ ] Ensure selected color links to correct frequency in YOHN training
 
-- [x] Upload podcast audio to CDN
-- [x] Update PodcastFeature component with the new audio URL
-- [x] Update Wissenspool component to focus on Episode 01 and mark future chapters as "Demnächst verfügbar"
-- [ ] Save checkpoint
-- [ ] Notify user to test and publish
-
-- [x] Fix audio player type to support WAV in PodcastFeature component
-
-- [x] Convert WAV to MP3 and upload to CDN
-- [x] Update Home.tsx with the new MP3 URL
-
-- [x] Update PodcastFeature description with intro text
-- [x] Change 'dein' to 'mein' in the podcast subtitle
-
-- [x] Update label above main title to 'DIE HÖRBUCHSERIE' and remove icon
-- [x] Add note about weekly episode releases
+- [x] Add 'Über den Autor' toggle link under the cover image
+- [x] Hide author text by default and show it when toggled
+- [x] Update the text above the podcast button to 'HIER GEHT'S ZUM WÖCHENTLICHEN PODCAST'
