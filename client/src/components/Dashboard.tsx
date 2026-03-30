@@ -16,9 +16,43 @@ interface DashboardProps {
     onOpenVital: () => void;
     onOpenSleep: () => void;
     onOpenHistory: () => void;
+    isPremium: boolean;
+    onTogglePremium: () => void;
 }
 
-export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOpenKnowledge, onOpenTable, onOpenVital, onOpenSleep, onOpenHistory }: DashboardProps) {
+export function Dashboard({ 
+    onStartAnalysis, 
+    onOpenTraining, 
+    onOpenScanner, 
+    onOpenKnowledge, 
+    onOpenTable,
+    onOpenVital,
+    onOpenSleep,
+    onOpenHistory,
+    isPremium,
+    onTogglePremium
+}: DashboardProps) {
+    const [clickCount, setClickCount] = useState(0);
+    const [lastClickTime, setLastClickTime] = useState(0);
+
+    const handleLogoClick = () => {
+        const now = Date.now();
+        if (now - lastClickTime > 1000) {
+            setClickCount(1);
+        } else {
+            const newCount = clickCount + 1;
+            setClickCount(newCount);
+            if (newCount >= 5) {
+                onTogglePremium();
+                setClickCount(0);
+                toast({
+                    title: "Developer Mode",
+                    description: isPremium ? "Premium-Funktionen gesperrt" : "Premium-Funktionen freigeschaltet",
+                });
+            }
+        }
+        setLastClickTime(now);
+    };
     const [streak, setStreak] = useState(0);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
     const { toast } = useToast();
@@ -28,12 +62,14 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
     }, []);
 
     const handlePremiumClick = (callback: () => void, moduleName: string) => {
-        toast({
-            title: "Premium Modul",
-            description: `Das Modul "${moduleName}" wird in der finalen Version kostenpflichtig sein. Für diesen Test ist es jedoch freigeschaltet.`,
-        });
-        // Slight delay to allow user to read the toast before navigating
-        setTimeout(callback, 500);
+        if (!isPremium) {
+            toast({
+                title: "Premium Funktion",
+                description: `Das Modul "${moduleName}" ist Teil der Premium-Version und aktuell gesperrt.`,
+            });
+            return;
+        }
+        callback();
     };
 
     return (
@@ -65,7 +101,8 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                     <img 
                         src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png" 
                         alt="METHODE 36 Logo" 
-                        className="h-24 md:h-32 mx-auto mb-6 drop-shadow-lg"
+                        className="h-24 md:h-32 mx-auto mb-6 drop-shadow-lg cursor-pointer"
+                        onClick={handleLogoClick}
                     />
                     <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tighter mb-1">
                         METHODE 36
@@ -109,8 +146,16 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CardContent className="p-6 flex flex-col h-full relative z-10">
-                            <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center mb-4 text-orange-500 group-hover:scale-110 transition-transform">
-                                <Mic className="w-6 h-6" />
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
+                                    <Mic className="w-6 h-6" />
+                                </div>
+                                {!isPremium && (
+                                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Premium</span>
+                                    </div>
+                                )}
                             </div>
                             
                             <h2 className="text-xl font-bold text-white mb-2 leading-tight">
@@ -121,7 +166,7 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={onStartAnalysis} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onStartAnalysis, "Stimmklang-Analyse")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Analyse Starten <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -173,10 +218,12 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                                 <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
                                     <HeartPulse className="w-6 h-6" />
                                 </div>
-                                <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
-                                    <Lock className="w-3 h-3" />
-                                    <span>Premium</span>
-                                </div>
+                                {!isPremium && (
+                                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Premium</span>
+                                    </div>
+                                )}
                             </div>
                             
                             <h2 className="text-xl font-bold text-white mb-2">Vital Monitor</h2>
@@ -204,8 +251,16 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CardContent className="p-6 flex flex-col h-full relative z-10">
-                            <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center mb-4 text-purple-500 group-hover:scale-110 transition-transform">
-                                <Activity className="w-6 h-6" />
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
+                                    <Activity className="w-6 h-6" />
+                                </div>
+                                {!isPremium && (
+                                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Premium</span>
+                                    </div>
+                                )}
                             </div>
                             
                             <h2 className="text-xl font-bold text-white mb-2">Frequenz-Labor</h2>
@@ -214,7 +269,7 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={onOpenScanner} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenScanner, "Frequenz-Labor")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Scanner Starten <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -233,8 +288,16 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CardContent className="p-6 flex flex-col h-full relative z-10">
-                            <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center mb-4 text-green-500 group-hover:scale-110 transition-transform">
-                                <BookOpen className="w-6 h-6" />
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+                                    <BookOpen className="w-6 h-6" />
+                                </div>
+                                {!isPremium && (
+                                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Premium</span>
+                                    </div>
+                                )}
                             </div>
                             
                             <h2 className="text-xl font-bold text-white mb-2">Wissenspool</h2>
@@ -243,7 +306,7 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={onOpenKnowledge} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenKnowledge, "Wissenspool")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Wissen Öffnen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -266,10 +329,12 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                                 <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
                                     <Moon className="w-6 h-6" />
                                 </div>
-                                <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
-                                    <Lock className="w-3 h-3" />
-                                    <span>Premium</span>
-                                </div>
+                                {!isPremium && (
+                                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Premium</span>
+                                    </div>
+                                )}
                             </div>
                             
                             <h2 className="text-xl font-bold text-white mb-2 leading-tight">
@@ -303,10 +368,12 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                                 <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-500 group-hover:scale-110 transition-transform">
                                     <Activity className="w-6 h-6" />
                                 </div>
-                                <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
-                                    <Lock className="w-3 h-3" />
-                                    <span>Premium</span>
-                                </div>
+                                {!isPremium && (
+                                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Premium</span>
+                                    </div>
+                                )}
                             </div>
                             
                             <h2 className="text-xl font-bold text-white mb-2">Meine Analysen</h2>
@@ -334,8 +401,16 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                         <CardContent className="p-6 flex flex-col h-full relative z-10">
-                            <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center mb-4 text-cyan-500 group-hover:scale-110 transition-transform">
-                                <BarChart3 className="w-6 h-6" />
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-500 group-hover:scale-110 transition-transform">
+                                    <BarChart3 className="w-6 h-6" />
+                                </div>
+                                {!isPremium && (
+                                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                                        <Lock className="w-3 h-3" />
+                                        <span>Premium</span>
+                                    </div>
+                                )}
                             </div>
                             
                             <h2 className="text-xl font-bold text-white mb-2">LICHTKLANG Tabelle</h2>
@@ -344,7 +419,7 @@ export function Dashboard({ onStartAnalysis, onOpenTraining, onOpenScanner, onOp
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={onOpenTable} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenTable, "LICHTKLANG Tabelle")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Tabelle Ansehen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>

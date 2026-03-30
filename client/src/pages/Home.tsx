@@ -142,6 +142,7 @@ export default function Home() {
   const [showSleepTheta, setShowSleepTheta] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
 
   const [basicTrainingData, setBasicTrainingData] = useState<{freq: number, tone: string, color: string, typeId: number} | null>(null);
 
@@ -401,6 +402,8 @@ export default function Home() {
                 onOpenVital={() => setShowVitalDashboard(true)}
                 onOpenSleep={() => setShowSleepTheta(true)}
                 onOpenHistory={() => setShowHistory(true)}
+                isPremium={isPremium}
+                onTogglePremium={() => setIsPremium(!isPremium)}
               />
             </div>
         );
@@ -974,6 +977,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
           ) : showTrainingCenter ? (
             <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
               <TrainingCategoryStructure
+                isPremium={isPremium}
                 onClose={() => setShowTrainingCenter(false)}
                 onStartTraining={(item, duration) => {
                   setSelectedTrainingDuration(duration);

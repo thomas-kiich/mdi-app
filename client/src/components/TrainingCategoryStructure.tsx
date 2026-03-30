@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ChevronRight, AlertCircle, BookOpen, ArrowLeft } from "lucide-react";
+import { ChevronRight, AlertCircle, BookOpen, ArrowLeft, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { BasicColorSelector } from "@/components/BasicColorSelector";
+import { useToast } from "@/hooks/use-toast";
 
 interface TrainingItem {
   id: string;
@@ -27,6 +28,7 @@ interface TrainingCategoryStructureProps {
   onStartBasicTraining?: (freq: number, tone: string, color: string, typeId: number) => void;
   onOpenKnowledge?: () => void;
   onClose?: () => void;
+  isPremium?: boolean;
 }
 
 const TRAINING_CATEGORIES: TrainingCategory[] = [
@@ -108,9 +110,11 @@ export function TrainingCategoryStructure({
   onStartTraining,
   onStartBasicTraining,
   onOpenKnowledge,
-  onClose
+  onClose,
+  isPremium
 }: TrainingCategoryStructureProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const { toast } = useToast();
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
 
@@ -351,11 +355,28 @@ export function TrainingCategoryStructure({
           {TRAINING_CATEGORIES.map((cat) => (
             <Card
               key={cat.id}
-              className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 border-zinc-800 hover:border-orange-500/50 cursor-pointer transition-all group"
-              onClick={() => setSelectedCategory(cat.id)}
+              className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 border-zinc-800 hover:border-orange-500/50 cursor-pointer transition-all group relative overflow-hidden"
+              onClick={() => {
+                if (cat.id !== "befindlichkeit" && !isPremium) {
+                  toast({
+                    title: "Premium Funktion",
+                    description: `Die Kategorie "${cat.name}" ist Teil der Premium-Version und aktuell gesperrt.`,
+                  });
+                  return;
+                }
+                setSelectedCategory(cat.id);
+              }}
             >
               <CardContent className="p-8">
-                <div className="text-5xl mb-4">{cat.icon}</div>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="text-5xl">{cat.icon}</div>
+                  {cat.id !== "befindlichkeit" && !isPremium && (
+                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                      <Lock className="w-3 h-3" />
+                      <span>Premium</span>
+                    </div>
+                  )}
+                </div>
                 <h2 className="text-2xl font-bold mb-3 group-hover:text-orange-500 transition-colors">
                   {cat.name}
                 </h2>

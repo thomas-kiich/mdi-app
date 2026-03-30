@@ -16,9 +16,10 @@ interface TrainingCenterProps {
     color: string;
     onClose: () => void;
     initialMode?: TrainingMode;
+    isPremium: boolean;
 }
 
-export function TrainingCenter({ frequency, toneName, color, onClose, initialMode = 'SELECTION' }: TrainingCenterProps) {
+export function TrainingCenter({ frequency, toneName, color, onClose, initialMode = 'SELECTION', isPremium }: TrainingCenterProps) {
     const [mode, setMode] = useState<TrainingMode>(initialMode);
     const [selectedDuration, setSelectedDuration] = useState<number>(7);
     const [selectedAudioModule, setSelectedAudioModule] = useState<'7min' | '21min' | '21min-loop'>('7min');
