@@ -476,3 +476,5 @@
 - [x] Remove upcoming episodes (Episode 02, Episode 03) from KnowledgePool
 
 - [x] Add audioUrl to PodcastFeature in the showPodcast modal in Home.tsx
+
+- [ ] Investigate and fix click logic in the Chart/Tabelle component

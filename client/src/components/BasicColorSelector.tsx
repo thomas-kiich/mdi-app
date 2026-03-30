@@ -42,7 +42,6 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
                 playTone(item.frequency);
               }}
               onMouseEnter={() => {
-                setSelectedId(item.id);
                 playTone(item.frequency);
               }}
               onMouseLeave={() => {
