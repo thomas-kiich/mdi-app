@@ -478,3 +478,6 @@
 
 - [x] Update PodcastFeature description with intro text
 - [x] Change 'dein' to 'mein' in the podcast subtitle
+
+- [x] Update label above main title to 'DIE HÖRBUCHSERIE' and remove icon
+- [x] Add note about weekly episode releases

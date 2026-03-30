@@ -47,9 +47,14 @@ export function PodcastFeature({
           {/* Content */}
           <div className="md:col-span-2 p-6 space-y-4">
             <div>
-              <p className="text-sm font-mono text-red-500 uppercase tracking-widest mb-2">
-                📚 DAS HÖRBUCH
-              </p>
+              <div className="flex items-center gap-3 mb-2">
+                <p className="text-sm font-mono text-red-500 uppercase tracking-widest">
+                  DIE HÖRBUCHSERIE
+                </p>
+                <span className="px-2 py-0.5 text-[10px] font-medium bg-red-500/10 text-red-400 rounded-full border border-red-500/20 uppercase tracking-wider">
+                  Jede Woche neu
+                </span>
+              </div>
               <h2 className="text-3xl md:text-4xl font-bold mb-2">
                 <span className="text-red-500">{title.split(" ")[0]}</span>
                 <br />
