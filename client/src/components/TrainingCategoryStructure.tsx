@@ -39,14 +39,14 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
   },
   {
     id: "breathing",
-    name: "1 - Atemtraining",
+    name: "1 - ATEMTRAINING",
     icon: "🫁",
     description: "Übungen in diesem Segment konzentrieren sich auf die Stärkung der Atemkompetenz mit all ihren positiven Auswirkungen auf das ganzheitliche Wohlbefinden.",
     items: [],
   },
   {
     id: "voice",
-    name: "2 - Stimmklangtraining",
+    name: "2 - STIMMKLANGTRAINING",
     icon: "🎵",
     description: "Übungen in diesem Segment konzentrieren sich auf die Nutzung und die Stärkung der eigenen Stimmqualität.",
     items: [
@@ -68,14 +68,14 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
   },
   {
     id: "movement",
-    name: "3 - Bewegungstraining",
+    name: "3 - BEWEGUNGSTRAINING",
     icon: "🏃",
     description: "Übungen in diesem Segment konzentrieren sich auf körperliche Bewegungsübungen in Abstimmung mit rhythmisch koordinierten Atemzyklen. Sie dienen der optimalen Aktivierung von Muskelketten - gesteuert durch gezielte Atemrhythmik.",
     items: [],
   },
   {
     id: "ambient",
-    name: "4 - Umfeldaktivierung",
+    name: "4 - UMFELDAKTIVIERUNG",
     icon: "✨",
     description: "Übungen in diesem Segment dienen der Regulation des Umfelds durch sanfte Hintergrundkompositionen. Zudem motivieren die eingearbeiteten Pulsationen zu einem optimalen Atemrhythmus.",
     items: [

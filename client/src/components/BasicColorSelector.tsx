@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Play } from 'lucide-react';
 import frequencyData from '@/lib/frequencyData.json';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSoundGenerator } from '@/hooks/useSoundGenerator';
 
 interface BasicColorSelectorProps {
   onStartTraining: (freq: number, tone: string, color: string, typeId: number) => void;
@@ -11,6 +12,7 @@ interface BasicColorSelectorProps {
 
 export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps) {
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const { playTone, stopAllSounds } = useSoundGenerator();
 
   // Filter only odd-numbered types (1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23)
   const basicTypes = frequencyData.filter(item => item.id % 2 !== 0 && item.id <= 23);
@@ -35,7 +37,17 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
               key={item.id}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setSelectedId(item.id)}
+              onClick={() => {
+                setSelectedId(item.id);
+                playTone(item.frequency);
+              }}
+              onMouseEnter={() => {
+                setSelectedId(item.id);
+                playTone(item.frequency);
+              }}
+              onMouseLeave={() => {
+                stopAllSounds();
+              }}
               className={`relative aspect-square rounded-full flex items-center justify-center transition-all duration-300 ${
                 selectedId === item.id ? 'ring-4 ring-white ring-offset-4 ring-offset-zinc-900' : 'hover:ring-2 hover:ring-white/50 hover:ring-offset-2 hover:ring-offset-zinc-900'
               }`}
