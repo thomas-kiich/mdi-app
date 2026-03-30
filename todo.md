@@ -446,3 +446,14 @@
 
 - [ ] Skip the intermediate detail page for "Stoffwechselatmung" and "Mayerwelle 5,5" in `TrainingCategoryStructure.tsx`.
 - [ ] Move the duration selection UI directly into the `AmbientTrainer.tsx` component.
+
+- [ ] Analyze NotebookLM podcast summary for marketing hooks
+- [ ] Draft marketing strategy for YouTube (KIICH) and LinkedIn
+- [ ] Add a "Szenario 2026 - Das Hörbuch" section to the App Dashboard
+
+- [ ] Finalize "app-BASIC" feature set for launch (YOHN, 3 levels, Color choice)
+- [ ] Prepare simultaneous launch plan for App and Podcast
+- [x] Implement embedded audio player for Podcast in App Dashboard
+
+- [ ] Identify the voice used for the congratulation screen
+- [ ] Plan integration of "Moderatorenstimme" for mediating app offers

@@ -6,6 +6,7 @@ import { Play, Music, BookOpen, ExternalLink, ChevronDown, ChevronUp } from "luc
 interface PodcastFeatureProps {
   youtubeUrl?: string;
   spotifyUrl?: string;
+  audioUrl?: string;
   coverImage: string;
   title: string;
   subtitle: string;
@@ -15,6 +16,7 @@ interface PodcastFeatureProps {
 export function PodcastFeature({
   youtubeUrl,
   spotifyUrl,
+  audioUrl,
   coverImage,
   title,
   subtitle,
@@ -68,6 +70,16 @@ export function PodcastFeature({
                 </button>
               </div>
             </div>
+
+            {/* Embedded Audio Player */}
+            {audioUrl && (
+              <div className="pt-2">
+                <audio controls className="w-full h-12 rounded-md bg-zinc-900/50">
+                  <source src={audioUrl} type="audio/mpeg" />
+                  Dein Browser unterstützt das Audio-Element nicht.
+                </audio>
+              </div>
+            )}
 
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-3 pt-4">
