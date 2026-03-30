@@ -468,3 +468,9 @@
 - [x] Add 'Über den Autor' toggle link under the cover image
 - [x] Hide author text by default and show it when toggled
 - [x] Update the text above the podcast button to 'HIER GEHT'S ZUM WÖCHENTLICHEN PODCAST'
+
+- [x] Update PodcastFeature label to 'DIE HÖRBUCHSERIE' and add 'JEDE WOCHE NEU' badge
+- [ ] Remove upcoming episodes from KnowledgePool
+
+- [x] Show full author text directly without 'Mehr lesen' logic
+- [x] Remove upcoming episodes (Episode 02, Episode 03) from KnowledgePool
