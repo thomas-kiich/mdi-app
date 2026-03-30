@@ -474,3 +474,5 @@
 
 - [x] Show full author text directly without 'Mehr lesen' logic
 - [x] Remove upcoming episodes (Episode 02, Episode 03) from KnowledgePool
+
+- [x] Add audioUrl to PodcastFeature in the showPodcast modal in Home.tsx
