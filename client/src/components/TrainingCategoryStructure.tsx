@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronRight, AlertCircle, BookOpen, ArrowLeft, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getTrainingHistory } from "@/lib/training";
 import { BasicColorSelector } from "@/components/BasicColorSelector";
 import { useToast } from "@/hooks/use-toast";
 
@@ -118,6 +119,13 @@ export function TrainingCategoryStructure({
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
 
+  const history = getTrainingHistory();
+  const yohn7MinCount = history.filter(s => s.type === 'methode36' && s.duration === 7).length;
+  const yohn12MinCount = history.filter(s => s.type === 'methode36' && s.duration === 12).length;
+  
+  const isEbene02Unlocked = yohn7MinCount >= 3;
+  const isEbene03Unlocked = yohn12MinCount >= 3;
+
   const category = selectedCategory
     ? TRAINING_CATEGORIES.find((c) => c.id === selectedCategory)
     : null;
@@ -160,24 +168,49 @@ export function TrainingCategoryStructure({
                     Dauer wählen:
                   </h3>
                   <div className="grid grid-cols-3 gap-2">
-                    {item.durations.map((duration) => (
-                      <Button
-                        key={duration}
-                        variant="outline"
-                        className={cn(
-                          "border-zinc-700 transition-all",
-                          selectedDuration === duration
-                            ? "bg-orange-500 border-orange-500 text-black font-bold"
-                            : "hover:bg-zinc-800 hover:border-orange-500"
-                        )}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedDuration(duration);
-                        }}
-                      >
-                        {duration} Min
-                      </Button>
-                    ))}
+                    {item.durations.map((duration) => {
+                      let isLocked = false;
+                      let lockReason = "";
+                      let label = `${duration} Min`;
+                      
+                      if (item.id === "yohn") {
+                        if (duration === 7) label = "Ebene 01";
+                        if (duration === 12) {
+                          label = "Ebene 02";
+                          isLocked = !isEbene02Unlocked;
+                          lockReason = "3x Ebene 01 benötigt";
+                        }
+                        if (duration === 21) {
+                          label = "Ebene 03";
+                          isLocked = !isEbene03Unlocked;
+                          lockReason = "3x Ebene 02 benötigt";
+                        }
+                      }
+                      
+                      return (
+                        <Button
+                          key={duration}
+                          variant="outline"
+                          disabled={isLocked}
+                          className={cn(
+                            "border-zinc-700 transition-all h-auto py-2 flex flex-col gap-1",
+                            selectedDuration === duration
+                              ? "bg-orange-500 border-orange-500 text-black font-bold"
+                              : "hover:bg-zinc-800 hover:border-orange-500",
+                            isLocked ? "opacity-50" : ""
+                          )}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (!isLocked) setSelectedDuration(duration);
+                          }}
+                          title={lockReason}
+                        >
+                          {item.id === "yohn" && <span className="font-bold text-xs">{label}</span>}
+                          <span className={item.id === "yohn" ? "text-xs font-normal" : ""}>{duration} Min</span>
+                          {isLocked && <Lock className="w-3 h-3 mt-1" />}
+                        </Button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
