@@ -909,8 +909,9 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 </Button>
                 <PodcastFeature 
                   title="Szenario 2026 - Episode 01"
-                  subtitle="Die Reise beginnt: Eine Einführung in die multidimensionale Identität"
+                  subtitle="Wer lenkt dein Leben im Agentenzeitalter?"
                   coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
+                  audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast_01_45a3118c.wav"
                   description={
                     <div className="space-y-4">
                       <p>

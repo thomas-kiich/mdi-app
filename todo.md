@@ -464,3 +464,9 @@
 
 - [ ] Create 12-color selection component for app-BASIC using odd types (1-23)
 - [ ] Ensure selected color links to correct frequency in YOHN training
+
+- [x] Upload podcast audio to CDN
+- [x] Update PodcastFeature component with the new audio URL
+- [x] Update Wissenspool component to focus on Episode 01 and mark future chapters as "Demnächst verfügbar"
+- [ ] Save checkpoint
+- [ ] Notify user to test and publish
