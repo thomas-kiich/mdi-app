@@ -222,7 +222,13 @@ export function TrainingCategoryStructure({
               <Card
                 key={item.id}
                 className="bg-zinc-900/50 border-zinc-800 hover:border-orange-500/50 cursor-pointer transition-all"
-                onClick={() => setSelectedItem(item.id)}
+                onClick={() => {
+                  if (item.id === "metabolic" || item.id === "mayerwelle") {
+                    if (onStartTraining) onStartTraining(item, 0);
+                  } else {
+                    setSelectedItem(item.id);
+                  }
+                }}
               >
                 <CardContent className="p-6 flex items-center justify-between">
                   <div className="flex-1">

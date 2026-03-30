@@ -937,11 +937,14 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                   setSelectedTrainingItem(null);
                 }}
              />
-          ) : showDirectTrainer && selectedTrainingItem === "metabolic" ? (
+           ) : showDirectTrainer && selectedTrainingItem === "metabolic" ? (
              <AmbientTrainer
                trainingId="metabolic"
-               duration={selectedTrainingDuration || 21}
-               audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/metabolic_0af5bdc2.mp3"
+               duration={selectedTrainingDuration || 0}
+               audioUrls={{
+                 7: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/platonischesJAHR_7min.wav",
+                 21: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/platonischesJAHR_21min.wav"
+               }}
                baseTone={finalResult?.tone}
                onClose={() => {
                  setShowDirectTrainer(false);
@@ -952,8 +955,10 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
           ) : showDirectTrainer && selectedTrainingItem === "mayerwelle" ? (
              <AmbientTrainer
                trainingId="mayerwelle"
-               duration={selectedTrainingDuration || 45}
-               audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/mayerwelle_0a96a8d7.mp3"
+               duration={selectedTrainingDuration || 0}
+               audioUrls={{
+                 45: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/llGeZhyAsOhattjj.wav"
+               }}
                baseTone={finalResult?.tone}
                onClose={() => {
                  setShowDirectTrainer(false);

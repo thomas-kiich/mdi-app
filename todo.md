@@ -443,3 +443,6 @@
 
 - [x] Restore detailed descriptions for "Stoffwechselatmung" and "Mayerwelle 5,5" in the `TRAINING_CATEGORIES` array.
 - [x] Hide the descriptions for these two items only in the category list view (Layer 2) in `TrainingCategoryStructure.tsx`.
+
+- [ ] Skip the intermediate detail page for "Stoffwechselatmung" and "Mayerwelle 5,5" in `TrainingCategoryStructure.tsx`.
+- [ ] Move the duration selection UI directly into the `AmbientTrainer.tsx` component.
