@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info, Music2, History as HistoryIcon, Lock } from "lucide-react";
+import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info, Music2, History as HistoryIcon } from "lucide-react";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { MetabolicBreathingTrainer } from "@/components/MetabolicBreathingTrainer";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { TrainingHistory } from "@/components/TrainingHistory";
 import { TONES } from "@/lib/tones";
-import { getTrainingHistory } from "@/lib/training";
 
 type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL' | 'HISTORY';
 
@@ -23,13 +22,6 @@ interface TrainingCenterProps {
 export function TrainingCenter({ frequency, toneName, color, onClose, initialMode = 'SELECTION', isPremium }: TrainingCenterProps) {
     const [mode, setMode] = useState<TrainingMode>(initialMode);
     const [selectedDuration, setSelectedDuration] = useState<number>(7);
-    
-    const history = getTrainingHistory();
-    const yohn7MinCount = history.filter(s => s.type === 'methode36' && s.duration === 7).length;
-    const yohn12MinCount = history.filter(s => s.type === 'methode36' && s.duration === 12).length;
-    
-    const isEbene02Unlocked = yohn7MinCount >= 3;
-    const isEbene03Unlocked = yohn12MinCount >= 3;
     const [selectedAudioModule, setSelectedAudioModule] = useState<'7min' | '21min' | '21min-loop'>('7min');
 
     useEffect(() => {
@@ -128,25 +120,17 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
 
                             <div className="space-y-4 mt-auto">
                                 <div className="grid grid-cols-3 gap-2">
-                                    {[
-                                        { mins: 7, label: 'Ebene 01', locked: false, req: '' },
-                                        { mins: 12, label: 'Ebene 02', locked: !isEbene02Unlocked, req: '3x Ebene 01 benötigt' },
-                                        { mins: 21, label: 'Ebene 03', locked: !isEbene03Unlocked, req: '3x Ebene 02 benötigt' }
-                                    ].map(({ mins, label, locked, req }) => (
+                                    {[7, 12, 21].map(mins => (
                                         <Button
                                             key={mins}
                                             variant={selectedDuration === mins ? "default" : "outline"}
-                                            disabled={locked}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                if (!locked) setSelectedDuration(mins);
+                                                setSelectedDuration(mins);
                                             }}
-                                            className={`h-auto py-2 flex flex-col gap-1 ${selectedDuration === mins ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'border-zinc-700 text-zinc-300 hover:bg-zinc-800'} ${locked ? 'opacity-50' : ''}`}
-                                            title={locked ? req : ''}
+                                            className={`h-10 ${selectedDuration === mins ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'border-zinc-700 text-zinc-300 hover:bg-zinc-800'}`}
                                         >
-                                            <span className="font-bold text-xs">{label}</span>
-                                            <span className="text-xs">{mins} Min</span>
-                                            {locked && <Lock className="w-3 h-3 mt-1" />}
+                                            {mins} Min
                                         </Button>
                                     ))}
                                 </div>

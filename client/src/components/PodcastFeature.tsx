@@ -114,11 +114,7 @@ export function PodcastFeature({
                   </a>
                 </Button>
               )}
-              {!youtubeUrl && !spotifyUrl && !customAction && (
-                <div className="text-sm text-zinc-500 italic">
-                  Links folgen in Kürze...
-                </div>
-              )}
+
               {customAction && customAction}
             </div>
 
