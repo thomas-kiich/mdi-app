@@ -9,7 +9,12 @@
     "talent": "VERGANGENHEIT | KARMA | ERINNERUNG | ALTLASTEN | GEBUNDENHEIT | ANHAFTUNG | VERDECKTHEIT | ÜBERGANG | TOD | PATHOLOGIE | UNDURCHSICHTIGKEIT | TRADITION | HERKUNFT | NEBEL | HISTORIE",
     "hex": "#6937c4",
     "metaphor": "DAS ERBE",
-    "tone": "E"
+    "tone": "E",
+    "nutzung": [
+      "Wenn du Vernetzungen aus der Vergangenheit aufdecken und entwirren möchtest.",
+      "Wenn du in Kontakt mit der feinstofflichen Welt treten möchtest.",
+      "Wenn du dich innerlich zurückziehen möchtest und tiefe Geborgenheit benötigst."
+    ]
   },
   {
     "id": 2,
@@ -21,7 +26,12 @@
     "talent": "VERGANGENHEIT | KARMA | ERINNERUNG | ALTLASTEN | GEBUNDENHEIT | ANHAFTUNG | VERDECKTHEIT | ÜBERGANG | TOD | PATHOLOGIE | UNDURCHSICHTIGKEIT | TRADITION | HERKUNFT | NEBEL | HISTORIE | ESOTERIK",
     "hex": "#5c36a8",
     "metaphor": "DER ERHABENE MYSTIKER",
-    "tone": "E+"
+    "tone": "E+",
+    "nutzung": [
+      "Wenn du Vernetzungen aus der Vergangenheit aufdecken und entwirren möchtest.",
+      "Wenn du in Kontakt mit der feinstofflichen Welt treten möchtest.",
+      "Wenn du dich innerlich zurückziehen möchtest und tiefe Geborgenheit benötigst."
+    ]
   },
   {
     "id": 3,
@@ -33,7 +43,12 @@
     "talent": "STRUKTUR | DURCHALTEVERMÖGEN | FORSCHERGEIST | EMOTIONSFREIHEIT | RATIONALITÄT | AUSDAUER | KOMPROMISSLOSIGKEIT | UNBEIRRBARKEIT | NOTFALLMANAGEMENT",
     "hex": "#4950ad",
     "metaphor": "DIE KÜHLE KONSEQUENZ",
-    "tone": "DIS"
+    "tone": "DIS",
+    "nutzung": [
+      "Wenn du Durchhaltevermögen entwickeln möchtest.",
+      "Wenn eine aktuell hochemotiionale Situation auf eine nüchterne, sachliche Ebene konzentriert werden soll",
+      "Wenn entzündliche, aggressive Einflüsse dein Wohlsein beinträchtigen."
+    ]
   },
   {
     "id": 4,
@@ -45,7 +60,12 @@
     "talent": "STRUKTUR | DURCHALTEVERMÖGEN | FORSCHERGEIST | EMOTIONSFREIHEIT | RATIONALITÄT | AUSDAUER | KOMPROMISSLOSIGKEIT | UNBEIRRBARKEIT | NOTFALLMANAGEMENT",
     "hex": "#225eaf",
     "metaphor": "DER NACHHALTIGE FORSCHERGEIST",
-    "tone": "DIS+"
+    "tone": "DIS+",
+    "nutzung": [
+      "Wenn du Durchhaltevermögen entwickeln möchtest.",
+      "Wenn eine aktuell hochemotiionale Situation auf eine nüchterne, sachliche Ebene konzentriert werden soll",
+      "Wenn entzündliche, aggressive Einflüsse dein Wohlsein beinträchtigen."
+    ]
   },
   {
     "id": 5,
@@ -57,7 +77,12 @@
     "talent": "PRAGMATIKER | REALIST | UMSETZER | SOZIAL | FÖRDERER | MENSCHENFREUND",
     "hex": "#2362db",
     "metaphor": "DER PRAKTIKER",
-    "tone": "D"
+    "tone": "D",
+    "nutzung": [
+      "Wenn du eine Idee in die greifbare Realität bringen möchtest.",
+      "Wenn du zwischenmenschliche Kommunikation fördern, harmonisieren, in Fluss bringen möchtest",
+      "Wenn du hitzige Diskussionen in ein sachliches Miteinander tranformieren möchtest"
+    ]
   },
   {
     "id": 6,
@@ -69,7 +94,12 @@
     "talent": "PRAGMATIKER | REALIST | UMSETZER | SOZIAL | FÖRDERER | MENSCHENFREUND",
     "hex": "#2883ed",
     "metaphor": "DER REALIST",
-    "tone": "D+"
+    "tone": "D+",
+    "nutzung": [
+      "Wenn du eine Idee in die greifbare Realität bringen möchtest.",
+      "Wenn du zwischenmenschliche Kommunikation fördern, harmonisieren, in Fluss bringen möchtest",
+      "Wenn du hitzige Diskussionen in ein sachliches Miteinander tranformieren möchtest"
+    ]
   },
   {
     "id": 7,
@@ -81,7 +111,12 @@
     "talent": "RÜCKVERBINDUNG | URSPRUNG | FRAGILITÄT | EMPFINDLICHKEIT | KREATIVITÄT | INTROVERSION | HÖHERE WELTEN | INSPIRATION | EMPFINDSAMKEIT",
     "hex": "#0599b3",
     "metaphor": "DER FANTAST",
-    "tone": "CIS"
+    "tone": "CIS",
+    "nutzung": [
+      "Wenn du das Gefühl und die Sehnsucht nach Anbindung an die Quelle unterstützen möchtest.",
+      "Wenn du deine tiefe Fähigkeit zu wahrer Kreativität leben möchtest",
+      "Wenn du dich tief sammeln musst und deine feinen Kanäle für das Wahrnehmen aktivieren möchtest."
+    ]
   },
   {
     "id": 8,
@@ -93,7 +128,12 @@
     "talent": "RÜCKVERBINDUNG | URSPRUNG | FRAGILITÄT | EMPFINDLICHKEIT | KREATIVITÄT | INTROVERSION | HÖHERE WELTEN | INSPIRATION | EMPFINDSAMKEIT",
     "hex": "#12b8aa",
     "metaphor": "DER ZERBRECHLICHE",
-    "tone": "CIS+"
+    "tone": "CIS+",
+    "nutzung": [
+      "Wenn du das Gefühl und die Sehnsucht nach Anbindung an die Quelle unterstützen möchtest.",
+      "Wenn du deine tiefe Fähigkeit zu wahrer Kreativität leben möchtest",
+      "Wenn du dich tief sammeln musst und deine feinen Kanäle für das Wahrnehmen aktivieren möchtest."
+    ]
   },
   {
     "id": 9,
@@ -105,7 +145,12 @@
     "talent": "FÜRSORGLICHKEIT | EMPATHIE | ZURÜCKNAHME | AUFOPRFERUNG | HILFSBEREITSCHAFT | NÄCHSTENLIEBE | MITEINANDER | ZUSAMMENHALT | GEMEINSCHAFT",
     "hex": "#32a765",
     "metaphor": "DER EMPATHISCHE",
-    "tone": "C"
+    "tone": "C",
+    "nutzung": [
+      "Wenn du deine empathischen Fähigkeiten aktivieren möchtest",
+      "Wenn du ein schwieriges soziales UMfeld harmoniseren möchtest",
+      "Wenn du einen Beziehungskonflikt in der Tiefe verstehen und regulieren willst."
+    ]
   },
   {
     "id": 10,
@@ -117,7 +162,12 @@
     "talent": "FÜRSORGLICHKEIT | EMPATHIE | ZURÜCKNAHME | AUFOPRFERUNG | HILFSBEREITSCHAFT | NÄCHSTENLIEBE | MITEINANDER | ZUSAMMENHALT | GEMEINSCHAFT",
     "hex": "#7fb00a",
     "metaphor": "DER FÜRSORGLICHE",
-    "tone": "C+"
+    "tone": "C+",
+    "nutzung": [
+      "Wenn du deine empathischen Fähigkeiten aktivieren möchtest",
+      "Wenn du ein schwieriges soziales UMfeld harmoniseren möchtest",
+      "Wenn du einen Beziehungskonflikt in der Tiefe verstehen und regulieren willst."
+    ]
   },
   {
     "id": 11,
@@ -129,7 +179,12 @@
     "talent": "VERSTECK | GEHEIMNIS | ÜBERFORDERUNG | LOGIK | UNTERSCHEIDBARKEIT | DISZIPLIN | POKERSPIEL | FORDERUNG | ÜBERZEUGTHEIT | ÜBERFORDERUNG | INTELLIGENZ | EXTREMITÄT | DOGMA",
     "hex": "#79995a",
     "metaphor": "DER MÄCHTIGE",
-    "tone": "H"
+    "tone": "H",
+    "nutzung": [
+      "Wenn du eine Extremleistung abrufen willst.",
+      "Wenn du gefordert bist, alles zu geben und dabei innerliche stabil zu bleiben",
+      "Wenn du dogmatisches Verhalten an dir wahrnimmst und das Motiv dahinter beleuchten möchtest."
+    ]
   },
   {
     "id": 12,
@@ -141,7 +196,12 @@
     "talent": "VERSTECK | GEHEIMNIS | ÜBERFORDERUNG | LOGIK | UNTERSCHEIDBARKEIT | DISZIPLIN | POKERSPIEL | FORDERUNG | ÜBERZEUGTHEIT | ÜBERFORDERUNG | INTELLIGENZ | EXTREMITÄT | DOGMA",
     "hex": "#69a131",
     "metaphor": "DER AUSERKORENE",
-    "tone": "H+"
+    "tone": "H+",
+    "nutzung": [
+      "Wenn du eine Extremleistung abrufen willst.",
+      "Wenn du gefordert bist, alles zu geben und dabei innerliche stabil zu bleiben",
+      "Wenn du dogmatisches Verhalten an dir wahrnimmst und das Motiv dahinter beleuchten möchtest."
+    ]
   },
   {
     "id": 13,
@@ -153,7 +213,12 @@
     "talent": "INTELLEKT | ANALYTIK | LOGIK | KRITIK | BESONDERHEIT | DENKEN | VERSTAND | AKADEMIE | STATUS | ANSPRUCH | ELITÄR | KONKURRENZ | UNTERSCHEIDEND | GRENZE | SPEZIALIST | STRUKTUR | SICHERHEIT | ABSOLUTHEIT",
     "hex": "#96b02e",
     "metaphor": "DER INTELLEKTUELLE",
-    "tone": "AIS"
+    "tone": "AIS",
+    "nutzung": [
+      "wenn du besondere intellektuelle Aufgaben in Fluss halten möchtest",
+      "Wenn du herausfordernde Aufgaben vor dir hast",
+      "Wenn du meinst, nicht genug zu sein und innere Akzeptanz deiner Menschlichkeit benötigst."
+    ]
   },
   {
     "id": 14,
@@ -165,7 +230,12 @@
     "talent": "INTELLEKT | ANALYTIK | LOGIK | KRITIK | BESONDERHEIT | DENKEN | VERSTAND | AKADEMIE | STATUS | ANSPRUCH | ELITÄR | KONKURRENZ | UNTERSCHEIDEND | GRENZE | SPEZIALIST | ABSOLUTHEIT | SICHERHEIT",
     "hex": "#c5b919",
     "metaphor": "DER BESONDERE",
-    "tone": "AIS+"
+    "tone": "AIS+",
+    "nutzung": [
+      "wenn du besondere intellektuelle Aufgaben in Fluss halten möchtest",
+      "Wenn du herausfordernde Aufgaben vor dir hast",
+      "Wenn du meinst, nicht genug zu sein und innere Akzeptanz deiner Menschlichkeit benötigst."
+    ]
   },
   {
     "id": 15,
@@ -177,7 +247,12 @@
     "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
     "hex": "#ffdd59",
     "metaphor": "DER FORMIERNDE",
-    "tone": "A"
+    "tone": "A",
+    "nutzung": [
+      "Wenn du Raum zum Ausleben deines Freiheitsanspuchs benötigst.",
+      "Wenn du gefordert bist im Lösen eines intellektuell fordernden Themas.",
+      "Wenn du ein wichtiges Meeting vorbereitest und zentriert agieren möchtest."
+    ]
   },
   {
     "id": 16,
@@ -189,7 +264,12 @@
     "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
     "hex": "#ffbd59",
     "metaphor": "DER ANALYTIKER",
-    "tone": "A+"
+    "tone": "A+",
+    "nutzung": [
+      "Wenn du Raum zum Ausleben deines Freiheitsanspuchs benötigst.",
+      "Wenn du gefordert bist im Lösen eines intellektuell fordernden Themas.",
+      "Wenn du ein wichtiges Meeting vorbereitest und zentriert agieren möchtest."
+    ]
   },
   {
     "id": 17,
@@ -201,7 +281,12 @@
     "talent": "TECHNIK | DETAILKRAFT | KRITISCHES WAHRNEHMEN | FAKTENOBRIGKEIT | NÜCHTERNHEIT | FEINABSTIMMUNG | GETRENNTHEIT | UNTERSCHEIDUNGSKRAFT | GENAUIGKEIT",
     "hex": "#ff924e",
     "metaphor": "DER DETAILGENAUE",
-    "tone": "GIS"
+    "tone": "GIS",
+    "nutzung": [
+      "Wenn du an deinem kritischen Beharren zu scheitern drohst",
+      "Wenn du ein herausforderndes Deatilproblem lösen möchtest",
+      "Wenn du dich zentrieren möchtest um all deine Sinne auf ein Ziel zu fokussieren."
+    ]
   },
   {
     "id": 18,
@@ -213,7 +298,12 @@
     "talent": "TECHNIK | DETAILKRAFT | KRITISCHES WAHRNEHMEN | FAKTENOBRIGKEIT | NÜCHTERNHEIT | FEINABSTIMMUNG | GETRENNTHEIT | UNTERSCHEIDUNGSKRAFT | GENAUIGKEIT",
     "hex": "#ff7723",
     "metaphor": "DER KRITISCHE",
-    "tone": "GIS+"
+    "tone": "GIS+",
+    "nutzung": [
+      "Wenn du an deinem kritischen Beharren zu scheitern drohst",
+      "Wenn du ein herausforderndes Deatilproblem lösen möchtest",
+      "Wenn du dich zentrieren möchtest um all deine Sinne auf ein Ziel zu fokussieren."
+    ]
   },
   {
     "id": 19,
@@ -225,7 +315,12 @@
     "talent": "HARMONIKER | FÜHRER | CHARISMATIKER | LEHRER | IDEALIST | INSPIRATOR | VERMITTLER",
     "hex": "#ff5757",
     "metaphor": "DER CHARISMAT",
-    "tone": "G"
+    "tone": "G",
+    "nutzung": [
+      "Wenn du einen wichtigen Auftritt vor Publikum zu absolvieren hast,",
+      "Wenn du Harmoniefluss in dir und um dich benötigst.",
+      "Wenn du erkennst, dass du zu stark auf dein eigenes Gewinnen fokussiert bist."
+    ]
   },
   {
     "id": 20,
@@ -237,7 +332,12 @@
     "talent": "HARMONIKER | FÜHRER | CHARISMATIKER | LEHRER | IDEALIST | INSPIRATOR | VERMITTLER",
     "hex": "#ff3131",
     "metaphor": "DER HARMONIKER",
-    "tone": "G+"
+    "tone": "G+",
+    "nutzung": [
+      "Wenn du einen wichtigen Auftritt vor Publikum zu absolvieren hast,",
+      "Wenn du Harmoniefluss in dir und um dich benötigst.",
+      "Wenn du erkennst, dass du zu stark auf dein eigenes Gewinnen fokussiert bist."
+    ]
   },
   {
     "id": 21,
@@ -249,7 +349,12 @@
     "talent": "BEWEGLICHKEIT | KREATIVITÄT | OFFENHEIT | LERNEN | KINDLICHKEIT | FERTIGKEIT | VIELSEITIGKEIT | ABWECHSLUNG | SPASS | FREUDE | VERWIRKLICHUNG | SPIELEN | VIELFALT | FLEXIBILITÄT | INSTINKT | UNBESTÄNDIGKEIT",
     "hex": "#e50707",
     "metaphor": "DAS INSTINKTBEGABTE",
-    "tone": "FIS"
+    "tone": "FIS",
+    "nutzung": [
+      "Wenn du ei8nfach Kind sein möchtest.",
+      "Wenn du Inspiration für ein kreative Idee benötigst.",
+      "Wenn du deine Aufmerksamkeit auf ein Ziel mit begeisterung füllen möchtest."
+    ]
   },
   {
     "id": 22,
@@ -261,7 +366,12 @@
     "talent": "BEWEGLICHKEIT | KREATIVITÄT | OFFENHEIT | LERNEN | KINDLICHKEIT | FERTIGKEIT | VIELSEITIGKEIT | ABWECHSLUNG | SPASS | FREUDE | VERWIRKLICHUNG | SPIELEN | FLEXIBILITÄT | INSTINKT",
     "hex": "#cb0505",
     "metaphor": "DER AUTODIDAKT",
-    "tone": "FIS+"
+    "tone": "FIS+",
+    "nutzung": [
+      "Wenn du ei8nfach Kind sein möchtest.",
+      "Wenn du Inspiration für ein kreative Idee benötigst.",
+      "Wenn du deine Aufmerksamkeit auf ein Ziel mit begeisterung füllen möchtest."
+    ]
   },
   {
     "id": 23,
@@ -273,7 +383,12 @@
     "talent": "INTUITION | HEILUNG | FEINSTOFFLICHKEIT | ZEITLOSIGKEIT | EINHEIT | SENSORIK DES UNSICHTBAREN | HYPNOSE | METAPHYSIK | ASTROLOGIE | NATUR | EINKLANG",
     "hex": "#bf095b",
     "metaphor": "DER INTUITIVE",
-    "tone": "F"
+    "tone": "F",
+    "nutzung": [
+      "Wenn du Zeit für dich alleine benötigst und dazu stehen möchtest.",
+      "Wenn du meditativ den Moment untertsützen möchtest.",
+      "Wenn du gefordert bist, zu akzepterien was nicht veränderbar scheint."
+    ]
   },
   {
     "id": 24,
@@ -285,6 +400,11 @@
     "talent": "INTUITION | HEILUNG | FEINSTOFFLICHKEIT | ZEITLOSIGKEIT | EINHEIT | SENSORIK DES UNSICHTBAREN | HYPNOSE | METAPHYSIK | ASTROLOGIE | NATUR | EINKLANG",
     "hex": "#b80b92",
     "metaphor": "QUELLE",
-    "tone": "F+"
+    "tone": "F+",
+    "nutzung": [
+      "Wenn du Zeit für dich alleine benötigst und dazu stehen möchtest.",
+      "Wenn du meditativ den Moment untertsützen möchtest.",
+      "Wenn du gefordert bist, zu akzepterien was nicht veränderbar scheint."
+    ]
   }
 ]

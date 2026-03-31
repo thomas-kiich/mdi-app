@@ -71,28 +71,35 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
               className="max-w-2xl mx-auto bg-zinc-800/40 rounded-xl p-6 border border-zinc-700/50 text-center space-y-6"
             >
               <div>
-                <h3 className="text-xl font-medium text-white mb-2" style={{ color: selectedItem.hex }}>
-                  {selectedItem.colorName}
-                </h3>
-                <p className="text-zinc-300 font-light italic">
+                <h3 className="text-2xl font-bold mb-2 tracking-wide uppercase" style={{ color: selectedItem.hex }}>
                   {selectedItem.metaphor}
+                </h3>
+                <p className="text-lg font-medium" style={{ color: selectedItem.hex }}>
+                  {selectedItem.description}
                 </p>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6 text-left">
                 <div>
-                  <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Wirkung</h4>
+                  <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3 border-b border-zinc-800 pb-2">Identität</h4>
                   <p className="text-sm text-zinc-300 leading-relaxed">
-                    {selectedItem.talent.split(' | ').slice(0, 5).join(' • ')}
+                    {selectedItem.talent.split(' | ').slice(0, 6).join(' • ')}
                   </p>
                 </div>
                 
-                <div>
-                  <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-2">Fokus</h4>
-                  <p className="text-sm text-zinc-300">
-                    {selectedItem.description}
-                  </p>
-                </div>
+                {selectedItem.nutzung && selectedItem.nutzung.length > 0 && (
+                  <div>
+                    <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3 border-b border-zinc-800 pb-2">Anwendung</h4>
+                    <ul className="space-y-2 text-sm text-zinc-300">
+                      {selectedItem.nutzung.map((nutzung: string, idx: number) => (
+                        <li key={idx} className="flex items-start">
+                          <span className="text-zinc-500 mr-2 font-mono">{idx + 1}.</span>
+                          <span className="leading-relaxed">{nutzung}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
 
               <Button 
