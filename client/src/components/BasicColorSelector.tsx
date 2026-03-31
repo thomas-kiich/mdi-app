@@ -25,9 +25,15 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
         <CardTitle className="text-2xl text-white font-light tracking-wider mb-2">
           Wähle deine Frequenz
         </CardTitle>
-        <p className="text-zinc-400">
-          Wähle intuitiv die Farbe, die dich jetzt gerade am meisten anzieht.
-        </p>
+        <div className="text-zinc-400 text-sm max-w-2xl mx-auto text-left space-y-2 mt-4 bg-zinc-800/30 p-4 rounded-lg border border-zinc-700/50">
+          <p className="font-semibold text-zinc-300 uppercase tracking-wider mb-2 text-xs">Anleitung:</p>
+          <ol className="space-y-1 list-decimal list-inside">
+            <li>Lasse die 12 Lichtklangtypen auf dich wirken.</li>
+            <li>Berühre einen Lichtkreis und erfahre den Klang der Lichtfarbe.</li>
+            <li>Unter dem Typefeld erscheint eine detaillierte Beschreibung.</li>
+            <li>Wenn du den für dich passenden Lichtklang zur momentanen Befindlichkeit entdeckt hast klicke auf Training starten.</li>
+          </ol>
+        </div>
       </CardHeader>
       <CardContent className="space-y-8">
         {/* Color Grid */}
@@ -108,7 +114,7 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
                 className="w-full sm:w-auto bg-white text-black hover:bg-zinc-200 transition-colors"
               >
                 <Play className="w-5 h-5 mr-2" />
-                Training starten (7 Min)
+                Training starten
               </Button>
             </motion.div>
           )}
