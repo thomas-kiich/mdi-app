@@ -30,7 +30,7 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
           <ol className="space-y-1 list-decimal list-inside">
             <li>Lasse die 12 Lichtklangtypen auf dich wirken.</li>
             <li>Berühre einen Lichtkreis und erfahre den Klang der Lichtfarbe.</li>
-            <li>Unter dem Typefeld erscheint eine detaillierte Beschreibung.</li>
+            <li>Unter dem Typenfeld erscheint eine detaillierte Beschreibung.</li>
             <li>Wenn du den für dich passenden Lichtklang zur momentanen Befindlichkeit entdeckt hast klicke auf Training starten.</li>
           </ol>
         </div>
