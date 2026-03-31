@@ -478,3 +478,15 @@
 - [x] Add audioUrl to PodcastFeature in the showPodcast modal in Home.tsx
 
 - [ ] Investigate and fix click logic in the Chart/Tabelle component
+
+## User Requested Changes (Mar 31, 2026)
+- [x] Update text instructions for recording steps in Home.tsx
+  - [x] Tagesablauf: Change first sentence to "Beginne bitte nun mit ganz normaler Sprechstimme zu erzählen,...." and add "DRÜCKE DEN STARTBUTTON BEVOR DU BEGINNST ZU ERZÄHLEN." at the bottom in uppercase.
+  - [x] Herzens-Erinnerung: Add "DRÜCKE BITTE DEN STARTBUTTON" in uppercase before "Nun erzähle davon".
+  - [x] Ton A: Add "Wiederhole den Ton 2x nachdem du zu Beginn deines Tönenes den STARTBUTTON gedrückt hast." as the last sentence.
+  - [x] Wurzelklang (tiefstes Summen): Capitalize "Ton" in the first sentence.
+- [x] Update Result page layout in Home.tsx
+  - [x] Replace color name with the main title (e.g., DER CHARISMAT) in the corresponding color.
+  - [x] Remove the blue banner ("Nächster Schritt: Überprüfe deinen Wurzelklang").
+  - [x] Remove the word "Wurzelklang" from the button, leaving only the checkmark or empty, then keep the YOHN training button.
+- [x] Add new columns to InterpretationView.tsx (Grundgefühle, Fähigkeit, Schattenkraft) based on the table the user will provide.

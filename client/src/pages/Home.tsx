@@ -627,10 +627,10 @@ export default function Home() {
         };
 
         const recordingInstructions: Record<string, string> = {
-          recording1: "Du wirst nun aufgefordert, mit ganz normaler Sprechstimme zu erzählen, wie dein bisheriger Tag verlaufen ist, Erinnere dich einfach an die Ereignisse des Tages und erzähle davon. Nimm dir dafür zumindest eine Minute, aber gerne auch länger Zeit dafür.",
-          recording2: "Schliesse deine Augen. Wandere mit deiner inneren Aufmerksamkeit in dein Herzzentrum. Atme sanft dreimal in deine Brust und erinnere dich an ein wunderschönes Erlebnis. Es kann aus deiner Kindheit oder auch aus der nahen Vergangenheit stammen. Wichtig ist, dass es eine schöne, angenehme Erinnerung ist, die in dein Bewusstsein tritt. Nun erzähle davon. Wenn du fertig bist öffne deine Augen und drücke den Stoppbutton.",
-          recording3: "Töne eine dir angenehmen Ton, indem du den Laut AAAAAAAAhhhh klingen lässt. Wiederhole den Ton noch 2x.",
-          recording4: "Zum Abschluss versuchst du nun den tiefsten ton zu Summen der dir möglich scheint. Schliesse die Lippen und summe ganz tief nachdem du den Startbutton gedrückt hast. Wiederhole diesen tiefsten Summton noch weitere 2x."
+          recording1: "Beginne bitte nun mit ganz normaler Sprechstimme zu erzählen, wie dein bisheriger Tag verlaufen ist. Erinnere dich einfach an die Ereignisse des Tages und erzähle davon. Nimm dir dafür zumindest eine Minute, aber gerne auch länger Zeit dafür.\n\nDRÜCKE DEN STARTBUTTON BEVOR DU BEGINNST ZU ERZÄHLEN.",
+          recording2: "Schliesse deine Augen. Wandere mit deiner inneren Aufmerksamkeit in dein Herzzentrum. Atme sanft dreimal in deine Brust und erinnere dich an ein wunderschönes Erlebnis. Es kann aus deiner Kindheit oder auch aus der nahen Vergangenheit stammen. Wichtig ist, dass es eine schöne, angenehme Erinnerung ist, die in dein Bewusstsein tritt.\n\nDRÜCKE BITTE DEN STARTBUTTON\nNun erzähle davon. Wenn du fertig bist öffne deine Augen und drücke den Stoppbutton.",
+          recording3: "Töne einen dir angenehmen Ton, indem du den Laut AAAAAAAAhhhh klingen lässt. Wiederhole den Ton 2x nachdem du zu Beginn deines Tönenes den STARTBUTTON gedrückt hast.",
+          recording4: "Zum Abschluss versuchst du nun den tiefsten Ton zu tönen der dir möglich scheint. Verwende dazu die Silbe NOOOOOO und töne tief in deine Wirbelsäule hinab nachdem du den Startbutton gedrückt hast. Wiederhole diesen tiefsten Summton noch weitere 2x."
         };
         
         // Determine if current step is done
@@ -663,7 +663,7 @@ export default function Home() {
             {/* Instructions - Only show if NOT done */}
             {!isCurrentStepDone && (
               <div className="mb-8 p-6 bg-zinc-900/50 rounded-xl border border-zinc-800 text-left w-full max-w-2xl">
-                <p className="text-zinc-300 text-lg leading-relaxed mb-4">
+                <p className="text-zinc-300 text-lg leading-relaxed mb-4 whitespace-pre-wrap">
                   {recordingInstructions[currentStep]}
                 </p>
                 <div className="flex items-center gap-2 text-zinc-500 text-sm">
@@ -786,8 +786,11 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                  {isStudyComplete ? "LÄNGSSCHNITT-STUDIE ABGESCHLOSSEN" : "TAGES-MESSUNG"}
               </div>
               
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-2 tracking-tighter">
-                {mdi.colorName}
+              <h1 
+                className="text-5xl md:text-7xl font-bold mb-2 tracking-tighter"
+                style={{ color: mdi.hex }}
+              >
+                {mdi.metaphor || "DER CHARISMAT"}
               </h1>
               <p className="text-xl text-orange-500 font-medium">{mdi.frequency} Hz (Lebensklang)</p>
 
@@ -867,21 +870,13 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     Detaillierte Deutung ansehen <ArrowRight className="ml-2 w-4 h-4" />
                   </Button>
 
-                  {!wurzelklangVerified && (
-                    <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 text-center">
-                      <p className="text-sm text-blue-300">
-                        <span className="font-semibold">Nächster Schritt:</span> Überprüfe deinen Wurzelklang
-                      </p>
-                    </div>
-                  )}
-
                   <div className="grid grid-cols-2 gap-3">
                     <Button 
                       variant="outline" 
                       className={`border-zinc-800 hover:bg-zinc-800 hover:border-zinc-600 cursor-pointer transition-all ${wurzelklangVerified ? 'border-green-500/50 hover:border-green-500/70' : ''}`}
                       onClick={() => setShowWurzelklangVerification(true)}
                     >
-                      {wurzelklangVerified ? '✓' : ''} Wurzelklang
+                      {wurzelklangVerified ? '✓' : '✓'}
                     </Button>
                     <Button 
                       variant="outline" 

@@ -10,7 +10,7 @@ import { useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface InterpretationViewProps {
-  mdiResult: typeof frequencyData[0];
+  mdiResult: typeof frequencyData[0] & { grundgefuehl?: string; faehigkeit?: string; schattenkraft?: string };
   onClose: () => void;
 }
 
@@ -166,6 +166,33 @@ export function InterpretationView({ mdiResult, onClose }: InterpretationViewPro
                         </p>
                     </div>
                     
+                    {mdiResult.grundgefuehl && (
+                        <div>
+                            <h4 className="text-zinc-500 font-semibold mb-3 uppercase text-xs tracking-wider border-b border-zinc-800 pb-2">Grundgefühl</h4>
+                            <p className="text-zinc-200 leading-relaxed text-lg">
+                                {mdiResult.grundgefuehl}
+                            </p>
+                        </div>
+                    )}
+
+                    {mdiResult.faehigkeit && (
+                        <div>
+                            <h4 className="text-zinc-500 font-semibold mb-3 uppercase text-xs tracking-wider border-b border-zinc-800 pb-2">Fähigkeit</h4>
+                            <p className="text-zinc-200 leading-relaxed text-lg">
+                                {mdiResult.faehigkeit}
+                            </p>
+                        </div>
+                    )}
+
+                    {mdiResult.schattenkraft && (
+                        <div>
+                            <h4 className="text-zinc-500 font-semibold mb-3 uppercase text-xs tracking-wider border-b border-zinc-800 pb-2">Schattenkraft</h4>
+                            <p className="text-zinc-200 leading-relaxed text-lg">
+                                {mdiResult.schattenkraft}
+                            </p>
+                        </div>
+                    )}
+
                     <div>
                         <h4 className="text-zinc-500 font-semibold mb-3 uppercase text-xs tracking-wider border-b border-zinc-800 pb-2">Assoziationen & Synonyme</h4>
                         <div className="flex flex-wrap gap-2">

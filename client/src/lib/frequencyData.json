@@ -14,7 +14,10 @@
       "Wenn du Vernetzungen aus der Vergangenheit aufdecken und entwirren möchtest.",
       "Wenn du in Kontakt mit der feinstofflichen Welt treten möchtest.",
       "Wenn du dich innerlich zurückziehen möchtest und tiefe Geborgenheit benötigst."
-    ]
+    ],
+    "grundgefuehl": "Ein Empfinden, als würde eine aus der Vergangenheit wirkende Kraft  das Leben begleiten und beeinflussen. Das kann sich als undefinierbares Schuldgefühl oder ein unsichtbares gelenkt / beeinflusst werden äussern und als Konsequenz ein inneres Bedürfnis nach verdecktem Tun motivieren.",
+    "faehigkeit": "Geheimnisvolle Aura welche das Nichtgreifbare ersehnt. Oftmals präkognitive Eingebungen, Traumerkenntisse welche sich im Alltag als real darstellen. Hinwendung zu Vergangenheitsforschung, Karmalehre, Sterbebegleitung, Tod und Übergang als Lebensthema.",
+    "schattenkraft": "Heimliche Tätgikeiten aus innerer Getriebenheit. Innere Stimmen die Macht über den eigenen Handlungsspielraum beanspruchen. Einsamkeit oder das Empfinden von Geborgenheit im abgeschiedenen Metarealen. "
   },
   {
     "id": 2,
@@ -48,7 +51,10 @@
       "Wenn du Durchhaltevermögen entwickeln möchtest.",
       "Wenn eine aktuell hochemotionale Situation auf eine nüchterne, sachliche Ebene konzentriert werden soll.",
       "Wenn entzündliche, aggressive Einflüsse dein Wohlsein beinträchtigen."
-    ]
+    ],
+    "grundgefuehl": "Ein nüchterner nachhaltiger Forscherdrang. Kühles, emotionsarmes Agieren im Alltag. Emotionale Berührtheit ist kaum wahrnehmbar. ",
+    "faehigkeit": "Robustheit und Coolness in Extremsituationen. Beharrlichkeit und konsequentes vorantreiben von Aufgabenstellungen. Ausdauerkraft um das Ziel erreichen.",
+    "schattenkraft": "Emotionale Härte gegenüber sich selbst und Anderen. Unsensibel und oftmals Unverständnis für Sanftheit oder Berührbarkeit."
   },
   {
     "id": 4,
@@ -82,7 +88,10 @@
       "Wenn du eine Idee in die greifbare Realität bringen möchtest.",
       "Wenn du zwischenmenschliche Kommunikation fördern, harmonisieren, in Fluss bringen möchtest",
       "Wenn du hitzige Diskussionen in ein sachliches Miteinander tranformieren möchtest"
-    ]
+    ],
+    "grundgefuehl": "Realistischer Zugang zum Leben. Das Handeln und Umsetzen vor Theorie stellend.",
+    "faehigkeit": "Feingefühl für Funktion. Talent für Verkauf,  Mangement und Geschäftssinn. Soziales Engagement für das persönliche berufliche wie private Umfeld.",
+    "schattenkraft": "Konkurrenzbewusstsein mit Hang zu illegalen Kompromissen. Ablehnung oder Missgunst gegenüber geistig spiritueller Qualitäten seiner selbst und Anderer."
   },
   {
     "id": 6,
@@ -116,7 +125,10 @@
       "Wenn du das Gefühl und die Sehnsucht nach Anbindung an die Quelle unterstützen möchtest.",
       "Wenn du deine tiefe Fähigkeit zu wahrer Kreativität leben möchtest",
       "Wenn du dich tief sammeln musst und deine feinen Kanäle für das Wahrnehmen aktivieren möchtest."
-    ]
+    ],
+    "grundgefuehl": "Sensibles Wahrnehmen der Welt. Fragilität und Unsicherheit gegenüber der eigenen Kompetenz im Alltag. Künstlerisch spirituelles Grundempfinden.",
+    "faehigkeit": "Künstlerisch sakrale Begabung. Darstellen des unsichtbar Wirkenden in der verdichteten sichtbaren Welt. Transzendenzerfahrungen und Feinstofflichkeit im Wahrnehmen. Fragilität der eigenen Persönlichkeit als Beitrag zum Gesamtwohl.",
+    "schattenkraft": "Kritiksensibel und dadurch mitunter keine Akzeptanz anderer Meingungen. Unzugänglich auf Grund der Sensiblen aurischen Wahrnehmung des Umfeldes. Gefahr des Inneren Rückzugs von sozialem Engagement."
   },
   {
     "id": 8,
@@ -150,7 +162,10 @@
       "Wenn du deine empathischen Fähigkeiten aktivieren möchtest",
       "Wenn du ein schwieriges soziales Umfeld harmonisieren möchtest",
       "Wenn du einen Beziehungskonflikt in der Tiefe verstehen und regulieren willst."
-    ]
+    ],
+    "grundgefuehl": "Starkes soziales Empfinden. Empathie als Grundgefühl. Miteinander als Lebensgrundlage und Persönlichkeitsfestigung.",
+    "faehigkeit": "Führungskompetenz in sozialem Engagement . Naturfreundschaft und Harmonie schaffend für Andere. Gelebtes Gerechtigkeitsempfinden.",
+    "schattenkraft": "Helfersyndrom und überzogene Fürsorglichkeit. Energetisches Auslaugen seiner selbst durch den Versuch die Welt zu retten. Mitleid als Selbsttrost."
   },
   {
     "id": 10,
@@ -184,7 +199,10 @@
       "Wenn du eine Extremleistung abrufen willst.",
       "Wenn du gefordert bist, alles zu geben und dabei innerlich stabil zu bleiben.",
       "Wenn du dogmatisches Verhalten an dir wahrnimmst und das Motiv dahinter beleuchten möchtest."
-    ]
+    ],
+    "grundgefuehl": "Sich selbst als aussergewöhnlich mächtig wahrnehmen. Höchstleistung als Priorität und Anspruch.",
+    "faehigkeit": "Ideale schaffen für Andere durch eigene Überwindungsfähigkeit und Disziplin. Richtlinien setzen und daran festhalten.",
+    "schattenkraft": "Dogmatisches Verlangen. Extremanspruch an das eigene Leistungsvermögen. Zusammenbruch folgt Ekstase. Unnatürliche Erhöhung von Status - ICH BIN GESETZ. Geheimwissenschaften für destruktive Lebenskraft nutzen."
   },
   {
     "id": 12,
@@ -218,7 +236,10 @@
       "Wenn du besondere intellektuelle Aufgaben in Fluss halten möchtest.",
       "Wenn du herausfordernde Aufgaben vor dir hast",
       "Wenn du meinst, nicht genug zu sein und innere Akzeptanz deiner Menschlichkeit benötigst."
-    ]
+    ],
+    "grundgefuehl": "Intellektuelles Wahrnehmen des Daseins. Soziale und materielle Absicherung als Lebensmotiv.",
+    "faehigkeit": "Erreichen eines hohen Status im Sozialgefüge. Beste Qualität des Angebots ist der Anspruch für sich selbst und sein Umfeld.",
+    "schattenkraft": "Elitäres Empfinden im Abverlangen besonderer Würdigung seiner selbst. Abgehobenes Empfinden von der Masse. Rechthaberisches kommunizieren."
   },
   {
     "id": 14,
@@ -252,7 +273,10 @@
       "Wenn du Raum zum Ausleben deines Freiheitsanspruchs benötigst.",
       "Wenn du gefordert bist im Lösen eines intellektuell fordernden Themas.",
       "Wenn du ein wichtiges Meeting vorbereitest und zentriert agieren möchtest."
-    ]
+    ],
+    "grundgefuehl": "Innerer Freiheitsdrang. Strukturierender, analytischer Grundcharakter. Nüchterne und sachliche Beziehungskultur.",
+    "faehigkeit": "Geschäftssinn mit Managementqualität. Organisationstalent mit Hang zu Informatik und genereller Berechenbarkeit des Lebens.",
+    "schattenkraft": "Schüchternheit und emotionsarme Kommunikation. Grosser innerer Freiheitsdrang der für sich selbst aber nicht für Andere eingefordert wird."
   },
   {
     "id": 16,
@@ -286,7 +310,10 @@
       "Wenn du an deinem kritischen Beharren zu scheitern drohst.",
       "Wenn du ein herausforderndes Detailproblem lösen möchtest.",
       "Wenn du dich zentrieren möchtest um all deine Sinne auf ein Ziel zu fokussieren."
-    ]
+    ],
+    "grundgefuehl": "Detailgenaues Betrachten von Ganzheit. Kontrollsinn und Korrekturkompetenz als Lebensgefühl.",
+    "faehigkeit": "Sensible Qualität für das Auffinden von Systemfehlern. Gründlichkeit und Genauigkeit in allen Lebenslagen. Hoher kritischer Anspruch",
+    "schattenkraft": "Überkritischer Geist. Ein unwesentliches Detail kann ein Gesamtsystem in Frage stellen. Hoher Stresspegel durch Hang zum Perfektionismus."
   },
   {
     "id": 18,
@@ -320,7 +347,10 @@
       "Wenn du einen wichtigen Auftritt vor Publikum zu absolvieren hast,",
       "Wenn du Harmoniefluss in dir und um dich benötigst.",
       "Wenn du erkennst, dass du zu stark auf dein eigenes Gewinnen fokussiert bist."
-    ]
+    ],
+    "grundgefuehl": "Führungsanspruch mit hohem Harmoniebewusstsein. Die Bühne des Lebens als Wohlfühlort anstreben.",
+    "faehigkeit": "Charismatische Ausstrahlung auf sein Umfeld. Entscheidungsstärke mit Führungskompetenz. Selbstständigkeit mit Verantwortungssinn.",
+    "schattenkraft": "Konkurrenzbewusstsein. Eigennuetzige Beeinflussung Anderer durch die persönliche Wirkkraft. "
   },
   {
     "id": 20,
@@ -354,7 +384,10 @@
       "Wenn du einfach Kind sein möchtest.",
       "Wenn du Inspiration für eine kreative Idee benötigst.",
       "Wenn du deine Aufmerksamkeit auf ein Ziel mit Begeisterung lenken und halten möchtest."
-    ]
+    ],
+    "grundgefuehl": "Kind sein dürfen und Leben als Spiel erfassen. Autodidaktes Tun, Improvisation, Flexibilität. Frei von Sorge und Not, Neugier und Wachsen wollen aus dem Instinkt heraus.",
+    "faehigkeit": "Kreativität als Angebot zur Vielseitigkeit. Motviationsfördernde und Lebensbejahende Kommunikation. Künstlerisches Agieren und freies Assoziieren.",
+    "schattenkraft": "Gefahr der Ablenkung und Aufmerksamkeitsdefizit. Immer wieder Neues beginnen ohne das Alte fertig gestellt zu haben. Ungeduld und zorniges Einfordern. Unbeständigkeit durch Zulassen und fordern von Informationsflut."
   },
   {
     "id": 22,
@@ -388,7 +421,10 @@
       "Wenn du Zeit für dich alleine benötigst und dazu stehen möchtest.",
       "Wenn du meditativ den Moment untertsützen möchtest.",
       "Wenn du gefordert bist, zu akzepterien was nicht veränderbar scheint."
-    ]
+    ],
+    "grundgefuehl": "Mystisches Wahrnehmen der Existenz. Intuition vor Intellekt. Zugang zur Quelle als Schöpfer und Erhalter jeder Lebensform. Dankbarkeit aus der Tiefe des Seins.",
+    "faehigkeit": "Das Gesamte erfassen. Zulassen und akzeptieren können. Die Einheit in der Vielfalt erkennen und dadurch Zugang zu metaphysischen Ebenen erlangen. Überbewusstes Agieren zum Wohle Aller. Meditation, Religio, Ganzheit als Lebensgrundlage. Weitergabe von höherem Wissen auf Basis eigener Erfahrung.",
+    "schattenkraft": "Isolation durch Flucht vor den niederen Bedürfnissen des Menschseins. Hang zu grenzenauflösenden Substanzen. Auflösungstenzenden des eigenen Bewusstseins."
   },
   {
     "id": 24,
