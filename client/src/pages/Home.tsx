@@ -57,9 +57,14 @@ import {
 type WizardStep = 
   | "dashboard" // New start step
   | "preparation" 
-  | "question1" 
-  | "question2" 
-  | "question3" 
+  | "relaxation"
+  | "recording1"
+  | "pause1"
+  | "recording2"
+  | "pause2"
+  | "recording3"
+  | "pause3"
+  | "recording4"
   | "analyzing" 
   | "result";
 
@@ -108,18 +113,38 @@ export default function Home() {
 
   // Store results from each step
   const [results, setResults] = useState<{
-    q1: AnalysisResult | null;
-    q2: AnalysisResult | null;
-    q3: AnalysisResult | null;
+    r1: AnalysisResult | null;
+    r2: AnalysisResult | null;
+    r3: AnalysisResult | null;
+    r4: AnalysisResult | null;
   }>({
-    q1: null,
-    q2: null,
-    q3: null
+    r1: null,
+    r2: null,
+    r3: null,
+    r4: null
   });
+
+  // Relaxation timer state
+  const [relaxationTimeLeft, setRelaxationTimeLeft] = useState(180);
+  const [isRelaxing, setIsRelaxing] = useState(false);
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isRelaxing && relaxationTimeLeft > 0) {
+      interval = setInterval(() => {
+        setRelaxationTimeLeft(prev => prev - 1);
+      }, 1000);
+    } else if (relaxationTimeLeft === 0) {
+      setIsRelaxing(false);
+    }
+    return () => clearInterval(interval);
+  }, [isRelaxing, relaxationTimeLeft]);
 
   // Combined result state
   const [finalResult, setFinalResult] = useState<any | null>(null);
   const [mdiResult, setMdiResult] = useState<typeof frequencyData[0] | null>(null);
+  const [wurzelklangResult, setWurzelklangResult] = useState<any | null>(null);
+  const [wurzelklangMdi, setWurzelklangMdi] = useState<typeof frequencyData[0] | null>(null);
   const [showInterpretation, setShowInterpretation] = useState(false);
   const [showCertificate, setShowCertificate] = useState(false);
   const [showKnowledgePool, setShowKnowledgePool] = useState(false);
@@ -168,12 +193,14 @@ export default function Home() {
   useEffect(() => {
     if (wasRecordingRef.current && !isRecording && analysisResult) {
       // Just finished recording
-      if (currentStep === "question1") {
-        setResults(prev => ({ ...prev, q1: analysisResult }));
-      } else if (currentStep === "question2") {
-        setResults(prev => ({ ...prev, q2: analysisResult }));
-      } else if (currentStep === "question3") {
-        setResults(prev => ({ ...prev, q3: analysisResult }));
+      if (currentStep === "recording1") {
+        setResults(prev => ({ ...prev, r1: analysisResult }));
+      } else if (currentStep === "recording2") {
+        setResults(prev => ({ ...prev, r2: analysisResult }));
+      } else if (currentStep === "recording3") {
+        setResults(prev => ({ ...prev, r3: analysisResult }));
+      } else if (currentStep === "recording4") {
+        setResults(prev => ({ ...prev, r4: analysisResult }));
       }
     }
     wasRecordingRef.current = isRecording;
@@ -181,10 +208,15 @@ export default function Home() {
 
   // CORRECT NAVIGATION LOGIC
   const advanceStep = () => {
-      if (currentStep === "preparation") setCurrentStep("question1");
-      else if (currentStep === "question1") setCurrentStep("question2");
-      else if (currentStep === "question2") setCurrentStep("question3");
-      else if (currentStep === "question3") {
+      if (currentStep === "preparation") setCurrentStep("relaxation");
+      else if (currentStep === "relaxation") setCurrentStep("recording1");
+      else if (currentStep === "recording1") setCurrentStep("pause1");
+      else if (currentStep === "pause1") setCurrentStep("recording2");
+      else if (currentStep === "recording2") setCurrentStep("pause2");
+      else if (currentStep === "pause2") setCurrentStep("recording3");
+      else if (currentStep === "recording3") setCurrentStep("pause3");
+      else if (currentStep === "pause3") setCurrentStep("recording4");
+      else if (currentStep === "recording4") {
           setCurrentStep("analyzing");
           setTimeout(() => {
               calculateFinalResult();
@@ -220,15 +252,16 @@ export default function Home() {
       }
     };
     
-    processResult(results.q1);
-    processResult(results.q2);
-    processResult(results.q3);
+    processResult(results.r1);
+    processResult(results.r2);
+    processResult(results.r3);
+    // r4 is Wurzelklang, not included in Lebensklang statistics
     
     // Normalize to 100%
     let validSteps = 0;
-    if (results.q1) validSteps++;
-    if (results.q2) validSteps++;
-    if (results.q3) validSteps++;
+    if (results.r1) validSteps++;
+    if (results.r2) validSteps++;
+    if (results.r3) validSteps++;
     
     if (validSteps > 0) {
         for (const tone in combinedDistribution) {
@@ -293,9 +326,9 @@ export default function Home() {
             }
         };
         
-        checkSession(results.q1);
-        checkSession(results.q2);
-        checkSession(results.q3);
+        checkSession(results.r1);
+        checkSession(results.r2);
+        checkSession(results.r3);
 
         let finalHz = 0;
         let finalCents = 0;
@@ -366,6 +399,40 @@ export default function Home() {
             saveDailyResult(syntheticResult);
         }
       }
+    }
+
+    // Calculate Wurzelklang from r4
+    if (results.r4) {
+        let maxWurzelScore = 0;
+        let dominantWurzelId = "";
+        if (results.r4.mdiDistribution) {
+            for (const [id, score] of Object.entries(results.r4.mdiDistribution)) {
+                if (score > maxWurzelScore) {
+                    maxWurzelScore = score;
+                    dominantWurzelId = id;
+                }
+            }
+        }
+        if (dominantWurzelId) {
+            const wMdi = frequencyData.find(f => f.id === parseInt(dominantWurzelId));
+            if (wMdi) {
+                setWurzelklangMdi(wMdi);
+                const wToneName = getToneNameFromMdiId(dominantWurzelId);
+                const wBaseToneName = wToneName.replace('+', '');
+                const wToneData = TONES.find(t => t.name === wBaseToneName);
+                
+                if (wToneData) {
+                    setWurzelklangResult({
+                        tone: wToneData,
+                        fundamentalFreq: results.r4.fundamentalFreq,
+                        cents: results.r4.cents,
+                        diffHz: results.r4.diffHz,
+                        toneDistribution: results.r4.toneDistribution,
+                        mdiDistribution: results.r4.mdiDistribution
+                    });
+                }
+            }
+        }
     }
   };
 
@@ -438,10 +505,22 @@ export default function Home() {
 
       case "preparation":
         return (
-          <div className="max-w-2xl mx-auto py-20 px-4 animate-in slide-in-from-bottom-8 duration-700 pt-48">
-            <h2 className="text-3xl font-bold text-white mb-8">Vorbereitung</h2>
+          <div className="max-w-2xl mx-auto py-20 px-4 animate-in slide-in-from-bottom-8 duration-700 pt-32">
+            <h2 className="text-3xl font-bold text-white mb-8">Vorbereitung zur Stimmklanganalyse</h2>
             
-            <div className="space-y-6 mb-12">
+            <div className="space-y-4 mb-12">
+              <Card className="bg-zinc-900/50 border-zinc-800">
+                <CardContent className="p-6 flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0 mt-1">
+                        <span className="text-orange-500 font-bold">0</span>
+                    </div>
+                    <div>
+                        <h3 className="text-white font-medium mb-1">Voraussetzungen</h3>
+                        <p className="text-zinc-400 text-sm">Du solltest die folgende Stimmklanganalyse nur machen, wenn deine Stimme frei ist von Einschränkungen jeglicher Art (Schnupfen, Husten, Heiserkeit, überanstrengte Stimme aus dem Tagesgeschehen). Mache die Analyse deiner Stimme nicht am Morgen, nicht nachdem du gegessen hast (mindestens zwei Stunden sollten vergangen sein) und nicht wenn du von einer anstrengenden Tätigkeit kommst.</p>
+                    </div>
+                </CardContent>
+              </Card>
+
               <Card className="bg-zinc-900/50 border-zinc-800">
                 <CardContent className="p-6 flex items-start gap-4">
                     <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0 mt-1">
@@ -449,7 +528,7 @@ export default function Home() {
                     </div>
                     <div>
                         <h3 className="text-white font-medium mb-1">Ruhige Umgebung</h3>
-                        <p className="text-zinc-400 text-sm">Suche dir einen Ort ohne Hintergrundgeräusche.</p>
+                        <p className="text-zinc-400 text-sm">Nimm dir 10 min Zeit an einem ruhigen ungestörten Platz deiner Wahl. Du benötigst einen Sitzplatz auf dem du aufrecht Platz nehmen kannst. Weiche Sofas oder ähnliche Sitzmöglichkeiten sind ungeeignet. Es dürfen keine Nebengeräusche im Umfeld vorhanden sein.</p>
                     </div>
                 </CardContent>
               </Card>
@@ -460,53 +539,114 @@ export default function Home() {
                         <span className="text-orange-500 font-bold">2</span>
                     </div>
                     <div>
-                        <h3 className="text-white font-medium mb-1">Natürliche Stimme</h3>
-                        <p className="text-zinc-400 text-sm">Sprich so, wie du dich wohlfühlst. Nicht verstellen.</p>
-                    </div>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-zinc-900/50 border-zinc-800">
-                <CardContent className="p-6 flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0 mt-1">
-                        <span className="text-orange-500 font-bold">3</span>
-                    </div>
-                    <div>
-                        <h3 className="text-white font-medium mb-1">3 Fragen</h3>
-                        <p className="text-zinc-400 text-sm">Wir stellen dir 3 kurze Fragen. Antworte intuitiv.</p>
+                        <h3 className="text-white font-medium mb-1">Wasser bereitstellen</h3>
+                        <p className="text-zinc-400 text-sm">Stelle für dich ein Glas mit angenehm warmen Trinkwasser bereit und öffne das Stimmklangprogramm auf deinem Handy oder Computer.</p>
                     </div>
                 </CardContent>
               </Card>
             </div>
 
-            <Button onClick={advanceStep} size="lg" className="w-full h-14 text-lg rounded-full">
+            <Button onClick={() => {
+                setIsRelaxing(true);
+                setRelaxationTimeLeft(180);
+                advanceStep();
+            }} size="lg" className="w-full h-14 text-lg rounded-full">
               Ich bin bereit <ArrowRight className="ml-2 w-5 h-5" />
             </Button>
           </div>
         );
 
-      case "question1":
-      case "question2":
-      case "question3":
-        const questions = {
-          question1: "Zähle bitte entspannt von 1 bis 10.",
-          question2: "Nenne deinen vollen Namen und dein Geburtsdatum.",
-          question3: "Was ist deine größte Stärke?"
+      case "relaxation":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in pt-48">
+             <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-8 max-w-2xl leading-tight">
+                Entspannung
+             </h2>
+             <div className="mb-8 p-6 bg-zinc-900/50 rounded-xl border border-zinc-800 text-left w-full max-w-md">
+                <p className="text-zinc-300 text-lg leading-relaxed mb-4">
+                  Du hörst nun für drei Minuten ein sanftes Wasserplätschern. Atme entspannt durch die Nase ein und aus. Beobachte den Atemfluss und entspanne dich.
+                </p>
+             </div>
+             
+             {isRelaxing ? (
+                 <div className="flex flex-col items-center">
+                     <div className="text-6xl font-mono text-orange-500 mb-8">
+                         {Math.floor(relaxationTimeLeft / 60)}:{(relaxationTimeLeft % 60).toString().padStart(2, '0')}
+                     </div>
+                     <audio autoPlay loop src="/water-stream.mp3" />
+                     <p className="text-zinc-500">Bitte schließe deine Augen und entspanne.</p>
+                     <Button onClick={() => setIsRelaxing(false)} variant="ghost" className="mt-8 text-zinc-500 hover:text-white">
+                         Überspringen
+                     </Button>
+                 </div>
+             ) : (
+                 <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-4">
+                     <p className="text-green-500 mb-8 flex items-center justify-center gap-2">
+                       <Sparkles className="w-5 h-5" /> Entspannungsphase abgeschlossen.
+                     </p>
+                     <p className="text-zinc-300 mb-8 text-center max-w-md">
+                       Wenn das Wasserplätschern verstummt öffne deine Augen, nimm einen Schluck Wasser zu dir und drücke den Startbutton für den nächsten Schritt.
+                     </p>
+                     <Button onClick={advanceStep} size="lg" className="w-full max-w-xs h-14 text-lg rounded-full">
+                       Weiter <ArrowRight className="ml-2 w-5 h-5" />
+                     </Button>
+                 </div>
+             )}
+          </div>
+        );
+
+      case "pause1":
+      case "pause2":
+      case "pause3":
+        return (
+          <div className="flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in pt-48">
+             <div className="w-20 h-20 rounded-full bg-blue-500/20 flex items-center justify-center mb-8">
+                 <div className="w-10 h-10 rounded-full bg-blue-500/40 animate-pulse" />
+             </div>
+             <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-8 max-w-2xl leading-tight">
+                Trinkpause
+             </h2>
+             <p className="text-zinc-300 text-lg mb-12 text-center max-w-md">
+                Nimm wieder einen Schluck Wasser zu dir.
+             </p>
+             <Button onClick={advanceStep} size="lg" className="w-full max-w-xs h-14 text-lg rounded-full">
+                Weiter <ArrowRight className="ml-2 w-5 h-5" />
+             </Button>
+          </div>
+        );
+
+      case "recording1":
+      case "recording2":
+      case "recording3":
+      case "recording4":
+        const recordingTitles: Record<string, string> = {
+          recording1: "Dein Tagesablauf",
+          recording2: "Herzens-Erinnerung",
+          recording3: "Der Ton A",
+          recording4: "Tiefstes Summen"
+        };
+
+        const recordingInstructions: Record<string, string> = {
+          recording1: "Du wirst nun aufgefordert, mit ganz normaler Sprechstimme zu erzählen, wie dein bisheriger Tag verlaufen ist, Erinnere dich einfach an die Ereignisse des Tages und erzähle davon. Nimm dir dafür zumindest eine Minute, aber gerne auch länger Zeit dafür.",
+          recording2: "Schliesse deine Augen. Wandere mit deiner inneren Aufmerksamkeit in dein Herzzentrum. Atme sanft dreimal in deine Brust und erinnere dich an ein wunderschönes Erlebnis. Es kann aus deiner Kindheit oder auch aus der nahen Vergangenheit stammen. Wichtig ist, dass es eine schöne, angenehme Erinnerung ist, die in dein Bewusstsein tritt. Nun erzähle davon. Wenn du fertig bist öffne deine Augen und drücke den Stoppbutton.",
+          recording3: "Töne eine dir angenehmen Ton, indem du den Laut AAAAAAAAhhhh klingen lässt. Wiederhole den Ton noch 2x.",
+          recording4: "Zum Abschluss versuchst du nun den tiefsten ton zu Summen der dir möglich scheint. Schliesse die Lippen und summe ganz tief nachdem du den Startbutton gedrückt hast. Wiederhole diesen tiefsten Summton noch weitere 2x."
         };
         
         // Determine if current step is done
         const isCurrentStepDone = 
-           (currentStep === "question1" && results.q1) ||
-           (currentStep === "question2" && results.q2) ||
-           (currentStep === "question3" && results.q3);
+           (currentStep === "recording1" && results.r1) ||
+           (currentStep === "recording2" && results.r2) ||
+           (currentStep === "recording3" && results.r3) ||
+           (currentStep === "recording4" && results.r4);
 
         return (
           <div className="flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in pt-48">
             <div className="mb-8 flex gap-2">
-                {[1, 2, 3].map(i => (
+                {[1, 2, 3, 4].map(i => (
                     <div key={i} className={cn(
                         "w-3 h-3 rounded-full transition-colors",
-                        (currentStep === "question1" && i === 1) || (currentStep === "question2" && i <= 2) || (currentStep === "question3" && i <= 3) 
+                        (currentStep === "recording1" && i === 1) || (currentStep === "recording2" && i <= 2) || (currentStep === "recording3" && i <= 3) || (currentStep === "recording4" && i <= 4) 
                         ? "bg-orange-500" 
                         : "bg-zinc-800"
                     )} />
@@ -515,22 +655,20 @@ export default function Home() {
 
             {/* Show question text only if recording is not done */}
             {!isCurrentStepDone && (
-              <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-12 max-w-2xl leading-tight">
-                "{questions[currentStep]}"
+              <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-8 max-w-2xl leading-tight">
+                {recordingTitles[currentStep]}
               </h2>
             )}
             
             {/* Instructions - Only show if NOT done */}
             {!isCurrentStepDone && (
-              <div className="mb-8 p-6 bg-zinc-900/50 rounded-xl border border-zinc-800 text-left w-full max-w-md">
+              <div className="mb-8 p-6 bg-zinc-900/50 rounded-xl border border-zinc-800 text-left w-full max-w-2xl">
                 <p className="text-zinc-300 text-lg leading-relaxed mb-4">
-                  {currentStep === "question1" && "Zähle bitte entspannt von 1 bis 10."}
-                  {currentStep === "question2" && "Sage deinen Vor- und Nachnamen drei Mal."}
-                  {currentStep === "question3" && "Summe einen Ton, der sich für dich angenehm anfühlt."}
+                  {recordingInstructions[currentStep]}
                 </p>
                 <div className="flex items-center gap-2 text-zinc-500 text-sm">
                   <Mic className="w-4 h-4" />
-                  <span>Sprich in normaler Lautstärke.</span>
+                  <span>Sprich in normaler Lautstärke. Drücke Stopp, wenn du fertig bist.</span>
                 </div>
               </div>
             )}
@@ -547,7 +685,7 @@ export default function Home() {
                   size="lg" 
                   className="rounded-full w-48 h-16 text-lg bg-white text-black hover:bg-zinc-200 shadow-[0_0_30px_rgba(255,255,255,0.1)]"
                 >
-                  <Mic className="mr-2 w-5 h-5" /> Aufnahme
+                  <Mic className="mr-2 w-5 h-5" /> Start
                 </Button>
               )}
 
@@ -593,7 +731,7 @@ export default function Home() {
                    <Sparkles className="w-4 h-4" /> Aufnahme erfolgreich!
                  </p>
                  <Button onClick={advanceStep} variant="outline" className="border-zinc-700 hover:bg-zinc-800 h-12 px-8 text-lg">
-                   Nächster Schritt <ArrowRight className="ml-2 w-5 h-5" />
+                   {currentStep === "recording4" ? "Analyse abschließen" : "Nächster Schritt"} <ArrowRight className="ml-2 w-5 h-5" />
                  </Button>
                </div>
             ) : null}
@@ -651,7 +789,15 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
               <h1 className="text-5xl md:text-7xl font-bold text-white mb-2 tracking-tighter">
                 {mdi.colorName}
               </h1>
-              <p className="text-xl text-orange-500 font-medium">{mdi.frequency} Hz</p>
+              <p className="text-xl text-orange-500 font-medium">{mdi.frequency} Hz (Lebensklang)</p>
+
+              {wurzelklangMdi && (
+                <div className="inline-block bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 mt-4">
+                  <p className="text-sm text-zinc-400 uppercase tracking-widest mb-1">Dein Wurzelklang</p>
+                  <p className="text-2xl font-bold text-white">{wurzelklangMdi.colorName}</p>
+                  <p className="text-md text-orange-400">{wurzelklangMdi.frequency} Hz</p>
+                </div>
+              )}
             </div>
 
             {/* Main Content Grid */}
@@ -801,14 +947,14 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 <div className="mb-12 bg-zinc-900/30 border border-zinc-800 rounded-xl p-6">
                     <div className="flex items-center justify-between mb-4">
                         <div>
-                            <h3 className="text-lg font-semibold text-white">Deine 5-Tage-Messung</h3>
-                            <p className="text-sm text-zinc-400">Wir benötigen 5 Messungen für dein valides Profil.</p>
+                            <h3 className="text-lg font-semibold text-white">Deine 3-Tage-Messung</h3>
+                            <p className="text-sm text-zinc-400">Wir benötigen 3 Messungen für dein valides Profil.</p>
                         </div>
                         <div className="text-2xl font-bold text-orange-500">
-                            {daysCompleted} / 5
+                            {daysCompleted} / 3
                         </div>
                     </div>
-                    <Progress value={(daysCompleted / 5) * 100} className="h-2 bg-zinc-800" />
+                    <Progress value={(daysCompleted / 3) * 100} className="h-2 bg-zinc-800" />
                     <p className="text-xs text-zinc-500 mt-2 text-center">
                         Die 2 extremsten Werte werden automatisch als Ausreißer entfernt.
                     </p>

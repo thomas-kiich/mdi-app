@@ -4,7 +4,7 @@ import { TONES } from '@/lib/tones';
 import frequencyData from '@/lib/frequencyData.json';
 
 const STORAGE_KEY = 'mdi_longitudinal_data';
-const REQUIRED_DAYS = 5;
+const REQUIRED_DAYS = 3;
 const OUTLIERS_TO_REMOVE = 2;
 
 export interface DailyResult {
