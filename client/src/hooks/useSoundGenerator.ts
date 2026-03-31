@@ -87,39 +87,45 @@ export function useSoundGenerator() {
         osc.stop(now + duration + 0.1);
         activeOscillatorsRef.current.push(osc);
     } else {
-        // STANDARD MODE: Richer Tone
-        // Fundamental: Triangle wave (more body than sine)
+        // STANDARD MODE: Softer, Warmer Tone
+        // Fundamental: Sine wave (very soft)
         const osc1 = ctx.createOscillator();
-        osc1.type = 'triangle';
+        osc1.type = 'sine';
         osc1.frequency.setValueAtTime(frequency, ctx.currentTime);
 
-        // Overtone 1: Sawtooth (adds brilliance), 1 octave up, lower volume
+        // Overtone 1: Triangle (adds subtle body), 1 octave up, very low volume
         const osc2 = ctx.createOscillator();
-        osc2.type = 'sawtooth';
+        osc2.type = 'triangle';
         osc2.frequency.setValueAtTime(frequency * 2, ctx.currentTime);
-        // osc2.detune.value = 5; // Slight detune for warmth (Removed detune for more precise tuning check)
+        osc2.detune.value = 8; // Slight detune for warmth
+
+        // Lowpass filter for extra warmth (removes sharp frequencies)
+        const filter = ctx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(frequency * 3, ctx.currentTime);
 
         const gainNode1 = ctx.createGain();
         const gainNode2 = ctx.createGain();
 
-        // Envelope for Fundamental
+        // Envelope for Fundamental (Softer attack)
         gainNode1.gain.setValueAtTime(0, now);
-        gainNode1.gain.linearRampToValueAtTime(0.6, now + 0.1); // Attack
-        gainNode1.gain.setValueAtTime(0.6, now + duration - 0.5); // Sustain
+        gainNode1.gain.linearRampToValueAtTime(0.5, now + 0.4); // Slower Attack
+        gainNode1.gain.setValueAtTime(0.5, now + duration - 1.0); // Sustain
         gainNode1.gain.linearRampToValueAtTime(0, now + duration); // Release
 
-        // Envelope for Overtone (Subtler)
+        // Envelope for Overtone (Subtler, softer attack)
         gainNode2.gain.setValueAtTime(0, now);
-        gainNode2.gain.linearRampToValueAtTime(0.15, now + 0.1); 
-        gainNode2.gain.setValueAtTime(0.15, now + duration - 0.5); 
+        gainNode2.gain.linearRampToValueAtTime(0.08, now + 0.5); // Slower Attack
+        gainNode2.gain.setValueAtTime(0.08, now + duration - 1.0); 
         gainNode2.gain.linearRampToValueAtTime(0, now + duration);
 
         osc1.connect(gainNode1);
         osc2.connect(gainNode2);
         
-        gainNode1.connect(masterGain);
-        gainNode2.connect(masterGain);
+        gainNode1.connect(filter);
+        gainNode2.connect(filter);
         
+        filter.connect(masterGain);
         masterGain.connect(ctx.destination);
 
         osc1.start(now);
