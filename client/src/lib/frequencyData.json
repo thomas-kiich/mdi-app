@@ -148,7 +148,7 @@
     "tone": "C",
     "nutzung": [
       "Wenn du deine empathischen Fähigkeiten aktivieren möchtest",
-      "Wenn du ein schwieriges soziales UMfeld harmoniseren möchtest",
+      "Wenn du ein schwieriges soziales Umfeld harmonisieren möchtest",
       "Wenn du einen Beziehungskonflikt in der Tiefe verstehen und regulieren willst."
     ]
   },
@@ -165,7 +165,7 @@
     "tone": "C+",
     "nutzung": [
       "Wenn du deine empathischen Fähigkeiten aktivieren möchtest",
-      "Wenn du ein schwieriges soziales UMfeld harmoniseren möchtest",
+      "Wenn du ein schwieriges soziales Umfeld harmonisieren möchtest",
       "Wenn du einen Beziehungskonflikt in der Tiefe verstehen und regulieren willst."
     ]
   },
@@ -182,7 +182,7 @@
     "tone": "H",
     "nutzung": [
       "Wenn du eine Extremleistung abrufen willst.",
-      "Wenn du gefordert bist, alles zu geben und dabei innerliche stabil zu bleiben",
+      "Wenn du gefordert bist, alles zu geben und dabei innerlich stabil zu bleiben.",
       "Wenn du dogmatisches Verhalten an dir wahrnimmst und das Motiv dahinter beleuchten möchtest."
     ]
   },
@@ -199,7 +199,7 @@
     "tone": "H+",
     "nutzung": [
       "Wenn du eine Extremleistung abrufen willst.",
-      "Wenn du gefordert bist, alles zu geben und dabei innerliche stabil zu bleiben",
+      "Wenn du gefordert bist, alles zu geben und dabei innerlich stabil zu bleiben.",
       "Wenn du dogmatisches Verhalten an dir wahrnimmst und das Motiv dahinter beleuchten möchtest."
     ]
   },
@@ -215,7 +215,7 @@
     "metaphor": "DER INTELLEKTUELLE",
     "tone": "AIS",
     "nutzung": [
-      "wenn du besondere intellektuelle Aufgaben in Fluss halten möchtest",
+      "Wenn du besondere intellektuelle Aufgaben in Fluss halten möchtest.",
       "Wenn du herausfordernde Aufgaben vor dir hast",
       "Wenn du meinst, nicht genug zu sein und innere Akzeptanz deiner Menschlichkeit benötigst."
     ]
@@ -232,7 +232,7 @@
     "metaphor": "DER BESONDERE",
     "tone": "AIS+",
     "nutzung": [
-      "wenn du besondere intellektuelle Aufgaben in Fluss halten möchtest",
+      "Wenn du besondere intellektuelle Aufgaben in Fluss halten möchtest.",
       "Wenn du herausfordernde Aufgaben vor dir hast",
       "Wenn du meinst, nicht genug zu sein und innere Akzeptanz deiner Menschlichkeit benötigst."
     ]
@@ -244,12 +244,12 @@
     "toneRange": "485.4 - 472.4 Thz",
     "frequency": 108,
     "description": "Die Fähigkeit zur Monetarisierung",
-    "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
+    "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG | LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
     "hex": "#ffdd59",
     "metaphor": "DER FORMIERNDE",
     "tone": "A",
     "nutzung": [
-      "Wenn du Raum zum Ausleben deines Freiheitsanspuchs benötigst.",
+      "Wenn du Raum zum Ausleben deines Freiheitsanspruchs benötigst.",
       "Wenn du gefordert bist im Lösen eines intellektuell fordernden Themas.",
       "Wenn du ein wichtiges Meeting vorbereitest und zentriert agieren möchtest."
     ]
@@ -261,12 +261,12 @@
     "toneRange": "472.4 - 460.1 Thz",
     "frequency": 105.8,
     "description": "Die Fähigkeit zur Strukturierung",
-    "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
+    "talent": "STRUKTUR SCHAFFEND | FREIHEITSDRANG | LEITUNG | GESCHÄFTSSINN | ANALYTIK | MANAGEMENT | INFORMATIK | DIGITALITÄT",
     "hex": "#ffbd59",
     "metaphor": "DER ANALYTIKER",
     "tone": "A+",
     "nutzung": [
-      "Wenn du Raum zum Ausleben deines Freiheitsanspuchs benötigst.",
+      "Wenn du Raum zum Ausleben deines Freiheitsanspruchs benötigst.",
       "Wenn du gefordert bist im Lösen eines intellektuell fordernden Themas.",
       "Wenn du ein wichtiges Meeting vorbereitest und zentriert agieren möchtest."
     ]
@@ -283,8 +283,8 @@
     "metaphor": "DER DETAILGENAUE",
     "tone": "GIS",
     "nutzung": [
-      "Wenn du an deinem kritischen Beharren zu scheitern drohst",
-      "Wenn du ein herausforderndes Deatilproblem lösen möchtest",
+      "Wenn du an deinem kritischen Beharren zu scheitern drohst.",
+      "Wenn du ein herausforderndes Detailproblem lösen möchtest.",
       "Wenn du dich zentrieren möchtest um all deine Sinne auf ein Ziel zu fokussieren."
     ]
   },
@@ -300,8 +300,8 @@
     "metaphor": "DER KRITISCHE",
     "tone": "GIS+",
     "nutzung": [
-      "Wenn du an deinem kritischen Beharren zu scheitern drohst",
-      "Wenn du ein herausforderndes Deatilproblem lösen möchtest",
+      "Wenn du an deinem kritischen Beharren zu scheitern drohst.",
+      "Wenn du ein herausforderndes Detailproblem lösen möchtest.",
       "Wenn du dich zentrieren möchtest um all deine Sinne auf ein Ziel zu fokussieren."
     ]
   },
@@ -351,9 +351,9 @@
     "metaphor": "DAS INSTINKTBEGABTE",
     "tone": "FIS",
     "nutzung": [
-      "Wenn du ei8nfach Kind sein möchtest.",
-      "Wenn du Inspiration für ein kreative Idee benötigst.",
-      "Wenn du deine Aufmerksamkeit auf ein Ziel mit begeisterung füllen möchtest."
+      "Wenn du einfach Kind sein möchtest.",
+      "Wenn du Inspiration für eine kreative Idee benötigst.",
+      "Wenn du deine Aufmerksamkeit auf ein Ziel mit Begeisterung lenken und halten möchtest."
     ]
   },
   {
@@ -368,9 +368,9 @@
     "metaphor": "DER AUTODIDAKT",
     "tone": "FIS+",
     "nutzung": [
-      "Wenn du ei8nfach Kind sein möchtest.",
-      "Wenn du Inspiration für ein kreative Idee benötigst.",
-      "Wenn du deine Aufmerksamkeit auf ein Ziel mit begeisterung füllen möchtest."
+      "Wenn du einfach Kind sein möchtest.",
+      "Wenn du Inspiration für eine kreative Idee benötigst.",
+      "Wenn du deine Aufmerksamkeit auf ein Ziel mit Begeisterung lenken und halten möchtest."
     ]
   },
   {
