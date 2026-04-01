@@ -492,3 +492,5 @@
 - [x] Add new columns to InterpretationView.tsx (Grundgefühle, Fähigkeit, Schattenkraft) based on the table the user will provide.
 
 - [x] Correct the spelling of the user's name (CHOCHOLA) in the podcast text
+
+- [x] Change author name to italic *Thomas Chochola* in the podcast text

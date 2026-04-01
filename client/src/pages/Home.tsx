@@ -1068,7 +1068,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                   description={
                     <div className="space-y-4">
                       <p>
-                         Willkommen zur Hörbuchserie MASCHINEN ATMEN NICHT von Thomas CHOCHOLA. Wir schreiben das Jahr 2026. Wenn es nach dem Autor geht, startet die Menschheit gerade in ein nie dagewesenes Abenteuer von Lebensqualität. Allerdings ist diese Qualität zweischneidig. Fremd- oder selbstbestimmt in einem Zeitalter mit schier unbegrenzten Möglichkeiten der Lebensentfaltung – das ist die entscheidende Frage, die es zu beantworten gilt.
+                         Willkommen zur Hörbuchserie MASCHINEN ATMEN NICHT von <i>Thomas Chochola</i>. Wir schreiben das Jahr 2026. Wenn es nach dem Autor geht, startet die Menschheit gerade in ein nie dagewesenes Abenteuer von Lebensqualität. Allerdings ist diese Qualität zweischneidig. Fremd- oder selbstbestimmt in einem Zeitalter mit schier unbegrenzten Möglichkeiten der Lebensentfaltung – das ist die entscheidende Frage, die es zu beantworten gilt.
                       </p>
                       <p>
                         Tauche bewusst ein in das Szenario, in dem du dich bereits befindest, und erkenne Lösungen, wie du dein Leben optimal inszenierst, in einer Zeit, die niemals wiederkommt und noch nie da war.
