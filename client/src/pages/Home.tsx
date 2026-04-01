@@ -578,7 +578,7 @@ export default function Home() {
                       23.04.2026
                     </div>
                     <h3 className="text-orange-400 text-base font-bold tracking-wider mb-2">2026 PRAXIS 01</h3>
-                    <h4 className="text-lg font-medium text-orange-400 mb-4">ECHT KRASS! Befindlichkeitstraining das ich bestimme?</h4>
+                    <h4 className="text-lg font-medium text-orange-400 mb-4">ECHT KRASS! Befindlichkeitstraining das ich selbst bestimme?</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
                       So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
                     </p>
