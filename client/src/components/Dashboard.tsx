@@ -81,18 +81,6 @@ export function Dashboard({
             </div>
             
             <div className="text-center mb-12 space-y-4 relative">
-                 {streak > 0 && (
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="absolute top-0 right-4 md:right-12 lg:right-24 flex items-center gap-2 bg-orange-500/10 border border-orange-500/20 px-4 py-2 rounded-full cursor-help"
-                        title="Tage in Folge trainiert"
-                    >
-                        <Flame className="w-5 h-5 text-orange-500 fill-orange-500 animate-pulse" />
-                        <span className="text-orange-500 font-bold">{streak} Tage Streak</span>
-                    </motion.div>
-                )}
-
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

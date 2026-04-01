@@ -494,3 +494,5 @@
 - [x] Correct the spelling of the user's name (CHOCHOLA) in the podcast text
 
 - [x] Change author name to italic *Thomas Chochola* in the podcast text
+
+- [x] Remove the "1 Tage Streak" display from the app
