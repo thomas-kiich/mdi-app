@@ -526,7 +526,22 @@ export default function Home() {
               <div className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
                 <h2 className="text-2xl font-bold text-center text-white mb-8">SZENARIO - Die Vorschau April 2026</h2>
                 
-                <div className="grid md:grid-cols-3 gap-6">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {/* Episode 1 Preview */}
+                  <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group cursor-pointer" onClick={() => setShowPodcast(true)}>
+                    <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
+                      JETZT VERFÜGBAR
+                    </div>
+                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2">2026 EPISODE 01</h3>
+                    <h4 className="text-lg font-medium text-orange-400 mb-4">Wer lenkt mein Leben im Agentenzeitalter?</h4>
+                    <p className="text-white text-sm leading-relaxed mb-6">
+                      Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet...
+                    </p>
+                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className="w-full h-full bg-orange-500"></div>
+                    </div>
+                  </div>
+                  
                   {/* Episode 2 Preview */}
                   <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
                     <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
