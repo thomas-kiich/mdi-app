@@ -38,7 +38,7 @@ export function PodcastFeature({
         <div className="grid md:grid-cols-3 gap-6 items-center">
           {/* Cover Image */}
           <div className="md:col-span-1 p-6 flex flex-col justify-center">
-            <div className="relative group mx-auto w-full max-w-[240px]">
+            <div className="relative group mx-auto w-full max-w-[180px]">
               <img
                 src={coverImage}
                 alt={title}

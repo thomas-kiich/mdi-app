@@ -32,7 +32,7 @@ import { OnboardingTour } from "@/components/OnboardingTour";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
 import { SleepTheta } from "@/components/SleepTheta";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
-import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, ChevronUp, ChevronDown, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone, Headphones } from "lucide-react";
+import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, ChevronUp, ChevronDown, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone, Headphones, Lock, MessageSquare } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
@@ -502,18 +502,85 @@ export default function Home() {
                   <span>Hier die App auf dein Handy laden</span>
                 </button>
               </div>
-              <Dashboard 
-                onStartAnalysis={() => setCurrentStep("preparation")}
-                onOpenTraining={() => setShowTrainingCenter(true)}
-                onOpenScanner={() => setShowSpectralScanner(true)}
-                onOpenKnowledge={() => setShowKnowledgePool(true)}
-                onOpenTable={() => setShowFrequencyTable(true)}
-                onOpenVital={() => setShowVitalDashboard(true)}
-                onOpenSleep={() => setShowSleepTheta(true)}
-                onOpenHistory={() => {}}
-                isPremium={isPremium}
-                onTogglePremium={() => setIsPremium(!isPremium)}
-              />
+              {/* 
+                // Dashboard is temporarily hidden for launch.
+                <Dashboard 
+                  onStartAnalysis={() => setCurrentStep("preparation")}
+                  onOpenTraining={() => setShowTrainingCenter(true)}
+                  onOpenScanner={() => setShowSpectralScanner(true)}
+                  onOpenKnowledge={() => setShowKnowledgePool(true)}
+                  onOpenTable={() => setShowFrequencyTable(true)}
+                  onOpenVital={() => setShowVitalDashboard(true)}
+                  onOpenSleep={() => setShowSleepTheta(true)}
+                  onOpenHistory={() => {}}
+                  isPremium={isPremium}
+                  onTogglePremium={() => setIsPremium(!isPremium)}
+                /> 
+              */}
+              
+              <div className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
+                <h2 className="text-2xl font-bold text-center text-white mb-8">VORSCHAU: DIE NÄCHSTEN SCHRITTE</h2>
+                
+                <div className="grid md:grid-cols-3 gap-6">
+                  {/* Episode 2 Preview */}
+                  <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
+                      DEMNÄCHST
+                    </div>
+                    <h3 className="text-zinc-400 text-sm font-bold tracking-wider mb-2">EPISODE 02</h3>
+                    <h4 className="text-xl font-bold text-white mb-4">Das Erwachen der Maschinen</h4>
+                    <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                      Wie künstliche Intelligenz begann, unsere Routinen zu analysieren und warum der Takt der Maschine uns zunehmend von unserer eigenen Lebenspulsation entfremdet.
+                    </p>
+                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className="w-1/3 h-full bg-zinc-600"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Episode 3 Preview */}
+                  <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
+                      DEMNÄCHST
+                    </div>
+                    <h3 className="text-zinc-400 text-sm font-bold tracking-wider mb-2">EPISODE 03</h3>
+                    <h4 className="text-xl font-bold text-white mb-4">Die Rückkehr zur Frequenz</h4>
+                    <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                      Der Moment der Erkenntnis: Nur wer seinen eigenen Lebensklang wiederfindet, kann sich der Fremdbestimmung entziehen. Die Einführung in die Methode 36.
+                    </p>
+                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                      <div className="w-1/4 h-full bg-zinc-600"></div>
+                    </div>
+                  </div>
+                  
+                  {/* Training Preview */}
+                  <div className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-orange-500/20">
+                      AB EPISODE 3
+                    </div>
+                    <h3 className="text-orange-400 text-sm font-bold tracking-wider mb-2">PRAXIS</h3>
+                    <h4 className="text-xl font-bold text-white mb-4">MDI-Analyse & Befindlichkeitstraining</h4>
+                    <p className="text-orange-200/70 text-sm leading-relaxed mb-6">
+                      Ermittle deinen ureigenen Lebensklang und starte dein persönliches YOHN-Training. Finde zurück in deine natürliche Pulsation.
+                    </p>
+                    <div className="flex items-center justify-center py-2">
+                      <Lock className="w-6 h-6 text-orange-500/50" />
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-16 flex flex-col items-center justify-center">
+                  <p className="text-zinc-400 mb-4 text-center max-w-lg">
+                    Wie hat dir die erste Episode gefallen? Wir freuen uns über dein ehrliches Feedback!
+                  </p>
+                  <a 
+                    href="mailto:feedback@mdi-app.com?subject=Feedback zu Episode 1"
+                    className="flex items-center gap-2 px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-full transition-colors shadow-lg shadow-orange-500/20"
+                  >
+                    <MessageSquare className="w-5 h-5" />
+                    Feedback senden
+                  </a>
+                </div>
+              </div>
             </div>
         );
 

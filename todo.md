@@ -508,3 +508,12 @@
 - [x] Adjust logo image size to align with text and start button
 
 - [x] Adjust the logo image size on the podcast detail page to align with the start button
+
+- [x] Hide the MDI analysis section in Home.tsx without deleting the code
+- [x] Add a preview section for Episode 2, Episode 3, and the Befindlichkeitstraining
+- [x] Add a feedback button to the page
+
+- [x] Adjust logo image size again to make it even smaller
+- [x] Hide the MDI analysis section in Home.tsx without deleting the code
+- [x] Add a preview section for Episode 2, Episode 3, and the Befindlichkeitstraining
+- [x] Add a feedback button to the page
