@@ -8,7 +8,7 @@ interface PodcastFeatureProps {
   spotifyUrl?: string;
   audioUrl?: string;
   coverImage: string;
-  title: string;
+  title: React.ReactNode;
   subtitle: string;
   description?: React.ReactNode;
   customAction?: React.ReactNode;
@@ -64,9 +64,15 @@ export function PodcastFeature({
                 </span>
               </div>
               <h2 className={titleClassName}>
-                <span className="text-red-500">{title.split(" ")[0]}</span>
-                <br />
-                <span className="text-white">{title.split(" ").slice(1).join(" ")}</span>
+                {typeof title === 'string' ? (
+                  <>
+                    <span className="text-red-500">{title.split(" ")[0]}</span>
+                    <br />
+                    <span className="text-white">{title.split(" ").slice(1).join(" ")}</span>
+                  </>
+                ) : (
+                  title
+                )}
               </h2>
               <div className="text-lg font-semibold mb-4">
                 {subtitle.includes(" _ ") ? (

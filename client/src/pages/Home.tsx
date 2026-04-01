@@ -1180,10 +1180,10 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                   ZUR HAUPTSEITE
                 </Button>
                 
-                <div className="mt-8">
-                  <PodcastFeature 
-                    title="2026 EPISODE 01"
-                    subtitle="Wer lenkt mein Leben im Agentenzeitalter? _ Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet und wie du das verhindern kannst..."
+	                <div className="mt-8">
+	                  <PodcastFeature 
+	                    title={<>2026 EPISODE 01<br/><span className="text-orange-400 block mt-1">BEFEHL ERTEILT!</span></>}
+	                    subtitle="Wer lenkt mein Leben im Agentenzeitalter? _ Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet und wie du das verhindern kannst..."
                     coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
                     audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast_01_8f2ce81d.mp3"
                     topLabel="MASCHINEN ATMEN NICHT"
