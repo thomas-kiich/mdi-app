@@ -532,7 +532,7 @@ export default function Home() {
                     <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
                       JETZT VERFÜGBAR
                     </div>
-                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2">2026 EPISODE 01</h3>
+                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 01</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">Wer lenkt mein Leben im Agentenzeitalter?</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
                       Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet...
@@ -547,7 +547,7 @@ export default function Home() {
                     <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
                       09.04.2026
                     </div>
-                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2">2026 EPISODE 02</h3>
+                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 02</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">Extreme Zeiten! Wie verschaffe ich mir den Überblick?</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
                       Wo und wie ich mein wahres Zentrum finde, von dem aus ich der Dirigent meines Lebens bleibe...
@@ -562,7 +562,7 @@ export default function Home() {
                     <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
                       16.04.2026
                     </div>
-                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2">2026 EPISODE 03</h3>
+                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 03</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">ALLES KLAR! Ich muss was tun und weiß jetzt wie?</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
                       Warum ich sofort den Schalter umlegen muss und die Überforderung in den Mülleimer schmeiße...
@@ -577,7 +577,7 @@ export default function Home() {
                     <div className="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-orange-500/20">
                       23.04.2026
                     </div>
-                    <h3 className="text-orange-400 text-base font-bold tracking-wider mb-2">2026 PRAXIS 01</h3>
+                    <h3 className="text-orange-400 text-base font-bold tracking-wider mb-2 mt-8">2026 PRAXIS 01</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">ECHT KRASS! Befindlichkeitstraining das ich selbst bestimme?</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
                       So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
