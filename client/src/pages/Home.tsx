@@ -552,7 +552,7 @@ export default function Home() {
                     <h4 className="text-lg font-medium text-orange-400 mb-4">EXTREME ZEITEN!</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
                       <span className="text-orange-400 block mb-2">Wie verschaffe ich mir den Überblick?</span>
-                      Wo und wie ich mein wahres Zentrum finde, von dem aus ich der Dirigent meines Lebens bleibe...
+                      Wo und wie ich mein wahres Zentrum finde und so der Dirigent meines Lebens bleibe....
                     </p>
                     <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
                       <div className="w-1/3 h-full bg-zinc-600"></div>
