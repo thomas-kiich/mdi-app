@@ -548,7 +548,7 @@ export default function Home() {
                       09.04.2026
                     </div>
                     <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 02</h3>
-                    <h4 className="text-lg font-medium text-orange-400 mb-4">Extreme Zeiten! Wie verschaffe ich mir den Überblick?</h4>
+                    <h4 className="text-lg font-medium text-orange-400 mb-4">EXTREME ZEITEN! Wie verschaffe ich mir den Überblick?</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
                       Wo und wie ich mein wahres Zentrum finde, von dem aus ich der Dirigent meines Lebens bleibe...
                     </p>
