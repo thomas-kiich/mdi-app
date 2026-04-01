@@ -490,3 +490,5 @@
   - [x] Remove the blue banner ("Nächster Schritt: Überprüfe deinen Wurzelklang").
   - [x] Remove the word "Wurzelklang" from the button, leaving only the checkmark or empty, then keep the YOHN training button.
 - [x] Add new columns to InterpretationView.tsx (Grundgefühle, Fähigkeit, Schattenkraft) based on the table the user will provide.
+
+- [x] Correct the spelling of the user's name (CHOCHOLA) in the podcast text
