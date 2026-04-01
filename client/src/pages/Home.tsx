@@ -535,7 +535,7 @@ export default function Home() {
                     <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 01</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">BEFEHL ERTEILT!</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
-                      Wer lenkt mein Leben im Agentenzeitalter?<br/>
+                      <span className="text-orange-400">Wer lenkt mein Leben im Agentenzeitalter?</span><br/>
                       Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet...
                     </p>
                     <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
@@ -551,7 +551,7 @@ export default function Home() {
                     <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 02</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">EXTREME ZEITEN!</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
-                      Wie verschaffe ich mir den Überblick?<br/>
+                      <span className="text-orange-400">Wie verschaffe ich mir den Überblick?</span><br/>
                       Wo und wie ich mein wahres Zentrum finde, von dem aus ich der Dirigent meines Lebens bleibe...
                     </p>
                     <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
@@ -567,7 +567,7 @@ export default function Home() {
                     <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 03</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">ALLES KLAR!</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
-                      Ich muss was tun und weiß jetzt wie?<br/>
+                      <span className="text-orange-400">Ich muss was tun und weiß jetzt wie?</span><br/>
                       Warum ich sofort den Schalter umlegen muss und die Überforderung in den Mülleimer schmeiße...
                     </p>
                     <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
@@ -583,7 +583,7 @@ export default function Home() {
                     <h3 className="text-white text-base font-bold tracking-wider mb-2 mt-8">2026 PRAXIS 01</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">ECHT KRASS!</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
-                      Befindlichkeitstraining das ich selbst bestimme?<br/>
+                      <span className="text-orange-400">Befindlichkeitstraining das ich selbst bestimme?</span><br/>
                       So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
                     </p>
                     <div className="flex items-center justify-center py-2">
