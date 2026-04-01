@@ -506,3 +506,5 @@
 - [x] Add back button to the podcast detail page
 - [x] Update text on podcast detail page (replace DIE HÖRBUCHSERIE with MASCHINEN ATMEN NICHT, reduce font size of 2026 - Episode 01)
 - [x] Adjust logo image size to align with text and start button
+
+- [x] Adjust the logo image size on the podcast detail page to align with the start button

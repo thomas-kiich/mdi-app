@@ -37,12 +37,12 @@ export function PodcastFeature({
       <CardContent className="p-0">
         <div className="grid md:grid-cols-3 gap-6 items-center">
           {/* Cover Image */}
-          <div className="md:col-span-1 p-6">
-            <div className="relative group">
+          <div className="md:col-span-1 p-6 flex flex-col justify-center">
+            <div className="relative group mx-auto w-full max-w-[240px]">
               <img
                 src={coverImage}
                 alt={title}
-                className="w-full rounded-lg shadow-2xl group-hover:shadow-red-500/50 transition-shadow"
+                className="w-full h-auto object-contain rounded-lg shadow-2xl group-hover:shadow-red-500/50 transition-shadow"
               />
               <div className="absolute inset-0 rounded-lg bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                 <Play className="w-12 h-12 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
