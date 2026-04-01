@@ -496,3 +496,5 @@
 - [x] Change author name to italic *Thomas Chochola* in the podcast text
 
 - [x] Remove the "1 Tage Streak" display from the app
+
+- [x] Move the podcast introduction text to the front page and remove it from the detail page
