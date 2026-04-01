@@ -530,7 +530,7 @@ export default function Home() {
                   {/* Episode 2 Preview */}
                   <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
                     <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
-                      DEMNÄCHST
+                      09.04.2026
                     </div>
                     <h3 className="text-zinc-400 text-sm font-bold tracking-wider mb-2">EPISODE 02</h3>
                     <h4 className="text-xl font-bold text-white mb-4">Das Erwachen der Maschinen</h4>
@@ -545,7 +545,7 @@ export default function Home() {
                   {/* Episode 3 Preview */}
                   <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
                     <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
-                      DEMNÄCHST
+                      16.04.2026
                     </div>
                     <h3 className="text-zinc-400 text-sm font-bold tracking-wider mb-2">EPISODE 03</h3>
                     <h4 className="text-xl font-bold text-white mb-4">Die Rückkehr zur Frequenz</h4>
@@ -560,7 +560,7 @@ export default function Home() {
                   {/* Training Preview */}
                   <div className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden group">
                     <div className="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-orange-500/20">
-                      AB EPISODE 3
+                      23.04.2026
                     </div>
                     <h3 className="text-orange-400 text-sm font-bold tracking-wider mb-2">PRAXIS</h3>
                     <h4 className="text-xl font-bold text-white mb-4">MDI-Analyse & Befindlichkeitstraining</h4>
@@ -573,17 +573,31 @@ export default function Home() {
                   </div>
                 </div>
                 
-                <div className="mt-16 flex flex-col items-center justify-center">
-                  <p className="text-zinc-400 mb-4 text-center max-w-lg">
-                    Wie hat dir die erste Episode gefallen? Wir freuen uns über dein ehrliches Feedback!
-                  </p>
-                  <a 
-                    href="mailto:feedback@mdi-app.com?subject=Feedback zu Episode 1"
-                    className="flex items-center gap-2 px-8 py-4 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-full transition-colors shadow-lg shadow-orange-500/20"
-                  >
-                    <MessageSquare className="w-5 h-5" />
-                    Feedback senden
-                  </a>
+                <div className="mt-16 flex flex-col items-center justify-center space-y-6">
+                  <div className="text-center">
+                    <p className="text-zinc-400 mb-4 max-w-lg">
+                      Wie hat dir die erste Episode gefallen? Wir freuen uns über dein ehrliches Feedback!
+                    </p>
+                    <a 
+                      href="mailto:LKRforschung@gmail.com?subject=Feedback zu Episode 1"
+                      className="inline-flex items-center justify-center px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-lg transition-colors shadow-lg"
+                    >
+                      <MessageSquare className="w-5 h-5 mr-2" />
+                      Feedback senden
+                    </a>
+                  </div>
+                  
+                  <div className="text-center border-t border-zinc-800 pt-8 mt-4">
+                    <p className="text-zinc-400 mb-4 max-w-lg">
+                      Möchtest du informiert werden, sobald neue Episoden oder das Training verfügbar sind?
+                    </p>
+                    <a 
+                      href="mailto:LKRforschung@gmail.com?subject=Bitte in den Newsletter aufnehmen"
+                      className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white font-medium rounded-lg transition-colors shadow-lg shadow-orange-900/20"
+                    >
+                      ABONNIEREN
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>

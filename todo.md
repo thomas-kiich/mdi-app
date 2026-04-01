@@ -526,3 +526,10 @@
 
 - [x] Find and remove the play arrow from the main cover image in the codebase
 - [x] Move the author info section above the podcast description in Home.tsx
+
+- [ ] Wait for the user to provide the real email address
+- [ ] Update the mailto link in Home.tsx with the user's email address
+
+- [x] Update the mailto link in Home.tsx with LKRforschung@gmail.com
+- [x] Replace the "Demnächst" placeholders with specific release dates in the preview section of Home.tsx
+- [x] Add an "Abonnieren" button that sends an email to LKRforschung@gmail.com
