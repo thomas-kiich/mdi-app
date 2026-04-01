@@ -448,30 +448,35 @@ export default function Home() {
                   subtitle="Die Chance auf selbstbestimmtes Glücklichsein"
                   description={
                     <div className="space-y-4">
+                      <div className="mb-6">
+                        <button 
+                          onClick={() => setShowAuthorText(!showAuthorText)}
+                          className="text-orange-400 hover:text-orange-300 text-sm font-medium flex items-center transition-colors mb-2"
+                        >
+                          {showAuthorText ? (
+                            <><ChevronUp className="w-4 h-4 mr-1" /> Autor-Info ausblenden</>
+                          ) : (
+                            <><ChevronDown className="w-4 h-4 mr-1" /> Über den Autor und seine Intention...</>
+                          )}
+                        </button>
+                        {showAuthorText && (
+                          <div className="bg-zinc-900/50 p-4 rounded-lg border border-orange-900/30 text-zinc-300 text-sm leading-relaxed mb-6 shadow-inner">
+                            <p>
+                              Der Autor ist kein Physiker, Mediziner oder Programmierexperte. Vielmehr baut er sein Weltbild kontrovers aus der Sicht eines Brückenbauingenieurs, Musikers und Atemexperten auf. Diese drei Fähigkeiten vereint das Naturgesetz der Harmonie. Ein lebendiges System fordert ein harmonisches, sich selbst regulierendes Tun als Existenzgrundlage ein. Genau hier zieht der Autor die Trennlinie zwischen Mensch und Maschine. Die fundamentale Fähigkeit des ATMENS wird dabei als entscheidender Qualitätsunterschied bestätigt. In beeindruckender Weise komprimiert der Autor wissenschaftlich-philosophische Darlegungen zu einer einfach zugänglichen Alltagspraxis, der METHODE 36.
+                            </p>
+                            <p className="mt-3">
+                              Ein revolutionäres Hörbuch im Podcast-Format. Es verwebt die Originaltexte des Autors mit kontroversen Reflexionen KI-generierter Kompetenz zu einem lebendigen Dialog. Diese innovative Form bereitet anspruchsvolle wissenschaftliche und philosophische Themen leicht verständlich auf – um dich zu inspirieren und direkt in dein eigenes, selbstbestimmtes Tun mit der METHODE 36 zu führen.
+                            </p>
+                          </div>
+                        )}
+                      </div>
                       <p>
                          Willkommen zur Hörbuchserie MASCHINEN ATMEN NICHT von <i>Thomas Chochola</i>. Wir schreiben das Jahr 2026. Wenn es nach dem Autor geht, startet die Menschheit gerade in ein nie dagewesenes Abenteuer von Lebensqualität. Allerdings ist diese Qualität zweischneidig. Fremd- oder selbstbestimmt in einem Zeitalter mit schier unbegrenzten Möglichkeiten der Lebensentfaltung – das ist die entscheidende Frage, die es zu beantworten gilt.
                       </p>
                       <p>
                         Tauche bewusst ein in das Szenario, in dem du dich bereits befindest, und erkenne Lösungen, wie du dein Leben optimal inszenierst, in einer Zeit, die niemals wiederkommt und noch nie da war.
                       </p>
-                      {showAuthorText && (
-                        <p className="mt-4 pt-4 border-t border-zinc-800 text-zinc-400">
-                          Der Autor ist kein Physiker, Mediziner oder Programmierexperte. Vielmehr baut er sein Weltbild kontrovers aus der Sicht eines Brückenbauingenieurs, Musikers und Atemexperten auf. Diese drei Fähigkeiten vereint das Naturgesetz der Harmonie. Ein lebendiges System fordert ein harmonisches, sich selbst regulierendes Tun als Existenzgrundlage ein. Genau hier zieht der Autor die Trennlinie zwischen Mensch und Maschine. Die fundamentale Fähigkeit des ATMENS wird dabei als entscheidender Qualitätsunterschied bestätigt. In beeindruckender Weise komprimiert der Autor wissenschaftlich-philosophische Darlegungen zu einer einfach zugänglichen Alltagspraxis, der METHODE 36.<br/><br/>Ein revolutionäres Hörbuch im Podcast-Format. Es verwebt die Originaltexte des Autors mit kontroversen Reflexionen KI-generierter Kompetenz zu einem lebendigen Dialog. Diese innovative Form bereitet anspruchsvolle wissenschaftliche und philosophische Themen leicht verständlich auf – um dich zu inspirieren und direkt in dein eigenes, selbstbestimmtes Tun mit der METHODE 36 zu führen.
-                        </p>
-                      )}
                     </div>
-                  }
-                  underCoverContent={
-                    <button 
-                      onClick={() => setShowAuthorText(!showAuthorText)}
-                      className="text-orange-400 hover:text-orange-300 text-sm font-medium flex items-center transition-colors w-full justify-center"
-                    >
-                      {showAuthorText ? (
-                        <><ChevronUp className="w-4 h-4 mr-1" /> Autor-Info ausblenden</>
-                      ) : (
-                        <><ChevronDown className="w-4 h-4 mr-1" /> Über den Autor und seine Intention...</>
-                      )}
-                    </button>
                   }
                   youtubeUrl=""
                   spotifyUrl=""

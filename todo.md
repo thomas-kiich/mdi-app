@@ -517,3 +517,12 @@
 - [x] Hide the MDI analysis section in Home.tsx without deleting the code
 - [x] Add a preview section for Episode 2, Episode 3, and the Befindlichkeitstraining
 - [x] Add a feedback button to the page
+
+- [x] Calculate the dates for the 4-week cycles throughout 2026 starting from April 2nd
+- [x] Format the calendar into a clear markdown document (Release_Kalender_2026.md)
+
+- [x] Add cache-busting meta tags to index.html
+- [ ] Remove play arrow from the main cover image on the front page (Home.tsx)
+
+- [x] Find and remove the play arrow from the main cover image in the codebase
+- [x] Move the author info section above the podcast description in Home.tsx
