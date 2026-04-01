@@ -68,7 +68,17 @@ export function PodcastFeature({
                 <br />
                 <span className="text-white">{title.split(" ").slice(1).join(" ")}</span>
               </h2>
-              <p className="text-lg text-orange-400 font-semibold mb-4">{subtitle}</p>
+              <div className="text-lg font-semibold mb-4">
+                {subtitle.includes(" _ ") ? (
+                  <>
+                    <span className="text-orange-400">{subtitle.split(" _ ")[0]}</span>
+                    <br />
+                    <span className="text-white text-base font-normal mt-2 inline-block">{subtitle.split(" _ ")[1]}</span>
+                  </>
+                ) : (
+                  <span className="text-orange-400">{subtitle}</span>
+                )}
+              </div>
               {description && (
                 <div className="relative">
                   <div className="text-zinc-300 leading-relaxed max-w-lg transition-all duration-300">

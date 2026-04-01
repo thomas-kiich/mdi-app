@@ -537,3 +537,6 @@
 - [ ] Update preview texts for Episode 1, 2, 3, and Praxis 01 in Home.tsx
 
 - [x] Update index.html with favicon and apple-touch-icon tags using the MDI logo URL
+
+- [x] Remove the lock icon from Praxis 01 in Home.tsx
+- [x] Update text colors for Episode 01 in the preview section (headline orange, description white)
