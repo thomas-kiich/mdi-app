@@ -13,6 +13,8 @@ interface PodcastFeatureProps {
   description?: React.ReactNode;
   customAction?: React.ReactNode;
   underCoverContent?: React.ReactNode;
+  topLabel?: string;
+  titleClassName?: string;
 }
 
 export function PodcastFeature({
@@ -25,6 +27,8 @@ export function PodcastFeature({
   description,
   customAction,
   underCoverContent,
+  topLabel = "DIE HÖRBUCHSERIE",
+  titleClassName = "text-3xl md:text-4xl font-bold mb-2",
 }: PodcastFeatureProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -56,13 +60,13 @@ export function PodcastFeature({
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <p className="text-sm font-mono text-red-500 uppercase tracking-widest">
-                  DIE HÖRBUCHSERIE
+                  {topLabel}
                 </p>
                 <span className="px-2 py-0.5 bg-orange-500/20 text-orange-400 text-xs font-bold rounded-full border border-orange-500/30">
                   JEDE WOCHE NEU
                 </span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-2">
+              <h2 className={titleClassName}>
                 <span className="text-red-500">{title.split(" ")[0]}</span>
                 <br />
                 <span className="text-white">{title.split(" ").slice(1).join(" ")}</span>

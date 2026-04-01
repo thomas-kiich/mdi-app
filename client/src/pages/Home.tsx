@@ -1065,22 +1065,27 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
 
         <main>
           {showPodcast && (
-            <div className="fixed inset-0 z-50 bg-black/95 overflow-y-auto p-4 md:p-8 flex items-center justify-center">
-              <div className="w-full max-w-4xl relative">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  className="absolute -top-12 right-0 text-white hover:bg-white/20 z-50"
+            <div className="fixed inset-0 z-50 bg-black overflow-y-auto pt-24">
+              <div className="container max-w-4xl mx-auto px-4 py-8 relative">
+                <Button
+                  variant="ghost"
                   onClick={() => setShowPodcast(false)}
+                  className="absolute top-4 left-4 z-50 text-zinc-400 hover:text-white"
                 >
-                  <X className="w-6 h-6" />
+                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  ZUR HAUPTSEITE
                 </Button>
-                <PodcastFeature 
-                  title="Szenario 2026 - Episode 01"
-                  subtitle="Wer lenkt mein Leben im Agentenzeitalter?"
-                  coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
-                  audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast_01_8f2ce81d.mp3"
-                />
+                
+                <div className="mt-8">
+                  <PodcastFeature 
+                    title="Szenario 2026 - Episode 01"
+                    subtitle="Wer lenkt mein Leben im Agentenzeitalter?"
+                    coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
+                    audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast_01_8f2ce81d.mp3"
+                    topLabel="MASCHINEN ATMEN NICHT"
+                    titleClassName="text-xl md:text-2xl font-bold mb-2"
+                  />
+                </div>
               </div>
             </div>
           )}

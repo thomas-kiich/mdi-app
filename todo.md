@@ -498,3 +498,11 @@
 - [x] Remove the "1 Tage Streak" display from the app
 
 - [x] Move the podcast introduction text to the front page and remove it from the detail page
+
+- [x] Add back button to the podcast detail page
+- [x] Update text on podcast detail page (replace DIE HÖRBUCHSERIE with MASCHINEN ATMEN NICHT, reduce font size of 2026 - Episode 01)
+- [x] Adjust logo image size to align with text and start button
+
+- [x] Add back button to the podcast detail page
+- [x] Update text on podcast detail page (replace DIE HÖRBUCHSERIE with MASCHINEN ATMEN NICHT, reduce font size of 2026 - Episode 01)
+- [x] Adjust logo image size to align with text and start button
