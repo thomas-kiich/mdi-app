@@ -574,10 +574,10 @@ export default function Home() {
                   
                   {/* Training Preview */}
                   <div className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden group">
-                    <div className="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-orange-500/20">
+                    <div className="absolute top-4 right-4 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-white/10">
                       23.04.2026
                     </div>
-                    <h3 className="text-orange-400 text-base font-bold tracking-wider mb-2 mt-8">2026 PRAXIS 01</h3>
+                    <h3 className="text-white text-base font-bold tracking-wider mb-2 mt-8">2026 PRAXIS 01</h3>
                     <h4 className="text-lg font-medium text-orange-400 mb-4">ECHT KRASS! Befindlichkeitstraining das ich selbst bestimme?</h4>
                     <p className="text-white text-sm leading-relaxed mb-6">
                       So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
@@ -594,7 +594,7 @@ export default function Home() {
                     </p>
                     <a 
                       href="mailto:LKRforschung@gmail.com?subject=Feedback zu Episode 1"
-                      className="inline-flex items-center justify-center px-6 py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-lg transition-colors shadow-lg"
+                      className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white font-medium rounded-lg transition-colors shadow-lg shadow-orange-900/20"
                     >
                       <MessageSquare className="w-5 h-5 mr-2" />
                       Feedback senden
