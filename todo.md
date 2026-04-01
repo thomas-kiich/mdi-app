@@ -535,3 +535,5 @@
 - [x] Add an "Abonnieren" button that sends an email to LKRforschung@gmail.com
 
 - [ ] Update preview texts for Episode 1, 2, 3, and Praxis 01 in Home.tsx
+
+- [x] Update index.html with favicon and apple-touch-icon tags using the MDI logo URL
