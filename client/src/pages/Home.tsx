@@ -524,7 +524,7 @@ export default function Home() {
               */}
               
               <div className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
-                <h2 className="text-2xl font-bold text-center text-white mb-8">VORSCHAU: DIE NÄCHSTEN SCHRITTE</h2>
+                <h2 className="text-2xl font-bold text-center text-white mb-8">SZENARIO - Die Vorschau April 2026</h2>
                 
                 <div className="grid md:grid-cols-3 gap-6">
                   {/* Episode 2 Preview */}
@@ -533,9 +533,9 @@ export default function Home() {
                       09.04.2026
                     </div>
                     <h3 className="text-zinc-400 text-sm font-bold tracking-wider mb-2">EPISODE 02</h3>
-                    <h4 className="text-xl font-bold text-white mb-4">Das Erwachen der Maschinen</h4>
+                    <h4 className="text-xl font-bold text-white mb-4">Extreme Zeiten! Wie verschaffe ich mir den Überblick?</h4>
                     <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                      Wie künstliche Intelligenz begann, unsere Routinen zu analysieren und warum der Takt der Maschine uns zunehmend von unserer eigenen Lebenspulsation entfremdet.
+                      Wo und wie ich mein wahres Zentrum finde, von dem aus ich der Dirigent meines Lebens bleibe...
                     </p>
                     <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
                       <div className="w-1/3 h-full bg-zinc-600"></div>
@@ -548,9 +548,9 @@ export default function Home() {
                       16.04.2026
                     </div>
                     <h3 className="text-zinc-400 text-sm font-bold tracking-wider mb-2">EPISODE 03</h3>
-                    <h4 className="text-xl font-bold text-white mb-4">Die Rückkehr zur Frequenz</h4>
+                    <h4 className="text-xl font-bold text-white mb-4">ALLES KLAR! Ich muss was tun und weiß jetzt wie?</h4>
                     <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                      Der Moment der Erkenntnis: Nur wer seinen eigenen Lebensklang wiederfindet, kann sich der Fremdbestimmung entziehen. Die Einführung in die Methode 36.
+                      Warum ich sofort den Schalter umlegen muss und die Überforderung in den Mülleimer schmeiße...
                     </p>
                     <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
                       <div className="w-1/4 h-full bg-zinc-600"></div>
@@ -562,10 +562,10 @@ export default function Home() {
                     <div className="absolute top-4 right-4 bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-orange-500/20">
                       23.04.2026
                     </div>
-                    <h3 className="text-orange-400 text-sm font-bold tracking-wider mb-2">PRAXIS</h3>
-                    <h4 className="text-xl font-bold text-white mb-4">MDI-Analyse & Befindlichkeitstraining</h4>
+                    <h3 className="text-orange-400 text-sm font-bold tracking-wider mb-2">PRAXIS 01</h3>
+                    <h4 className="text-xl font-bold text-white mb-4">ECHT KRASS! Befindlichkeitstraining das ich bestimme?</h4>
                     <p className="text-orange-200/70 text-sm leading-relaxed mb-6">
-                      Ermittle deinen ureigenen Lebensklang und starte dein persönliches YOHN-Training. Finde zurück in deine natürliche Pulsation.
+                      So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
                     </p>
                     <div className="flex items-center justify-center py-2">
                       <Lock className="w-6 h-6 text-orange-500/50" />
@@ -1165,7 +1165,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 <div className="mt-8">
                   <PodcastFeature 
                     title="Szenario 2026 - Episode 01"
-                    subtitle="Wer lenkt mein Leben im Agentenzeitalter?"
+                    subtitle="Wer lenkt mein Leben im Agentenzeitalter? _ Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet und wie du das verhindern kannst..."
                     coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
                     audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast_01_8f2ce81d.mp3"
                     topLabel="MASCHINEN ATMEN NICHT"

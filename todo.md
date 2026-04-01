@@ -533,3 +533,5 @@
 - [x] Update the mailto link in Home.tsx with LKRforschung@gmail.com
 - [x] Replace the "Demnächst" placeholders with specific release dates in the preview section of Home.tsx
 - [x] Add an "Abonnieren" button that sends an email to LKRforschung@gmail.com
+
+- [ ] Update preview texts for Episode 1, 2, 3, and Praxis 01 in Home.tsx
