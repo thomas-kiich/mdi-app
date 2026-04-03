@@ -552,3 +552,8 @@
 
 - [ ] Save a definitive checkpoint of the current working state to ensure it remains accessible.
 - [ ] Refactor existing modules (Dashboard, Analysis, Training) to use the new interface architecture.
+
+- [ ] Analyze current `Home.tsx` and identify the core modules and state to be decoupled.
+- [ ] Define and document the TypeScript interfaces (APIs) for the neuronal network communication.
+- [ ] Create a central state management system to act as the "synapses" for data exchange.
+- [ ] Refactor existing modules (Analysis, Training, Podcast, Scanner) to consume and provide data via the new interfaces.
