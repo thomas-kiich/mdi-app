@@ -8,13 +8,13 @@ interface PodcastFeatureProps {
   spotifyUrl?: string;
   audioUrl?: string;
   coverImage: string;
+  topLabel?: string;
+  titleClassName?: string;
   title: React.ReactNode;
   subtitle: string;
   description?: React.ReactNode;
   customAction?: React.ReactNode;
   underCoverContent?: React.ReactNode;
-  topLabel?: string;
-  titleClassName?: string;
 }
 
 export function PodcastFeature({

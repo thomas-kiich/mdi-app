@@ -508,8 +508,7 @@ export default function Home() {
                   <span>Hier die App auf dein Handy laden</span>
                 </button>
               </div>
-              {/* 
-                // Dashboard is temporarily hidden for launch.
+              <div className="container max-w-6xl mx-auto px-4">
                 <Dashboard 
                   onStartAnalysis={() => setCurrentStep("preparation")}
                   onOpenTraining={() => setShowTrainingCenter(true)}
@@ -521,8 +520,8 @@ export default function Home() {
                   onOpenHistory={() => {}}
                   isPremium={isPremium}
                   onTogglePremium={() => setIsPremium(!isPremium)}
-                /> 
-              */}
+                />
+              </div>
               
               <div className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
                 <h2 className="text-2xl font-bold text-center text-white mb-8">SZENARIO - Die Vorschau April 2026</h2>
