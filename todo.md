@@ -547,3 +547,8 @@
 
 - [ ] Rollback to the latest working checkpoint.
 - [ ] Find and expose the Stimmklanganalyse (Voice Analysis) section properly without breaking the React layout.
+
+- [ ] Develop a strategy and architecture for developing independent but integratable modules (parallel universes) of the MDI project.
+
+- [ ] Save a definitive checkpoint of the current working state to ensure it remains accessible.
+- [ ] Refactor existing modules (Dashboard, Analysis, Training) to use the new interface architecture.
