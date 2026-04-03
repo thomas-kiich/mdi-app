@@ -570,3 +570,6 @@
 
 - [ ] Fix the topLabel TypeScript error in PodcastFeature component.
 - [ ] Extract VoiceAnalysis from Home.tsx into a separate component file.
+
+- [ ] Extract the Training module (Method36Trainer) from Home.tsx into a separate component file.
+- [ ] Extract the Scanner module from Home.tsx into a separate component file.
