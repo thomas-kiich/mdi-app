@@ -557,3 +557,8 @@
 - [ ] Define and document the TypeScript interfaces (APIs) for the neuronal network communication.
 - [ ] Create a central state management system to act as the "synapses" for data exchange.
 - [ ] Refactor existing modules (Analysis, Training, Podcast, Scanner) to consume and provide data via the new interfaces.
+
+- [ ] Set up MDIContext Provider in App.tsx or main.tsx.
+- [ ] Refactor Home.tsx to use MDIContext instead of local state.
+- [ ] Extract major components from Home.tsx into separate files.
+- [ ] Fix any TypeScript or linting errors.
