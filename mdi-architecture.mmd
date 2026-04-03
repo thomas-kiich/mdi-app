@@ -1,0 +1,61 @@
+graph TD
+    subgraph "Cloud Storage / Media Assets"
+        Cloud[CDN - Externe Dateien]
+        Audio[Audio: Wasser-Meditation, etc.]
+        Images[Bilder: Cover, etc.]
+        Cloud --- Audio
+        Cloud --- Images
+    end
+
+    subgraph "MDI Hub (Dashboard)"
+        Hub[Home.tsx - Dashboard]
+        Context((MDIContext - Synapsen))
+    end
+
+    subgraph "Paralleluniversum: Hörbuch & Podcast"
+        Podcast[PodcastFeature.tsx]
+        Episode1[Episode 01]
+        Praxis1[Praxis 01 - Wasser-Meditation]
+        Podcast --> Episode1
+        Podcast --> Praxis1
+    end
+
+    subgraph "Paralleluniversum: Stimmklanganalyse"
+        Analysis[VoiceAnalysis.tsx]
+        Scanner[SpectralScanner.tsx]
+        Result[AnalysisResult.tsx]
+        Analysis --> Scanner
+        Scanner --> Result
+    end
+
+    subgraph "Paralleluniversum: Training & Praxis"
+        Training[Method36Trainer.tsx]
+        Befindlichkeit[Befindlichkeitstraining]
+        Training --> Befindlichkeit
+    end
+
+    %% Cloud Verbindungen
+    Cloud -.->|Streamt Audio| Praxis1
+    Cloud -.->|Lädt Bilder| Podcast
+    
+    %% Verbindungen (Synapsen)
+    Hub === Context
+    
+    Context <-->|Navigiert zu| Podcast
+    Context <-->|Startet| Analysis
+    Context <-->|Startet| Training
+
+    %% Datenfluss
+    Result -.->|Uebergibt Frequenz| Context
+    Context -.->|Steuert Rhythmus| Training
+
+    classDef hub fill:#2d3748,stroke:#f6ad55,stroke-width:2px,color:#fff;
+    classDef context fill:#4a5568,stroke:#ed8936,stroke-width:2px,color:#fff,shape:circle;
+    classDef universe fill:#1a202c,stroke:#4a5568,stroke-width:1px,color:#e2e8f0;
+    classDef node fill:#2d3748,stroke:#718096,stroke-width:1px,color:#fff;
+
+    class Hub hub;
+    class Context context;
+    class Podcast,Analysis,Training,Scanner,Result,Episode1,Praxis1,Befindlichkeit node;
+    classDef cloud fill:#2b6cb0,stroke:#63b3ed,stroke-width:2px,color:#fff,stroke-dasharray: 5 5;
+    class Cloud,Audio,Images cloud;

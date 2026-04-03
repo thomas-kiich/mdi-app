@@ -573,3 +573,6 @@
 
 - [ ] Extract the Training module (Method36Trainer) from Home.tsx into a separate component file.
 - [ ] Extract the Scanner module from Home.tsx into a separate component file.
+
+- [ ] Create a visual mind map (Mermaid/D2) representing the current MDI architecture and modules.
+- [ ] Render the diagram and present it to the user.

@@ -1218,8 +1218,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     subtitle="Befindlichkeitstraining das ich selbst bestimme? So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch..."
                     coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
                     audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/einschwingenSTIMMKLANGANALYSE_f1530836.wav"
-                    topLabel="DIE PRAXIS"
-                    titleClassName="text-2xl md:text-3xl font-bold mb-2 text-white"
                   />
                 </div>
               </div>
