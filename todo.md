@@ -562,3 +562,8 @@
 - [ ] Refactor Home.tsx to use MDIContext instead of local state.
 - [ ] Extract major components from Home.tsx into separate files.
 - [ ] Fix any TypeScript or linting errors.
+
+- [ ] Extract VoiceAnalysis logic and UI from Home.tsx into a new component file.
+- [ ] Refactor Home.tsx to import and use the new VoiceAnalysis component.
+- [ ] Connect the VoiceAnalysis component to MDIContext.
+- [ ] Test the refactored code and fix any errors.
