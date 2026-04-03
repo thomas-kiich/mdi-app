@@ -41,7 +41,7 @@ export function PodcastFeature({
             <div className="relative group mx-auto w-full max-w-[180px]">
               <img
                 src={coverImage}
-                alt={title}
+                alt={typeof title === "string" ? title : "Podcast Episode"}
                 className="w-full h-auto object-contain rounded-lg shadow-2xl group-hover:shadow-red-500/50 transition-shadow"
               />
             </div>

@@ -540,3 +540,5 @@
 
 - [x] Remove the lock icon from Praxis 01 in Home.tsx
 - [x] Update text colors for Episode 01 in the preview section (headline orange, description white)
+
+- [ ] Integrate the uploaded audio file (https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/einschwingenSTIMMKLANGANALYSE_f1530836.wav) into the website, specifically for Praxis 01 (Befindlichkeitstraining) or as directed by the user.

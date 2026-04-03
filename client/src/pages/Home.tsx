@@ -168,6 +168,7 @@ export default function Home() {
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [showPodcast, setShowPodcast] = useState(false);
+  const [showPraxis01, setShowPraxis01] = useState(false);
   const [showAuthorText, setShowAuthorText] = useState(false);
 
   const [basicTrainingData, setBasicTrainingData] = useState<{freq: number, tone: string, color: string, typeId: number} | null>(null);
@@ -576,7 +577,14 @@ export default function Home() {
                   </div>
                   
                   {/* Training Preview */}
-                  <div className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden group">
+                  <div 
+                    onClick={() => {
+                      setShowPodcast(false);
+                      setShowPraxis01(true);
+                      window.scrollTo(0, 0);
+                    }}
+                    className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-orange-500/50 transition-colors"
+                  >
                     <div className="absolute top-4 right-4 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-white/10">
                       23.04.2026
                     </div>
@@ -586,7 +594,8 @@ export default function Home() {
                       <span className="text-orange-400 block mb-2">Befindlichkeitstraining das ich selbst bestimme?</span>
                       So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
                     </p>
-                    <div className="flex items-center justify-center py-2">
+                    <div className="flex items-center justify-center py-2 group-hover:scale-110 transition-transform">
+                      <Play className="w-10 h-10 text-orange-500 opacity-80" />
                     </div>
                   </div>
                 </div>
@@ -1186,6 +1195,32 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
 	                    subtitle="Wer lenkt mein Leben im Agentenzeitalter? _ Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet und wie du das verhindern kannst..."
                     coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
                     audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast_01_8f2ce81d.mp3"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {showPraxis01 && (
+            <div className="fixed inset-0 z-50 bg-black overflow-y-auto pt-24">
+              <div className="container max-w-4xl mx-auto px-4 py-8 relative">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowPraxis01(false)}
+                  className="absolute top-4 left-4 z-50 text-zinc-400 hover:text-white"
+                >
+                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  ZUR HAUPTSEITE
+                </Button>
+                
+                <div className="mt-8">
+                  <PodcastFeature 
+                    title={<>2026 PRAXIS 01<br/><span className="text-orange-400 block mt-1">ECHT KRASS!</span></>}
+                    subtitle="Befindlichkeitstraining das ich selbst bestimme? So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch..."
+                    coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
+                    audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/einschwingenSTIMMKLANGANALYSE_f1530836.wav"
+                    topLabel="DIE PRAXIS"
+                    titleClassName="text-2xl md:text-3xl font-bold mb-2 text-white"
                   />
                 </div>
               </div>
