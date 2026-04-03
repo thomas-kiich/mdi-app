@@ -567,3 +567,6 @@
 - [ ] Refactor Home.tsx to import and use the new VoiceAnalysis component.
 - [ ] Connect the VoiceAnalysis component to MDIContext.
 - [ ] Test the refactored code and fix any errors.
+
+- [ ] Fix the topLabel TypeScript error in PodcastFeature component.
+- [ ] Extract VoiceAnalysis from Home.tsx into a separate component file.
