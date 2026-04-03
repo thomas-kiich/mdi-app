@@ -18,7 +18,7 @@ export function VoiceAnalysis({ onComplete, onCancel }: VoiceAnalysisProps) {
   const { isRecording, startRecording, stopRecording, result: analysisResult, error } = useAudioAnalyzer();
   const { saveDailyResult } = useLongitudinalStudy();
 
-  const [relaxationTimeLeft, setRelaxationTimeLeft] = useState(180);
+  const [relaxationTimeLeft, setRelaxationTimeLeft] = useState(101);
   const [isRelaxing, setIsRelaxing] = useState(false);
 
   // Helper to get local results since the context might not have intermediate states
@@ -221,7 +221,7 @@ export function VoiceAnalysis({ onComplete, onCancel }: VoiceAnalysisProps) {
            </h2>
            <div className="mb-8 p-6 bg-zinc-900/50 rounded-xl border border-zinc-800 text-left w-full max-w-md">
               <p className="text-zinc-300 text-lg leading-relaxed mb-4">
-                Du hörst nun für drei Minuten ein sanftes Wasserplätschern. Atme entspannt durch die Nase ein und aus. Beobachte den Atemfluss und entspanne dich.
+                Du hörst nun für ca. 1,5 Minuten ein sanftes Wasserplätschern. Atme entspannt durch die Nase ein und aus. Beobachte den Atemfluss und entspanne dich.
               </p>
            </div>
            
@@ -230,7 +230,7 @@ export function VoiceAnalysis({ onComplete, onCancel }: VoiceAnalysisProps) {
                    <div className="text-6xl font-mono text-orange-500 mb-8">
                        {Math.floor(relaxationTimeLeft / 60)}:{(relaxationTimeLeft % 60).toString().padStart(2, '0')}
                    </div>
-                   <audio autoPlay loop src="/water-stream.mp3" />
+                   <audio autoPlay loop src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/einschwingenSTIMMKLANGANALYSE_7322ec47.wav" />
                    <p className="text-zinc-500">Bitte schließe deine Augen und entspanne.</p>
                    <Button onClick={() => setIsRelaxing(false)} variant="ghost" className="mt-8 text-zinc-500 hover:text-white">
                        Überspringen
