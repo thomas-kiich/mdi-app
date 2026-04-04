@@ -20,6 +20,7 @@ import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
+import { Visionsraum } from "@/components/Visionsraum";
 import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { PodcastFeature } from "@/components/PodcastFeature";
 import { WurzelklangVerification } from "@/components/WurzelklangVerification";
@@ -168,6 +169,7 @@ export default function Home() {
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const [showPodcast, setShowPodcast] = useState(false);
+  const [showVisionsraum, setShowVisionsraum] = useState(false);
   const [showPraxis01, setShowPraxis01] = useState(false);
   const [showAuthorText, setShowAuthorText] = useState(false);
 
@@ -518,6 +520,7 @@ export default function Home() {
                   onOpenVital={() => setShowVitalDashboard(true)}
                   onOpenSleep={() => setShowSleepTheta(true)}
                   onOpenHistory={() => {}}
+                  onOpenVisionsraum={() => setShowVisionsraum(true)}
                   isPremium={isPremium}
                   onTogglePremium={() => setIsPremium(!isPremium)}
                 />
@@ -1417,13 +1420,15 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
              </div>
           ) : showFrequencyTable ? (
             <FrequencyTable onClose={() => setShowFrequencyTable(false)} />
+          ) : showVisionsraum ? (
+            <Visionsraum onClose={() => setShowVisionsraum(false)} />
           ) : (
             renderContent()
           )}
         </main>
         
         {/* Footer */}
-        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && currentStep === 'dashboard' && (
+        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && !showVisionsraum && currentStep === 'dashboard' && (
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
                 <div>
                     &copy; {new Date().getFullYear()} MDI System.
