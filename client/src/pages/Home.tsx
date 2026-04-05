@@ -1,3 +1,4 @@
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -40,6 +41,7 @@ import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
 import frequencyData from '@/lib/frequencyData.json';
 import { getToneNameFromMdiId, convertMdiDistributionToToneDistribution } from '@/lib/mdiToToneMapping';
+import { NewsletterSignup } from '@/components/NewsletterSignup';
 import {
   Collapsible,
   CollapsibleContent,
@@ -70,14 +72,17 @@ type WizardStep =
   | "result";
 
 export default function Home() {
-  const [, setLocation] = useLocation();
+  // The userAuth hooks provides authentication state
+  // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
+  let { user, loading, error: authError, isAuthenticated, logout } = useAuth();
+  const [, setLocation] = useLocation();;
   const [currentStep, setCurrentStep] = useState<WizardStep>("dashboard"); // Start at Dashboard
   const { 
     isRecording, 
     startRecording, 
     stopRecording, 
     result: analysisResult,
-    error,
+    error: audioError,
   } = useAudioAnalyzer();
   
   const { 
@@ -649,16 +654,8 @@ export default function Home() {
                     </a>
                   </div>
                   
-                  <div className="text-center border-t border-zinc-800 pt-8 mt-4">
-                    <p className="text-zinc-400 mb-4 max-w-lg">
-                      Möchtest du informiert werden, sobald neue Episoden oder das Training verfügbar sind?
-                    </p>
-                    <a 
-                      href="mailto:LKRforschung@gmail.com?subject=Bitte in den Newsletter aufnehmen"
-                      className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 hover:bg-orange-500 text-white font-medium rounded-lg transition-colors shadow-lg shadow-orange-900/20"
-                    >
-                      ABONNIEREN
-                    </a>
+                  <div className="border-t border-zinc-800 pt-8 mt-4">
+                    <NewsletterSignup source="podcast" />
                   </div>
                 </div>
               </div>

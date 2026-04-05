@@ -576,3 +576,20 @@
 
 - [ ] Create a visual mind map (Mermaid/D2) representing the current MDI architecture and modules.
 - [ ] Render the diagram and present it to the user.
+
+## Newsletter-System (Datenbank / Server / Frontend)
+
+- [x] Datenbank-Tabelle `newsletter_subscribers` in `drizzle/schema.ts` angelegt
+- [x] Migration mit `pnpm db:push` erfolgreich durchgeführt
+- [x] DB-Hilfsfunktionen in `server/db.ts`: `subscribeToNewsletter`, `unsubscribeFromNewsletter`, `listNewsletterSubscribers`, `getNewsletterSubscriberCount`
+- [x] tRPC-Router `server/routers/newsletter.ts` mit Prozeduren: `subscribe`, `unsubscribe`, `list` (Admin), `count`
+- [x] Router in `server/routers.ts` registriert
+- [x] Frontend-Komponente `NewsletterSignup.tsx` erstellt (normal + compact Variante)
+- [x] Admin-Seite `AdminNewsletter.tsx` mit Tabelle, Statistiken und CSV-Export
+- [x] Route `/admin/newsletter` in `App.tsx` registriert
+- [x] tRPC-Provider in `main.tsx` korrekt eingebunden
+- [x] Newsletter-Formular auf der Startseite (ersetzt mailto-Link)
+- [x] Vitest-Tests für den Newsletter-Router (9 Tests, alle grün)
+- [x] TypeScript-Fehler (doppelte `error`-Variable) behoben
+- [ ] Unsubscribe-Seite mit Token-basiertem Link (für E-Mail-Links)
+- [ ] Willkommens-E-Mail automatisch versenden nach Anmeldung

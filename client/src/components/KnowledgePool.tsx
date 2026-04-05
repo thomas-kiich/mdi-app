@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, BookOpen, Activity, Info, ChevronRight, Play } from 'lucide-react';
+import { ArrowLeft, BookOpen, Activity, Info, ChevronRight, Play, Wind, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -267,26 +267,101 @@ export function KnowledgePool({ onClose, initialTab = "method", initialToneId }:
 
       {/* Content */}
       <div className="flex-1 overflow-hidden p-6 max-w-7xl mx-auto w-full">
-        <Tabs defaultValue={initialTab} className="h-full flex flex-col">
-          <TabsList className="bg-zinc-900 border border-zinc-800 p-1 mb-6 w-full max-w-md mx-auto grid grid-cols-3">
-            <TabsTrigger value="method">Die Methode</TabsTrigger>
-            <TabsTrigger value="frequencies">Frequenzen</TabsTrigger>
-            <TabsTrigger value="instructions">Anleitung</TabsTrigger>
+        <Tabs defaultValue={initialTab === 'method' || initialTab === 'frequencies' || initialTab === 'instructions' ? 'methode36' : initialTab} className="h-full flex flex-col">
+          <TabsList className="bg-zinc-900 border border-zinc-800 p-1 mb-6 w-full max-w-md mx-auto grid grid-cols-2">
+            <TabsTrigger value="methode36">METHODE 36</TabsTrigger>
+            <TabsTrigger value="atemdiaet" className="data-[state=active]:bg-yellow-500/20 data-[state=active]:text-yellow-500">DIE ATEMDIÄT</TabsTrigger>
           </TabsList>
 
-          <ScrollArea className="flex-1 pr-4">
-            <TabsContent value="method" className="mt-0 pb-20">
-              {renderMethodSection()}
+          <div className="flex-1 overflow-hidden">
+            <TabsContent value="methode36" className="mt-0 h-full flex flex-col">
+              <Tabs defaultValue={initialTab === 'methode36' || initialTab === 'atemdiaet' ? 'method' : initialTab} className="h-full flex flex-col">
+                <TabsList className="bg-transparent border-b border-zinc-800 rounded-none p-0 mb-6 w-full flex justify-start gap-6">
+                  <TabsTrigger value="method" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-white rounded-none px-0 pb-2">Kern-Methode</TabsTrigger>
+                  <TabsTrigger value="frequencies" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-white rounded-none px-0 pb-2">Frequenzen</TabsTrigger>
+                  <TabsTrigger value="instructions" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-white rounded-none px-0 pb-2">Anleitung</TabsTrigger>
+                </TabsList>
+                <ScrollArea className="flex-1 pr-4">
+                  <TabsContent value="method" className="mt-0 pb-20">
+                    {renderMethodSection()}
+                  </TabsContent>
+                  <TabsContent value="frequencies" className="mt-0 pb-20 h-full">
+                    {renderFrequenciesSection()}
+                  </TabsContent>
+                  <TabsContent value="instructions" className="mt-0 pb-20">
+                    {renderInstructionsSection()}
+                  </TabsContent>
+                </ScrollArea>
+              </Tabs>
             </TabsContent>
-            
-            <TabsContent value="frequencies" className="mt-0 pb-20 h-full">
-              {renderFrequenciesSection()}
+
+            <TabsContent value="atemdiaet" className="mt-0 h-full">
+              <ScrollArea className="h-full pr-4 pb-20">
+                <div className="space-y-8 animate-in slide-in-from-right-8 duration-500 max-w-4xl mx-auto pb-12">
+                  <div className="bg-gradient-to-br from-yellow-900/20 to-orange-900/10 border border-yellow-500/20 rounded-2xl p-8 md:p-12 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-64 h-64 bg-yellow-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4 pointer-events-none" />
+                      
+                      <div className="inline-flex items-center gap-2 bg-yellow-500/10 text-yellow-500 px-3 py-1 rounded-full text-xs font-bold tracking-wider mb-6 border border-yellow-500/20">
+                          <Zap className="w-3 h-3" /> BUCH-KONZEPT
+                      </div>
+                      
+                      <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter leading-tight">
+                          DIE ATEMDIÄT
+                      </h2>
+                      <p className="text-xl text-yellow-500/80 font-medium mb-8 leading-relaxed">
+                          Warum du nicht abnimmst, wenn du falsch atmest – und wie 7 Minuten Rhythmus deinen Stoffwechsel neu programmieren.
+                      </p>
+                      
+                      <div className="prose prose-invert max-w-none prose-p:text-zinc-300 prose-p:leading-relaxed prose-headings:text-white prose-strong:text-orange-400">
+                          <p>
+                              Ein radikal neuer Ansatz zur Gewichtsregulation, der nicht beim Magen, sondern beim Nervensystem und der Atmung ansetzt.
+                          </p>
+                          
+                          <h3 className="text-2xl mt-8 mb-4 border-b border-zinc-800 pb-2">Die Kern-These</h3>
+                          <p>
+                              Über 85 % der Menschen scheitern beim Versuch, ihr Normalgewicht zu erreichen oder zu halten. Der Grund ist nicht mangelnde Disziplin oder die falsche Kalorienbilanz, sondern ein <strong>Stoffwechsel-Wirkungsgrad von oft nur 60 %</strong>. Wenn das autonome Nervensystem im permanenten "Überlebens- und Stressmodus" (Sympathikus) feststeckt, schaltet der Körper auf Notstrom und Fettspeicherung.
+                          </p>
+                          <p>
+                              Die Lösung liegt nicht auf dem Teller, sondern im Atemrhythmus. "Die Atemdiät" nutzt harte physiologische Fakten – <strong>CO2-Toleranz, Stickstoffmonoxid-Produktion (NO) und Körperkerntemperatur</strong> –, um den Stoffwechsel über gezieltes Mikrotraining (7–12 Minuten) von "Überleben" auf "Verbrennung" umzuprogrammieren.
+                          </p>
+
+                          <h3 className="text-2xl mt-12 mb-6 border-b border-zinc-800 pb-2">Die drei Säulen der Atemdiät</h3>
+                          
+                          <div className="grid gap-6 mt-6">
+                              <div className="bg-black/40 border border-zinc-800 p-6 rounded-xl">
+                                  <h4 className="text-xl text-yellow-500 mt-0 mb-3 flex items-center gap-2">
+                                      <span className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-sm">1</span>
+                                      Die Physiologie des Atems
+                                  </h4>
+                                  <p className="mb-2"><strong>Die CO2-Toleranz als Schalter:</strong> Nur wer eine hohe Toleranz für Kohlendioxid im Blut aufbaut, ermöglicht es den roten Blutkörperchen, Sauerstoff an die Zellen (und Mitochondrien) abzugeben (Bohr-Effekt).</p>
+                                  <p className="mb-2"><strong>Das Wunder-Molekül NO:</strong> Entsteht primär bei Nasenatmung. Es weitet Gefäße, senkt Blutdruck und pusht das Immunsystem.</p>
+                                  <p className="mb-0"><strong>Die Körperkerntemperatur:</strong> Gezielte Atemtechniken beeinflussen die Thermogenese und steigern den Grundumsatz.</p>
+                              </div>
+
+                              <div className="bg-black/40 border border-zinc-800 p-6 rounded-xl">
+                                  <h4 className="text-xl text-yellow-500 mt-0 mb-3 flex items-center gap-2">
+                                      <span className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-sm">2</span>
+                                      Das Rhythmus-Mikrotraining
+                                  </h4>
+                                  <p className="mb-2"><strong>7 bis 12 Minuten:</strong> Kurze, hochpräzise Rhythmus-Einheiten, die das System "resetten" statt stundenlangem, stressigem Ausdauertraining.</p>
+                                  <p className="mb-0"><strong>Takt vs. Pulsation:</strong> Wir brechen die maschinelle Monotonie (den Stress-Takt) auf und etablieren eine dynamische Pulsation (HRV), die dem Körper Sicherheit signalisiert.</p>
+                              </div>
+
+                              <div className="bg-black/40 border border-zinc-800 p-6 rounded-xl">
+                                  <h4 className="text-xl text-yellow-500 mt-0 mb-3 flex items-center gap-2">
+                                      <span className="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center text-sm">3</span>
+                                      Neurobiologische Hacks
+                                  </h4>
+                                  <p className="mb-2"><strong>Der "Graue-Brille-Effekt":</strong> Unser Gehirn assoziiert leuchtende Farben evolutionär mit energiereicher Nahrung. Entzieht man der Nahrung (mental oder real) die Farbe, stuft das Gehirn sie als unattraktiv ein. Der Appetit verschwindet gehirnphysiologisch sofort.</p>
+                                  <p className="mb-0"><strong>Reizunterbrechung:</strong> Gezielte Atempausen unterbrechen den "Autopiloten" beim Essen.</p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                </div>
+              </ScrollArea>
             </TabsContent>
-            
-            <TabsContent value="instructions" className="mt-0 pb-20">
-              {renderInstructionsSection()}
-            </TabsContent>
-          </ScrollArea>
+          </div>
         </Tabs>
       </div>
     </div>
