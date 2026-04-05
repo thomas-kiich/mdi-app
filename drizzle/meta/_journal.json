@@ -15,6 +15,13 @@
       "when": 1775400781647,
       "tag": "0001_redundant_wind_dancer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1775415859276,
+      "tag": "0002_curious_daredevil",
+      "breakpoints": true
     }
   ]
 }

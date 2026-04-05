@@ -26,8 +26,17 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
- * Newsletter subscribers table.
- * Stores email addresses of people who signed up for KIICH newsletter updates.
+ * Newsletter subscribers table – DSGVO-konform.
+ *
+ * Double-Opt-In Ablauf:
+ * 1. Nutzer trägt sich ein → active=false, confirmToken gesetzt, Bestätigungs-E-Mail gesendet
+ * 2. Nutzer klickt Bestätigungslink → active=true, confirmedAt gesetzt, confirmToken gelöscht
+ *
+ * Löschrecht (Art. 17 DSGVO):
+ * - deleteToken ermöglicht tokenbasierte Datenlöschung ohne Login
+ *
+ * Einwilligungsnachweis (Art. 7 DSGVO):
+ * - signupIp und confirmedAt dokumentieren Zeitpunkt und Herkunft der Einwilligung
  */
 export const newsletterSubscribers = mysqlTable("newsletter_subscribers", {
   id: int("id").autoincrement().primaryKey(),
@@ -35,10 +44,25 @@ export const newsletterSubscribers = mysqlTable("newsletter_subscribers", {
   name: varchar("name", { length: 255 }),
   /** Source of signup: 'website', 'podcast', etc. */
   source: varchar("source", { length: 64 }).default("website"),
-  /** Whether the subscriber is still active (not unsubscribed) */
-  active: boolean("active").default(true).notNull(),
+
+  /** DSGVO: Double-Opt-In – erst nach Bestätigung aktiv */
+  active: boolean("active").default(false).notNull(),
+
+  /** DSGVO: Token für E-Mail-Bestätigung (wird nach Bestätigung gelöscht) */
+  confirmToken: varchar("confirmToken", { length: 128 }),
+
+  /** DSGVO: Zeitpunkt der Bestätigung (Einwilligungsnachweis) */
+  confirmedAt: timestamp("confirmedAt"),
+
+  /** DSGVO: Token für Abmeldung / Datenlöschung per Link */
+  deleteToken: varchar("deleteToken", { length: 128 }),
+
+  /** DSGVO: IP-Adresse bei Anmeldung (Einwilligungsnachweis, Art. 7) */
+  signupIp: varchar("signupIp", { length: 45 }),
+
   /** Whether the welcome email has been sent */
   welcomeEmailSent: boolean("welcomeEmailSent").default(false).notNull(),
+
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

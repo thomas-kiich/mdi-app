@@ -1,5 +1,6 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import { randomBytes } from "crypto";
 import { InsertNewsletterSubscriber, InsertUser, newsletterSubscribers, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -89,19 +90,31 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// ─── Newsletter Subscriber Helpers ───────────────────────────────────────────
+// ─── Newsletter Subscriber Helpers (DSGVO-konform) ───────────────────────────
+
+function generateToken(): string {
+  return randomBytes(48).toString("hex");
+}
 
 /**
- * Subscribe an email address to the newsletter.
- * Returns the subscriber record. Throws if the email is already subscribed.
+ * DSGVO: Schritt 1 – Anmeldung mit Double-Opt-In.
+ * Erstellt einen inaktiven Eintrag mit Bestätigungs-Token.
+ * Der Nutzer wird erst nach Klick auf den Bestätigungslink aktiviert.
  */
-export async function subscribeToNewsletter(data: { email: string; name?: string; source?: string }) {
+export async function subscribeToNewsletter(data: {
+  email: string;
+  name?: string;
+  source?: string;
+  signupIp?: string;
+}) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
   const email = data.email.toLowerCase().trim();
+  const confirmToken = generateToken();
+  const deleteToken = generateToken();
 
-  // Check if already subscribed
+  // Check if already exists
   const existing = await db
     .select()
     .from(newsletterSubscribers)
@@ -113,19 +126,28 @@ export async function subscribeToNewsletter(data: { email: string; name?: string
     if (sub.active) {
       throw new Error("ALREADY_SUBSCRIBED");
     }
-    // Re-activate if previously unsubscribed
+    // Pending confirmation or previously unsubscribed → reset tokens and resend
     await db
       .update(newsletterSubscribers)
-      .set({ active: true, updatedAt: new Date() })
+      .set({
+        confirmToken,
+        deleteToken,
+        active: false,
+        confirmedAt: null,
+        updatedAt: new Date(),
+      })
       .where(eq(newsletterSubscribers.id, sub.id));
-    return { ...sub, active: true, reactivated: true };
+    return { ...sub, confirmToken, deleteToken, resent: true };
   }
 
   const insert: InsertNewsletterSubscriber = {
     email,
     name: data.name ?? null,
     source: data.source ?? "website",
-    active: true,
+    active: false, // DSGVO: erst nach Bestätigung aktiv
+    confirmToken,
+    deleteToken,
+    signupIp: data.signupIp ?? null,
     welcomeEmailSent: false,
   };
 
@@ -141,21 +163,93 @@ export async function subscribeToNewsletter(data: { email: string; name?: string
 }
 
 /**
- * Unsubscribe an email address from the newsletter.
+ * DSGVO: Schritt 2 – Bestätigung per Token (Double-Opt-In).
+ * Aktiviert den Abonnenten und löscht den Bestätigungs-Token.
  */
-export async function unsubscribeFromNewsletter(email: string) {
+export async function confirmNewsletterSubscription(token: string) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
 
-  const normalized = email.toLowerCase().trim();
+  const result = await db
+    .select()
+    .from(newsletterSubscribers)
+    .where(eq(newsletterSubscribers.confirmToken, token))
+    .limit(1);
+
+  if (result.length === 0) {
+    throw new Error("INVALID_TOKEN");
+  }
+
+  const sub = result[0];
+
+  if (sub.active) {
+    throw new Error("ALREADY_CONFIRMED");
+  }
+
   await db
     .update(newsletterSubscribers)
-    .set({ active: false, updatedAt: new Date() })
-    .where(eq(newsletterSubscribers.email, normalized));
+    .set({
+      active: true,
+      confirmedAt: new Date(),
+      confirmToken: null, // Token nach Bestätigung löschen
+      updatedAt: new Date(),
+    })
+    .where(eq(newsletterSubscribers.id, sub.id));
+
+  return { ...sub, active: true, confirmedAt: new Date() };
 }
 
 /**
- * List all active newsletter subscribers (admin only).
+ * DSGVO: Abmeldung per Token (aus E-Mail-Link).
+ */
+export async function unsubscribeFromNewsletter(token: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db
+    .select()
+    .from(newsletterSubscribers)
+    .where(eq(newsletterSubscribers.deleteToken, token))
+    .limit(1);
+
+  if (result.length === 0) {
+    throw new Error("INVALID_TOKEN");
+  }
+
+  await db
+    .update(newsletterSubscribers)
+    .set({ active: false, updatedAt: new Date() })
+    .where(eq(newsletterSubscribers.id, result[0].id));
+
+  return { email: result[0].email };
+}
+
+/**
+ * DSGVO Art. 17: Vollständige Datenlöschung per Token.
+ */
+export async function deleteNewsletterData(token: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const result = await db
+    .select()
+    .from(newsletterSubscribers)
+    .where(eq(newsletterSubscribers.deleteToken, token))
+    .limit(1);
+
+  if (result.length === 0) {
+    throw new Error("INVALID_TOKEN");
+  }
+
+  await db
+    .delete(newsletterSubscribers)
+    .where(eq(newsletterSubscribers.id, result[0].id));
+
+  return { email: result[0].email };
+}
+
+/**
+ * Admin: Alle Abonnenten auflisten.
  */
 export async function listNewsletterSubscribers(opts?: { activeOnly?: boolean }) {
   const db = await getDb();
@@ -173,7 +267,7 @@ export async function listNewsletterSubscribers(opts?: { activeOnly?: boolean })
 }
 
 /**
- * Get newsletter subscriber count.
+ * Abonnenten-Zähler für Social Proof.
  */
 export async function getNewsletterSubscriberCount() {
   const db = await getDb();

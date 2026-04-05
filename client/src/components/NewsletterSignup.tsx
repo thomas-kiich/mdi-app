@@ -23,7 +23,7 @@ export function NewsletterSignup({ source = "website", className = "", compact =
       toast.success(data.message);
     },
     onError: (err) => {
-      if (err.message.includes("bereits angemeldet")) {
+      if (err.message.includes("bereits aktiv")) {
         toast.info("Diese E-Mail-Adresse ist bereits angemeldet.");
       } else {
         toast.error(err.message || "Anmeldung fehlgeschlagen. Bitte versuche es später erneut.");
@@ -34,7 +34,12 @@ export function NewsletterSignup({ source = "website", className = "", compact =
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
-    subscribe.mutate({ email: email.trim(), name: name.trim() || undefined, source });
+    subscribe.mutate({
+      email: email.trim(),
+      name: name.trim() || undefined,
+      source,
+      origin: window.location.origin,
+    });
   };
 
   if (submitted) {
@@ -42,10 +47,10 @@ export function NewsletterSignup({ source = "website", className = "", compact =
       <div className={`flex flex-col items-center gap-3 py-4 ${className}`}>
         <CheckCircle className="w-10 h-10 text-green-500" />
         <p className="text-green-400 font-medium text-center">
-          Erfolgreich angemeldet!
+          Fast geschafft!
         </p>
         <p className="text-zinc-400 text-sm text-center max-w-xs">
-          Du wirst ab sofort über neue Episoden und Inhalte informiert.
+          Wir haben dir eine Bestätigungs-E-Mail geschickt. Bitte klicke auf den Link darin, um deine Anmeldung abzuschließen.
         </p>
       </div>
     );

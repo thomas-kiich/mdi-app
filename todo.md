@@ -593,3 +593,16 @@
 - [x] TypeScript-Fehler (doppelte `error`-Variable) behoben
 - [ ] Unsubscribe-Seite mit Token-basiertem Link (für E-Mail-Links)
 - [ ] Willkommens-E-Mail automatisch versenden nach Anmeldung
+
+## DSGVO-Konformität (Newsletter)
+
+- [x] Datenbank: `confirmToken`, `confirmedAt`, `deleteToken` Felder zu `newsletter_subscribers` hinzufügen
+- [x] Migration durchführen
+- [x] Server: Double-Opt-In Bestätigungs-Endpunkt (`newsletter.confirm`)
+- [x] Server: Lösch-Endpunkt (`newsletter.deleteData`) mit Token
+- [x] Server: Bestätigungs-E-Mail versenden nach Anmeldung (via Manus Notification oder Forge API)
+- [x] Frontend: Bestätigungsseite `/newsletter/bestaetigen?token=...`
+- [x] Frontend: Abmelde-/Löschseite `/newsletter/abmelden?token=...`
+- [x] Datenschutzerklärung aktualisieren (Newsletter, Speicherdauer, Löschrecht)
+- [x] Einwilligungsnachweis: IP-Adresse und Zeitstempel bei Anmeldung speichern
+- [x] Tests für neue Endpunkte schreiben

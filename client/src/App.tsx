@@ -9,6 +9,8 @@ import Wissen from "@/pages/Wissen";
 import { Impressum } from "@/pages/Impressum";
 import { Datenschutz } from "@/pages/Datenschutz";
 import AdminNewsletter from "@/pages/AdminNewsletter";
+import NewsletterBestaetigen from "@/pages/NewsletterBestaetigen";
+import NewsletterAbmelden from "@/pages/NewsletterAbmelden";
 import NotFound from "@/pages/NotFound";
 
 function Router() {
@@ -19,6 +21,8 @@ function Router() {
       <Route path="/impressum" component={Impressum} />
       <Route path="/datenschutz" component={Datenschutz} />
       <Route path="/admin/newsletter" component={AdminNewsletter} />
+      <Route path="/newsletter/bestaetigen" component={NewsletterBestaetigen} />
+      <Route path="/newsletter/abmelden" component={NewsletterAbmelden} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

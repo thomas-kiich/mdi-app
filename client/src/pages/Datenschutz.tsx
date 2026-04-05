@@ -13,58 +13,208 @@ export function Datenschutz() {
         </Link>
 
         <div className="space-y-4">
-          <h1 className="text-4xl font-light text-white tracking-tight">Datenschutz</h1>
-          <p className="text-zinc-500 text-sm uppercase tracking-widest">Ihre Privatsphäre ist uns wichtig</p>
+          <h1 className="text-4xl font-light text-white tracking-tight">Datenschutzerklärung</h1>
+          <p className="text-zinc-500 text-sm uppercase tracking-widest">
+            Gemäß DSGVO (EU) 2016/679 · Stand: April 2026
+          </p>
         </div>
 
-        <div className="space-y-8 text-lg font-light leading-relaxed">
-          <section>
-            <h2 className="text-white text-xl font-medium mb-4">1. Grundlegendes</h2>
-            <p>
-              Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Wir behandeln Ihre personenbezogenen Daten vertraulich und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung.
-            </p>
-            <p className="mt-4">
-              <strong>Wichtiger Hinweis zur Sprachanalyse:</strong><br/>
-              Die Analyse Ihrer Stimme erfolgt ausschließlich lokal in Ihrem Browser ("Client-Side Processing"). Es werden keine Audioaufnahmen auf unsere Server hochgeladen oder dort gespeichert. Sobald Sie das Browserfenster schließen, sind alle Aufnahmen und Analysedaten gelöscht.
-            </p>
-          </section>
+        <div className="space-y-10 text-base font-light leading-relaxed text-zinc-400">
 
-          <section>
-            <h2 className="text-white text-xl font-medium mb-4">2. Datenerfassung auf unserer Website</h2>
-            <div className="space-y-4 text-base text-zinc-400">
-                <p>
-                    <strong>Server-Log-Dateien</strong><br/>
-                    Der Provider der Seiten erhebt und speichert automatisch Informationen in so genannten Server-Log-Dateien, die Ihr Browser automatisch an uns übermittelt. Dies sind:
-                    <ul className="list-disc pl-6 mt-2 space-y-1">
-                        <li>Browsertyp und Browserversion</li>
-                        <li>Verwendetes Betriebssystem</li>
-                        <li>Referrer URL</li>
-                        <li>Hostname des zugreifenden Rechners</li>
-                        <li>Uhrzeit der Serveranfrage</li>
-                        <li>IP-Adresse</li>
-                    </ul>
-                    Eine Zusammenführung dieser Daten mit anderen Datenquellen wird nicht vorgenommen.
-                </p>
+          {/* 1. Verantwortlicher */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">1. Verantwortlicher</h2>
+            <p>
+              Verantwortlich für die Verarbeitung personenbezogener Daten auf dieser Website ist:
+            </p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
+              <p className="text-white font-medium">Thomas Chochola</p>
+              <p>MDI – Multidimensionales Identitätssystem / KIICHwerke</p>
+              <p>Österreich</p>
+              <p>
+                Kontakt:{" "}
+                <a href="mailto:office@kiich.at" className="text-orange-400 hover:underline">
+                  office@kiich.at
+                </a>
+              </p>
             </div>
           </section>
 
-          <section>
-            <h2 className="text-white text-xl font-medium mb-4">3. Ihre Rechte</h2>
-            <p className="text-base text-zinc-400">
-              Sie haben jederzeit das Recht auf unentgeltliche Auskunft über Ihre gespeicherten personenbezogenen Daten, deren Herkunft und Empfänger und den Zweck der Datenverarbeitung sowie ein Recht auf Berichtigung, Sperrung oder Löschung dieser Daten. Hierzu sowie zu weiteren Fragen zum Thema personenbezogene Daten können Sie sich jederzeit unter der im Impressum angegebenen Adresse an uns wenden.
+          {/* 2. Sprachanalyse */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">2. Sprachanalyse (lokale Verarbeitung)</h2>
+            <p>
+              Die Analyse Ihrer Stimme im Rahmen der MDI-Frequenzanalyse erfolgt ausschließlich
+              lokal in Ihrem Browser (<em>Client-Side Processing</em>). Es werden keine
+              Audioaufnahmen auf unsere Server übertragen oder dort gespeichert. Sobald Sie das
+              Browserfenster schließen, sind alle Aufnahmen und Analysedaten unwiderruflich gelöscht.
+            </p>
+            <p>
+              <strong className="text-white">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO
+              (Vertragserfüllung / Nutzung des Dienstes).
             </p>
           </section>
 
-          <section>
-            <h2 className="text-white text-xl font-medium mb-4">4. SSL- bzw. TLS-Verschlüsselung</h2>
-            <p className="text-base text-zinc-400">
-              Diese Seite nutzt aus Sicherheitsgründen und zum Schutz der Übertragung vertraulicher Inhalte eine SSL-bzw. TLS-Verschlüsselung. Eine verschlüsselte Verbindung erkennen Sie daran, dass die Adresszeile des Browsers von “http://” auf “https://” wechselt und an dem Schloss-Symbol in Ihrer Browserzeile.
+          {/* 3. Newsletter */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">3. Newsletter (Double-Opt-In)</h2>
+            <p>
+              Wenn Sie sich für unseren Newsletter anmelden, verwenden wir das sogenannte
+              Double-Opt-In-Verfahren: Nach der Eingabe Ihrer E-Mail-Adresse erhalten Sie eine
+              Bestätigungs-E-Mail mit einem Aktivierungslink. Erst nach dem Klick auf diesen Link
+              wird Ihre Anmeldung aktiviert.
+            </p>
+
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-3 text-sm">
+              <p className="text-white font-medium">Welche Daten werden gespeichert?</p>
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="text-zinc-500 border-b border-zinc-800">
+                    <th className="text-left pb-2">Datum</th>
+                    <th className="text-left pb-2">Zweck</th>
+                    <th className="text-left pb-2">Rechtsgrundlage</th>
+                  </tr>
+                </thead>
+                <tbody className="space-y-2">
+                  <tr className="border-b border-zinc-800/50">
+                    <td className="py-2 text-zinc-300">E-Mail-Adresse</td>
+                    <td className="py-2">Newsletter-Versand</td>
+                    <td className="py-2">Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)</td>
+                  </tr>
+                  <tr className="border-b border-zinc-800/50">
+                    <td className="py-2 text-zinc-300">Name (optional)</td>
+                    <td className="py-2">Personalisierung</td>
+                    <td className="py-2">Art. 6 Abs. 1 lit. a DSGVO</td>
+                  </tr>
+                  <tr className="border-b border-zinc-800/50">
+                    <td className="py-2 text-zinc-300">IP-Adresse bei Anmeldung</td>
+                    <td className="py-2">Einwilligungsnachweis</td>
+                    <td className="py-2">Art. 7 Abs. 1 DSGVO</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 text-zinc-300">Zeitpunkt der Bestätigung</td>
+                    <td className="py-2">Einwilligungsnachweis</td>
+                    <td className="py-2">Art. 7 Abs. 1 DSGVO</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <p>
+              <strong className="text-white">Speicherdauer:</strong> Ihre Daten werden so lange
+              gespeichert, wie Sie den Newsletter abonniert haben. Nach einer Abmeldung werden die
+              Daten für den gesetzlich vorgeschriebenen Einwilligungsnachweis aufbewahrt. Auf Ihren
+              ausdrücklichen Wunsch (Recht auf Löschung, Art. 17 DSGVO) werden alle Daten
+              vollständig gelöscht.
+            </p>
+
+            <p>
+              <strong className="text-white">Abmeldung:</strong> Sie können den Newsletter jederzeit
+              über den Abmeldelink in jeder E-Mail oder über{" "}
+              <Link href="/newsletter/abmelden">
+                <span className="text-orange-400 hover:underline cursor-pointer">
+                  diese Seite
+                </span>
+              </Link>{" "}
+              abbestellen. Eine Abmeldung berührt nicht die Rechtmäßigkeit der bis dahin erfolgten
+              Verarbeitung.
+            </p>
+
+            <p>
+              <strong className="text-white">Datenlöschung (Art. 17 DSGVO):</strong> Über den
+              Abmeldelink können Sie zusätzlich zur Abmeldung die vollständige Löschung aller
+              gespeicherten Daten beantragen.
             </p>
           </section>
+
+          {/* 4. Nutzerkonto */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">4. Nutzerkonto (Manus OAuth)</h2>
+            <p>
+              Für die Nutzung bestimmter Funktionen (z. B. gespeicherte Analysen) können Sie sich
+              über Manus OAuth anmelden. Dabei werden Name, E-Mail-Adresse und eine eindeutige
+              Nutzer-ID gespeichert. Die Authentifizierung erfolgt über einen verschlüsselten
+              Session-Cookie. Es werden keine Passwörter auf unseren Servern gespeichert.
+            </p>
+            <p>
+              <strong className="text-white">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO
+              (Vertragserfüllung).
+            </p>
+          </section>
+
+          {/* 5. Server-Log-Dateien */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">5. Server-Log-Dateien</h2>
+            <p>
+              Der Hosting-Anbieter erhebt automatisch Server-Log-Dateien mit folgenden Daten:
+              Browsertyp, Betriebssystem, Referrer-URL, IP-Adresse, Uhrzeit der Serveranfrage.
+              Diese Daten werden nicht mit anderen Quellen zusammengeführt und nach spätestens
+              7 Tagen gelöscht.
+            </p>
+            <p>
+              <strong className="text-white">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO
+              (berechtigtes Interesse an der Sicherheit des Dienstes).
+            </p>
+          </section>
+
+          {/* 6. Ihre Rechte */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">6. Ihre Rechte (Art. 15–22 DSGVO)</h2>
+            <p>Sie haben gegenüber uns folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:</p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-2 text-sm">
+              {[
+                ["Recht auf Auskunft", "Art. 15 DSGVO", "Welche Daten wir über Sie gespeichert haben"],
+                ["Recht auf Berichtigung", "Art. 16 DSGVO", "Korrektur unrichtiger Daten"],
+                ["Recht auf Löschung", "Art. 17 DSGVO", "Vollständige Datenlöschung auf Anfrage"],
+                ["Recht auf Einschränkung", "Art. 18 DSGVO", "Einschränkung der Verarbeitung"],
+                ["Recht auf Widerspruch", "Art. 21 DSGVO", "Widerspruch gegen die Verarbeitung"],
+                ["Recht auf Datenübertragbarkeit", "Art. 20 DSGVO", "Export Ihrer Daten in maschinenlesbarem Format"],
+              ].map(([right, article, desc]) => (
+                <div key={right} className="flex gap-3 py-2 border-b border-zinc-800/50 last:border-0">
+                  <div className="min-w-[180px]">
+                    <p className="text-zinc-300 font-medium">{right}</p>
+                    <p className="text-zinc-600 text-xs">{article}</p>
+                  </div>
+                  <p className="text-zinc-500">{desc}</p>
+                </div>
+              ))}
+            </div>
+            <p>
+              Zur Ausübung Ihrer Rechte wenden Sie sich bitte an:{" "}
+              <a href="mailto:office@kiich.at" className="text-orange-400 hover:underline">
+                office@kiich.at
+              </a>
+            </p>
+            <p>
+              Sie haben außerdem das Recht, sich bei der zuständigen Datenschutzbehörde zu
+              beschweren. In Österreich ist dies die{" "}
+              <a
+                href="https://www.dsb.gv.at"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-400 hover:underline"
+              >
+                Datenschutzbehörde (DSB)
+              </a>
+              .
+            </p>
+          </section>
+
+          {/* 7. SSL */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">7. SSL/TLS-Verschlüsselung</h2>
+            <p>
+              Diese Website nutzt aus Sicherheitsgründen eine SSL/TLS-Verschlüsselung. Eine
+              verschlüsselte Verbindung erkennen Sie am „https://" in der Adresszeile und am
+              Schloss-Symbol Ihres Browsers.
+            </p>
+          </section>
+
         </div>
-        
+
         <div className="pt-12 border-t border-zinc-800 text-center text-sm text-zinc-600">
-            <p>© {new Date().getFullYear()} MDI System. Alle Rechte vorbehalten.</p>
+          <p>© {new Date().getFullYear()} Thomas Chochola / KIICHwerke. Alle Rechte vorbehalten.</p>
+          <p className="mt-1">Stand: April 2026</p>
         </div>
       </div>
     </div>
