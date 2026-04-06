@@ -6,7 +6,7 @@
 
 const BREVO_API_URL = "https://api.brevo.com/v3";
 const SENDER_EMAIL = "newsletter@kiich.de";
-const SENDER_NAME = "Thomas Chochola | KIICHwerke";
+const SENDER_NAME = "Thomas Chochola | KIICH";
 
 function getApiKey(): string {
   const key = process.env.BREVO_API_KEY;
@@ -70,7 +70,7 @@ export async function sendConfirmationEmail(
   name: string | null,
   confirmUrl: string
 ): Promise<boolean> {
-  const greeting = name ? `Hallo ${name}` : "Hallo";
+  const greeting = "HALLO!";
 
   const htmlContent = `
 <!DOCTYPE html>
@@ -78,7 +78,7 @@ export async function sendConfirmationEmail(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Newsletter bestätigen – KIICHwerke</title>
+  <title>Newsletter bestätigen – KIICH</title>
 </head>
 <body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,serif;">
   <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
@@ -89,7 +89,7 @@ export async function sendConfirmationEmail(
           <tr>
             <td style="padding:0 0 32px 0;">
               <p style="margin:0;font-size:11px;letter-spacing:4px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">
-                KIICHWERKE · MDI SYSTEM
+                KIICH · MDI SYSTEM
               </p>
             </td>
           </tr>
@@ -108,7 +108,7 @@ export async function sendConfirmationEmail(
                 ${greeting},
               </p>
               <p style="margin:0 0 16px 0;font-size:16px;color:#a1a1aa;line-height:1.7;">
-                du hast dich für den wöchentlichen Newsletter von <strong style="color:#e4e4e7;">KIICHwerke</strong> angemeldet. Jeden Donnerstag erhältst du die neue Episode der Hörbuchserie <em style="color:#e4e4e7;">MASCHINEN ATMEN NICHT</em> sowie Gedanken zu Bewusstsein, Identität und selbstbestimmtem Leben im KI-Zeitalter.
+                Du hast dich für den wöchentlichen Newsletter von <strong style="color:#e4e4e7;">KIICH</strong> angemeldet. Jeden Donnerstag erhältst du aktuelle NEWS zur Hörbuchserie <em style="color:#e4e4e7;">MASCHINEN ATMEN NICHT</em> sowie Gedanken zu Bewusstsein, Identität und selbstbestimmtem Leben im KI-Zeitalter.
               </p>
               <p style="margin:0 0 32px 0;font-size:16px;color:#a1a1aa;line-height:1.7;">
                 Klicke auf den Button, um deine Anmeldung zu bestätigen:
@@ -154,7 +154,7 @@ export async function sendConfirmationEmail(
 
   const textContent = `${greeting},
 
-du hast dich für den wöchentlichen Newsletter von KIICHwerke angemeldet.
+Du hast dich für den wöchentlichen Newsletter von KIICH angemeldet.
 
 Bitte bestätige deine Anmeldung unter folgendem Link:
 ${confirmUrl}
@@ -163,12 +163,12 @@ Dieser Link ist 48 Stunden gültig.
 
 Falls du dich nicht angemeldet hast, ignoriere diese E-Mail.
 
-Thomas Chochola · KIICHwerke
+Thomas Chochola · KIICH
 Lindacher Weg 17 · D-93128 Regenstauf`;
 
   return sendEmail({
     to: [{ email, name: name ?? undefined }],
-    subject: "Bitte bestätige deinen Newsletter – KIICHwerke",
+    subject: "Bitte bestätige deinen Newsletter – KIICH",
     htmlContent,
     textContent,
   });

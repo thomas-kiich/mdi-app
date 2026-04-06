@@ -622,3 +622,12 @@
 - [x] Newsletter-Agent: KI-Entwurf aus Episode-Daten generieren
 - [x] Admin-Interface: Entwurf prüfen, bearbeiten und versenden
 - [x] Absenderadresse newsletter@kiich.de konfigurieren
+
+## Newsletter-Texte anpassen
+
+- [x] NewsletterSignup: Untertitel auf "Aktuell informiert am Puls der Zeit!" ändern
+- [x] NewsletterSignup: Nach-Absenden-Text: "...bitte klicke auf den Link um deine Anmeldung abzuschließen."
+- [x] Brevo E-Mail: KIICHwerke → KIICH (überall)
+- [x] Brevo E-Mail: Begrüßung auf "HALLO! Du hast dich..." (ohne Namen, da optional)
+- [x] Bestätigungsseite: "aktuelle NEWS" statt "die neue Episode"
+- [x] Abmeldeseite: "Wähle bitte..." statt "Wähle eine der folgenden Optionen:"

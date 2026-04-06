@@ -99,7 +99,7 @@ export const newsletterRouter = router({
         return {
           success: true,
           message:
-            "Danke! Deine Anmeldung wurde erfolgreich bestätigt. Du wirst ab sofort jeden Donnerstag informiert.",
+            "Danke! Deine Anmeldung wurde erfolgreich bestätigt. Du erhältst ab sofort jeden Donnerstag aktuelle NEWS.",
         };
       } catch (err: any) {
         if (err.message === "INVALID_TOKEN") {

@@ -80,7 +80,7 @@ export default function NewsletterAbmelden() {
             <div>
               <h1 className="text-2xl font-bold text-white mb-2">Newsletter abmelden</h1>
               <p className="text-zinc-400 text-sm">
-                Wähle eine der folgenden Optionen:
+                Wähle bitte eine der folgenden Optionen:
               </p>
             </div>
 

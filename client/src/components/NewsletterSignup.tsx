@@ -50,7 +50,7 @@ export function NewsletterSignup({ source = "website", className = "", compact =
           Fast geschafft!
         </p>
         <p className="text-zinc-400 text-sm text-center max-w-xs">
-          Wir haben dir eine Bestätigungs-E-Mail geschickt. Bitte klicke auf den Link darin, um deine Anmeldung abzuschließen.
+          Wir haben dir eine Bestätigungs-E-Mail geschickt – bitte klicke auf den Link darin, um deine Anmeldung abzuschließen.
         </p>
       </div>
     );
@@ -90,7 +90,7 @@ export function NewsletterSignup({ source = "website", className = "", compact =
         </div>
         <div>
           <h3 className="text-white font-semibold">Newsletter abonnieren</h3>
-          <p className="text-zinc-400 text-sm">Informiert bleiben über neue Episoden & Trainings</p>
+          <p className="text-zinc-400 text-sm">Aktuell informiert am Puls der Zeit!</p>
         </div>
       </div>
 
