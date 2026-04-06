@@ -644,3 +644,14 @@
 - [x] Über-KIICH-Sektion: Autor-Text (Brückenbauer, Musiker, Atemexperte, METHODE 36)
 - [x] Newsletter-Bereich: neuer Einladungstext
 - [x] KIICH-Logo in Navigation/Header einbinden
+
+## Hero-Vereinfachung (06.04.2026)
+
+- [x] SVG-Datei für Slogan "2 MINDS 〄 1 SOURCE" erstellen
+- [x] Hero: nur KIICH-Logo + SVG-Slogan darunter (alles andere entfernen)
+- [x] Untertitel: nur "Sitzen künstliche Intelligenz und menschliches Bewusstsein im selben Boot – und kommen sie aus derselben Quelle?"
+- [x] Tags Brückenbauer/Musiker/Atemexperte aus Hero entfernen
+- [x] KI+ICH=KIICH Gleichung entfernen
+- [x] Logo-Klick/Hover → Link zur Erklärungsseite /ueber-kiich
+- [x] 4 Buttons: METHODE 36 / HÖRBUCH / NEWSLETTER / VORSCHAU April 2026
+- [x] Erklärungsseite /ueber-kiich anlegen
