@@ -668,3 +668,6 @@
 
 ## YOHN-Trainer Wasser-Slider
 - [x] Wasser-Lautstärke-Slider einbauen (steuert Ambience + Haupt-WAV gleichzeitig, Popup am Wellen-Button)
+
+## YOHN-Trainer Wasser-Slider Bugfix
+- [x] Slider-Echtzeit-Volume-Änderung repariert: doppeltes Audio-System bereinigt, nur noch waterSoundRef aktiv

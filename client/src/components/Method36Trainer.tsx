@@ -159,22 +159,32 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                     audio.play().catch(e => console.error("Water sound play failed", e));
                 },
                 stop: () => {
-                    // Fade out logic for stop
+                    // Fade out then pause
+                    const savedVol = audio.volume;
                     const fadeOut = setInterval(() => {
                         if (audio.volume > 0.05) {
                             audio.volume -= 0.05;
                         } else {
+                            audio.volume = savedVol; // Restore for next play
                             audio.pause();
                             audio.currentTime = 0;
                             clearInterval(fadeOut);
                         }
                     }, 100);
                 },
+                pause: () => {
+                    audio.pause();
+                },
+                resume: (vol: number) => {
+                    audio.volume = Math.max(0, Math.min(1, vol));
+                    audio.play().catch(e => console.error("Water sound play failed", e));
+                },
                 setVolume: (vol: number) => {
-                    // Only set volume if not fading out/in (simplified)
-                    audio.volume = vol;
+                    audio.volume = Math.max(0, Math.min(1, vol));
+                    // Start playback if vol > 0 and audio is paused
                     if (vol > 0 && audio.paused) audio.play().catch(e => console.error("Water sound play failed", e));
-                    if (vol === 0 && !audio.paused) audio.pause();
+                    // Pause if vol reaches 0
+                    if (vol <= 0 && !audio.paused) audio.pause();
                 }
             };
 
@@ -196,20 +206,20 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     }, [duration]);
 
     // Handle water sound playback when training starts/stops
+    // Only waterSoundRef is used – waterAudioRef HTML element is kept but muted to avoid duplicate playback
     useEffect(() => {
-        // waterAudioRef: subtle background ambience
+        // Mute the HTML audio element completely (it's kept in JSX for preloading only)
         if (waterAudioRef.current) {
-            waterAudioRef.current.volume = 0.07; // Slightly raised water ambience volume
-            if (isPlaying && isStreamSoundEnabled) {
-                waterAudioRef.current.play().catch(e => console.error("Water sound play failed", e));
-            } else {
-                waterAudioRef.current.pause();
-                waterAudioRef.current.currentTime = 0;
-            }
+            waterAudioRef.current.volume = 0;
+            waterAudioRef.current.pause();
         }
-        // waterSoundRef: main water sound (7/12/21 min WAV files)
+        // waterSoundRef: sole audio source for water sound
         if (waterSoundRef.current) {
-            waterSoundRef.current.setVolume(isPlaying && isStreamSoundEnabled ? waterVolume : 0);
+            if (!isPlaying || !isStreamSoundEnabled) {
+                waterSoundRef.current.setVolume(0);
+            } else {
+                waterSoundRef.current.setVolume(waterVolume);
+            }
         }
     }, [isPlaying, isStreamSoundEnabled, waterVolume]);
 
@@ -224,10 +234,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     const handleWaterVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const vol = parseFloat(e.target.value);
         setWaterVolume(vol);
-        // Apply immediately to both audio layers
-        if (waterAudioRef.current && isStreamSoundEnabled) {
-            waterAudioRef.current.volume = vol * 0.6; // Ambience at 60% of main volume
-        }
+        // Apply immediately to waterSoundRef (the sole audio source)
         if (waterSoundRef.current && isStreamSoundEnabled && isPlaying) {
             waterSoundRef.current.setVolume(vol);
         }
