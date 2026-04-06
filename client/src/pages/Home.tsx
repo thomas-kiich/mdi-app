@@ -453,8 +453,12 @@ export default function Home() {
               <div className="relative overflow-hidden bg-black border-b border-zinc-900">
                 <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'radial-gradient(circle at 15% 50%, #e63329 0%, transparent 55%), radial-gradient(circle at 85% 50%, #f5a623 0%, transparent 55%)'}} />
                 <div className="container max-w-4xl mx-auto px-4 py-16 md:py-24 relative z-10">
-                  <div className="flex flex-col items-center text-center space-y-8">
+                  <div className="flex flex-col items-center text-center space-y-6">
                     {/* KIICH Logo – klickbar → Erklärungsseite */}
+                    {/* Logo-Referenzbreite: 608px × 221px → Verhältnis 2.75:1
+                        Bei h-20 (80px) → Breite ≈ 220px
+                        Bei h-28 (112px) → Breite ≈ 308px
+                        Slogan-SVG viewBox 520×60 → gleiche max-width wie Logo */}
                     <a
                       href="/ueber-kiich"
                       className="group block transition-all duration-300 hover:opacity-80 hover:scale-105"
@@ -463,14 +467,21 @@ export default function Home() {
                       <img
                         src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_8b45e8fa.png"
                         alt="KIICH"
-                        className="h-24 md:h-32 w-auto"
+                        className="h-20 md:h-28 w-auto"
                       />
                     </a>
-                    {/* SVG Slogan */}
+                    {/* SVG Slogan – gleiche Breite wie Logo-Außenmaß
+                        Logo: 608×221px (ratio 2.751), bei h-20 (80px) → 220px, bei h-28 (112px) → 308px
+                        Slogan: viewBox 520×60 (ratio 8.667)
+                        Wir geben dem Slogan dieselbe Pixelbreite wie das Logo:
+                        - Mobile (h-20): width = 80px * 2.751 = 220px
+                        - Desktop (h-28): width = 112px * 2.751 = 308px
+                    */}
                     <img
                       src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-slogan_c3b9c2ba.svg"
                       alt="2 MINDS 〄 1 SOURCE"
-                      className="w-full max-w-md md:max-w-lg"
+                      className="w-[220px] md:w-[308px]"
+                      style={{ height: 'auto' }}
                     />
                     {/* Subtitle */}
                     <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">
@@ -479,7 +490,7 @@ export default function Home() {
                     {/* 4 Buttons */}
                     <div className="flex flex-wrap justify-center gap-3 mt-2">
                       <button
-                        onClick={() => setCurrentStep('dashboard')}
+                        onClick={() => setShowTrainingCenter(true)}
                         className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-600 hover:border-white text-zinc-300 hover:text-white transition-all duration-200"
                       >
                         METHODE 36
@@ -498,7 +509,7 @@ export default function Home() {
                         NEWSLETTER
                       </button>
                       <button
-                        onClick={() => setShowPodcast(true)}
+                        onClick={() => document.getElementById('vorschau-april-2026')?.scrollIntoView({behavior: 'smooth'})}
                         className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border transition-all duration-200"
                         style={{borderColor: 'rgba(245,166,35,0.5)', color: '#f5a623'}}
                       >
@@ -591,7 +602,7 @@ export default function Home() {
                 />
               </div>
               
-              <div className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
+              <div id="vorschau-april-2026" className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
                 <h2 className="text-2xl font-bold text-center text-white mb-8">SZENARIO - Die Vorschau April 2026</h2>
                 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">

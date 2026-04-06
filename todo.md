@@ -655,3 +655,10 @@
 - [x] Logo-Klick/Hover → Link zur Erklärungsseite /ueber-kiich
 - [x] 4 Buttons: METHODE 36 / HÖRBUCH / NEWSLETTER / VORSCHAU April 2026
 - [x] Erklärungsseite /ueber-kiich anlegen
+
+## KIICH Hero Verfeinerungen (April 2026)
+- [x] Logo etwas kleiner (h-20 md:h-28), Slogan etwas größer (max-w-lg md:max-w-2xl)
+- [x] Slogan-Breite exakt auf Logo-Außenmaß begrenzen (gleiche max-width)
+- [x] VORSCHAU April 2026 Button inhaltlich vernetzen (scrollt zur Vorschau-Sektion)
+- [x] METHODE 36 Button vernetzen (öffnet Training-Center direkt)
+- [x] Impressum/Datenschutz im Footer belassen (korrekte Position)
