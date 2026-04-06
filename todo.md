@@ -631,3 +631,8 @@
 - [x] Brevo E-Mail: Begrüßung auf "HALLO! Du hast dich..." (ohne Namen, da optional)
 - [x] Bestätigungsseite: "aktuelle NEWS" statt "die neue Episode"
 - [x] Abmeldeseite: "Wähle bitte..." statt "Wähle eine der folgenden Optionen:"
+
+## KIICH-Logo in E-Mail-Signatur
+
+- [x] KIICH-Logo als CDN-Asset hochladen
+- [x] Logo in Brevo Bestätigungs-E-Mail Signatur einbauen (über Thomas Chochola)

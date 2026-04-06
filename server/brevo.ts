@@ -88,9 +88,7 @@ export async function sendConfirmationEmail(
           <!-- Header -->
           <tr>
             <td style="padding:0 0 32px 0;">
-              <p style="margin:0;font-size:11px;letter-spacing:4px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">
-                KIICH · MDI SYSTEM
-              </p>
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_f314ec60.png" alt="KIICH" width="120" style="display:block;border:0;" />
             </td>
           </tr>
           <!-- Titel -->
@@ -138,6 +136,7 @@ export async function sendConfirmationEmail(
           <!-- Footer -->
           <tr>
             <td style="padding:32px 0 0 0;">
+              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_f314ec60.png" alt="KIICH" width="80" style="display:block;border:0;margin-bottom:8px;" />
               <p style="margin:0;font-size:11px;color:#3f3f46;font-family:Arial,sans-serif;">
                 Thomas Chochola · Lindacher Weg 17 · D-93128 Regenstauf<br>
                 <a href="https://kiich.de/datenschutz" style="color:#3f3f46;">Datenschutz</a> · 
