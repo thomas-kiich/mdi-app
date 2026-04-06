@@ -39,6 +39,8 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     const [showLog, setShowLog] = useState(false);
     const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
     const [isStreamSoundEnabled, setIsStreamSoundEnabled] = useState(true);
+    const [waterVolume, setWaterVolume] = useState(0.12); // 0.0 – 1.0, default 0.12
+    const [showWaterSlider, setShowWaterSlider] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
     
     const handleShare = async () => {
@@ -207,15 +209,27 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
         }
         // waterSoundRef: main water sound (7/12/21 min WAV files)
         if (waterSoundRef.current) {
-            waterSoundRef.current.setVolume(isPlaying && isStreamSoundEnabled ? 0.12 : 0);
+            waterSoundRef.current.setVolume(isPlaying && isStreamSoundEnabled ? waterVolume : 0);
         }
-    }, [isPlaying, isStreamSoundEnabled]);
+    }, [isPlaying, isStreamSoundEnabled, waterVolume]);
 
     const toggleStreamSound = () => {
         const newState = !isStreamSoundEnabled;
         setIsStreamSoundEnabled(newState);
         if (waterSoundRef.current) {
-            waterSoundRef.current.setVolume(newState && isPlaying ? 0.12 : 0);
+            waterSoundRef.current.setVolume(newState && isPlaying ? waterVolume : 0);
+        }
+    };
+
+    const handleWaterVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const vol = parseFloat(e.target.value);
+        setWaterVolume(vol);
+        // Apply immediately to both audio layers
+        if (waterAudioRef.current && isStreamSoundEnabled) {
+            waterAudioRef.current.volume = vol * 0.6; // Ambience at 60% of main volume
+        }
+        if (waterSoundRef.current && isStreamSoundEnabled && isPlaying) {
+            waterSoundRef.current.setVolume(vol);
         }
     };
 
@@ -574,16 +588,55 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                         <History className="h-5 w-5" />
                     </Button>
 
-                    {/* Stream Sound Toggle */}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={toggleStreamSound}
-                        className={`rounded-full ${isStreamSoundEnabled ? 'text-blue-400' : 'text-zinc-600'}`}
-                        title="Hintergrundgeräusch (Bach)"
-                    >
-                        {isStreamSoundEnabled ? <Waves className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
-                    </Button>
+                    {/* Stream Sound Toggle + Volume Slider */}
+                    <div className="relative">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowWaterSlider(prev => !prev)}
+                            className={`rounded-full ${isStreamSoundEnabled ? 'text-blue-400' : 'text-zinc-600'}`}
+                            title="Wassergeräusch Lautstärke"
+                        >
+                            {isStreamSoundEnabled ? <Waves className="h-5 w-5" /> : <VolumeX className="h-5 w-5" />}
+                        </Button>
+
+                        {/* Slider Popup */}
+                        {showWaterSlider && (
+                            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-zinc-900/95 border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-md z-50 w-48">
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs text-zinc-400 uppercase tracking-wider">Wasser</span>
+                                    <button
+                                        onClick={toggleStreamSound}
+                                        className={`text-xs px-2 py-0.5 rounded-full border transition-colors ${
+                                            isStreamSoundEnabled
+                                                ? 'border-blue-500/50 text-blue-400 hover:bg-blue-500/10'
+                                                : 'border-zinc-600 text-zinc-500 hover:bg-white/5'
+                                        }`}
+                                    >
+                                        {isStreamSoundEnabled ? 'AN' : 'AUS'}
+                                    </button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <VolumeX className="h-3 w-3 text-zinc-500 flex-shrink-0" />
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="0.5"
+                                        step="0.01"
+                                        value={waterVolume}
+                                        onChange={handleWaterVolumeChange}
+                                        disabled={!isStreamSoundEnabled}
+                                        className="flex-1 h-1.5 appearance-none rounded-full cursor-pointer accent-blue-400 disabled:opacity-30"
+                                        style={{ background: `linear-gradient(to right, #60a5fa ${(waterVolume / 0.5) * 100}%, #3f3f46 ${(waterVolume / 0.5) * 100}%)` }}
+                                    />
+                                    <Volume2 className="h-3 w-3 text-blue-400 flex-shrink-0" />
+                                </div>
+                                <div className="text-center mt-1">
+                                    <span className="text-xs text-zinc-500">{Math.round(waterVolume * 200)}%</span>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     {/* Timer Display */}
                     {timeLeft !== null && (

@@ -665,3 +665,6 @@
 
 ## YOHN-Trainer Audio-Optimierung
 - [x] Wasserplätschern-Lautstärke in allen drei Zeitsequenzen (7, 12, 21 min) leicht angehoben (0.03→0.07 Ambience, 0.05→0.12 Haupt-Wasser)
+
+## YOHN-Trainer Wasser-Slider
+- [x] Wasser-Lautstärke-Slider einbauen (steuert Ambience + Haupt-WAV gleichzeitig, Popup am Wellen-Button)
