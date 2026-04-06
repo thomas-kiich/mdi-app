@@ -662,3 +662,6 @@
 - [x] VORSCHAU April 2026 Button inhaltlich vernetzen (scrollt zur Vorschau-Sektion)
 - [x] METHODE 36 Button vernetzen (öffnet Training-Center direkt)
 - [x] Impressum/Datenschutz im Footer belassen (korrekte Position)
+
+## YOHN-Trainer Audio-Optimierung
+- [x] Wasserplätschern-Lautstärke in allen drei Zeitsequenzen (7, 12, 21 min) leicht angehoben (0.03→0.07 Ambience, 0.05→0.12 Haupt-Wasser)
