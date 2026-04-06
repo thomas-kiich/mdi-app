@@ -606,3 +606,10 @@
 - [x] Datenschutzerklärung aktualisieren (Newsletter, Speicherdauer, Löschrecht)
 - [x] Einwilligungsnachweis: IP-Adresse und Zeitstempel bei Anmeldung speichern
 - [x] Tests für neue Endpunkte schreiben
+
+## Datenschutzerklärung – Anpassungen
+
+- [x] Deutsches Recht als Priorität (DSGVO + BDSG statt österreichisches DSG)
+- [x] Zuständige Aufsichtsbehörde auf deutsche Behörde ändern (BfDI / Landesbehörde)
+- [x] E-Mail-Adresse auf LKRforschung@gmail.com aktualisieren
+- [x] Impressum: E-Mail ebenfalls anpassen, vollständige Adresse und Telefon ergänzt

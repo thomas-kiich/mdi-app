@@ -15,7 +15,7 @@ export function Datenschutz() {
         <div className="space-y-4">
           <h1 className="text-4xl font-light text-white tracking-tight">Datenschutzerklärung</h1>
           <p className="text-zinc-500 text-sm uppercase tracking-widest">
-            Gemäß DSGVO (EU) 2016/679 · Stand: April 2026
+            Gemäß DSGVO (EU) 2016/679 und BDSG (Deutschland) · Stand: April 2026
           </p>
         </div>
 
@@ -25,19 +25,32 @@ export function Datenschutz() {
           <section className="space-y-3">
             <h2 className="text-white text-xl font-medium">1. Verantwortlicher</h2>
             <p>
-              Verantwortlich für die Verarbeitung personenbezogener Daten auf dieser Website ist:
+              Verantwortlich für die Verarbeitung personenbezogener Daten auf dieser Website ist gemäß
+              Art. 4 Nr. 7 DSGVO:
             </p>
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
               <p className="text-white font-medium">Thomas Chochola</p>
               <p>MDI – Multidimensionales Identitätssystem / KIICHwerke</p>
-              <p>Österreich</p>
+              <p>Lindacher Weg 17</p>
+              <p>D-93128 Regenstauf, Deutschland</p>
               <p>
-                Kontakt:{" "}
-                <a href="mailto:office@kiich.at" className="text-orange-400 hover:underline">
-                  office@kiich.at
+                Telefon:{" "}
+                <a href="tel:+4915123040661" className="text-zinc-300 hover:text-white">
+                  +49 151 23040661
+                </a>
+              </p>
+              <p>
+                E-Mail:{" "}
+                <a href="mailto:LKRforschung@gmail.com" className="text-orange-400 hover:underline">
+                  LKRforschung@gmail.com
                 </a>
               </p>
             </div>
+            <p className="text-sm text-zinc-500">
+              Da der Verantwortliche seinen gewöhnlichen Aufenthalt in Deutschland hat, gilt
+              deutsches Datenschutzrecht (DSGVO in Verbindung mit dem BDSG) als vorrangiges
+              anwendbares Recht.
+            </p>
           </section>
 
           {/* 2. Sprachanalyse */}
@@ -60,9 +73,9 @@ export function Datenschutz() {
             <h2 className="text-white text-xl font-medium">3. Newsletter (Double-Opt-In)</h2>
             <p>
               Wenn Sie sich für unseren Newsletter anmelden, verwenden wir das sogenannte
-              Double-Opt-In-Verfahren: Nach der Eingabe Ihrer E-Mail-Adresse erhalten Sie eine
-              Bestätigungs-E-Mail mit einem Aktivierungslink. Erst nach dem Klick auf diesen Link
-              wird Ihre Anmeldung aktiviert.
+              Double-Opt-In-Verfahren gemäß den Anforderungen des deutschen Rechts: Nach der
+              Eingabe Ihrer E-Mail-Adresse erhalten Sie eine Bestätigungs-E-Mail mit einem
+              Aktivierungslink. Erst nach dem Klick auf diesen Link wird Ihre Anmeldung aktiviert.
             </p>
 
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-3 text-sm">
@@ -75,11 +88,11 @@ export function Datenschutz() {
                     <th className="text-left pb-2">Rechtsgrundlage</th>
                   </tr>
                 </thead>
-                <tbody className="space-y-2">
+                <tbody>
                   <tr className="border-b border-zinc-800/50">
                     <td className="py-2 text-zinc-300">E-Mail-Adresse</td>
                     <td className="py-2">Newsletter-Versand</td>
-                    <td className="py-2">Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)</td>
+                    <td className="py-2">Art. 6 Abs. 1 lit. a DSGVO</td>
                   </tr>
                   <tr className="border-b border-zinc-800/50">
                     <td className="py-2 text-zinc-300">Name (optional)</td>
@@ -89,7 +102,7 @@ export function Datenschutz() {
                   <tr className="border-b border-zinc-800/50">
                     <td className="py-2 text-zinc-300">IP-Adresse bei Anmeldung</td>
                     <td className="py-2">Einwilligungsnachweis</td>
-                    <td className="py-2">Art. 7 Abs. 1 DSGVO</td>
+                    <td className="py-2">Art. 7 Abs. 1 DSGVO i. V. m. § 25 BDSG</td>
                   </tr>
                   <tr>
                     <td className="py-2 text-zinc-300">Zeitpunkt der Bestätigung</td>
@@ -103,9 +116,9 @@ export function Datenschutz() {
             <p>
               <strong className="text-white">Speicherdauer:</strong> Ihre Daten werden so lange
               gespeichert, wie Sie den Newsletter abonniert haben. Nach einer Abmeldung werden die
-              Daten für den gesetzlich vorgeschriebenen Einwilligungsnachweis aufbewahrt. Auf Ihren
-              ausdrücklichen Wunsch (Recht auf Löschung, Art. 17 DSGVO) werden alle Daten
-              vollständig gelöscht.
+              Protokolldaten (IP, Zeitstempel) für den gesetzlich vorgeschriebenen
+              Einwilligungsnachweis aufbewahrt. Auf Ihren ausdrücklichen Wunsch (Recht auf Löschung,
+              Art. 17 DSGVO) werden alle Daten vollständig gelöscht.
             </p>
 
             <p>
@@ -116,14 +129,14 @@ export function Datenschutz() {
                   diese Seite
                 </span>
               </Link>{" "}
-              abbestellen. Eine Abmeldung berührt nicht die Rechtmäßigkeit der bis dahin erfolgten
-              Verarbeitung.
+              abbestellen. Die Rechtmäßigkeit der bis zur Abmeldung erfolgten Verarbeitung bleibt
+              davon unberührt (Art. 7 Abs. 3 DSGVO).
             </p>
 
             <p>
               <strong className="text-white">Datenlöschung (Art. 17 DSGVO):</strong> Über den
               Abmeldelink können Sie zusätzlich zur Abmeldung die vollständige Löschung aller
-              gespeicherten Daten beantragen.
+              gespeicherten personenbezogenen Daten beantragen.
             </p>
           </section>
 
@@ -142,9 +155,20 @@ export function Datenschutz() {
             </p>
           </section>
 
-          {/* 5. Server-Log-Dateien */}
+          {/* 5. Cookies */}
           <section className="space-y-3">
-            <h2 className="text-white text-xl font-medium">5. Server-Log-Dateien</h2>
+            <h2 className="text-white text-xl font-medium">5. Cookies</h2>
+            <p>
+              Diese Website verwendet ausschließlich technisch notwendige Cookies (Session-Cookie
+              für die Authentifizierung). Es werden keine Tracking-, Werbe- oder
+              Analyse-Cookies eingesetzt. Technisch notwendige Cookies bedürfen gemäß § 25 Abs. 2
+              TDDDG (ehemals TTDSG) keiner gesonderten Einwilligung.
+            </p>
+          </section>
+
+          {/* 6. Server-Log-Dateien */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">6. Server-Log-Dateien</h2>
             <p>
               Der Hosting-Anbieter erhebt automatisch Server-Log-Dateien mit folgenden Daten:
               Browsertyp, Betriebssystem, Referrer-URL, IP-Adresse, Uhrzeit der Serveranfrage.
@@ -153,14 +177,16 @@ export function Datenschutz() {
             </p>
             <p>
               <strong className="text-white">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. f DSGVO
-              (berechtigtes Interesse an der Sicherheit des Dienstes).
+              (berechtigtes Interesse an der Sicherheit und dem störungsfreien Betrieb des Dienstes).
             </p>
           </section>
 
-          {/* 6. Ihre Rechte */}
+          {/* 7. Ihre Rechte */}
           <section className="space-y-3">
-            <h2 className="text-white text-xl font-medium">6. Ihre Rechte (Art. 15–22 DSGVO)</h2>
-            <p>Sie haben gegenüber uns folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:</p>
+            <h2 className="text-white text-xl font-medium">7. Ihre Rechte (Art. 15–22 DSGVO)</h2>
+            <p>
+              Sie haben gegenüber uns folgende Rechte hinsichtlich Ihrer personenbezogenen Daten:
+            </p>
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-2 text-sm">
               {[
                 ["Recht auf Auskunft", "Art. 15 DSGVO", "Welche Daten wir über Sie gespeichert haben"],
@@ -180,29 +206,45 @@ export function Datenschutz() {
               ))}
             </div>
             <p>
-              Zur Ausübung Ihrer Rechte wenden Sie sich bitte an:{" "}
-              <a href="mailto:office@kiich.at" className="text-orange-400 hover:underline">
-                office@kiich.at
-              </a>
-            </p>
-            <p>
-              Sie haben außerdem das Recht, sich bei der zuständigen Datenschutzbehörde zu
-              beschweren. In Österreich ist dies die{" "}
-              <a
-                href="https://www.dsb.gv.at"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-orange-400 hover:underline"
-              >
-                Datenschutzbehörde (DSB)
-              </a>
-              .
+              Zur Ausübung Ihrer Rechte wenden Sie sich bitte per E-Mail an:{" "}
+              <a href="mailto:LKRforschung@gmail.com" className="text-orange-400 hover:underline">
+                LKRforschung@gmail.com
+              </a>{" "}
+              oder schriftlich an die oben genannte Adresse.
             </p>
           </section>
 
-          {/* 7. SSL */}
+          {/* 8. Beschwerderecht */}
           <section className="space-y-3">
-            <h2 className="text-white text-xl font-medium">7. SSL/TLS-Verschlüsselung</h2>
+            <h2 className="text-white text-xl font-medium">8. Beschwerderecht bei der Aufsichtsbehörde</h2>
+            <p>
+              Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die Verarbeitung
+              Ihrer personenbezogenen Daten durch uns zu beschweren (Art. 77 DSGVO i. V. m. § 19 BDSG).
+            </p>
+            <p>
+              Zuständig ist in Deutschland die Aufsichtsbehörde des Bundeslandes, in dem Sie Ihren
+              Wohnsitz haben, oder – für bundesweite Angelegenheiten – der:
+            </p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
+              <p className="text-white font-medium">Bundesbeauftragte für den Datenschutz und die Informationsfreiheit (BfDI)</p>
+              <p>Graurheindorfer Str. 153, 53117 Bonn</p>
+              <p>
+                Web:{" "}
+                <a
+                  href="https://www.bfdi.bund.de"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-400 hover:underline"
+                >
+                  www.bfdi.bund.de
+                </a>
+              </p>
+            </div>
+          </section>
+
+          {/* 9. SSL */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">9. SSL/TLS-Verschlüsselung</h2>
             <p>
               Diese Website nutzt aus Sicherheitsgründen eine SSL/TLS-Verschlüsselung. Eine
               verschlüsselte Verbindung erkennen Sie am „https://" in der Adresszeile und am
@@ -214,7 +256,7 @@ export function Datenschutz() {
 
         <div className="pt-12 border-t border-zinc-800 text-center text-sm text-zinc-600">
           <p>© {new Date().getFullYear()} Thomas Chochola / KIICHwerke. Alle Rechte vorbehalten.</p>
-          <p className="mt-1">Stand: April 2026</p>
+          <p className="mt-1">Stand: April 2026 · Deutsches Recht (DSGVO + BDSG)</p>
         </div>
       </div>
     </div>

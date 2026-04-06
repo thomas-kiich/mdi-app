@@ -18,55 +18,76 @@ export function Impressum() {
         </div>
 
         <div className="space-y-8 text-lg font-light leading-relaxed">
+
           <section>
             <h2 className="text-white text-xl font-medium mb-4">Betreiber der Website</h2>
-            <p>
-              Ing. Thomas Chochola<br />
-              Lindacher Weg 17<br />
-              D-93128 Regenstauf<br />
-              Deutschland
-            </p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-base space-y-1">
+              <p className="text-white font-medium">Thomas Chochola</p>
+              <p>Lindacher Weg 17</p>
+              <p>D-93128 Regenstauf</p>
+              <p>Deutschland</p>
+            </div>
           </section>
 
           <section>
             <h2 className="text-white text-xl font-medium mb-4">Kontakt</h2>
-            <p>
-              Telefon: 0049 151 23040661<br />
-              E-Mail: lkrforschung@gmail.com
-            </p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-base space-y-2">
+              <p>
+                <span className="text-zinc-500">Telefon:</span>{" "}
+                <a href="tel:+4915123040661" className="text-zinc-300 hover:text-white">
+                  +49 151 23040661
+                </a>
+              </p>
+              <p>
+                <span className="text-zinc-500">E-Mail:</span>{" "}
+                <a href="mailto:LKRforschung@gmail.com" className="text-orange-400 hover:underline">
+                  LKRforschung@gmail.com
+                </a>
+              </p>
+            </div>
           </section>
 
           <section>
             <h2 className="text-white text-xl font-medium mb-4">Verantwortlich für den Inhalt</h2>
-            <p className="text-sm text-zinc-400 mb-2">nach § 55 Abs. 2 RStV:</p>
-            <p>
-              Ing. Thomas Chochola<br />
-              Lindacher Weg 17<br />
-              D-93128 Regenstauf
-            </p>
+            <p className="text-sm text-zinc-500 mb-3">nach § 18 Abs. 2 MStV:</p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-base space-y-1">
+              <p className="text-white font-medium">Thomas Chochola</p>
+              <p>Lindacher Weg 17</p>
+              <p>D-93128 Regenstauf</p>
+            </div>
           </section>
 
           <section>
             <h2 className="text-white text-xl font-medium mb-4">Haftungsausschluss</h2>
             <div className="space-y-4 text-base text-zinc-400">
-                <p>
-                    <strong>Haftung für Inhalte</strong><br/>
-                    Als Diensteanbieter sind wir gemäß § 7 Abs.1 TMG für eigene Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
-                </p>
-                <p>
-                    <strong>Haftung für Links</strong><br/>
-                    Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige Anbieter oder Betreiber der Seiten verantwortlich.
-                </p>
-                <p>
-                    <strong>Urheberrecht</strong><br/>
-                    Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung, Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
-                </p>
+              <p>
+                <strong className="text-zinc-300">Haftung für Inhalte</strong><br />
+                Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen
+                Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir
+                als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde
+                Informationen zu überwachen oder nach Umständen zu forschen, die auf eine
+                rechtswidrige Tätigkeit hinweisen.
+              </p>
+              <p>
+                <strong className="text-zinc-300">Haftung für Links</strong><br />
+                Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir
+                keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige
+                Anbieter oder Betreiber der Seiten verantwortlich.
+              </p>
+              <p>
+                <strong className="text-zinc-300">Urheberrecht</strong><br />
+                Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten
+                unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung,
+                Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes
+                bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
+              </p>
             </div>
           </section>
+
         </div>
-        
+
         <div className="pt-12 border-t border-zinc-800 text-center text-sm text-zinc-600">
-            <p>© {new Date().getFullYear()} MDI System. Alle Rechte vorbehalten.</p>
+          <p>© {new Date().getFullYear()} Thomas Chochola / KIICHwerke. Alle Rechte vorbehalten.</p>
         </div>
       </div>
     </div>
