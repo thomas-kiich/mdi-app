@@ -602,7 +602,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
 
                         {/* Slider Popup */}
                         {showWaterSlider && (
-                            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-zinc-900/95 border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-md z-50 w-48">
+                            <div className="absolute top-12 left-1/2 -translate-x-1/2 bg-zinc-900/95 border border-white/10 rounded-2xl p-4 shadow-2xl backdrop-blur-md z-50 w-48">
                                 <div className="flex items-center justify-between mb-2">
                                     <span className="text-xs text-zinc-400 uppercase tracking-wider">Wasser</span>
                                     <button
