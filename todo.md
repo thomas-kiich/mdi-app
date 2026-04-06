@@ -613,3 +613,12 @@
 - [x] Zuständige Aufsichtsbehörde auf deutsche Behörde ändern (BfDI / Landesbehörde)
 - [x] E-Mail-Adresse auf LKRforschung@gmail.com aktualisieren
 - [x] Impressum: E-Mail ebenfalls anpassen, vollständige Adresse und Telefon ergänzt
+
+## Brevo E-Mail-Integration
+
+- [x] Brevo API-Schlüssel als Secret (BREVO_API_KEY) speichern
+- [x] Brevo E-Mail-Helper (server/brevo.ts) erstellen
+- [x] Bestätigungs-E-Mail bei Newsletter-Anmeldung versenden (Double-Opt-In)
+- [x] Newsletter-Agent: KI-Entwurf aus Episode-Daten generieren
+- [x] Admin-Interface: Entwurf prüfen, bearbeiten und versenden
+- [x] Absenderadresse newsletter@kiich.de konfigurieren

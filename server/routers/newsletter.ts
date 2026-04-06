@@ -10,42 +10,13 @@ import {
 } from "../db";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { notifyOwner } from "../_core/notification";
+import { sendConfirmationEmail as sendBrevoConfirmation, sendNewsletter } from "../brevo";
 import { invokeLLM } from "../_core/llm";
-
-/**
- * Sendet die Double-Opt-In Bestätigungs-E-Mail via LLM-generiertem Text
- * und Manus Notification API.
- */
-async function sendConfirmationEmail(opts: {
-  email: string;
-  name?: string | null;
-  confirmUrl: string;
-  unsubscribeUrl: string;
-}) {
-  // Wir nutzen notifyOwner als Kanal – in Produktion sollte hier ein
-  // echter E-Mail-Dienst (z. B. Resend) eingebunden werden.
-  // Für jetzt: Owner-Benachrichtigung mit allen Infos.
-  await notifyOwner({
-    title: `[Newsletter] Bestätigung angefordert: ${opts.email}`,
-    content: `
-Neue Newsletter-Anmeldung – bitte Bestätigungslink manuell weiterleiten:
-
-An: ${opts.email}
-Name: ${opts.name ?? "–"}
-
-Bestätigungslink:
-${opts.confirmUrl}
-
-Abmeldelink:
-${opts.unsubscribeUrl}
-    `.trim(),
-  });
-}
 
 export const newsletterRouter = router({
   /**
    * DSGVO: Schritt 1 – Anmeldung (Double-Opt-In).
-   * Erstellt inaktiven Eintrag und sendet Bestätigungs-E-Mail.
+   * Erstellt inaktiven Eintrag und sendet Bestätigungs-E-Mail via Brevo.
    */
   subscribe: publicProcedure
     .input(
@@ -72,21 +43,28 @@ export const newsletterRouter = router({
           signupIp: signupIp ?? undefined,
         });
 
-        const origin = input.origin ?? "https://kiich.manus.space";
+        const origin = input.origin ?? "https://kiich.de";
         const confirmUrl = `${origin}/newsletter/bestaetigen?token=${subscriber.confirmToken}`;
-        const unsubscribeUrl = `${origin}/newsletter/abmelden?token=${subscriber.deleteToken}`;
 
-        // Bestätigungs-E-Mail senden
-        await sendConfirmationEmail({
-          email: input.email,
-          name: input.name,
-          confirmUrl,
-          unsubscribeUrl,
-        });
+        // Bestätigungs-E-Mail via Brevo senden
+        const sent = await sendBrevoConfirmation(
+          input.email,
+          input.name ?? null,
+          confirmUrl
+        );
+
+        if (!sent) {
+          // Fallback: Owner-Benachrichtigung
+          await notifyOwner({
+            title: `[Newsletter] Bestätigungslink für ${input.email}`,
+            content: `Brevo-Versand fehlgeschlagen. Bitte manuell weiterleiten:\n\n${confirmUrl}`,
+          });
+        }
 
         return {
           success: true,
-          message: "Fast geschafft! Bitte prüfe deine E-Mails und bestätige deine Anmeldung.",
+          message:
+            "Fast geschafft! Bitte prüfe deine E-Mails und bestätige deine Anmeldung.",
         };
       } catch (err: any) {
         if (err.message === "ALREADY_SUBSCRIBED") {
@@ -120,7 +98,8 @@ export const newsletterRouter = router({
 
         return {
           success: true,
-          message: "Danke! Deine Anmeldung wurde erfolgreich bestätigt. Du wirst ab sofort informiert.",
+          message:
+            "Danke! Deine Anmeldung wurde erfolgreich bestätigt. Du wirst ab sofort jeden Donnerstag informiert.",
         };
       } catch (err: any) {
         if (err.message === "INVALID_TOKEN") {
@@ -215,4 +194,100 @@ export const newsletterRouter = router({
   count: publicProcedure.query(async () => {
     return getNewsletterSubscriberCount();
   }),
+
+  /**
+   * Admin only: KI-Entwurf für den wöchentlichen Newsletter generieren.
+   */
+  generateDraft: protectedProcedure
+    .input(
+      z.object({
+        episodeTitle: z.string().min(1),
+        episodeDescription: z.string().min(1),
+        episodeNumber: z.number().int().positive(),
+        additionalNotes: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const prompt = `Du bist der Autor Thomas Chochola und schreibst den wöchentlichen Newsletter für deine Hörbuchserie "MASCHINEN ATMEN NICHT – Die Chance auf selbstbestimmtes Glücklichsein".
+
+Erstelle einen Newsletter-Entwurf für Episode ${input.episodeNumber}:
+Titel: ${input.episodeTitle}
+Beschreibung: ${input.episodeDescription}
+${input.additionalNotes ? `Zusätzliche Notizen: ${input.additionalNotes}` : ""}
+
+Der Newsletter soll:
+- Persönlich und authentisch klingen (du-Form, direkte Ansprache)
+- Neugier auf die neue Episode wecken
+- Den philosophischen Kern (Bewusstsein, Identität, KI-Zeitalter, selbstbestimmtes Leben) berühren
+- Einen klaren Call-to-Action zur Episode enthalten
+- Ca. 150-200 Wörter lang sein
+- Mit einer persönlichen Signatur von Thomas enden
+
+Antworte NUR mit dem Newsletter-Text, ohne Erklärungen oder Metakommentare.`;
+
+      const response = await invokeLLM({
+        messages: [
+          {
+            role: "system",
+            content:
+              "Du bist Thomas Chochola, Autor und Denker. Du schreibst persönliche, tiefgründige Newsletter über Bewusstsein, Identität und das selbstbestimmte Leben im KI-Zeitalter.",
+          },
+          { role: "user", content: prompt },
+        ],
+      });
+
+      const draft =
+        response.choices?.[0]?.message?.content ?? "Entwurf konnte nicht generiert werden.";
+
+      return { draft };
+    }),
+
+  /**
+   * Admin only: Newsletter an alle aktiven Abonnenten versenden.
+   */
+  send: protectedProcedure
+    .input(
+      z.object({
+        subject: z.string().min(1),
+        htmlContent: z.string().min(1),
+        textContent: z.string().min(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+
+      const subscribers = await listNewsletterSubscribers({ activeOnly: true });
+
+      if (subscribers.length === 0) {
+        return { sent: 0, failed: 0, message: "Keine aktiven Abonnenten gefunden." };
+      }
+
+      const recipients = subscribers.map((s) => ({
+        email: s.email,
+        name: s.name ?? undefined,
+      }));
+
+      const result = await sendNewsletter(
+        recipients,
+        input.subject,
+        input.htmlContent,
+        input.textContent
+      );
+
+      await notifyOwner({
+        title: `Newsletter versendet: ${input.subject}`,
+        content: `Versendet an ${result.sent} Abonnenten. Fehler: ${result.failed}.`,
+      });
+
+      return {
+        ...result,
+        message: `Newsletter erfolgreich an ${result.sent} Abonnenten versendet.`,
+      };
+    }),
 });
