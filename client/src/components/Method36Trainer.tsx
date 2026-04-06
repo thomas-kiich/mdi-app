@@ -39,7 +39,14 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     const [showLog, setShowLog] = useState(false);
     const [sessionLogs, setSessionLogs] = useState<SessionLog[]>([]);
     const [isStreamSoundEnabled, setIsStreamSoundEnabled] = useState(true);
-    const [waterVolume, setWaterVolume] = useState(0.12); // 0.0 – 1.0, default 0.12
+    const [waterVolume, setWaterVolume] = useState<number>(() => {
+        try {
+            const saved = localStorage.getItem('yohn_water_volume');
+            return saved !== null ? parseFloat(saved) : 0.12;
+        } catch {
+            return 0.12;
+        }
+    });
     const [showWaterSlider, setShowWaterSlider] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
     
@@ -234,6 +241,8 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     const handleWaterVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const vol = parseFloat(e.target.value);
         setWaterVolume(vol);
+        // Persist to localStorage
+        try { localStorage.setItem('yohn_water_volume', String(vol)); } catch {}
         // Apply immediately to waterSoundRef (the sole audio source)
         if (waterSoundRef.current && isStreamSoundEnabled && isPlaying) {
             waterSoundRef.current.setVolume(vol);

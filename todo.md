@@ -671,3 +671,6 @@
 
 ## YOHN-Trainer Wasser-Slider Bugfix
 - [x] Slider-Echtzeit-Volume-Änderung repariert: doppeltes Audio-System bereinigt, nur noch waterSoundRef aktiv
+
+## YOHN-Trainer Wasser-Slider Persistenz
+- [x] Slider-Wert im localStorage speichern und beim Start laden (key: yohn_water_volume)
