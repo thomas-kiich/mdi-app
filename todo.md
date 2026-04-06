@@ -636,3 +636,11 @@
 
 - [x] KIICH-Logo als CDN-Asset hochladen
 - [x] Logo in Brevo Bestätigungs-E-Mail Signatur einbauen (über Thomas Chochola)
+
+## KIICH-Startseite Redesign
+
+- [x] KIICH-Farbpalette (Rot #e63329, Gold #f5a623, Schwarz #0a0a0a, Weiß) in index.css verankern
+- [x] Hero-Sektion: KI + ICH = KIICH, Slogan 2 MINDS 〄 1 SOURCE, neuer Untertitel
+- [x] Über-KIICH-Sektion: Autor-Text (Brückenbauer, Musiker, Atemexperte, METHODE 36)
+- [x] Newsletter-Bereich: neuer Einladungstext
+- [x] KIICH-Logo in Navigation/Header einbinden

@@ -38,6 +38,8 @@
   --color-ring: var(--ring);
   
   --color-kiich-orange: #FF6B00;
+  --color-kiich-red: #e63329;
+  --color-kiich-gold: #f5a623;
   --color-kiich-dark: #000000;
   --color-kiich-light: #FFFFFF;
 }

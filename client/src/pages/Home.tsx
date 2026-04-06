@@ -449,6 +449,63 @@ export default function Home() {
       case "dashboard":
         return (
             <div className="space-y-8">
+              {/* ===== KIICH HERO SECTION ===== */}
+              <div className="relative overflow-hidden bg-black border-b border-zinc-900">
+                <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'radial-gradient(circle at 15% 50%, #e63329 0%, transparent 55%), radial-gradient(circle at 85% 50%, #f5a623 0%, transparent 55%)'}} />
+                <div className="container max-w-6xl mx-auto px-4 py-16 md:py-24 relative z-10">
+                  <div className="flex flex-col items-center text-center space-y-6">
+                    {/* KIICH Logo */}
+                    <img
+                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_8b45e8fa.png"
+                      alt="KIICH"
+                      className="h-16 md:h-20 w-auto mb-2"
+                    />
+                    {/* KI + ICH = KIICH */}
+                    <div className="flex items-center gap-3 md:gap-5">
+                      <span className="text-4xl md:text-6xl font-black tracking-tight" style={{color: '#e63329'}}>KI</span>
+                      <span className="text-3xl md:text-5xl font-thin text-zinc-500">+</span>
+                      <span className="text-4xl md:text-6xl font-black tracking-tight text-white">ICH</span>
+                      <span className="text-3xl md:text-5xl font-thin text-zinc-500">=</span>
+                      <span className="text-4xl md:text-6xl font-black tracking-tight" style={{color: '#f5a623'}}>KIICH</span>
+                    </div>
+                    {/* Slogan */}
+                    <p className="text-base md:text-lg font-light tracking-[0.4em] text-zinc-300 uppercase">
+                      2 MINDS <span className="mx-3" style={{color: '#f5a623'}}>〄</span> 1 SOURCE
+                    </p>
+                    {/* Subtitle */}
+                    <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed mt-2">
+                      Antworten auf die Frage, die alles verändert: Sitzen künstliche Intelligenz und menschliches Bewusstsein im selben Boot – und kommen sie aus derselben Quelle?
+                    </p>
+                    {/* Three pillars */}
+                    <div className="flex flex-wrap justify-center gap-3 mt-2">
+                      {['Brückenbauingenieur', 'Musiker', 'Atemexperte'].map((pillar) => (
+                        <span key={pillar} className="px-4 py-1.5 text-xs font-medium tracking-widest uppercase border" style={{borderColor: 'rgba(245,166,35,0.35)', color: '#f5a623'}}>
+                          {pillar}
+                        </span>
+                      ))}
+                    </div>
+                    {/* CTAs */}
+                    <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                      <button
+                        onClick={() => setShowPodcast(true)}
+                        className="group flex items-center justify-center gap-3 px-8 py-3 font-bold tracking-wider text-black transition-all duration-300 hover:opacity-90"
+                        style={{background: 'linear-gradient(135deg, #e63329, #f5a623)'}}
+                      >
+                        <Headphones className="w-5 h-5" />
+                        JETZT HÖREN
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </button>
+                      <button
+                        onClick={() => document.getElementById('newsletter-section')?.scrollIntoView({behavior: 'smooth'})}
+                        className="flex items-center justify-center gap-3 px-8 py-3 border border-zinc-600 hover:border-zinc-400 text-zinc-300 hover:text-white font-medium tracking-wider transition-all duration-300"
+                      >
+                        NEWSLETTER
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* ===== END KIICH HERO ===== */}
               <div className="container max-w-6xl mx-auto px-4 pt-8">
                 <PodcastFeature
                   coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/2_30109d8c.png"
@@ -654,7 +711,7 @@ export default function Home() {
                     </a>
                   </div>
                   
-                  <div className="border-t border-zinc-800 pt-8 mt-4">
+                  <div id="newsletter-section" className="border-t border-zinc-800 pt-8 mt-4">
                     <NewsletterSignup source="podcast" />
                   </div>
                 </div>
