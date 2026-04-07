@@ -495,11 +495,9 @@ export default function Momentaufnahme() {
           </div>
         )}
 
-        {/* Haupt-Aufnahme-Button */}
+        {/* Haupt-Aufnahme-Button – Tap-to-Start / Tap-to-Stop */}
         <button
-          onPointerDown={startRecording}
-          onPointerUp={stopRecording}
-          onPointerLeave={isRecording ? stopRecording : undefined}
+          onClick={isRecording ? stopRecording : startRecording}
           disabled={isProcessing}
           className={cn(
             "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-200 select-none touch-none",
@@ -522,7 +520,7 @@ export default function Momentaufnahme() {
         </button>
 
         <p className="text-xs text-white/30">
-          {isRecording ? "Loslassen zum Stoppen" : "Halten zum Sprechen"}
+          {isRecording ? "Nochmal tippen zum Stoppen" : "Tippen zum Sprechen"}
         </p>
 
         {/* Obsidian-Hinweis */}

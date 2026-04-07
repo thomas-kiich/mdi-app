@@ -696,3 +696,8 @@
 - [x] Neue Express-Route /api/audio/upload mit multer
 - [x] tRPC-Route aufnehmen: nimmt jetzt audioUrl statt audioBase64
 - [x] 5 neue Tests für MIME-Type-Erkennung, alle 28 Tests grün
+
+## MOMENTAUFNAHME – Bugfix Button (Session D)
+- [x] Ursache: onPointerDown/onPointerUp-Pattern bricht auf Mobilgeräten ab (Mikrofon-Dialog unterbricht Pointer-State)
+- [x] Fix: Button auf Tap-to-Start/Tap-to-Stop (onClick Toggle) umgestellt
+- [x] Hinweistext angepasst: "Tippen zum Sprechen" / "Nochmal tippen zum Stoppen"
