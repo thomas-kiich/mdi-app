@@ -85,6 +85,8 @@ function generiereObsidianMarkdown(aufnahmen: Array<{
   text: string;
   kategorie: string;
   zusammenfassung: string | null;
+  audioUrl?: string | null;
+  dauerSekunden?: number | null;
   createdAt: Date;
 }>): string {
   const datum = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -126,6 +128,11 @@ anzahl: ${aufnahmen.length}
         md += `> ${a.zusammenfassung}\n\n`;
       }
       md += `${a.text}\n\n`;
+      // Audio-Einbettung für Obsidian (als externer Link, da S3-URL)
+      if (a.audioUrl) {
+        const dateiname = `aufnahme-${a.id}.webm`;
+        md += `[🎙️ Audio-Aufnahme herunterladen](${a.audioUrl})\n\n`;
+      }
     }
   }
 
@@ -292,6 +299,97 @@ Schreibe in einem ruhigen, meditativen Ton. Maximal 5-7 Sätze. Auf Deutsch.`,
       datum: new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
     };
   }),
+
+  /**
+   * Alle Tage mit Aufnahmen abrufen (für Archiv-Kalender).
+   */
+  archivTage: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Datenbank nicht verfügbar" });
+
+    const alle = await db
+      .select({ createdAt: momentaufnahmen.createdAt })
+      .from(momentaufnahmen)
+      .where(eq(momentaufnahmen.userId, ctx.user.id))
+      .orderBy(desc(momentaufnahmen.createdAt));
+
+    // Eindeutige Tage als ISO-Datum-Strings (YYYY-MM-DD)
+    const tageSet = new Set<string>();
+    for (const a of alle) {
+      const tag = a.createdAt.toISOString().split("T")[0];
+      tageSet.add(tag);
+    }
+
+    return Array.from(tageSet).sort().reverse();
+  }),
+
+  /**
+   * Aufnahmen eines bestimmten Tages abrufen.
+   */
+  tagAbrufen: protectedProcedure
+    .input(z.object({ datum: z.string() })) // YYYY-MM-DD
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Datenbank nicht verfügbar" });
+
+      const von = new Date(input.datum + "T00:00:00.000Z");
+      const bis = new Date(input.datum + "T23:59:59.999Z");
+
+      const aufnahmen = await db
+        .select()
+        .from(momentaufnahmen)
+        .where(
+          and(
+            eq(momentaufnahmen.userId, ctx.user.id),
+            gte(momentaufnahmen.createdAt, von),
+          )
+        )
+        .orderBy(desc(momentaufnahmen.createdAt));
+
+      // Client-seitig auf den Tag filtern (Timezone-sicher)
+      const filtered = aufnahmen.filter(a => {
+        const d = a.createdAt.toISOString().split("T")[0];
+        return d === input.datum;
+      });
+
+      return filtered;
+    }),
+
+  /**
+   * Obsidian-Export für einen bestimmten Tag.
+   */
+  obsidianExportTag: protectedProcedure
+    .input(z.object({ datum: z.string() })) // YYYY-MM-DD
+    .query(async ({ input, ctx }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Datenbank nicht verfügbar" });
+
+      const von = new Date(input.datum + "T00:00:00.000Z");
+
+      const aufnahmen = await db
+        .select()
+        .from(momentaufnahmen)
+        .where(
+          and(
+            eq(momentaufnahmen.userId, ctx.user.id),
+            gte(momentaufnahmen.createdAt, von),
+          )
+        )
+        .orderBy(desc(momentaufnahmen.createdAt));
+
+      const filtered = aufnahmen.filter(a => {
+        const d = a.createdAt.toISOString().split("T")[0];
+        return d === input.datum;
+      });
+
+      const markdown = generiereObsidianMarkdown(filtered);
+      const datumFormatiert = new Date(input.datum).toLocaleDateString("de-DE", {
+        day: "2-digit", month: "2-digit", year: "numeric"
+      });
+      const filename = `${input.datum} – Momentaufnahmen.md`;
+
+      return { markdown, filename, anzahl: filtered.length, datum: datumFormatiert };
+    }),
 
   /**
    * Eine Aufnahme löschen.

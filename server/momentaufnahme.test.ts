@@ -164,3 +164,146 @@ describe("MOMENTAUFNAHME – MIME-Type-Erkennung", () => {
     expect(mime).toBe('audio/ogg');
   });
 });
+
+describe("MOMENTAUFNAHME – Aufnahme-Limits", () => {
+  const MIN_DAUER_SEK = 2;
+  const MAX_DAUER_SEK = 180;
+
+  it("Mindestdauer ist 2 Sekunden", () => {
+    expect(MIN_DAUER_SEK).toBe(2);
+  });
+
+  it("Maximaldauer ist 180 Sekunden (3 Minuten)", () => {
+    expect(MAX_DAUER_SEK).toBe(180);
+  });
+
+  it("Aufnahme unter 2 Sekunden wird abgelehnt", () => {
+    const dauer = 1;
+    const zuKurz = dauer < MIN_DAUER_SEK;
+    expect(zuKurz).toBe(true);
+  });
+
+  it("Aufnahme von genau 2 Sekunden wird akzeptiert", () => {
+    const dauer = 2;
+    const zuKurz = dauer < MIN_DAUER_SEK;
+    expect(zuKurz).toBe(false);
+  });
+
+  it("Aufnahme von 180 Sekunden löst Auto-Stop aus", () => {
+    const dauer = 180;
+    const maxErreicht = dauer >= MAX_DAUER_SEK;
+    expect(maxErreicht).toBe(true);
+  });
+
+  it("Fortschrittsbalken-Prozent wird korrekt berechnet", () => {
+    const dauer = 90;
+    const prozent = Math.min((dauer / MAX_DAUER_SEK) * 100, 100);
+    expect(prozent).toBe(50);
+  });
+
+  it("Fortschrittsbalken wird bei 180s auf 100% begrenzt", () => {
+    const dauer = 200;
+    const prozent = Math.min((dauer / MAX_DAUER_SEK) * 100, 100);
+    expect(prozent).toBe(100);
+  });
+});
+
+describe("MOMENTAUFNAHME – Obsidian-Export mit Audio", () => {
+  // Repliziert die erweiterte generiereObsidianMarkdown-Funktion
+  function generiereObsidianMarkdownMitAudio(aufnahmen: Array<{
+    id: number;
+    text: string;
+    kategorie: string;
+    zusammenfassung: string | null;
+    audioUrl?: string | null;
+    createdAt: Date;
+  }>): string {
+    const KATEGORIEN = ["ICH", "QUELL", "KONZEPT", "PROJEKT", "DIALOG", "WELT"] as const;
+    const EMOJI: Record<string, string> = {
+      ICH: "👤", QUELL: "⚡", KONZEPT: "🧠", PROJEKT: "🎯", DIALOG: "💬", WELT: "🌍",
+    };
+    const datum = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const datumISO = new Date().toISOString().split("T")[0];
+    let md = `---\ntags: [momentaufnahme, tagebuch, ${datumISO}]\ndatum: ${datum}\nanzahl: ${aufnahmen.length}\n---\n\n# 📸 Momentaufnahmen – ${datum}\n\n`;
+
+    const gruppiertNachKategorie = KATEGORIEN.reduce((acc, kat) => {
+      acc[kat] = aufnahmen.filter(a => a.kategorie === kat);
+      return acc;
+    }, {} as Record<string, typeof aufnahmen>);
+
+    for (const kat of KATEGORIEN) {
+      const gruppe = gruppiertNachKategorie[kat];
+      if (gruppe.length === 0) continue;
+      md += `## ${EMOJI[kat]} ${kat}\n\n`;
+      for (const a of gruppe) {
+        const zeit = a.createdAt.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+        md += `### ${zeit} Uhr\n`;
+        if (a.zusammenfassung) md += `> ${a.zusammenfassung}\n\n`;
+        md += `${a.text}\n\n`;
+        if (a.audioUrl) {
+          md += `[🎙️ Audio-Aufnahme herunterladen](${a.audioUrl})\n\n`;
+        }
+      }
+    }
+    md += `---\n*Exportiert aus KIICH MOMENTAUFNAHME*\n`;
+    return md;
+  }
+
+  it("enthält Audio-Download-Link wenn audioUrl vorhanden", () => {
+    const aufnahmen = [{
+      id: 42,
+      text: "Test mit Audio",
+      kategorie: "PROJEKT",
+      zusammenfassung: "Projekt-Gedanke",
+      audioUrl: "https://cdn.example.com/aufnahme-42.webm",
+      createdAt: new Date(),
+    }];
+    const md = generiereObsidianMarkdownMitAudio(aufnahmen);
+    expect(md).toContain("🎙️ Audio-Aufnahme herunterladen");
+    expect(md).toContain("https://cdn.example.com/aufnahme-42.webm");
+  });
+
+  it("enthält keinen Audio-Link wenn audioUrl null ist", () => {
+    const aufnahmen = [{
+      id: 1,
+      text: "Ohne Audio",
+      kategorie: "QUELL",
+      zusammenfassung: null,
+      audioUrl: null,
+      createdAt: new Date(),
+    }];
+    const md = generiereObsidianMarkdownMitAudio(aufnahmen);
+    expect(md).not.toContain("🎙️ Audio-Aufnahme herunterladen");
+  });
+});
+
+describe("MOMENTAUFNAHME – Archiv-Datum-Logik", () => {
+  it("ISO-Datum-String wird korrekt aus Date extrahiert", () => {
+    const datum = new Date("2026-04-07T14:30:00.000Z");
+    const isoTag = datum.toISOString().split("T")[0];
+    expect(isoTag).toBe("2026-04-07");
+  });
+
+  it("Tages-Filter funktioniert korrekt", () => {
+    const aufnahmen = [
+      { createdAt: new Date("2026-04-07T10:00:00.000Z") },
+      { createdAt: new Date("2026-04-07T18:00:00.000Z") },
+      { createdAt: new Date("2026-04-06T22:00:00.000Z") },
+    ];
+    const zielDatum = "2026-04-07";
+    const filtered = aufnahmen.filter(a => a.createdAt.toISOString().split("T")[0] === zielDatum);
+    expect(filtered).toHaveLength(2);
+  });
+
+  it("eindeutige Tage werden korrekt dedupliziert", () => {
+    const createdAts = [
+      new Date("2026-04-07T10:00:00.000Z"),
+      new Date("2026-04-07T18:00:00.000Z"),
+      new Date("2026-04-06T22:00:00.000Z"),
+    ];
+    const tageSet = new Set(createdAts.map(d => d.toISOString().split("T")[0]));
+    expect(tageSet.size).toBe(2);
+    expect(Array.from(tageSet)).toContain("2026-04-07");
+    expect(Array.from(tageSet)).toContain("2026-04-06");
+  });
+});

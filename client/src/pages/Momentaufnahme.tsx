@@ -18,6 +18,7 @@ import {
   Play,
   Square,
   ArrowLeft,
+  Archive,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -85,10 +86,15 @@ export default function Momentaufnahme() {
   const { loading, isAuthenticated } = useAuth();
   const { speak, stop, isSpeaking } = useTTS();
 
+  // Aufnahme-Konstanten
+  const MIN_DAUER_SEK = 2;
+  const MAX_DAUER_SEK = 180; // 3 Minuten
+
   // Aufnahme-State
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isMaxReached, setIsMaxReached] = useState(false); // 3-Min-Signal
   const [showSummary, setShowSummary] = useState(false);
   const [summaryText, setSummaryText] = useState("");
   const [summaryDatum, setSummaryDatum] = useState("");
@@ -113,20 +119,34 @@ export default function Momentaufnahme() {
     { enabled: isAuthenticated }
   );
 
-  // Timer
+  // Timer + Auto-Stop bei 3 Minuten
   useEffect(() => {
     if (isRecording) {
       timerRef.current = setInterval(() => {
-        setRecordingSeconds(s => s + 1);
+        setRecordingSeconds(s => {
+          const next = s + 1;
+          if (next >= MAX_DAUER_SEK) {
+            // Maximaldauer erreicht: optisches Signal + Vibration
+            setIsMaxReached(true);
+            if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+            // Auto-Stop nach kurzem Delay damit letztes Chunk noch kommt
+            setTimeout(() => stopRecordingRef.current?.(), 300);
+          }
+          return next;
+        });
       }, 1000);
     } else {
       if (timerRef.current) clearInterval(timerRef.current);
       setRecordingSeconds(0);
+      setIsMaxReached(false);
     }
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
   }, [isRecording]);
+
+  // Ref auf stopRecording für den Auto-Stop-Callback
+  const stopRecordingRef = useRef<(() => void) | null>(null);
 
   // Aufnahme starten
   const startRecording = useCallback(async () => {
@@ -159,6 +179,18 @@ export default function Momentaufnahme() {
   // Aufnahme stoppen und verarbeiten
   const stopRecording = useCallback(() => {
     if (!mediaRecorderRef.current || !isRecording) return;
+
+    // Mindestdauer prüfen
+    if (recordingSeconds < MIN_DAUER_SEK) {
+      // Aufnahme abbrechen ohne Upload
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.onstop = () => {
+        setIsRecording(false);
+        streamRef.current?.getTracks().forEach(t => t.stop());
+        toast.warning("Zu kurz – bitte mindestens 2 Sekunden sprechen.");
+      };
+      return;
+    }
 
     const dauer = recordingSeconds;
 
@@ -214,6 +246,11 @@ export default function Momentaufnahme() {
 
     mediaRecorderRef.current.stop();
   }, [isRecording, recordingSeconds, aufnehmenMutation, refetchAufnahmen, refetchExport]);
+
+  // stopRecording-Ref aktuell halten
+  useEffect(() => {
+    stopRecordingRef.current = stopRecording;
+  }, [stopRecording]);
 
   // Obsidian-Export herunterladen
   const handleExport = useCallback(() => {
@@ -320,6 +357,15 @@ export default function Momentaufnahme() {
           </div>
         </div>
         <div className="flex gap-2">
+          {/* Archiv-Link */}
+          <Link href="/momentaufnahme/archiv">
+            <button
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              title="Archiv"
+            >
+              <Archive className="w-4 h-4" />
+            </button>
+          </Link>
           {anzahlHeute > 0 && (
             <>
               <button
@@ -451,6 +497,18 @@ export default function Momentaufnahme() {
                       </p>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
+                      {/* Audio-Download */}
+                      {aufnahme.audioUrl && (
+                        <a
+                          href={aufnahme.audioUrl}
+                          download={`aufnahme-${aufnahme.id}.webm`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="p-1.5 rounded-full hover:bg-white/10 text-white/20 hover:text-white/60 transition-colors"
+                          title="Audio herunterladen"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                        </a>
+                      )}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -470,6 +528,15 @@ export default function Momentaufnahme() {
                   {isExpanded && (
                     <div className="px-4 pb-4 pt-0 border-t border-white/5">
                       <p className="text-sm text-white/60 leading-relaxed mt-3">{aufnahme.text}</p>
+                      {aufnahme.audioUrl && (
+                        <div className="mt-3">
+                          <audio
+                            controls
+                            src={aufnahme.audioUrl}
+                            className="w-full h-8 opacity-50"
+                          />
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -483,9 +550,28 @@ export default function Momentaufnahme() {
       <div className="fixed bottom-0 left-0 right-0 pb-8 flex flex-col items-center gap-3 bg-gradient-to-t from-[#0a0a0f] via-[#0a0a0f]/90 to-transparent pt-8">
         {/* Status-Text */}
         {isRecording && (
-          <div className="flex items-center gap-2 text-sm text-white/60">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            {formatZeit(recordingSeconds)} – Spreche jetzt...
+          <div className="flex flex-col items-center gap-1.5 w-full px-8">
+            <div className="flex items-center gap-2 text-sm">
+              <span className={cn(
+                "w-2 h-2 rounded-full animate-pulse",
+                isMaxReached ? "bg-amber-400" : "bg-red-500"
+              )} />
+              <span className={isMaxReached ? "text-amber-400 font-medium" : "text-white/60"}>
+                {isMaxReached
+                  ? "3 Minuten erreicht – wird gespeichert..."
+                  : `${formatZeit(recordingSeconds)} – Spreche jetzt...`}
+              </span>
+            </div>
+            {/* Fortschrittsbalken */}
+            <div className="w-full max-w-xs h-1 rounded-full bg-white/10 overflow-hidden">
+              <div
+                className={cn(
+                  "h-full rounded-full transition-all duration-1000",
+                  isMaxReached ? "bg-amber-400" : "bg-red-500"
+                )}
+                style={{ width: `${Math.min((recordingSeconds / MAX_DAUER_SEK) * 100, 100)}%` }}
+              />
+            </div>
           </div>
         )}
         {isProcessing && (
@@ -502,7 +588,9 @@ export default function Momentaufnahme() {
           className={cn(
             "w-20 h-20 rounded-full flex items-center justify-center transition-all duration-200 select-none touch-none",
             "shadow-2xl active:scale-95",
-            isRecording
+            isMaxReached
+              ? "bg-amber-500 shadow-amber-500/40 scale-110 animate-pulse"
+              : isRecording
               ? "bg-red-500 shadow-red-500/40 scale-110"
               : isProcessing
               ? "bg-white/20 cursor-not-allowed"

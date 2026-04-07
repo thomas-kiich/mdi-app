@@ -701,3 +701,15 @@
 - [x] Ursache: onPointerDown/onPointerUp-Pattern bricht auf Mobilgeräten ab (Mikrofon-Dialog unterbricht Pointer-State)
 - [x] Fix: Button auf Tap-to-Start/Tap-to-Stop (onClick Toggle) umgestellt
 - [x] Hinweistext angepasst: "Tippen zum Sprechen" / "Nochmal tippen zum Stoppen"
+
+## MOMENTAUFNAHME – Erweiterungen (Session E)
+- [x] Aufnahme-Mindestdauer 2 Sekunden: zu kurze Aufnahmen verwerfen mit Hinweis
+- [x] Aufnahme-Maximaldauer 3 Minuten: automatisch stoppen mit optischem Signal (Pulsieren/Farbwechsel) + Vibration (Mobilgeräte)
+- [x] 3-Minuten-Aufnahmen werden normal gespeichert (kein Verlust)
+- [x] Tages-Archiv: Route /momentaufnahme/archiv mit Kalender-Ansicht
+- [x] Tages-Archiv: vergangene Tage abrufen und Aufnahmen anzeigen
+- [x] Tages-Archiv: Obsidian-Export pro Tag
+- [x] Audio-Download-Button pro Aufnahme in der App
+- [x] Obsidian-Export: Audio-Download-Link pro Aufnahme eingebettet
+- [x] DB: audioUrl in momentaufnahmen-Tabelle vorhanden (bestätigt)
+- [x] Navigation: Archiv-Link (Archiv-Icon) in MOMENTAUFNAHME-Header eingebunden
