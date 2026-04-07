@@ -13,6 +13,7 @@ import UeberKiich from "@/pages/UeberKiich";
 import NewsletterBestaetigen from "@/pages/NewsletterBestaetigen";
 import NewsletterAbmelden from "@/pages/NewsletterAbmelden";
 import NotFound from "@/pages/NotFound";
+import Momentaufnahme from "@/pages/Momentaufnahme";
 
 function Router() {
   return (
@@ -25,6 +26,7 @@ function Router() {
       <Route path="/newsletter/bestaetigen" component={NewsletterBestaetigen} />
       <Route path="/newsletter/abmelden" component={NewsletterAbmelden} />
       <Route path="/ueber-kiich" component={UeberKiich} />
+      <Route path="/momentaufnahme" component={Momentaufnahme} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

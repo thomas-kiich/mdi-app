@@ -69,3 +69,27 @@ export const newsletterSubscribers = mysqlTable("newsletter_subscribers", {
 
 export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
 export type InsertNewsletterSubscriber = typeof newsletterSubscribers.$inferInsert;
+
+/**
+ * MOMENTAUFNAHME – Sprachnotizen
+ * Jede Aufnahme wird transkribiert, einem Gravitationszentrum zugeordnet
+ * und als Obsidian-Markdown exportierbar gespeichert.
+ */
+export const momentaufnahmen = mysqlTable("momentaufnahmen", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Transkribierter Text der Sprachaufnahme */
+  text: text("text").notNull(),
+  /** KI-zugeordnetes Gravitationszentrum: ICH | QUELL | KONZEPT | PROJEKT | DIALOG | WELT */
+  kategorie: mysqlEnum("kategorie", ["ICH", "QUELL", "KONZEPT", "PROJEKT", "DIALOG", "WELT"]).default("QUELL").notNull(),
+  /** Kurze KI-generierte Zusammenfassung (1 Satz) */
+  zusammenfassung: text("zusammenfassung"),
+  /** S3-URL der Originalaudio-Datei */
+  audioUrl: varchar("audioUrl", { length: 512 }),
+  /** Dauer der Aufnahme in Sekunden */
+  dauerSekunden: int("dauerSekunden"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Momentaufnahme = typeof momentaufnahmen.$inferSelect;
+export type InsertMomentaufnahme = typeof momentaufnahmen.$inferInsert;

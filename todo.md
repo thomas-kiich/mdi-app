@@ -674,3 +674,17 @@
 
 ## YOHN-Trainer Wasser-Slider Persistenz
 - [x] Slider-Wert im localStorage speichern und beim Start laden (key: yohn_water_volume)
+
+## MOMENTAUFNAHME – Mobile Feature (Session B)
+- [x] Backend: DB-Schema für Momentaufnahmen (userId, text, kategorie, timestamp, audioUrl)
+- [x] Backend: tRPC-Route für Audio-Upload und Whisper-Transkription
+- [x] Backend: KI-Klassifizierung (Gravitationszentrum-Zuordnung via LLM)
+- [x] Backend: Obsidian-Markdown-Export generieren
+- [x] Backend: Tages-Zusammenfassung generieren (alle Aufnahmen des Tages)
+- [x] Backend: Text-to-Speech für "Das war mein Tag" (Web Speech API im Browser)
+- [x] Frontend: /momentaufnahme Route anlegen
+- [x] Frontend: Mobile-First Aufnahme-Interface (grosser Mikrofon-Button)
+- [x] Frontend: Aufnahmeliste des Tages anzeigen
+- [x] Frontend: .md-Datei Download-Button
+- [x] Frontend: "Das war mein Tag" Hörbuch-Player (TTS + Play/Stop)
+- [x] Navigation: MOMENTAUFNAHME-Button in Hero-Sektion eingebunden

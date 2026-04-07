@@ -515,6 +515,12 @@ export default function Home() {
                       >
                         VORSCHAU APRIL 2026
                       </button>
+                      <a
+                        href="/momentaufnahme"
+                        className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-violet-500/50 text-violet-300 hover:border-violet-400 hover:text-violet-200 transition-all duration-200"
+                      >
+                        📸 MOMENTAUFNAHME
+                      </a>
                     </div>
                   </div>
                 </div>
