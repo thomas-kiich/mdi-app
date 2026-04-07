@@ -19,6 +19,7 @@ import {
   Square,
   ArrowLeft,
   Archive,
+  Plug,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -364,6 +365,15 @@ export default function Momentaufnahme() {
               title="Archiv"
             >
               <Archive className="w-4 h-4" />
+            </button>
+          </Link>
+          {/* Obsidian-Verbinden-Link */}
+          <Link href="/momentaufnahme/obsidian">
+            <button
+              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              title="Obsidian verbinden"
+            >
+              <Plug className="w-4 h-4" />
             </button>
           </Link>
           {anzahlHeute > 0 && (

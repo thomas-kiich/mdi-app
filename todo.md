@@ -713,3 +713,16 @@
 - [x] Obsidian-Export: Audio-Download-Link pro Aufnahme eingebettet
 - [x] DB: audioUrl in momentaufnahmen-Tabelle vorhanden (bestätigt)
 - [x] Navigation: Archiv-Link (Archiv-Icon) in MOMENTAUFNAHME-Header eingebunden
+
+## OBSIDIAN PLUGIN – KIICH MOMENTAUFNAHME Sync (Session F)
+- [x] DB: Tabelle api_tokens (id, userId, token, name, lastUsed, createdAt, revokedAt)
+- [x] Backend: tRPC-Routen für Token-Verwaltung (generieren, auflisten, widerrufen)
+- [x] Backend: Express-Route GET /api/obsidian/sync (Token-Auth, gibt neue Aufnahmen zurück)
+- [x] Backend: lastSync-Timestamp-Parameter für inkrementellen Sync
+- [x] Frontend: /momentaufnahme/obsidian Seite mit Token-Verwaltung (generieren/anzeigen/widerrufen)
+- [x] Obsidian Plugin: manifest.json
+- [x] Obsidian Plugin: main.ts (Settings, Sync-Logik, Ribbon-Button, automatischer Start-Sync)
+- [x] Obsidian Plugin: styles.css
+- [x] Plugin als ZIP paketieren (main.js + manifest.json + styles.css) – CDN-URL verfügbar
+- [x] Installations-Anleitung als Markdown erstellen (ANLEITUNG.md)
+- [x] Tests für API-Token-Validierung (13 neue Tests, 53 gesamt grün)

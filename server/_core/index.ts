@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import audioUploadRouter from "../routes/audioUpload";
+import obsidianSyncRouter from "../routes/obsidianSync";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -38,6 +39,8 @@ async function startServer() {
   registerOAuthRoutes(app);
   // Audio upload route (multipart/form-data)
   app.use(audioUploadRouter);
+  // Obsidian Sync API (Bearer-Token-Auth)
+  app.use(obsidianSyncRouter);
   // tRPC API
   app.use(
     "/api/trpc",

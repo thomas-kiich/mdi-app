@@ -93,3 +93,24 @@ export const momentaufnahmen = mysqlTable("momentaufnahmen", {
 
 export type Momentaufnahme = typeof momentaufnahmen.$inferSelect;
 export type InsertMomentaufnahme = typeof momentaufnahmen.$inferInsert;
+
+/**
+ * API-Tokens für externe Integrationen (z.B. Obsidian Plugin)
+ * Jeder Nutzer kann mehrere benannte Tokens erstellen und widerrufen.
+ */
+export const apiTokens = mysqlTable("api_tokens", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Sicherer zufälliger Token (64 Hex-Zeichen) */
+  token: varchar("token", { length: 128 }).notNull().unique(),
+  /** Nutzer-definierter Name (z.B. "Obsidian MacBook") */
+  name: varchar("name", { length: 128 }).notNull(),
+  /** Letzter Verwendungszeitpunkt */
+  lastUsedAt: timestamp("lastUsedAt"),
+  /** Widerrufszeitpunkt – null = aktiv */
+  revokedAt: timestamp("revokedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type ApiToken = typeof apiTokens.$inferSelect;
+export type InsertApiToken = typeof apiTokens.$inferInsert;
