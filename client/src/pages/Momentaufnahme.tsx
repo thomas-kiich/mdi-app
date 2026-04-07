@@ -171,18 +171,27 @@ export default function Momentaufnahme() {
           type: mediaRecorderRef.current?.mimeType || "audio/webm",
         });
 
-        // Blob → Base64
-        const arrayBuffer = await blob.arrayBuffer();
-        const uint8 = new Uint8Array(arrayBuffer);
-        let binary = "";
-        for (let i = 0; i < uint8.byteLength; i++) {
-          binary += String.fromCharCode(uint8[i]);
-        }
-        const base64 = btoa(binary);
+        // Schritt 1: Audio direkt als multipart/form-data hochladen
+        const formData = new FormData();
+        formData.append("audio", blob, "aufnahme.webm");
+        formData.append("mimeType", blob.type);
 
+        const uploadRes = await fetch("/api/audio/upload", {
+          method: "POST",
+          body: formData,
+          credentials: "include",
+        });
+
+        if (!uploadRes.ok) {
+          const errData = await uploadRes.json().catch(() => ({}));
+          throw new Error(errData.error || "Audio-Upload fehlgeschlagen");
+        }
+
+        const { audioUrl } = await uploadRes.json();
+
+        // Schritt 2: tRPC-Mutation mit S3-URL
         const result = await aufnehmenMutation.mutateAsync({
-          audioBase64: base64,
-          mimeType: blob.type,
+          audioUrl,
           dauerSekunden: dauer,
         });
 

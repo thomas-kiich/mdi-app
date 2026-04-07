@@ -4,7 +4,6 @@ import { z } from "zod";
 import { momentaufnahmen } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
 import { transcribeAudio } from "../_core/voiceTranscription";
-import { storagePut } from "../storage";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 
@@ -145,8 +144,7 @@ export const momentaufnahmeRouter = router({
   aufnehmen: protectedProcedure
     .input(
       z.object({
-        audioBase64: z.string(),
-        mimeType: z.string().default("audio/webm"),
+        audioUrl: z.string(), // S3-URL nach Upload via /api/audio/upload
         dauerSekunden: z.number().optional(),
       })
     )
@@ -154,23 +152,9 @@ export const momentaufnahmeRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Datenbank nicht verfügbar" });
 
-      // 1. Audio in S3 hochladen
-      const audioBuffer = Buffer.from(input.audioBase64, "base64");
-      const ext = input.mimeType.includes("webm") ? "webm" : input.mimeType.includes("mp4") ? "m4a" : "webm";
-      const fileKey = `momentaufnahmen/${ctx.user.id}/${Date.now()}.${ext}`;
+      const audioUrl = input.audioUrl;
 
-      let audioUrl: string | undefined;
-      try {
-        const { url } = await storagePut(fileKey, audioBuffer, input.mimeType);
-        audioUrl = url;
-      } catch (e) {
-        console.warn("[Momentaufnahme] S3 Upload fehlgeschlagen:", e);
-      }
-
-      // 2. Transkribieren
-      if (!audioUrl) {
-        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Audio-Upload fehlgeschlagen" });
-      }
+      // 1. Transkribieren (Audio bereits in S3)
 
       const transkription = await transcribeAudio({
         audioUrl,

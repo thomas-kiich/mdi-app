@@ -111,3 +111,56 @@ describe("MOMENTAUFNAHME – Kategorie-Validierung", () => {
     expect(fallback).toBe("QUELL");
   });
 });
+
+describe("MOMENTAUFNAHME – MIME-Type-Erkennung", () => {
+  // Repliziert die Logik aus voiceTranscription.ts
+  function detectMimeFromUrl(audioUrl: string, contentTypeHeader: string): string {
+    const urlPath = new URL(audioUrl).pathname.toLowerCase();
+    const extFromUrl = urlPath.split('.').pop() || '';
+    const extMimeMap: Record<string, string> = {
+      webm: 'audio/webm', mp3: 'audio/mpeg', mp4: 'audio/mp4',
+      m4a: 'audio/mp4', ogg: 'audio/ogg', wav: 'audio/wav', flac: 'audio/flac',
+    };
+    return extMimeMap[extFromUrl] || (contentTypeHeader.startsWith('audio/') ? contentTypeHeader : 'audio/webm');
+  }
+
+  it("erkennt audio/webm aus .webm URL (auch wenn CloudFront application/octet-stream liefert)", () => {
+    const mime = detectMimeFromUrl(
+      'https://cdn.example.com/momentaufnahmen/1/1234567890.webm',
+      'application/octet-stream'
+    );
+    expect(mime).toBe('audio/webm');
+  });
+
+  it("erkennt audio/mpeg aus .mp3 URL", () => {
+    const mime = detectMimeFromUrl(
+      'https://cdn.example.com/audio/test.mp3',
+      'application/octet-stream'
+    );
+    expect(mime).toBe('audio/mpeg');
+  });
+
+  it("erkennt audio/mp4 aus .m4a URL", () => {
+    const mime = detectMimeFromUrl(
+      'https://cdn.example.com/audio/test.m4a',
+      'application/octet-stream'
+    );
+    expect(mime).toBe('audio/mp4');
+  });
+
+  it("fällt auf audio/webm zurück wenn keine bekannte Extension", () => {
+    const mime = detectMimeFromUrl(
+      'https://cdn.example.com/audio/test',
+      'application/octet-stream'
+    );
+    expect(mime).toBe('audio/webm');
+  });
+
+  it("nutzt Content-Type-Header wenn Extension unbekannt aber Header audio/* ist", () => {
+    const mime = detectMimeFromUrl(
+      'https://cdn.example.com/audio/test',
+      'audio/ogg'
+    );
+    expect(mime).toBe('audio/ogg');
+  });
+});

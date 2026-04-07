@@ -104,7 +104,15 @@ export async function transcribeAudio(
       }
       
       audioBuffer = Buffer.from(await response.arrayBuffer());
-      mimeType = response.headers.get('content-type') || 'audio/mpeg';
+      // MIME-Type aus URL-Extension ableiten (CloudFront gibt oft 'application/octet-stream' zurück)
+      const urlPath = new URL(options.audioUrl).pathname.toLowerCase();
+      const extFromUrl = urlPath.split('.').pop() || '';
+      const extMimeMap: Record<string, string> = {
+        webm: 'audio/webm', mp3: 'audio/mpeg', mp4: 'audio/mp4',
+        m4a: 'audio/mp4', ogg: 'audio/ogg', wav: 'audio/wav', flac: 'audio/flac',
+      };
+      const ctHeader = response.headers.get('content-type') || '';
+      mimeType = extMimeMap[extFromUrl] || (ctHeader.startsWith('audio/') ? ctHeader : 'audio/webm');
       
       // Check file size (16MB limit)
       const sizeMB = audioBuffer.length / (1024 * 1024);

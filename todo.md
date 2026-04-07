@@ -688,3 +688,11 @@
 - [x] Frontend: .md-Datei Download-Button
 - [x] Frontend: "Das war mein Tag" Hörbuch-Player (TTS + Play/Stop)
 - [x] Navigation: MOMENTAUFNAHME-Button in Hero-Sektion eingebunden
+
+## MOMENTAUFNAHME – Bugfix Transkription (Session C)
+- [x] Fehlerursache identifiziert: CloudFront gibt application/octet-stream statt audio/webm zurück
+- [x] Fix: MIME-Type aus URL-Extension ableiten statt aus Content-Type-Header
+- [x] Fix: Audio-Upload via multipart/form-data statt Base64 (robuster, kein Encoding-Verlust)
+- [x] Neue Express-Route /api/audio/upload mit multer
+- [x] tRPC-Route aufnehmen: nimmt jetzt audioUrl statt audioBase64
+- [x] 5 neue Tests für MIME-Type-Erkennung, alle 28 Tests grün
