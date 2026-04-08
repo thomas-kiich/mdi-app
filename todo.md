@@ -741,3 +741,12 @@
 ## MOMENTAUFNAHME – Textkorrektur Fettschrift (Session H)
 - [x] "ALLES DA! – was schon vergessen war..." als fetten Satz-Dialog
 - [x] "Gesichert als Schatz deiner einzigartigen IDENTITÄT" fett
+
+## Obsidian-Theme + Dataview + USP-Marketing (Session H)
+- [x] Obsidian CSS-Snippet: Blauviolett/KIICH Akzentfarben
+- [x] Obsidian vollständiges Theme (theme.css) mit KIICH-Farbpalette
+- [x] MA-Export: Dataview-kompatible Frontmatter-Metadaten (dominantes_zentrum, gravitationszentren, datum_iso, typ)
+- [x] Dataview-Vorlage für automatische Tabellen nach Gravitationszentrum (7 Abfragen)
+- [x] USP-Marketingdokument: MA als erstes intelligentes Sprachtagebuch
+- [x] Zielgruppen: Business, Privat/Alltag, Vergesslichkeit, Alzheimer-Prävention, Gesundheit, Kreative, Studium
+- [x] Alle Dateien als PDF exportieren + KIICH-Obsidian-Paket.zip

@@ -106,10 +106,24 @@ function generiereObsidianMarkdown(aufnahmen: Array<{
     WELT: "🌍",
   };
 
+  // Gravitationszentrum-Statistik für Frontmatter berechnen
+  const gzStats: Record<string, number> = {};
+  for (const a of aufnahmen) {
+    const k = a.kategorie || "UNBEKANNT";
+    gzStats[k] = (gzStats[k] || 0) + 1;
+  }
+  const dominantGZ = Object.entries(gzStats).sort((a, b) => b[1] - a[1])[0]?.[0] || "";
+  const gzListe = Object.entries(gzStats).map(([k, n]) => `${k}: ${n}`).join(", ");
+
   let md = `---
 tags: [momentaufnahme, tagebuch, ${datumISO}]
 datum: ${datum}
+datum_iso: ${datumISO}
 anzahl: ${aufnahmen.length}
+dominantes_zentrum: ${dominantGZ}
+gravitationszentren: {${gzListe}}
+quelle: KIICH-MOMENTAUFNAHME
+typ: tagesaufnahme
 ---
 
 # 📸 Momentaufnahmen – ${datum}
