@@ -492,11 +492,11 @@ export default function Momentaufnahme() {
             <div className="w-full max-w-sm mx-auto mb-8 px-2">
               <p className="text-white/40 text-xs leading-relaxed">
                 MA ist wie eine Mutter, die alles für dich bereithält – behutsam, strukturiert,
-                vollständig. Am Abend bist du erstaunt und dankbar: <em className="text-white/60">ALLES da!</em>
-                Was schon vergessen war – MA hat es aufbereitet und zusammengefasst.
+                vollständig.{" "}
+                <strong className="text-white/80">Am Abend bist du erstaunt und dankbar: ALLES DA! – was schon vergessen war – MA hat es aufbereitet und zusammengefasst.</strong>{" "}
                 Die Hüterin deines geistigen Potentials. Dein zweites Gehirn.
-                Deine Chefsekretärin. Alles nur für dich zugänglich –
-                gesichert als Schatz deiner einzigartigen <span className="text-white/70 font-semibold">IDENTITÄT</span>.
+                Deine Chefsekretärin. Alles nur für dich zugänglich –{" "}
+                <strong className="text-white/80">gesichert als Schatz deiner einzigartigen IDENTITÄT.</strong>
               </p>
             </div>
 

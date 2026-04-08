@@ -737,3 +737,7 @@
 - [x] Dokument 1: Erklärvideo-Skript (Installation, Konfiguration, Anwendung von MA)
 - [x] Dokument 2: Philosophie, Zielgruppen und Nutzen als zweites Gehirn
 - [x] Beide als PDF exportieren
+
+## MOMENTAUFNAHME – Textkorrektur Fettschrift (Session H)
+- [x] "ALLES DA! – was schon vergessen war..." als fetten Satz-Dialog
+- [x] "Gesichert als Schatz deiner einzigartigen IDENTITÄT" fett
