@@ -95,7 +95,7 @@ export async function sendConfirmationEmail(
           <tr>
             <td style="padding:0 0 24px 0;border-bottom:1px solid #27272a;">
               <h1 style="margin:0;font-size:28px;font-weight:300;color:#ffffff;line-height:1.3;">
-                Bitte bestätige deine<br>Newsletter-Anmeldung
+                Noch ein Schritt zur Anmeldung
               </h1>
             </td>
           </tr>
@@ -109,14 +109,14 @@ export async function sendConfirmationEmail(
                 Du hast dich für den wöchentlichen Newsletter von <strong style="color:#e4e4e7;">KIICH</strong> angemeldet. Jeden Donnerstag erhältst du aktuelle NEWS zur Hörbuchserie <em style="color:#e4e4e7;">MASCHINEN ATMEN NICHT</em> sowie Gedanken zu Bewusstsein, Identität und selbstbestimmtem Leben im KI-Zeitalter.
               </p>
               <p style="margin:0 0 32px 0;font-size:16px;color:#a1a1aa;line-height:1.7;">
-                Klicke auf den Button, um deine Anmeldung zu bestätigen:
+                Klicke bitte auf den Button, um die Anmeldung rechtlich freizugeben:
               </p>
               <!-- Button -->
               <table cellpadding="0" cellspacing="0">
                 <tr>
                   <td style="background:#b45309;border-radius:4px;">
                     <a href="${confirmUrl}" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:1px;font-family:Arial,sans-serif;text-transform:uppercase;">
-                      Anmeldung bestätigen →
+                      Jetzt freigeben →
                     </a>
                   </td>
                 </tr>
@@ -155,7 +155,7 @@ export async function sendConfirmationEmail(
 
 Du hast dich für den wöchentlichen Newsletter von KIICH angemeldet.
 
-Bitte bestätige deine Anmeldung unter folgendem Link:
+Klicke bitte auf den folgenden Link, um die Anmeldung rechtlich freizugeben:
 ${confirmUrl}
 
 Dieser Link ist 48 Stunden gültig.
@@ -167,7 +167,7 @@ Lindacher Weg 17 · D-93128 Regenstauf`;
 
   return sendEmail({
     to: [{ email, name: name ?? undefined }],
-    subject: "Bitte bestätige deinen Newsletter – KIICH",
+    subject: "Noch ein Schritt zur Anmeldung – KIICH",
     htmlContent,
     textContent,
   });

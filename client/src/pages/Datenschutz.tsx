@@ -74,8 +74,9 @@ export function Datenschutz() {
             <p>
               Wenn Sie sich für unseren Newsletter anmelden, verwenden wir das sogenannte
               Double-Opt-In-Verfahren gemäß den Anforderungen des deutschen Rechts: Nach der
-              Eingabe Ihrer E-Mail-Adresse erhalten Sie eine Bestätigungs-E-Mail mit einem
-              Aktivierungslink. Erst nach dem Klick auf diesen Link wird Ihre Anmeldung aktiviert.
+              Eingabe Ihrer E-Mail-Adresse erhalten Sie eine Bestätigungsmail – bitte klicken Sie auf
+              den Link darin, um die Anmeldung rechtlich freizugeben. Erst nach diesem Schritt wird
+              Ihre Anmeldung aktiviert.
             </p>
 
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-3 text-sm">
