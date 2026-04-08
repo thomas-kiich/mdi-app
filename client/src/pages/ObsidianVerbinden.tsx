@@ -348,6 +348,128 @@ export default function ObsidianVerbinden() {
           </div>
         </div>
 
+        {/* KIICH Dark Theme für Obsidian */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 space-y-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-white/70">KIICH Dark Theme installieren</h2>
+              <p className="text-xs text-white/30 mt-0.5">Blauviolettes Farbschema – passend zu MOMENTAUFNAHME</p>
+            </div>
+            <a
+              href="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-obsidian-plugin_e8887188.zip"
+              download
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600/50 hover:bg-violet-600 text-white text-xs font-medium transition-colors"
+            >
+              Paket (.zip)
+            </a>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">1</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">KIICH-Paket herunterladen und entpacken</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Klicke auf „Paket (.zip)" und entpacke die Datei. Du erhältst einen Ordner mit{" "}
+                <code className="text-violet-300 bg-violet-500/10 px-1 rounded">theme.css</code>,{" "}
+                <code className="text-violet-300 bg-violet-500/10 px-1 rounded">manifest.json</code> und einem{" "}
+                <code className="text-violet-300 bg-violet-500/10 px-1 rounded">snippets/</code>-Ordner.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">2</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">Theme-Dateien in den Vault kopieren</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Kopiere <code className="text-violet-300 bg-violet-500/10 px-1 rounded">theme.css</code> und{" "}
+                <code className="text-violet-300 bg-violet-500/10 px-1 rounded">manifest.json</code> in:
+              </p>
+              <div className="mt-1.5 bg-black/40 rounded-lg px-3 py-2 font-mono text-xs text-violet-200">.obsidian/themes/KIICH-Dark/</div>
+              <p className="text-xs text-white/40 leading-relaxed mt-2">
+                Kopiere den Inhalt des <code className="text-violet-300 bg-violet-500/10 px-1 rounded">snippets/</code>-Ordners in:
+              </p>
+              <div className="mt-1.5 bg-black/40 rounded-lg px-3 py-2 font-mono text-xs text-violet-200">.obsidian/snippets/</div>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">3</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">Theme in Obsidian aktivieren</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Obsidian → Einstellungen → Erscheinungsbild → Theme → „KIICH Dark" auswählen.
+                Dann unter CSS-Snippets „kiich-farben" aktivieren.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-green-600/30 border border-green-500/40 flex items-center justify-center text-xs font-bold text-green-300">✓</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">Obsidian erscheint jetzt in KIICH-Farben</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Akzentfarben, Links, Buttons und Highlights erscheinen in Blauviolett –
+                konsistent mit dem MOMENTAUFNAHME-Design.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Dataview – automatische Tabellen */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 space-y-5">
+          <div>
+            <h2 className="text-sm font-semibold text-white/70">Dataview – automatische Tabellen</h2>
+            <p className="text-xs text-white/30 mt-0.5">Deine Aufnahmen nach Gravitationszentrum automatisch strukturiert</p>
+          </div>
+
+          <div className="rounded-xl bg-violet-500/10 border border-violet-500/20 p-4">
+            <p className="text-xs text-white/60 leading-relaxed">
+              Jede von MA exportierte Note enthält Metadaten (Frontmatter) wie{" "}
+              <code className="text-violet-300 bg-violet-500/10 px-1 rounded">dominantes_zentrum</code>,{" "}
+              <code className="text-violet-300 bg-violet-500/10 px-1 rounded">datum_iso</code> und{" "}
+              <code className="text-violet-300 bg-violet-500/10 px-1 rounded">anzahl_aufnahmen</code>.
+              Das Dataview-Plugin liest diese Metadaten und erstellt automatisch Tabellen und Übersichten –
+              ohne dass du auch nur eine Zeile tippst.
+            </p>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">1</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">Dataview-Plugin installieren</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Obsidian → Einstellungen → Community Plugins → Browse → „Dataview" suchen → Installieren → Aktivieren.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">2</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">Dataview-Vorlage in deinen Vault kopieren</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Im KIICH-Paket findest du die Datei{" "}
+                <code className="text-violet-300 bg-violet-500/10 px-1 rounded">KIICH-Dataview-Vorlage.md</code>.
+                Kopiere sie in deinen Vault-Ordner{" "}
+                <code className="text-violet-300 bg-violet-500/10 px-1 rounded">KIICH/</code>.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-green-600/30 border border-green-500/40 flex items-center justify-center text-xs font-bold text-green-300">✓</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">7 automatische Tabellen sofort verfügbar</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Die Vorlage enthält Abfragen für alle 6 Gravitationszentren, eine Tagesübersicht
+                und eine Wochenstatistik. Alle Tabellen befüllen sich automatisch sobald du
+                MA-Exporte in deinen Vault synchronisierst.
+              </p>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );

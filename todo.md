@@ -750,3 +750,8 @@
 - [x] USP-Marketingdokument: MA als erstes intelligentes Sprachtagebuch
 - [x] Zielgruppen: Business, Privat/Alltag, Vergesslichkeit, Alzheimer-Prävention, Gesundheit, Kreative, Studium
 - [x] Alle Dateien als PDF exportieren + KIICH-Obsidian-Paket.zip
+
+## Obsidian-Anleitung + Alzheimer-Dokument (Session I)
+- [x] Obsidian-Installationsanleitung in ObsidianVerbinden.tsx: Theme + Dataview-Schritte ergänzt
+- [x] Alzheimer/Pflege-Positionierungsdokument (Zielgruppe, Nutzen, Marktpotenzial, Kooperationspartner)
+- [x] Alzheimer-Dokument als PDF exportieren (331 KB)
