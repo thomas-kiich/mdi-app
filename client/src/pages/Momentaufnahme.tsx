@@ -460,14 +460,56 @@ export default function Momentaufnahme() {
       {/* Aufnahmeliste */}
       <div className="flex-1 overflow-y-auto px-5 pb-44">
         {anzahlHeute === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-center">
-            <div className="text-5xl mb-4 opacity-30">🎙️</div>
-            <p className="text-white/30 text-sm max-w-xs">
-              Drücke den Aufnahme-Knopf und sprich deinen ersten Gedanken des Tages.
-            </p>
-            <p className="text-white/20 text-xs mt-3 max-w-xs">
-              Deine Gedanken werden automatisch in die 6 Gravitationszentren eingeordnet.
-            </p>
+          <div className="flex flex-col items-center pt-6 pb-44 text-center">
+            {/* Tagline + Claim */}
+            <div className="mb-8 px-2">
+              <p className="text-xs font-semibold tracking-[0.2em] text-violet-400 uppercase mb-3">
+                NIE WIEDER VERGESSEN WAS DU BEHALTEN MÖCHTEST
+              </p>
+              <p className="text-white/70 text-sm leading-relaxed max-w-sm">
+                Sichere deine besten Ideen, die wichtigsten Erkenntnisse, die echten Eindrücke
+                und deine tiefsten Empfindungen – in jedem Moment deines Tages.
+              </p>
+              <p className="text-white/50 text-sm leading-relaxed max-w-sm mt-3">
+                Organisiere dein Leben neu – in nie dagewesener Qualität und Übersicht.
+                Erstelle dein <span className="text-white font-semibold">ZWEITES GEHIRN</span> –
+                nur dir selbst zugänglich, bestens aufbereitet, optimal nutzbar.
+              </p>
+            </div>
+
+            {/* Zitat-Karte */}
+            <div className="w-full max-w-sm mx-auto mb-8 p-4 rounded-2xl bg-gradient-to-br from-violet-900/30 to-blue-900/20 border border-violet-500/20">
+              <p className="text-white/60 text-sm italic leading-relaxed">
+                „Die besten Ideen fallen ein, wenn man loslässt – beim Duschen, auf der Toilette,
+                beim Spazierengehen, beim Angeln..."
+              </p>
+              <p className="text-violet-400 text-xs mt-3 font-medium">
+                ✦ Der MOMENT entscheidet – erlöse deine wichtigsten Momente in die Zeitlosigkeit.
+              </p>
+            </div>
+
+            {/* MA als Hüterin */}
+            <div className="w-full max-w-sm mx-auto mb-8 px-2">
+              <p className="text-white/40 text-xs leading-relaxed">
+                MA ist wie eine Mutter, die alles für dich bereithält – behutsam, strukturiert,
+                vollständig. Am Abend bist du erstaunt und dankbar: <em className="text-white/60">ALLES da!</em>
+                Was schon vergessen war – MA hat es aufbereitet und zusammengefasst.
+                Die Hüterin deines geistigen Potentials. Dein zweites Gehirn.
+                Deine Chefsekretärin. Alles nur für dich zugänglich –
+                gesichert als Schatz deiner einzigartigen <span className="text-white/70 font-semibold">IDENTITÄT</span>.
+              </p>
+            </div>
+
+            {/* Aufnahme-Hinweis */}
+            <div className="text-center">
+              <div className="text-4xl mb-3 opacity-40">🎙️</div>
+              <p className="text-white/30 text-xs">
+                Tippe auf den Mikrofon-Button und sprich deinen ersten Gedanken.
+              </p>
+              <p className="text-white/20 text-xs mt-1">
+                MA ordnet ihn automatisch in eines der 6 Gravitationszentren ein.
+              </p>
+            </div>
           </div>
         ) : (
           <div className="space-y-3">

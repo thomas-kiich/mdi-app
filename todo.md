@@ -726,3 +726,14 @@
 - [x] Plugin als ZIP paketieren (main.js + manifest.json + styles.css) – CDN-URL verfügbar
 - [x] Installations-Anleitung als Markdown erstellen (ANLEITUNG.md)
 - [x] Tests für API-Token-Validierung (13 neue Tests, 53 gesamt grün)
+
+## MOMENTAUFNAHME – Startseite & Onboarding (Session G)
+- [x] Startseiten-Text in Momentaufnahme.tsx ersetzen mit neuem Text von thomas
+- [x] Willkommens-Text + Zitat-Karte + Hüterin-Text im Leer-Zustand eingebaut
+- [x] Obsidian-Verbindungsanleitung in ObsidianVerbinden.tsx (5 Schritte + iPhone-Hinweis)
+- [ ] Erklärvideo-Placeholder einbauen (Video folgt separat)
+
+## NotebookLM-Dokumente für MOMENTAUFNAHME (Session G)
+- [x] Dokument 1: Erklärvideo-Skript (Installation, Konfiguration, Anwendung von MA)
+- [x] Dokument 2: Philosophie, Zielgruppen und Nutzen als zweites Gehirn
+- [x] Beide als PDF exportieren

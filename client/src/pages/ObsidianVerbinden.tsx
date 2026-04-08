@@ -250,23 +250,102 @@ export default function ObsidianVerbinden() {
           )}
         </div>
 
-        {/* Download-Link für Plugin */}
-        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 space-y-3">
-          <h2 className="text-sm font-semibold text-white/70">Plugin herunterladen</h2>
-          <p className="text-sm text-white/50">
-            Lade das KIICH-Obsidian-Plugin herunter und installiere es manuell in deinem Vault.
-          </p>
-          <a
-            href="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-obsidian-plugin_e8887188.zip"
-            download
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium transition-colors"
-          >
-            Plugin herunterladen (.zip)
-          </a>
-          <p className="text-xs text-white/30">
-            Installationsanleitung: Einstellungen → Community Plugins → Manuell installieren →
-            ZIP-Inhalt in <code className="text-violet-300">.obsidian/plugins/kiich-momentaufnahme/</code> entpacken
-          </p>
+        {/* Schritt-für-Schritt Installationsanleitung */}
+        <div className="rounded-2xl bg-white/5 border border-white/10 p-5 space-y-5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-white/70">Plugin installieren – Schritt für Schritt</h2>
+            <a
+              href="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-obsidian-plugin_e8887188.zip"
+              download
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-xs font-medium transition-colors"
+            >
+              Plugin (.zip)
+            </a>
+          </div>
+
+          {/* Schritt 1 */}
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">1</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">Plugin herunterladen</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Klicke oben auf „Plugin (.zip)“ und speichere die Datei auf deinem Computer.
+              </p>
+            </div>
+          </div>
+
+          {/* Schritt 2 */}
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">2</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">ZIP entpacken und in Vault kopieren</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Entpacke die ZIP-Datei. Den entstandenen Ordner{" "}
+                <code className="text-violet-300 bg-violet-500/10 px-1 rounded">kiich-momentaufnahme</code>{" "}
+                kopierst du in deinen Obsidian-Vault-Ordner unter:
+              </p>
+              <div className="mt-2 bg-black/40 rounded-lg px-3 py-2 font-mono text-xs text-violet-200 break-all">
+                .obsidian/plugins/kiich-momentaufnahme/
+              </div>
+              <p className="text-xs text-white/30 mt-1.5">
+                Den Vault-Ordner findest du in Obsidian unter: Einstellungen → Über → Vault-Pfad
+              </p>
+            </div>
+          </div>
+
+          {/* Schritt 3 */}
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">3</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">Plugin in Obsidian aktivieren</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Öffne Obsidian → Einstellungen (⚙️) → Community Plugins → Installierte Plugins.
+                Suche nach „KIICH MOMENTAUFNAHME“ und aktiviere den Schalter.
+              </p>
+              <p className="text-xs text-white/30 mt-1.5">
+                Falls Community Plugins deaktiviert sind: Einstellungen → Community Plugins → „Sicherer Modus“ ausschalten.
+              </p>
+            </div>
+          </div>
+
+          {/* Schritt 4 */}
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-violet-600/30 border border-violet-500/40 flex items-center justify-center text-xs font-bold text-violet-300">4</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">API-Token eintragen</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Einstellungen → KIICH MOMENTAUFNAHME → API-Token eintragen (den du oben erstellt hast).
+                Klicke auf „Verbindung testen“ – bei Erfolg erscheint ein grünes Häkchen.
+              </p>
+            </div>
+          </div>
+
+          {/* Schritt 5 */}
+          <div className="flex gap-4">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-green-600/30 border border-green-500/40 flex items-center justify-center text-xs font-bold text-green-300">✓</div>
+            <div>
+              <p className="text-sm font-medium text-white/80 mb-1">Fertig – automatischer Sync aktiv</p>
+              <p className="text-xs text-white/40 leading-relaxed">
+                Ab sofort synchronisiert Obsidian beim Start automatisch alle neuen Aufnahmen.
+                Du findest sie im Ordner{" "}
+                <code className="text-violet-300 bg-violet-500/10 px-1 rounded">KIICH/Momentaufnahmen/</code>{" "}
+                in deinem Vault.
+              </p>
+              <p className="text-xs text-white/30 mt-1.5">
+                Manueller Sync: Ribbon-Symbol 🔌 in der linken Seitenleiste von Obsidian.
+              </p>
+            </div>
+          </div>
+
+          {/* Hinweis für iPhone-Nutzer */}
+          <div className="rounded-xl bg-amber-500/10 border border-amber-500/20 p-3">
+            <p className="text-xs text-amber-300/80 font-medium mb-1">📱 Hinweis für iPhone/iPad-Nutzer</p>
+            <p className="text-xs text-white/40 leading-relaxed">
+              Das Obsidian-Plugin läuft auf dem Desktop (Mac/Windows/Linux).
+              Auf dem iPhone nutze den manuellen Export (↓ Symbol in MA) und lege die .md-Datei
+              über iCloud Drive in deinen Obsidian-Vault.
+            </p>
+          </div>
         </div>
 
       </div>
