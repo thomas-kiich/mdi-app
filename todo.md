@@ -773,3 +773,9 @@
 - [x] Anschreiben-Vorlagen (3 Kategorien: Alzheimer-Orgs, Pflegeheime, Influencer)
 - [x] Anschreiben Deutsche Alzheimer Gesellschaft (fertig, versandbereit)
 - [x] Kooperationsdokument als PDF exportiert (330 KB) + Anschreiben-PDF (265 KB)
+
+## Demenz-Positionierungsdokument (Session K)
+- [ ] Wissenschaftliche Grundlagen: Musik/Stimme und autobiografisches Gedächtnis bei Demenz
+- [ ] MA als Klang-Identitäts-Archiv: eigene Stimme als Gedächtnis-Anker
+- [ ] Demenz-Positionierungsdokument mit Stimm-Gedächtnis-Ansatz
+- [ ] Dokument als PDF exportieren

@@ -47,10 +47,10 @@ export function NewsletterSignup({ source = "website", className = "", compact =
       <div className={`flex flex-col items-center gap-3 py-4 ${className}`}>
         <CheckCircle className="w-10 h-10 text-green-500" />
         <p className="text-green-400 font-medium text-center">
-          Fast geschafft!
+          Noch ein Schritt zur Anmeldung:
         </p>
         <p className="text-zinc-400 text-sm text-center max-w-xs">
-          Wir haben dir eine Bestätigungs-E-Mail geschickt – bitte klicke auf den Link darin, um deine Anmeldung abzuschließen.
+          Klicke bitte auf den Link in der Bestätigungsmail die du erhalten hast, um die Anmeldung rechtlich freizugeben.
         </p>
       </div>
     );
