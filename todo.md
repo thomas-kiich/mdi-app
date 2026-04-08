@@ -755,3 +755,21 @@
 - [x] Obsidian-Installationsanleitung in ObsidianVerbinden.tsx: Theme + Dataview-Schritte ergänzt
 - [x] Alzheimer/Pflege-Positionierungsdokument (Zielgruppe, Nutzen, Marktpotenzial, Kooperationspartner)
 - [x] Alzheimer-Dokument als PDF exportieren (331 KB)
+
+## DACH-Kooperationsrecherche MA (Session J)
+- [ ] Recherche: Alzheimer/Demenz-Organisationen DACH (DAG, Alzheimer Austria, Alzheimer Schweiz)
+- [ ] Recherche: Pflegeverbände und Pflegeheimketten DACH
+- [ ] Recherche: Gesundheits-Influencer und Podcasts (Kognition, Aging, Gehirn)
+- [ ] Recherche: Forschungsinstitute und Universitäten (DZNE, MPI, Uni Wien, ETH Zürich)
+- [ ] Anschreiben an Deutsche Alzheimer Gesellschaft (DAG) formulieren
+- [ ] Vollständiges Kooperationsdokument als PDF exportieren
+
+## DACH-Kooperationsrecherche (Session J)
+- [x] Alzheimer/Demenz-Organisationen DACH (DAG, Alzheimer Austria, Alzheimer Schweiz, DZNE)
+- [x] Pflegeheimketten und Pflegeverbände DACH (Alloheim, emeis, Caritas, Diakonie, AWO, Spitex, Curaviva)
+- [x] Forschungsinstitute und Universitäten (DZNE, Max-Planck, ETH Zürich, MedUni Wien/Graz, Uni Osnabrück)
+- [x] Influencer und Multiplikatoren (Markus Hofmann, Dr. Anne Fleck, Longevity-Podcasts, PKM-Community)
+- [x] Medien und Fachpresse (Healthcare Digital, Bibliomed, WDR, NZZ, Kurier)
+- [x] Anschreiben-Vorlagen (3 Kategorien: Alzheimer-Orgs, Pflegeheime, Influencer)
+- [x] Anschreiben Deutsche Alzheimer Gesellschaft (fertig, versandbereit)
+- [x] Kooperationsdokument als PDF exportiert (330 KB) + Anschreiben-PDF (265 KB)
