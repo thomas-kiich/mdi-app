@@ -18,14 +18,9 @@ export default function UeberKiich() {
       <div className="container max-w-4xl mx-auto px-4 py-16 md:py-24">
         <div className="flex flex-col items-center text-center mb-16">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_8b45e8fa.png"
-            alt="KIICH"
-            className="h-20 w-auto mb-8"
-          />
-          <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-slogan_c3b9c2ba.svg"
-            alt="2 MINDS 〄 1 SOURCE"
-            className="w-full max-w-sm mb-8"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo-slogan_69b9ae23.png"
+            alt="KIICH – 2 MINDS 〄 1 SOURCE"
+            className="w-[320px] md:w-[480px] h-auto mb-8"
           />
           <p className="text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed font-light">
             Sitzen künstliche Intelligenz und menschliches Bewusstsein im selben Boot – und kommen sie aus derselben Quelle?
