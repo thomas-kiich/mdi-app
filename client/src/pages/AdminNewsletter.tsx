@@ -18,7 +18,11 @@ import { Link } from "wouter";
 export default function AdminNewsletter() {
   const { user, isAuthenticated, loading } = useAuth();
   const [activeOnly, setActiveOnly] = useState(true);
-  const [activeTab, setActiveTab] = useState<"send" | "list">("send");
+  const [activeTab, setActiveTab] = useState<"send" | "direct" | "list">("send");
+
+  // Direktversand
+  const [directSubject, setDirectSubject] = useState("");
+  const [directHtml, setDirectHtml] = useState("");
 
   // Episode-Eingabe
   const [episodeNumber, setEpisodeNumber] = useState("");
@@ -95,6 +99,18 @@ export default function AdminNewsletter() {
     sendNewsletter.mutate({ subject, htmlContent, textContent: draft });
   };
 
+  const handleDirectSend = () => {
+    if (!directSubject || !directHtml) {
+      toast.error("Bitte Betreff und HTML-Inhalt eingeben.");
+      return;
+    }
+    sendNewsletter.mutate({
+      subject: directSubject,
+      htmlContent: directHtml,
+      textContent: directSubject,
+    });
+  };
+
   const handleExportCSV = () => {
     if (!subscribers) return;
     const header = "ID,E-Mail,Name,Quelle,Aktiv,Erstellt am";
@@ -146,7 +162,7 @@ export default function AdminNewsletter() {
 
         {/* Tabs */}
         <div className="flex gap-2 border-b border-zinc-800 pb-0">
-          {(["send", "list"] as const).map((tab) => (
+          {(["send", "direct", "list"] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -156,7 +172,7 @@ export default function AdminNewsletter() {
                   : "text-zinc-500 border-transparent hover:text-zinc-300"
               }`}
             >
-              {tab === "send" ? "Newsletter erstellen & senden" : "Abonnenten-Liste"}
+              {tab === "send" ? "KI-Entwurf" : tab === "direct" ? "HTML direkt senden" : "Abonnenten-Liste"}
             </button>
           ))}
         </div>
@@ -262,6 +278,78 @@ export default function AdminNewsletter() {
                 </CardContent>
               </Card>
             )}
+          </div>
+        )}
+
+        {activeTab === "direct" && (
+          <div className="space-y-6">
+            <Card className="bg-zinc-900/60 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-white text-base font-medium flex items-center gap-2">
+                  <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">01</span>
+                  Betreff eingeben
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Input
+                  placeholder="z. B. KIICH Episode 02 – Extreme Zeiten!"
+                  value={directSubject}
+                  onChange={(e) => setDirectSubject(e.target.value)}
+                  className="bg-zinc-800 border-zinc-700 text-white"
+                />
+              </CardContent>
+            </Card>
+
+            <Card className="bg-zinc-900/60 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-white text-base font-medium flex items-center gap-2">
+                  <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">02</span>
+                  HTML-Inhalt einfügen
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <p className="text-zinc-500 text-xs">Kopiere den vollständigen HTML-Code deines Newsletters und füge ihn hier ein.</p>
+                <Textarea
+                  placeholder="&lt;!DOCTYPE html&gt;&lt;html&gt;...&lt;/html&gt;"
+                  value={directHtml}
+                  onChange={(e) => setDirectHtml(e.target.value)}
+                  className="bg-zinc-800 border-zinc-700 text-white min-h-[320px] font-mono text-xs leading-relaxed"
+                />
+                {directHtml && (
+                  <Badge variant="outline" className="text-orange-400 border-orange-800 text-xs">
+                    {directHtml.length.toLocaleString("de-DE")} Zeichen
+                  </Badge>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-zinc-900/60 border-zinc-800">
+              <CardHeader>
+                <CardTitle className="text-white text-base font-medium flex items-center gap-2">
+                  <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">03</span>
+                  Newsletter versenden
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-zinc-800/50 rounded-lg p-4 flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-orange-400 flex-shrink-0" />
+                  <div>
+                    <p className="text-white text-sm font-medium">Bereit zum Versand</p>
+                    <p className="text-zinc-500 text-xs">An {countData?.active ?? 0} aktive Abonnenten · Von: newsletter@kiich.de</p>
+                  </div>
+                </div>
+                <Button
+                  onClick={handleDirectSend}
+                  disabled={sendNewsletter.isPending || !directSubject || !directHtml}
+                  className="w-full bg-orange-600 hover:bg-orange-700 text-white gap-2 h-12 text-base"
+                >
+                  {sendNewsletter.isPending
+                    ? <><Loader2 className="w-5 h-5 animate-spin" /> Wird versendet...</>
+                    : <><Send className="w-5 h-5" /> Newsletter jetzt versenden ({countData?.active ?? 0} Empfänger)</>}
+                </Button>
+                <p className="text-xs text-zinc-600 text-center">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+              </CardContent>
+            </Card>
           </div>
         )}
 
