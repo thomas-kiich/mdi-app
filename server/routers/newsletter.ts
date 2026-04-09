@@ -271,13 +271,17 @@ Antworte NUR mit dem Newsletter-Text, ohne Erklärungen oder Metakommentare.`;
       const recipients = subscribers.map((s) => ({
         email: s.email,
         name: s.name ?? undefined,
+        deleteToken: s.deleteToken ?? undefined,
       }));
+
+      const origin = (ctx.req.headers["origin"] as string) ?? "https://kiich.de";
 
       const result = await sendNewsletter(
         recipients,
         input.subject,
         input.htmlContent,
-        input.textContent
+        input.textContent,
+        origin
       );
 
       await notifyOwner({

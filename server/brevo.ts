@@ -17,6 +17,7 @@ function getApiKey(): string {
 interface EmailRecipient {
   email: string;
   name?: string;
+  deleteToken?: string;
 }
 
 interface SendEmailOptions {
@@ -174,37 +175,43 @@ Lindacher Weg 17 · D-93128 Regenstauf`;
 }
 
 /**
- * Sendet den Newsletter an eine Liste von Empfängern
+ * Sendet den Newsletter an eine Liste von Empfängern.
+ * Pro Empfänger wird {{unsubscribeUrl}} durch den individuellen Abmelde-Link ersetzt.
  */
 export async function sendNewsletter(
   recipients: EmailRecipient[],
   subject: string,
   htmlContent: string,
-  textContent: string
+  textContent: string,
+  baseUrl: string = "https://kiich.de"
 ): Promise<{ sent: number; failed: number }> {
-  // Brevo erlaubt max. 50 Empfänger pro API-Aufruf im kostenlosen Plan
-  // Wir senden in Batches
-  const BATCH_SIZE = 50;
   let sent = 0;
   let failed = 0;
 
-  for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
-    const batch = recipients.slice(i, i + BATCH_SIZE);
+  // Jeden Empfänger einzeln versenden damit der Abmelde-Link individuell ist
+  for (const recipient of recipients) {
+    const unsubscribeUrl = recipient.deleteToken
+      ? `${baseUrl}/newsletter/abmelden?token=${recipient.deleteToken}`
+      : `${baseUrl}/newsletter/abmelden`;
+
+    const personalHtml = htmlContent
+      .replace(/\{\{unsubscribeUrl\}\}/g, unsubscribeUrl);
+    const personalText = textContent
+      .replace(/\{\{unsubscribeUrl\}\}/g, unsubscribeUrl);
+
     const success = await sendEmail({
-      to: batch,
+      to: [{ email: recipient.email, name: recipient.name }],
       subject,
-      htmlContent,
-      textContent,
+      htmlContent: personalHtml,
+      textContent: personalText,
     });
     if (success) {
-      sent += batch.length;
+      sent++;
     } else {
-      failed += batch.length;
+      failed++;
     }
-    // Kurze Pause zwischen Batches
-    if (i + BATCH_SIZE < recipients.length) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-    }
+    // Kurze Pause zwischen Versendungen
+    await new Promise((resolve) => setTimeout(resolve, 200));
   }
 
   return { sent, failed };
