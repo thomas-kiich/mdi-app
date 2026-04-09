@@ -183,7 +183,7 @@ export async function sendNewsletter(
   subject: string,
   htmlContent: string,
   textContent: string,
-  baseUrl: string = "https://kiich.de"
+  baseUrl: string = "https://www.kiich.de"
 ): Promise<{ sent: number; failed: number }> {
   let sent = 0;
   let failed = 0;
