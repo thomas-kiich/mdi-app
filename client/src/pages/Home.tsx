@@ -1303,7 +1303,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     title={<>2026 EPISODE 02<br/><span className="text-orange-400 block mt-1">EXTREME ZEITEN!</span></>}
                     subtitle="Wie bleibe ich der Dirigent meines Lebens? _ Warum es enorme Vorteile für dich bietet, wenn du deinen Körper verstehst und ihm gibst was er wirklich braucht..."
                     coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
-                    audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EPISODE_02_7c231085.wav"
+                    audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EPISODE_02_8bca4d18.mp3"
                     topLabel="NEUESTE EPISODE"
                   />
                   <div className="border-t border-zinc-800 pt-8">
