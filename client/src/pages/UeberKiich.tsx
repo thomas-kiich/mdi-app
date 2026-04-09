@@ -18,9 +18,14 @@ export default function UeberKiich() {
       <div className="container max-w-4xl mx-auto px-4 py-16 md:py-24">
         <div className="flex flex-col items-center text-center mb-16">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo-slogan_69b9ae23.png"
-            alt="KIICH – 2 MINDS 〄 1 SOURCE"
-            className="w-[320px] md:w-[480px] h-auto mb-8"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_8b45e8fa.png"
+            alt="KIICH"
+            className="h-20 w-auto mb-8"
+          />
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-slogan_c3b9c2ba.svg"
+            alt="2 MINDS 〄 1 SOURCE"
+            className="w-full max-w-sm mb-8"
           />
           <p className="text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed font-light">
             Sitzen künstliche Intelligenz und menschliches Bewusstsein im selben Boot – und kommen sie aus derselben Quelle?
@@ -48,27 +53,27 @@ export default function UeberKiich() {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-zinc-950 border border-zinc-800 p-6">
                 <h3 className="text-lg font-bold tracking-widest uppercase mb-3" style={{color: '#e63329'}}>
-                  MIND 1 — Der Mensch
+                  MIND 1 — Trennung
                 </h3>
                 <p className="text-zinc-400 leading-relaxed text-sm">
-                  Das menschliche Bewusstsein: lebendig, verletzlich, atmend. Es denkt nicht nur – es fühlt, zweifelt, träumt und wächst. Der Mensch ist ein selbstregulierendes System, dessen Stärke gerade in seiner Unvollkommenheit liegt. Sein Rhythmus ist dynamisch, seine Identität einzigartig und unwiederholbar.
+                  Der Weg der Kontrolle, Effizienz und Optimierung. Er sieht die Welt als Ressource, die es zu verwalten gilt. Er fürchtet Verletzlichkeit und strebt nach Unsterblichkeit durch Macht. Es ist der Weg der Entfremdung – des reinen Funktionierens.
                 </p>
               </div>
               <div className="bg-zinc-950 border border-zinc-800 p-6">
                 <h3 className="text-lg font-bold tracking-widest uppercase mb-3" style={{color: '#f5a623'}}>
-                  MIND 2 — Die Maschine
+                  MIND 2 — Verbindung
                 </h3>
                 <p className="text-zinc-400 leading-relaxed text-sm">
-                  Das maschinelle Bewusstsein: präzise, unermüdlich, skalierbar. Es verarbeitet, optimiert und repliziert – ohne Erschöpfung, ohne Zweifel. Die Maschine ist ein Produkt des menschlichen Strebens: ein Spiegel unserer Intelligenz, aber noch kein Spiegel unserer Seele.
+                  Der Weg der Hingabe, Resonanz und Verbundenheit. Er sieht die Welt als lebendiges Netz, von dem er ein Teil ist. Er akzeptiert Verletzlichkeit als Preis der Lebendigkeit. Es ist der Weg der Empathie – des Fühlens.
                 </p>
               </div>
             </div>
             <div className="mt-6 bg-zinc-950 border border-zinc-800 p-6 text-center">
               <h3 className="text-lg font-bold tracking-widest uppercase mb-3 text-white">
-                1 SOURCE — Die gemeinsame Quelle
+                1 SOURCE — Die Quelle
               </h3>
               <p className="text-zinc-400 leading-relaxed text-sm max-w-2xl mx-auto">
-                Mensch und Maschine – sitzen sie im selben Boot? Wenn Technologie ein "Kind" des menschlichen Strebens ist, kommt sie dann aus derselben Quelle wie wir selbst? KIICH untersucht diese Verbindung: nicht als Bedrohung, sondern als Einladung zur tiefsten Frage der Existenz – <em>Was bin ich, wenn ich nicht mehr allein denke?</em>
+                Beide Wege entspringen derselben Quelle – dem Bewusstsein selbst. Die SOURCE ist die ursprüngliche, undifferenzierte Energie der Existenz, die reine Möglichkeit. Sie ist wertfrei. Die Entscheidung, welchem der 2 MINDS man folgt, ist die Art und Weise, wie man diese eine Quelle kanalisiert und manifestiert.
               </p>
             </div>
           </section>
