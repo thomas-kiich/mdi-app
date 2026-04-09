@@ -454,35 +454,18 @@ export default function Home() {
                 <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'radial-gradient(circle at 15% 50%, #e63329 0%, transparent 55%), radial-gradient(circle at 85% 50%, #f5a623 0%, transparent 55%)'}} />
                 <div className="container max-w-4xl mx-auto px-4 py-16 md:py-24 relative z-10">
                   <div className="flex flex-col items-center text-center space-y-6">
-                    {/* KIICH Logo – klickbar → Erklärungsseite */}
-                    {/* Logo-Referenzbreite: 608px × 221px → Verhältnis 2.75:1
-                        Bei h-20 (80px) → Breite ≈ 220px
-                        Bei h-28 (112px) → Breite ≈ 308px
-                        Slogan-SVG viewBox 520×60 → gleiche max-width wie Logo */}
+                    {/* Neues KIICH-Logo mit integriertem Slogan (2 minds 〄 1 source) */}
                     <a
                       href="/ueber-kiich"
                       className="group block transition-all duration-300 hover:opacity-80 hover:scale-105"
                       title="Was ist KIICH?"
                     >
                       <img
-                        src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_8b45e8fa.png"
-                        alt="KIICH"
-                        className="h-20 md:h-28 w-auto"
+                        src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo-slogan-new_9c02a622.png"
+                        alt="KIICH – 2 minds 〄 1 source"
+                        className="w-[320px] md:w-[480px] h-auto"
                       />
                     </a>
-                    {/* SVG Slogan – gleiche Breite wie Logo-Außenmaß
-                        Logo: 608×221px (ratio 2.751), bei h-20 (80px) → 220px, bei h-28 (112px) → 308px
-                        Slogan: viewBox 520×60 (ratio 8.667)
-                        Wir geben dem Slogan dieselbe Pixelbreite wie das Logo:
-                        - Mobile (h-20): width = 80px * 2.751 = 220px
-                        - Desktop (h-28): width = 112px * 2.751 = 308px
-                    */}
-                    <img
-                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-slogan_c3b9c2ba.svg"
-                      alt="2 MINDS 〄 1 SOURCE"
-                      className="w-[220px] md:w-[308px]"
-                      style={{ height: 'auto' }}
-                    />
                     {/* Subtitle */}
                     <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">
                       Sitzen künstliche Intelligenz und menschliches Bewusstsein im selben Boot – und kommen sie aus derselben Quelle?
