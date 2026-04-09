@@ -211,6 +211,44 @@ export async function sendNewsletter(
 }
 
 /**
+ * Fügt einen bestätigten Abonnenten zur Brevo-Kontaktliste hinzu.
+ * Wird nach erfolgreichem Double-Opt-In aufgerufen.
+ */
+export async function addContactToBrevoList(
+  email: string,
+  name: string | null,
+  listId: number = 2
+): Promise<boolean> {
+  try {
+    const response = await fetch(`${BREVO_API_URL}/contacts`, {
+      method: "POST",
+      headers: {
+        "api-key": getApiKey(),
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        attributes: { FIRSTNAME: name ?? "" },
+        listIds: [listId],
+        updateEnabled: true,
+      }),
+    });
+    if (!response.ok) {
+      const error = await response.text();
+      // duplicate_parameter = bereits vorhanden → kein Fehler
+      if (error.includes("duplicate_parameter")) return true;
+      console.error("[Brevo] addContact Fehler:", error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[Brevo] addContact Netzwerkfehler:", err);
+    return false;
+  }
+}
+
+/**
  * Testet die Brevo-Verbindung (für Vitest)
  */
 export async function testBrevoConnection(): Promise<boolean> {

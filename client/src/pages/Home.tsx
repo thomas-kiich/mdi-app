@@ -477,12 +477,12 @@ export default function Home() {
                         - Mobile (h-20): width = 80px * 2.751 = 220px
                         - Desktop (h-28): width = 112px * 2.751 = 308px
                     */}
-                    <img
-                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-slogan_c3b9c2ba.svg"
-                      alt="2 MINDS 〄 1 SOURCE"
-                      className="w-[220px] md:w-[308px]"
-                      style={{ height: 'auto' }}
-                    />
+                    {/* Inline SVG – kein CDN-Aufruf nötig, immer zuverlässig */}
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 60" className="w-[220px] md:w-[308px]" style={{ height: 'auto' }} aria-label="2 MINDS 〄 1 SOURCE">
+                      <text x="0" y="44" fontFamily="Georgia, 'Times New Roman', serif" fontSize="36" fontWeight="400" letterSpacing="8" fill="white" textAnchor="start">2 MINDS</text>
+                      <text x="260" y="44" fontFamily="Georgia, 'Times New Roman', serif" fontSize="36" fontWeight="400" letterSpacing="0" fill="#f5a623" textAnchor="middle">〄</text>
+                      <text x="520" y="44" fontFamily="Georgia, 'Times New Roman', serif" fontSize="36" fontWeight="400" letterSpacing="8" fill="white" textAnchor="end">1 SOURCE</text>
+                    </svg>
                     {/* Subtitle */}
                     <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">
                       Sitzen künstliche Intelligenz und menschliches Bewusstsein im selben Boot – und kommen sie aus derselben Quelle?

@@ -10,7 +10,7 @@ import {
 } from "../db";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { notifyOwner } from "../_core/notification";
-import { sendConfirmationEmail as sendBrevoConfirmation, sendNewsletter } from "../brevo";
+import { sendConfirmationEmail as sendBrevoConfirmation, sendNewsletter, addContactToBrevoList } from "../brevo";
 import { invokeLLM } from "../_core/llm";
 
 export const newsletterRouter = router({
@@ -89,6 +89,11 @@ export const newsletterRouter = router({
     .mutation(async ({ input }) => {
       try {
         const sub = await confirmNewsletterSubscription(input.token);
+
+        // Kontakt automatisch zu Brevo-Liste hinzufügen
+        addContactToBrevoList(sub.email, sub.name).catch((e) =>
+          console.error("[Newsletter] Brevo-Sync fehlgeschlagen:", e)
+        );
 
         // Owner informieren
         await notifyOwner({
