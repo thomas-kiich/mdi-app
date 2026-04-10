@@ -104,8 +104,52 @@ export default function EinschlafBibliothek() {
 
   // Audio-State
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const musikRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLaedt, setAudioLaedt] = useState(false);
+
+  // Schlaf-Musik URL (dieselbe wie im Schlaf-Modus)
+  const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlauntermalung_MAapp_3deef3ee.wav";
+
+  // Musik sanft einblenden
+  const startMusik = useCallback(() => {
+    if (!musikRef.current) {
+      musikRef.current = new Audio(SCHLAF_MUSIK_URL);
+      musikRef.current.loop = true;
+      musikRef.current.volume = 0;
+    }
+    musikRef.current.currentTime = 0;
+    musikRef.current.play().catch(() => {});
+    // Fade-in auf 0.30 in 3 Sekunden
+    const steps = 30;
+    const interval = 3000 / steps;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      if (musikRef.current) musikRef.current.volume = Math.min(0.30, 0.30 * (step / steps));
+      if (step >= steps) clearInterval(timer);
+    }, interval);
+  }, [SCHLAF_MUSIK_URL]);
+
+  // Musik sanft ausblenden
+  const stopMusik = useCallback((durationMs = 5000) => {
+    if (!musikRef.current) return;
+    const audio = musikRef.current;
+    const startVol = audio.volume;
+    const steps = 40;
+    const interval = durationMs / steps;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      audio.volume = Math.max(0, startVol * (1 - step / steps));
+      if (step >= steps) {
+        clearInterval(timer);
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = 0.30;
+      }
+    }, interval);
+  }, []);
 
   // tRPC
   const { data: geschichten, refetch } = trpc.einschlafBibliothek.liste.useQuery(
@@ -144,6 +188,7 @@ export default function EinschlafBibliothek() {
     if (isPlaying && audioRef.current) {
       audioRef.current.pause();
       setIsPlaying(false);
+      stopMusik(2000); // Musik sanft ausblenden beim Pausieren
       return;
     }
 
@@ -151,10 +196,17 @@ export default function EinschlafBibliothek() {
       // Bereits gecachtes Audio
       if (!audioRef.current || audioRef.current.src !== geschichte.audioUrl) {
         audioRef.current = new Audio(geschichte.audioUrl);
-        audioRef.current.onended = () => setIsPlaying(false);
+        audioRef.current.onended = () => {
+          setIsPlaying(false);
+          stopMusik(5000); // Musik sanft ausblenden nach Ende
+        };
       }
-      audioRef.current.play();
-      setIsPlaying(true);
+      startMusik(); // Musik einblenden
+      // Kurze Verzögerung damit Musik zuerst einsetzt
+      setTimeout(() => {
+        audioRef.current?.play();
+        setIsPlaying(true);
+      }, 1500);
     } else {
       // Audio generieren (ElevenLabs)
       setAudioLaedt(true);
@@ -162,9 +214,16 @@ export default function EinschlafBibliothek() {
         const result = await audioGenerierenMutation.mutateAsync({ id: geschichte.id });
         if (result.audioUrl) {
           audioRef.current = new Audio(result.audioUrl);
-          audioRef.current.onended = () => setIsPlaying(false);
-          audioRef.current.play();
-          setIsPlaying(true);
+          audioRef.current.onended = () => {
+            setIsPlaying(false);
+            stopMusik(5000); // Musik sanft ausblenden nach Ende
+          };
+          startMusik(); // Musik einblenden
+          // Kurze Verzögerung damit Musik zuerst einsetzt
+          setTimeout(() => {
+            audioRef.current?.play();
+            setIsPlaying(true);
+          }, 1500);
           // Lokale Geschichte aktualisieren
           setAktiveGeschichte(prev => prev ? { ...prev, audioUrl: result.audioUrl } : prev);
           refetch();
@@ -173,7 +232,7 @@ export default function EinschlafBibliothek() {
         setAudioLaedt(false);
       }
     }
-  }, [isPlaying, audioGenerierenMutation, refetch]);
+  }, [isPlaying, audioGenerierenMutation, refetch, startMusik, stopMusik]);
 
   const handleGenerieren = useCallback(() => {
     if (!gewaehlteKategorie || !gewaehlteThema.trim()) {

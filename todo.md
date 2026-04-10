@@ -813,3 +813,8 @@
 ## Bugfixes Session M
 - [x] BUG: MA-Namens-Dialog blockiert Schlaf-Modus (Stimme spricht nicht wegen Dialog-Unterbrechung)
 - [x] BUG: Einschlaf-Bibliothek nicht sichtbar/erreichbar in der App-Navigation
+
+## Audio-Fixes Einschlaf-Bibliothek (Session M, Abschluss)
+- [x] Hintergrundmusik beim Vorlesen in Einschlaf-Bibliothek einblenden (dieselbe URL wie Schlaf-Modus)
+- [x] ElevenLabs Sprechgeschwindigkeit reduzieren (stability erhöhen, speed reduzieren)
+- [x] Musik sanft einblenden wenn Audio startet, ausblenden wenn Audio endet

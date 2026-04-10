@@ -533,10 +533,11 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
               text: input.text,
               model_id: "eleven_multilingual_v2",
               voice_settings: {
-                stability: 0.55,        // Etwas stabiler für ruhige Einschlaf-Stimme
+                stability: 0.75,        // Höhere Stabilität = gleichmäßigerer, ruhigerer Fluss
                 similarity_boost: 0.80, // Hohe Ähnlichkeit zur geklonten Stimme
-                style: 0.15,            // Leicht expressiv aber nicht übertrieben
+                style: 0.05,            // Minimal expressiv — ruhig, fließend, nicht abgehakt
                 use_speaker_boost: true,
+                speed: 0.82,            // Langsameres Tempo für Einschlaf-Qualität
               },
             }),
           }
