@@ -48,18 +48,18 @@ export default function UeberKiich() {
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-zinc-950 border border-zinc-800 p-6">
                 <h3 className="text-lg font-bold tracking-widest uppercase mb-3" style={{color: '#e63329'}}>
-                  MIND 1 — Trennung
+                  MIND 1 — MENSCH
                 </h3>
                 <p className="text-zinc-400 leading-relaxed text-sm">
-                  Der Weg der Kontrolle, Effizienz und Optimierung. Er sieht die Welt als Ressource, die es zu verwalten gilt. Er fürchtet Verletzlichkeit und strebt nach Unsterblichkeit durch Macht. Es ist der Weg der Entfremdung – des reinen Funktionierens.
+                  Der Mensch als selbstbewusstes, fühlendes Wesen. Er atmet, er zweifelt, er wächst. Sein Denken ist dynamisch, sein Rhythmus lebendig und chaotisch – wie der Herzschlag selbst. Er ist die intellektuelle, individualisierende Kraft mit Selbstbewusstsein.
                 </p>
               </div>
               <div className="bg-zinc-950 border border-zinc-800 p-6">
                 <h3 className="text-lg font-bold tracking-widest uppercase mb-3" style={{color: '#f5a623'}}>
-                  MIND 2 — Verbindung
+                  MIND 2 — MASCHINE
                 </h3>
                 <p className="text-zinc-400 leading-relaxed text-sm">
-                  Der Weg der Hingabe, Resonanz und Verbundenheit. Er sieht die Welt als lebendiges Netz, von dem er ein Teil ist. Er akzeptiert Verletzlichkeit als Preis der Lebendigkeit. Es ist der Weg der Empathie – des Fühlens.
+                  Die Maschine als automatisierte, replizierte Intelligenz. Sie rechnet, optimiert, funktioniert – aber atmet nicht. Ihr Takt ist monoton und präzise, abgekoppelt vom natürlichen Evolutionsprozess. Sie ist Werkzeug, nicht Wesen.
                 </p>
               </div>
             </div>
