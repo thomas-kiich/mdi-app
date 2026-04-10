@@ -184,6 +184,7 @@ export default function Home() {
   const [showVisionsraum, setShowVisionsraum] = useState(false);
   const [showPraxis01, setShowPraxis01] = useState(false);
   const [showAuthorText, setShowAuthorText] = useState(false);
+  const [showMomentaufnahme, setShowMomentaufnahme] = useState(false);
 
   const [basicTrainingData, setBasicTrainingData] = useState<{freq: number, tone: string, color: string, typeId: number} | null>(null);
 
@@ -688,7 +689,7 @@ export default function Home() {
                     {/* MOMENTAUFNAHME - Einführungstext frei, Aufnahme gesperrt */}
                     <div
                       className="relative bg-zinc-900/60 border border-violet-500/40 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-violet-400/70 transition-all duration-200 group"
-                      onClick={() => setCurrentStep("preparation")}
+                      onClick={() => setShowMomentaufnahme(true)}
                     >
                       {/* Violetter Glanz oben */}
                       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
@@ -1578,6 +1579,79 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
             <FrequencyTable onClose={() => setShowFrequencyTable(false)} />
           ) : showVisionsraum ? (
             <Visionsraum onClose={() => setShowVisionsraum(false)} />
+          ) : showMomentaufnahme ? (
+            <div className="max-w-2xl mx-auto py-20 px-4 animate-in slide-in-from-bottom-8 duration-700 pt-32">
+              <button
+                onClick={() => setShowMomentaufnahme(false)}
+                className="mb-8 flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm"
+              >
+                <ArrowLeft className="w-4 h-4" /> Zurück
+              </button>
+              <div className="inline-block mb-3 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/30 text-violet-400 text-xs font-mono tracking-widest">
+                MOMENTAUFNAHME
+              </div>
+              <h2 className="text-3xl font-bold text-white mb-2">Wo stehe ich gerade wirklich?</h2>
+              <p className="text-violet-400 text-sm mb-8">Ein ehrlicher Kompass für deine aktuelle Lebenssituation</p>
+
+              <div className="space-y-4 mb-12">
+                <Card className="bg-zinc-900/50 border-zinc-800">
+                  <CardContent className="p-6 flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center shrink-0 mt-1">
+                      <span className="text-violet-400 font-bold text-sm">1</span>
+                    </div>
+                    <div>
+                      <h3 className="text-white font-medium mb-1">Was ist die MOMENTAUFNAHME?</h3>
+                      <p className="text-zinc-400 text-sm leading-relaxed">
+                        Die MOMENTAUFNAHME ist ein strukturierter Selbst-Check, der dir in wenigen Minuten ein klares Bild deiner aktuellen Lebenssituation gibt. Nicht als Bewertung — sondern als ehrlicher Kompass. Weil Klarheit der erste Schritt zur Veränderung ist.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-zinc-900/50 border-zinc-800">
+                  <CardContent className="p-6 flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center shrink-0 mt-1">
+                      <span className="text-violet-400 font-bold text-sm">2</span>
+                    </div>
+                    <div>
+                      <h3 className="text-white font-medium mb-1">Wie funktioniert sie?</h3>
+                      <p className="text-zinc-400 text-sm leading-relaxed">
+                        Du beantwortest einige gezielte Fragen zu deinem körperlichen, emotionalen und mentalen Befinden. MIND 2 — die Maschine — hilft dir dabei, Muster zu erkennen, die MIND 1 — der Mensch in dir — alleine oft nicht sieht.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-zinc-900/50 border-zinc-800">
+                  <CardContent className="p-6 flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center shrink-0 mt-1">
+                      <span className="text-violet-400 font-bold text-sm">3</span>
+                    </div>
+                    <div>
+                      <h3 className="text-white font-medium mb-1">Wann wird sie freigeschaltet?</h3>
+                      <p className="text-zinc-400 text-sm leading-relaxed">
+                        Wir öffnen die MOMENTAUFNAHME schrittweise — als logische Fortsetzung der Episoden. Wer die Episoden hört und versteht, ist bereit für das Werkzeug. Das Häppchenprinzip schützt vor Überforderung und sichert Tiefe statt Oberfläche.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <div className="relative">
+                <Button
+                  onClick={() => {
+                    toast({
+                      title: 'PREMIUM — Bald verfügbar',
+                      description: 'Die MOMENTAUFNAHME wird schrittweise für die Community geöffnet. Bleib dabei!',
+                    });
+                  }}
+                  size="lg"
+                  className="w-full h-14 text-lg rounded-full bg-violet-600/40 hover:bg-violet-600/50 border border-violet-500/40 text-violet-200 cursor-not-allowed"
+                >
+                  <Lock className="mr-2 w-5 h-5" />
+                  Ich bin bereit — PREMIUM
+                </Button>
+                <span className="block text-center text-xs text-zinc-500 mt-3">Diese Funktion wird schrittweise für die Community geöffnet.</span>
+              </div>
+            </div>
           ) : (
             renderContent()
           )}
