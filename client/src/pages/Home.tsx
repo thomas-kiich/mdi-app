@@ -604,8 +604,8 @@ export default function Home() {
                 
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {/* Episode 1 Preview */}
-                  <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group cursor-pointer" onClick={() => setShowPodcast(true)}>
-                    <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
+                  <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all" onClick={() => setShowPodcast(true)}>
+                    <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
                       JETZT VERFÜGBAR
                     </div>
                     <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 01</h3>
@@ -620,7 +620,7 @@ export default function Home() {
                   </div>
                   
                   {/* Episode 2 Preview */}
-                  <div className="bg-zinc-900/50 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden group">
+                  <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all" onClick={() => setShowPodcast(true)}>
                     <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
                       JETZT VERFÜGBAR
                     </div>
