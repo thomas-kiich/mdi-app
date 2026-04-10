@@ -36,6 +36,7 @@ import { SleepTheta } from "@/components/SleepTheta";
 import { getToneFromFrequency, TONES } from "@/lib/tones";
 import { Loader2, Mic, Play, Square, Volume2, VolumeX, Download, ChevronRight, ChevronUp, ChevronDown, RotateCcw, ArrowUp, ArrowDown, Settings, Activity, Sparkles, X, Music2, User, ArrowRight, ArrowLeft, HeartPulse, Check, Smartphone, Headphones, Lock, MessageSquare } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { cn } from "@/lib/utils";
 import { useLocation } from "wouter";
@@ -76,6 +77,7 @@ export default function Home() {
   // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
   let { user, loading, error: authError, isAuthenticated, logout } = useAuth();
   const [, setLocation] = useLocation();;
+  const { toast } = useToast();
   const [currentStep, setCurrentStep] = useState<WizardStep>("dashboard"); // Start at Dashboard
   const { 
     isRecording, 
@@ -580,7 +582,12 @@ export default function Home() {
               </div>
               <div className="container max-w-6xl mx-auto px-4">
                 <Dashboard 
-                  onStartAnalysis={() => setCurrentStep("preparation")}
+                  onStartAnalysis={() => {
+                    toast({
+                      title: 'PREMIUM – Bald verfügbar',
+                      description: 'Die MOMENTAUFNAHME-Funktion öffnen wir schrittweise für unsere Community.',
+                    });
+                  }}
                   onOpenTraining={() => setShowTrainingCenter(true)}
                   onOpenScanner={() => setShowSpectralScanner(true)}
                   onOpenKnowledge={() => setShowKnowledgePool(true)}
