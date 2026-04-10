@@ -191,6 +191,11 @@ export default function Momentaufnahme() {
     return localStorage.getItem("kiich_ma_consent") === "true";
   });
   const [showConsentDialog, setShowConsentDialog] = useState(false);
+  const [schlafModusAktiv, setSchlafModusAktiv] = useState(false);
+
+  // Schlaf-Modus Hintergrundmusik
+  const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlauntermalung_MAapp_3deef3ee.wav";
+  const schlafAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -238,6 +243,42 @@ export default function Momentaufnahme() {
 
   // Ref auf stopRecording für den Auto-Stop-Callback
   const stopRecordingRef = useRef<(() => void) | null>(null);
+
+  // Schlaf-Modus: Musik starten/stoppen
+  const startSchlafModus = useCallback(() => {
+    setSchlafModusAktiv(true);
+    // Audio initialisieren
+    if (!schlafAudioRef.current) {
+      const audio = new Audio(SCHLAF_MUSIK_URL);
+      audio.loop = true;
+      audio.volume = 0.35;
+      schlafAudioRef.current = audio;
+    }
+    schlafAudioRef.current.currentTime = 0;
+    schlafAudioRef.current.play().catch(() => {});
+    // Summary nach kurzem Delay vorlesen (Musik zuerst einsetzen lassen)
+    if (summaryText) {
+      setTimeout(() => speak(summaryText), 2500);
+    }
+  }, [summaryText, speak, SCHLAF_MUSIK_URL]);
+
+  const stopSchlafModus = useCallback(() => {
+    setSchlafModusAktiv(false);
+    stop(); // TTS stoppen
+    if (schlafAudioRef.current) {
+      schlafAudioRef.current.pause();
+      schlafAudioRef.current.currentTime = 0;
+    }
+  }, [stop]);
+
+  // Cleanup beim Unmount
+  useEffect(() => {
+    return () => {
+      if (schlafAudioRef.current) {
+        schlafAudioRef.current.pause();
+      }
+    };
+  }, []);
 
   // Aufnahme starten — mit DSGVO-Einwilligungsprüfung
   const startRecording = useCallback(async () => {
@@ -578,6 +619,39 @@ export default function Momentaufnahme() {
               <span className="text-xs text-violet-400 ml-1">wird vorgelesen...</span>
             </div>
           )}
+
+          {/* Schlaf-Modus Button */}
+          <div className="mt-4 pt-3 border-t border-indigo-500/10">
+            {!schlafModusAktiv ? (
+              <button
+                onClick={startSchlafModus}
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-gradient-to-r from-indigo-900/50 to-violet-900/50 border border-indigo-500/30 hover:border-indigo-400/50 text-indigo-200 text-sm font-medium transition-all hover:scale-[1.01] active:scale-[0.99]"
+              >
+                <span className="text-base">🌙</span>
+                <span>SCHLAF-MODUS starten</span>
+                <span className="text-indigo-400/50 text-xs">· Musik + Vorlesen</span>
+              </button>
+            ) : (
+              <div className="space-y-2">
+                <div className="flex items-center justify-center gap-2 py-2">
+                  {[0,1,2,3,4].map(i => (
+                    <span
+                      key={i}
+                      className="w-1 rounded-full bg-indigo-400 animate-pulse"
+                      style={{ height: `${6 + (i % 3) * 5}px`, animationDelay: `${i * 0.2}s` }}
+                    />
+                  ))}
+                  <span className="text-xs text-indigo-300 ml-2">Schlaf-Modus aktiv · Musik läuft</span>
+                </div>
+                <button
+                  onClick={stopSchlafModus}
+                  className="w-full py-2 rounded-xl border border-white/10 text-white/40 hover:text-white/70 text-xs transition-colors"
+                >
+                  Schlaf-Modus beenden
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
