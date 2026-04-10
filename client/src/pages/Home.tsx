@@ -1648,13 +1648,20 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
         
         {/* Footer */}
         {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && !showVisionsraum && currentStep === 'dashboard' && (
-            <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-600">
-                <div>
-                    &copy; {new Date().getFullYear()} MDI System.
+            <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col gap-6 text-xs text-zinc-600">
+                {/* Disclaimer */}
+                <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg px-5 py-4 text-zinc-400 text-xs leading-relaxed">
+                  <p className="font-semibold text-zinc-300 mb-1">Haftungsausschluss</p>
+                  <p>
+                    KIICH ist kein medizinisches Angebot. Die Inhalte und KI-generierten Auswertungen dienen ausschließlich der persönlichen Selbstreflexion und stellen keine medizinische Diagnose, psychologische Beratung oder Therapie dar. Bei psychischen Krisen wenden Sie sich bitte an eine qualifizierte Fachkraft. Krisentelefon Österreich: <span className="text-zinc-300">0800 277 000</span> (kostenlos, 24h).
+                  </p>
                 </div>
-                <div className="flex gap-6">
-                    <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
-                    <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                  <div>&copy; {new Date().getFullYear()} KIICH. Alle Rechte vorbehalten.</div>
+                  <div className="flex gap-6">
+                      <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
+                      <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
+                  </div>
                 </div>
             </footer>
         )}

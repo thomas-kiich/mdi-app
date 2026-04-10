@@ -779,3 +779,8 @@
 - [ ] MA als Klang-Identitäts-Archiv: eigene Stimme als Gedächtnis-Anker
 - [ ] Demenz-Positionierungsdokument mit Stimm-Gedächtnis-Ansatz
 - [ ] Dokument als PDF exportieren
+
+## Rechtliche Sofortmaßnahmen (April 2026)
+- [x] Disclaimer-Komponente erstellen und in Footer + MOMENTAUFNAHME-Seite einbauen
+- [x] KI-Kennzeichnung auf jedem generierten Summary sichtbar machen
+- [x] Einwilligungsdialog (DSGVO) vor der ersten Aufnahme einbauen

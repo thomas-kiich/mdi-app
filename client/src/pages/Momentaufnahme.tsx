@@ -101,6 +101,11 @@ export default function Momentaufnahme() {
   const [summaryDatum, setSummaryDatum] = useState("");
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  // DSGVO-Einwilligung: einmalig pro Session
+  const [consentGiven, setConsentGiven] = useState(() => {
+    return localStorage.getItem("kiich_ma_consent") === "true";
+  });
+  const [showConsentDialog, setShowConsentDialog] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
@@ -149,9 +154,13 @@ export default function Momentaufnahme() {
   // Ref auf stopRecording für den Auto-Stop-Callback
   const stopRecordingRef = useRef<(() => void) | null>(null);
 
-  // Aufnahme starten
+  // Aufnahme starten — mit DSGVO-Einwilligungsprüfung
   const startRecording = useCallback(async () => {
     if (isRecording || isProcessing) return;
+    if (!consentGiven) {
+      setShowConsentDialog(true);
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -339,6 +348,7 @@ export default function Momentaufnahme() {
   const anzahlHeute = aufnahmen?.length ?? 0;
 
   return (
+    <>
     <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
       {/* Header */}
       <header className="px-5 pt-6 pb-4 flex items-center justify-between">
@@ -438,6 +448,11 @@ export default function Momentaufnahme() {
           </div>
           <p className="text-xs text-white/60 mb-2">{summaryDatum}</p>
           <p className="text-sm text-white/80 leading-relaxed">{summaryText}</p>
+          {/* KI-Kennzeichnung (EU AI Act Art. 50) */}
+          <div className="mt-3 pt-3 border-t border-violet-500/10 flex items-center gap-1.5">
+            <span className="text-[10px] text-violet-400/60 font-medium tracking-wide">✦ KI-GENERIERT</span>
+            <span className="text-[10px] text-white/25">· Dieser Text wurde automatisch durch ein KI-Sprachmodell erstellt und dient ausschließlich der persönlichen Reflexion.</span>
+          </div>
           {/* Pulsierender Indikator beim Vorlesen */}
           {isSpeaking && (
             <div className="flex items-center gap-1.5 mt-3">
@@ -662,6 +677,12 @@ export default function Momentaufnahme() {
         <p className="text-xs text-white/30">
           {isRecording ? "Nochmal tippen zum Stoppen" : "Tippen zum Sprechen"}
         </p>
+        {/* Datenschutz-Hinweis unter Button */}
+        {!isRecording && !isProcessing && (
+          <p className="text-[10px] text-white/15 text-center px-8">
+            Aufnahmen werden verschlüsselt verarbeitet und nicht für KI-Training verwendet.
+          </p>
+        )}
 
         {/* Obsidian-Hinweis */}
         {anzahlHeute > 0 && (
@@ -675,5 +696,47 @@ export default function Momentaufnahme() {
         )}
       </div>
     </div>
+    {/* DSGVO-Einwilligungsdialog */}
+    {showConsentDialog && (
+      <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm">
+        <div className="w-full max-w-lg bg-[#0f0f1a] border border-violet-500/30 rounded-t-3xl p-6 pb-10 shadow-2xl">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-2xl">🔒</span>
+            <h2 className="text-white font-semibold text-base">Datenschutz & Einwilligung</h2>
+          </div>
+          <p className="text-white/60 text-sm leading-relaxed mb-4">
+            Bevor du deine erste Aufnahme machst, benötigen wir deine Einwilligung zur Verarbeitung deiner Spracheingabe.
+          </p>
+          <div className="bg-white/5 rounded-xl p-4 mb-5 text-xs text-white/40 leading-relaxed space-y-2">
+            <p>✦ Deine Sprachaufnahme wird transkribiert und durch ein KI-Sprachmodell analysiert.</p>
+            <p>✦ Die Aufnahme wird nach der Verarbeitung nicht dauerhaft gespeichert.</p>
+            <p>✦ Deine Daten werden nicht für das Training von KI-Modellen verwendet.</p>
+            <p>✦ Du kannst deine Einwilligung jederzeit widerrufen (Einstellungen → Datenschutz).</p>
+            <p>✦ Die KI-generierten Auswertungen dienen ausschließlich der persönlichen Reflexion — kein medizinisches Angebot.</p>
+          </div>
+          <div className="flex flex-col gap-3">
+            <button
+              onClick={() => {
+                localStorage.setItem("kiich_ma_consent", "true");
+                setConsentGiven(true);
+                setShowConsentDialog(false);
+                // Aufnahme direkt starten
+                setTimeout(() => startRecording(), 100);
+              }}
+              className="w-full py-3.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-colors"
+            >
+              Ich stimme zu — Aufnahme starten
+            </button>
+            <button
+              onClick={() => setShowConsentDialog(false)}
+              className="w-full py-3 rounded-2xl bg-white/5 hover:bg-white/10 text-white/50 text-sm transition-colors"
+            >
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
