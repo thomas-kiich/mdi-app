@@ -507,8 +507,8 @@ export default function Home() {
                         VORSCHAU APRIL 2026
                       </button>
                       <button
-                        onClick={() => document.getElementById('premium-angebote-section')?.scrollIntoView({behavior: 'smooth'})}
-                        className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-700 text-zinc-300 hover:border-orange-500 hover:text-orange-400 transition-colors"
+                        onClick={() => setLocation('/momentaufnahme')}
+                        className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-violet-500/60 text-violet-300 hover:border-violet-400 hover:text-violet-200 transition-colors"
                       >
                         MOMENTAUFNAHME
                       </button>
