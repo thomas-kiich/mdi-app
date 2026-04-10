@@ -18,6 +18,7 @@ import MomentaufnahmeArchiv from "@/pages/MomentaufnahmeArchiv";
 import ObsidianVerbinden from "@/pages/ObsidianVerbinden";
 import Episoden from "@/pages/Episoden";
 import AdminPremium from "@/pages/AdminPremium";
+import EinschlafBibliothek from "@/pages/EinschlafBibliothek";
 
 function Router() {
   return (
@@ -35,6 +36,7 @@ function Router() {
       <Route path="/momentaufnahme/obsidian" component={ObsidianVerbinden} />
       <Route path="/episoden" component={Episoden} />
       <Route path="/admin/premium" component={AdminPremium} />
+      <Route path="/einschlafen" component={EinschlafBibliothek} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

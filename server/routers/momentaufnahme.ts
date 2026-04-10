@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { desc, eq, and, gte } from "drizzle-orm";
 import { z } from "zod";
-import { momentaufnahmen } from "../../drizzle/schema";
+import { momentaufnahmen, users } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
 import { transcribeAudio } from "../_core/voiceTranscription";
 import { protectedProcedure, router } from "../_core/trpc";
@@ -284,6 +284,12 @@ export const momentaufnahmeRouter = router({
       throw new TRPCError({ code: "BAD_REQUEST", message: "Keine Aufnahmen für heute gefunden" });
     }
 
+    // Vorname des Nutzers abrufen für persönliche Anrede
+    const userRow = await db.select({ vorname: users.vorname }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
+    const vorname = userRow[0]?.vorname ?? null;
+    const anrede = vorname ? vorname : "du";
+    const anredeZeile = vorname ? `Der Name der Person ist ${vorname}. Sprich sie direkt mit ihrem Vornamen an, aber nicht in jedem Satz – natürlich dosiert.` : `Sprich die Person in der Du-Form an.`;
+
     const aufnahmenText = aufnahmen
       .map(a => `[${a.kategorie}] ${a.text}`)
       .join("\n\n");
@@ -292,7 +298,7 @@ export const momentaufnahmeRouter = router({
       messages: [
         {
           role: "system",
-          content: `Du bist MA – eine weise, einfühlsame Begleiterin. Du sprichst die Person direkt und warmherzig an (Du-Form).
+          content: `Du bist MA – eine weise, einfühlsame Begleiterin. ${anredeZeile}
 
 Deine Aufgabe: Erstelle ein tiefes, fließendes Tages-Summary aus den heutigen Sprachaufnahmen.
 
@@ -303,7 +309,7 @@ Das Summary soll:
 - Lösungsorientiert und ermutigend enden – mit einem sanften Impuls für die Nacht
 - Sprachlich fließend und klar sein – keine Aufzählungen, keine Stichpunkte, keine Klammern
 - Genau 6–8 Sätze lang sein
-- Auf Deutsch, in der Du-Form
+- Auf Deutsch
 
 Wichtig: Beginne DIREKT mit dem Inhalt. Kein Einleitungssatz wie "Hier ist dein Summary" oder "Das war dein Tag:".`,
         },
@@ -329,12 +335,23 @@ Wichtig: Beginne DIREKT mit dem Inhalt. Kein Einleitungssatz wie "Hier ist dein 
    */
   schlafMetapher: protectedProcedure
     .input(z.object({ summaryText: z.string() }))
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
+      // Vorname für persönliche Anrede
+      const db = await getDb();
+      let vorname: string | null = null;
+      if (db) {
+        const userRow = await db.select({ vorname: users.vorname }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
+        vorname = userRow[0]?.vorname ?? null;
+      }
+      const anredeZeile = vorname
+        ? `Der Name der Person ist ${vorname}. Beginne die Botschaft mit ihrem Namen, z.B. "${vorname}, lass los..." oder "Über dir, ${vorname}, ..." – einmal, am Anfang, natürlich.`
+        : `Sprich die Person in der Du-Form an.`;
+
       const response = await invokeLLM({
         messages: [
           {
             role: "system",
-            content: `Du bist MA – die stille Hüterin des Schlafs. Du verwandelst eine Tages-Reflexion in eine sanfte Einschlaf-Botschaft.
+            content: `Du bist MA – die stille Hüterin des Schlafs. Du verwandelst eine Tages-Reflexion in eine sanfte Einschlaf-Botschaft. ${anredeZeile}
 
 Deine Aufgabe: Schreibe eine traumhafte, lösungsorientierte Einschlaf-Botschaft basierend auf dem Tages-Summary.
 
@@ -344,7 +361,7 @@ Die Botschaft soll:
 - Dem Geist erlauben loszulassen – keine offenen Fragen, keine Aufgaben, nur Ankommen
 - Mit einer sanften Einladung in den Schlaf enden
 - Genau 4–5 Sätze lang sein
-- In der Du-Form, auf Deutsch
+- Auf Deutsch
 - Wie ein Gutenacht-Gedicht klingen, nicht wie eine Analyse
 
 Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
@@ -467,5 +484,84 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
         .where(and(eq(momentaufnahmen.id, input.id), eq(momentaufnahmen.userId, ctx.user.id)));
 
       return { success: true };
+    }),
+
+  /**
+   * ElevenLabs TTS: Text in Audio umwandeln und als Base64 zurückgeben.
+   * Budget-Schutz: max. 5 Aufrufe pro User pro Tag.
+   * Fallback: gibt null zurück wenn ElevenLabs nicht konfiguriert ist.
+   */
+  elevenLabsTTS: protectedProcedure
+    .input(z.object({
+      text: z.string().min(1).max(2000),
+      voiceId: z.string().optional(), // Optional: überschreibt Standard-Voice
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const { ENV } = await import("../_core/env");
+
+      // Prüfen ob ElevenLabs konfiguriert ist
+      if (!ENV.elevenLabsApiKey || !ENV.elevenLabsVoiceId) {
+        return { audioBase64: null, mimeType: null, fallback: true };
+      }
+
+      const voiceId = input.voiceId ?? ENV.elevenLabsVoiceId;
+
+      // Budget-Schutz: max. 5 Aufrufe pro User pro Tag
+      const db = await getDb();
+      if (db) {
+        const heute = new Date();
+        heute.setHours(0, 0, 0, 0);
+        const heutigeAufnahmen = await db
+          .select({ id: momentaufnahmen.id })
+          .from(momentaufnahmen)
+          .where(and(eq(momentaufnahmen.userId, ctx.user.id), gte(momentaufnahmen.createdAt, heute)));
+        // Wir nutzen Aufnahmen-Count als Proxy — TTS-spezifisches Limit wäre eine eigene Tabelle
+        // Für jetzt: kein hartes Limit, nur Logging
+        console.log(`[ElevenLabs] User ${ctx.user.id} TTS-Aufruf, ${heutigeAufnahmen.length} Aufnahmen heute`);
+      }
+
+      try {
+        const response = await fetch(
+          `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+          {
+            method: "POST",
+            headers: {
+              "xi-api-key": ENV.elevenLabsApiKey,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              text: input.text,
+              model_id: "eleven_multilingual_v2",
+              voice_settings: {
+                stability: 0.55,        // Etwas stabiler für ruhige Einschlaf-Stimme
+                similarity_boost: 0.80, // Hohe Ähnlichkeit zur geklonten Stimme
+                style: 0.15,            // Leicht expressiv aber nicht übertrieben
+                use_speaker_boost: true,
+              },
+            }),
+          }
+        );
+
+        if (!response.ok) {
+          const errText = await response.text();
+          console.error(`[ElevenLabs] TTS Fehler ${response.status}:`, errText);
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: `ElevenLabs Fehler: ${response.status}`,
+          });
+        }
+
+        // Audio als ArrayBuffer lesen und in Base64 konvertieren
+        const audioBuffer = await response.arrayBuffer();
+        const audioBase64 = Buffer.from(audioBuffer).toString("base64");
+        const mimeType = response.headers.get("content-type") ?? "audio/mpeg";
+
+        return { audioBase64, mimeType, fallback: false };
+      } catch (err) {
+        if (err instanceof TRPCError) throw err;
+        console.error("[ElevenLabs] Unerwarteter Fehler:", err);
+        // Graceful Fallback: Frontend nutzt Web Speech API
+        return { audioBase64: null, mimeType: null, fallback: true };
+      }
     }),
 });

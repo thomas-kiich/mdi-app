@@ -203,11 +203,18 @@ export default function Momentaufnahme() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
+  // Vorname-Dialog: MA fragt beim ersten Besuch nach dem Namen
+  const [showVornameDialog, setShowVornameDialog] = useState(false);
+  const [vornameInput, setVornameInput] = useState("");
+  const [vorname, setVorname] = useState<string | null>(null);
+
   // tRPC
   const aufnehmenMutation = trpc.momentaufnahme.aufnehmen.useMutation();
   const tagesSummaryMutation = trpc.momentaufnahme.tagesSummary.useMutation();
   const loeschenMutation = trpc.momentaufnahme.loeschen.useMutation();
   const schlafMetapherMutation = trpc.momentaufnahme.schlafMetapher.useMutation();
+  const { data: profilData } = trpc.profil.getVorname.useQuery(undefined, { enabled: isAuthenticated });
+  const setVornameMutation = trpc.profil.setVorname.useMutation();
   const { data: aufnahmen, refetch: refetchAufnahmen } = trpc.momentaufnahme.heuteAbrufen.useQuery(
     undefined,
     { enabled: isAuthenticated }
@@ -216,6 +223,30 @@ export default function Momentaufnahme() {
     undefined,
     { enabled: isAuthenticated }
   );
+
+  // Vorname aus Profil laden und ggf. Dialog zeigen
+  useEffect(() => {
+    if (profilData !== undefined) {
+      if (profilData.vorname) {
+        setVorname(profilData.vorname);
+      } else {
+        // Noch kein Vorname gespeichert → MA fragt
+        setShowVornameDialog(true);
+      }
+    }
+  }, [profilData]);
+
+  const handleVornameBestaetigen = useCallback(async () => {
+    const name = vornameInput.trim();
+    if (!name) return;
+    try {
+      await setVornameMutation.mutateAsync({ vorname: name });
+      setVorname(name);
+      setShowVornameDialog(false);
+    } catch {
+      // Fehler ignorieren — Dialog bleibt offen
+    }
+  }, [vornameInput, setVornameMutation]);
 
   // Timer + Auto-Stop bei 3 Minuten
   useEffect(() => {
@@ -266,12 +297,14 @@ export default function Momentaufnahme() {
     }, interval);
   }, []);
 
+  const elevenLabsTTSMutation = trpc.momentaufnahme.elevenLabsTTS.useMutation();
+
   const startSchlafModus = useCallback(async () => {
     if (!summaryText) return;
     setSchlafModusAktiv(true);
     setSchlafMetapherLaedt(true);
 
-    // Audio initialisieren und sofort starten
+    // Hintergrundmusik sofort starten
     if (!schlafAudioRef.current) {
       const audio = new Audio(SCHLAF_MUSIK_URL);
       audio.loop = true;
@@ -283,27 +316,45 @@ export default function Momentaufnahme() {
     schlafAudioRef.current.currentTime = 0;
     schlafAudioRef.current.play().catch(() => {});
 
-    // Schlaf-Metapher vom Server holen (zweiter KI-Schritt)
+    // Schritt 1: KI-Metapher generieren
     let textZumVorlesen = summaryText;
     try {
       const metapher = await schlafMetapherMutation.mutateAsync({ summaryText });
       textZumVorlesen = metapher.text;
     } catch {
-      // Fallback: rohes Summary vorlesen
+      // Fallback: rohes Summary
     } finally {
       setSchlafMetapherLaedt(false);
     }
 
-    // Nach kurzem Delay vorlesen — nach Ende sanfter Fade-Out
-    setTimeout(() => {
-      speak(textZumVorlesen, () => {
-        // TTS fertig → sanfter Fade-Out der Musik (5 Sekunden)
-        if (schlafAudioRef.current) {
-          fadeOutAudio(schlafAudioRef.current, 5000);
+    // Schritt 2: ElevenLabs TTS versuchen, dann Web Speech als Fallback
+    const onAudioEnde = () => {
+      if (schlafAudioRef.current) fadeOutAudio(schlafAudioRef.current, 5000);
+    };
+
+    setTimeout(async () => {
+      try {
+        const ttsResult = await elevenLabsTTSMutation.mutateAsync({ text: textZumVorlesen });
+        if (ttsResult.audioBase64 && !ttsResult.fallback) {
+          // ElevenLabs Audio abspielen
+          const audioSrc = `data:${ttsResult.mimeType};base64,${ttsResult.audioBase64}`;
+          const elAudio = new Audio(audioSrc);
+          elAudio.volume = 0.9;
+          elAudio.onended = onAudioEnde;
+          elAudio.play().catch(() => {
+            // Autoplay blockiert — Web Speech Fallback
+            speak(textZumVorlesen, onAudioEnde);
+          });
+        } else {
+          // Kein ElevenLabs — Web Speech
+          speak(textZumVorlesen, onAudioEnde);
         }
-      });
+      } catch {
+        // Fehler — Web Speech Fallback
+        speak(textZumVorlesen, onAudioEnde);
+      }
     }, 1500);
-  }, [summaryText, speak, fadeOutAudio, SCHLAF_MUSIK_URL, schlafMetapherMutation]);
+  }, [summaryText, speak, fadeOutAudio, SCHLAF_MUSIK_URL, schlafMetapherMutation, elevenLabsTTSMutation]);
 
   const stopSchlafModus = useCallback(() => {
     setSchlafModusAktiv(false);
@@ -518,6 +569,51 @@ export default function Momentaufnahme() {
 
   return (
     <>
+    {/* MA-Begrüßungsdialog: "Mit welchem Namen darf ich dich ansprechen?" */}
+    {showVornameDialog && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-6">
+        <div className="w-full max-w-sm bg-[#12101a] border border-violet-500/20 rounded-2xl p-6 shadow-2xl">
+          {/* MA-Avatar */}
+          <div className="flex flex-col items-center mb-5">
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-2xl mb-3 shadow-lg shadow-violet-900/50">
+              🌙
+            </div>
+            <p className="text-[10px] font-semibold tracking-[0.2em] text-violet-400 uppercase mb-1">MA · Momentaufnahme</p>
+          </div>
+          {/* MA-Frage */}
+          <p className="text-white/90 text-center text-base leading-relaxed mb-6">
+            Mit welchem Namen darf ich dich ansprechen?
+          </p>
+          {/* Eingabefeld */}
+          <input
+            type="text"
+            value={vornameInput}
+            onChange={e => setVornameInput(e.target.value)}
+            onKeyDown={e => e.key === "Enter" && handleVornameBestaetigen()}
+            placeholder="Dein Vorname ..."
+            autoFocus
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-violet-500/50 mb-4"
+          />
+          {/* Buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={handleVornameBestaetigen}
+              disabled={!vornameInput.trim() || setVornameMutation.isPending}
+              className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm font-medium transition-colors"
+            >
+              {setVornameMutation.isPending ? "..." : "Bestätigen"}
+            </button>
+            <button
+              onClick={() => setShowVornameDialog(false)}
+              className="px-4 py-2.5 rounded-xl border border-white/10 text-white/40 hover:text-white/70 text-sm transition-colors"
+            >
+              Später
+            </button>
+          </div>
+          <p className="text-center text-white/25 text-xs mt-3">Du kannst deinen Namen jederzeit ändern</p>
+        </div>
+      </div>
+    )}
     <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
       {/* Header */}
       <header className="px-5 pt-6 pb-4 flex items-center justify-between">
@@ -662,6 +758,19 @@ export default function Momentaufnahme() {
               <span className="text-xs text-violet-400 ml-1">wird vorgelesen...</span>
             </div>
           )}
+
+          {/* Einschlaf-Bibliothek Link */}
+          <div className="mt-3">
+            <Link href="/einschlafen">
+              <button className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white/3 hover:bg-white/6 border border-white/5 hover:border-white/10 transition-all">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm">📚</span>
+                  <span className="text-xs text-white/50">Einschlaf-Bibliothek</span>
+                </div>
+                <span className="text-[10px] text-white/25">Märchen · Abenteuer · Metaphern ›</span>
+              </button>
+            </Link>
+          </div>
 
           {/* Schlaf-Modus Button */}
           <div className="mt-4 pt-3 border-t border-indigo-500/10">

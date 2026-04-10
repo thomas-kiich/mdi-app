@@ -784,3 +784,28 @@
 - [x] Disclaimer-Komponente erstellen und in Footer + MOMENTAUFNAHME-Seite einbauen
 - [x] KI-Kennzeichnung auf jedem generierten Summary sichtbar machen
 - [x] Einwilligungsdialog (DSGVO) vor der ersten Aufnahme einbauen
+
+## Personalisierung & Stimme (Session L)
+- [ ] Vorname-Feld: users-Tabelle um `vorname` Spalte erweitern (DB-Migration)
+- [ ] Profil-Router: `profil.setVorname` und `profil.getVorname` Endpoints
+- [ ] MA-Seite: Vorname-Eingabe-Dialog (einmalig, beim ersten Öffnen der MA-Seite)
+- [ ] Summary-Prompt: Vorname als persönliche Anrede einbauen
+- [ ] Schlaf-Metapher-Prompt: Vorname als persönliche Anrede einbauen
+- [ ] ElevenLabs TTS: API-Key über webdev_request_secrets einbinden
+- [ ] ElevenLabs TTS: Server-seitiger Endpoint `momentaufnahme.elevenLabsTTS`
+- [x] Schlaf-Modus: ElevenLabs Audio statt Web Speech API verwenden
+- [ ] Fallback: Web Speech API wenn ElevenLabs nicht verfügbar
+
+## ElevenLabs TTS + Einschlaf-Bibliothek (Session L, Teil 2)
+- [x] ElevenLabs API-Key + Voice-ID als Secrets einbinden (vom User)
+- [x] Backend: ElevenLabs TTS-Endpoint (POST /api/trpc/momentaufnahme.elevenLabsTTS)
+- [x] Schlaf-Modus: ElevenLabs Audio statt Web Speech API
+- [x] Fallback auf Web Speech API wenn ElevenLabs nicht konfiguriert
+- [x] Einschlaf-Bibliothek: DB-Schema (schlafBibliothek-Tabelle: id, kategorie, zielgruppe, titel, prompt, audioUrl, createdAt)
+- [x] Einschlaf-Bibliothek: Backend-Router (bibliothek.generieren, bibliothek.liste, bibliothek.abspielen)
+- [x] Einschlaf-Bibliothek: Kategorie A — Märchen für Kinder/Jugendliche (personalisiert mit Vorname + Thema)
+- [x] Einschlaf-Bibliothek: Kategorie B — Abenteuer-Metaphern für Erwachsene (Held = User, Aufgabe = individuelle Herausforderung)
+- [x] Einschlaf-Bibliothek: Kategorie C — Befindlichkeits-Metaphern (Angst vor Zukunft, Beziehungssorgen, Erschöpfung, Trauer, Prüfungsangst etc.)
+- [x] Einschlaf-Bibliothek: Frontend-Seite /einschlafen mit Kategorien-Auswahl
+- [x] Einschlaf-Bibliothek: Generierungs-Flow (Zielgruppe → Thema → KI generiert Text → ElevenLabs spricht)
+- [x] Einschlaf-Bibliothek: Archiv gespeicherter Einschlaf-Geschichten

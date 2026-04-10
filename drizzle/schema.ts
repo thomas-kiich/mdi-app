@@ -17,6 +17,8 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }),
   loginMethod: varchar("loginMethod", { length: 64 }),
   role: mysqlEnum("role", ["user", "admin"]).default("user").notNull(),
+  /** Vom Nutzer eingegebener Vorname für persönliche Anrede in MA-Summaries */
+  vorname: varchar("vorname", { length: 64 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -133,3 +135,37 @@ export const premiumSettings = mysqlTable("premium_settings", {
 
 export type PremiumSetting = typeof premiumSettings.$inferSelect;
 export type InsertPremiumSetting = typeof premiumSettings.$inferInsert;
+
+/**
+ * EINSCHLAF-BIBLIOTHEK
+ * KI-generierte Einschlaf-Geschichten in drei Kategorien:
+ * - MAERCHEN: Personalisierte Märchen für Kinder/Jugendliche
+ * - ABENTEUER: Held-Metaphern für Erwachsene (individuelle Aufgabenstellung als Heldenreise)
+ * - BEFINDLICHKEIT: Thematische Einschlaf-Metaphern (Angst, Beziehung, Zukunft etc.)
+ */
+export const einschlafBibliothek = mysqlTable("einschlaf_bibliothek", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Kategorie der Geschichte */
+  kategorie: mysqlEnum("kategorie", ["MAERCHEN", "ABENTEUER", "BEFINDLICHKEIT"]).notNull(),
+  /** Zielgruppe */
+  zielgruppe: mysqlEnum("zielgruppe", ["KIND", "JUGENDLICHER", "ERWACHSENER"]).default("ERWACHSENER").notNull(),
+  /** Thema/Unterkategorie z.B. 'Angst vor der Zukunft', 'Beziehungssorgen', 'Prüfungsangst' */
+  thema: varchar("thema", { length: 128 }).notNull(),
+  /** Optionaler Personalisierungstext (z.B. konkrete Herausforderung des Users) */
+  personalisierung: text("personalisierung"),
+  /** KI-generierter Titel der Geschichte */
+  titel: varchar("titel", { length: 256 }).notNull(),
+  /** Vollständiger KI-generierter Text */
+  text: text("text").notNull(),
+  /** S3-URL der ElevenLabs-Audio-Datei (optional, wird beim ersten Abspielen generiert) */
+  audioUrl: varchar("audioUrl", { length: 512 }),
+  /** Dauer in Sekunden (nach Audio-Generierung gesetzt) */
+  dauerSekunden: int("dauerSekunden"),
+  /** Favorit des Users */
+  favorit: boolean("favorit").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EinschlafBibliothek = typeof einschlafBibliothek.$inferSelect;
+export type InsertEinschlafBibliothek = typeof einschlafBibliothek.$inferInsert;
