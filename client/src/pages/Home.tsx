@@ -582,12 +582,7 @@ export default function Home() {
               </div>
               <div className="container max-w-6xl mx-auto px-4">
                 <Dashboard 
-                  onStartAnalysis={() => {
-                    toast({
-                      title: 'PREMIUM – Bald verfügbar',
-                      description: 'Die MOMENTAUFNAHME-Funktion öffnen wir schrittweise für unsere Community.',
-                    });
-                  }}
+                  onStartAnalysis={() => setCurrentStep("preparation")}
                   onOpenTraining={() => setShowTrainingCenter(true)}
                   onOpenScanner={() => setShowSpectralScanner(true)}
                   onOpenKnowledge={() => setShowKnowledgePool(true)}
@@ -841,13 +836,22 @@ export default function Home() {
               </Card>
             </div>
 
-            <Button onClick={() => {
-                setIsRelaxing(true);
-                setRelaxationTimeLeft(180);
-                advanceStep();
-            }} size="lg" className="w-full h-14 text-lg rounded-full">
-              Ich bin bereit <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
+            <div className="relative">
+              <Button
+                onClick={() => {
+                  toast({
+                    title: 'PREMIUM – Bald verfügbar',
+                    description: 'Die MOMENTAUFNAHME-Analyse öffnen wir schrittweise für unsere Community.',
+                  });
+                }}
+                size="lg"
+                className="w-full h-14 text-lg rounded-full opacity-60 cursor-not-allowed"
+              >
+                <Lock className="mr-2 w-5 h-5" />
+                PREMIUM – Bald verfügbar
+              </Button>
+              <span className="block text-center text-xs text-zinc-500 mt-3">Diese Funktion wird schrittweise für die Community geöffnet.</span>
+            </div>
           </div>
         );
 
