@@ -325,6 +325,44 @@ Wichtig: Beginne DIREKT mit dem Inhalt. Kein Einleitungssatz wie "Hier ist dein 
   }),
 
   /**
+   * Schlaf-Metapher: Verwandelt das Tages-Summary in eine traumhafte Einschlaf-Botschaft.
+   */
+  schlafMetapher: protectedProcedure
+    .input(z.object({ summaryText: z.string() }))
+    .mutation(async ({ input }) => {
+      const response = await invokeLLM({
+        messages: [
+          {
+            role: "system",
+            content: `Du bist MA – die stille Hüterin des Schlafs. Du verwandelst eine Tages-Reflexion in eine sanfte Einschlaf-Botschaft.
+
+Deine Aufgabe: Schreibe eine traumhafte, lösungsorientierte Einschlaf-Botschaft basierend auf dem Tages-Summary.
+
+Die Botschaft soll:
+- In einer weichen, traumhaften, metaphorischen Sprache geschrieben sein
+- Die Kernthemen des Tages als Bilder und Symbole aufgreifen (z.B. Wasser, Licht, Atem, Wald, Stille)
+- Dem Geist erlauben loszulassen – keine offenen Fragen, keine Aufgaben, nur Ankommen
+- Mit einer sanften Einladung in den Schlaf enden
+- Genau 4–5 Sätze lang sein
+- In der Du-Form, auf Deutsch
+- Wie ein Gutenacht-Gedicht klingen, nicht wie eine Analyse
+
+Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
+          },
+          {
+            role: "user",
+            content: `Mein heutiges Tages-Summary:\n\n${input.summaryText}\n\nSchreibe meine Einschlaf-Botschaft.`,
+          },
+        ],
+      });
+
+      const rawText = response.choices?.[0]?.message?.content;
+      const metapherText = typeof rawText === "string" ? rawText : input.summaryText;
+
+      return { text: metapherText };
+    }),
+
+  /**
    * Alle Tage mit Aufnahmen abrufen (für Archiv-Kalender).
    */
   archivTage: protectedProcedure.query(async ({ ctx }) => {

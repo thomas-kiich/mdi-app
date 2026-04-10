@@ -192,6 +192,7 @@ export default function Momentaufnahme() {
   });
   const [showConsentDialog, setShowConsentDialog] = useState(false);
   const [schlafModusAktiv, setSchlafModusAktiv] = useState(false);
+  const [schlafMetapherLaedt, setSchlafMetapherLaedt] = useState(false);
 
   // Schlaf-Modus Hintergrundmusik
   const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlauntermalung_MAapp_3deef3ee.wav";
@@ -206,6 +207,7 @@ export default function Momentaufnahme() {
   const aufnehmenMutation = trpc.momentaufnahme.aufnehmen.useMutation();
   const tagesSummaryMutation = trpc.momentaufnahme.tagesSummary.useMutation();
   const loeschenMutation = trpc.momentaufnahme.loeschen.useMutation();
+  const schlafMetapherMutation = trpc.momentaufnahme.schlafMetapher.useMutation();
   const { data: aufnahmen, refetch: refetchAufnahmen } = trpc.momentaufnahme.heuteAbrufen.useQuery(
     undefined,
     { enabled: isAuthenticated }
@@ -264,9 +266,12 @@ export default function Momentaufnahme() {
     }, interval);
   }, []);
 
-  const startSchlafModus = useCallback(() => {
+  const startSchlafModus = useCallback(async () => {
+    if (!summaryText) return;
     setSchlafModusAktiv(true);
-    // Audio initialisieren
+    setSchlafMetapherLaedt(true);
+
+    // Audio initialisieren und sofort starten
     if (!schlafAudioRef.current) {
       const audio = new Audio(SCHLAF_MUSIK_URL);
       audio.loop = true;
@@ -277,18 +282,28 @@ export default function Momentaufnahme() {
     }
     schlafAudioRef.current.currentTime = 0;
     schlafAudioRef.current.play().catch(() => {});
-    // Summary nach kurzem Delay vorlesen — nach Ende sanfter Fade-Out
-    if (summaryText) {
-      setTimeout(() => {
-        speak(summaryText, () => {
-          // TTS fertig → sanfter Fade-Out der Musik (5 Sekunden)
-          if (schlafAudioRef.current) {
-            fadeOutAudio(schlafAudioRef.current, 5000);
-          }
-        });
-      }, 2500);
+
+    // Schlaf-Metapher vom Server holen (zweiter KI-Schritt)
+    let textZumVorlesen = summaryText;
+    try {
+      const metapher = await schlafMetapherMutation.mutateAsync({ summaryText });
+      textZumVorlesen = metapher.text;
+    } catch {
+      // Fallback: rohes Summary vorlesen
+    } finally {
+      setSchlafMetapherLaedt(false);
     }
-  }, [summaryText, speak, fadeOutAudio, SCHLAF_MUSIK_URL]);
+
+    // Nach kurzem Delay vorlesen — nach Ende sanfter Fade-Out
+    setTimeout(() => {
+      speak(textZumVorlesen, () => {
+        // TTS fertig → sanfter Fade-Out der Musik (5 Sekunden)
+        if (schlafAudioRef.current) {
+          fadeOutAudio(schlafAudioRef.current, 5000);
+        }
+      });
+    }, 1500);
+  }, [summaryText, speak, fadeOutAudio, SCHLAF_MUSIK_URL, schlafMetapherMutation]);
 
   const stopSchlafModus = useCallback(() => {
     setSchlafModusAktiv(false);
@@ -657,20 +672,29 @@ export default function Momentaufnahme() {
               >
                 <span className="text-base">🌙</span>
                 <span>SCHLAF-MODUS starten</span>
-                <span className="text-indigo-400/50 text-xs">· Musik + Vorlesen</span>
+                <span className="text-indigo-400/50 text-xs">· Musik + Einschlaf-Botschaft</span>
               </button>
             ) : (
               <div className="space-y-2">
-                <div className="flex items-center justify-center gap-2 py-2">
-                  {[0,1,2,3,4].map(i => (
-                    <span
-                      key={i}
-                      className="w-1 rounded-full bg-indigo-400 animate-pulse"
-                      style={{ height: `${6 + (i % 3) * 5}px`, animationDelay: `${i * 0.2}s` }}
-                    />
-                  ))}
-                  <span className="text-xs text-indigo-300 ml-2">Schlaf-Modus aktiv · Musik läuft</span>
-                </div>
+                {schlafMetapherLaedt ? (
+                  <div className="flex items-center justify-center gap-2 py-2">
+                    <Loader2 className="w-3.5 h-3.5 text-indigo-400 animate-spin" />
+                    <span className="text-xs text-indigo-300">Einschlaf-Botschaft wird bereitet...</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-2 py-2">
+                    {[0,1,2,3,4].map(i => (
+                      <span
+                        key={i}
+                        className="w-1 rounded-full bg-indigo-400 animate-pulse"
+                        style={{ height: `${6 + (i % 3) * 5}px`, animationDelay: `${i * 0.2}s` }}
+                      />
+                    ))}
+                    <span className="text-xs text-indigo-300 ml-2">
+                      {isSpeaking ? "Einschlaf-Botschaft wird vorgelesen..." : "Schlaf-Modus aktiv · Musik läuft"}
+                    </span>
+                  </div>
+                )}
                 <button
                   onClick={stopSchlafModus}
                   className="w-full py-2 rounded-xl border border-white/10 text-white/40 hover:text-white/70 text-xs transition-colors"
