@@ -714,6 +714,20 @@ export default function Momentaufnahme() {
               </p>
             </div>
 
+            {/* Mobilgeräte-Vorteil */}
+            <div className="w-full max-w-sm mx-auto mb-8 p-4 rounded-2xl bg-gradient-to-br from-indigo-900/20 to-violet-900/20 border border-indigo-500/20 flex items-start gap-3">
+              <span className="text-2xl mt-0.5">📱</span>
+              <div>
+                <p className="text-indigo-300 text-xs font-semibold tracking-wide uppercase mb-1">Immer dabei · überall</p>
+                <p className="text-white/60 text-sm leading-relaxed">
+                  MA läuft auf jedem Gerät — Handy, Tablet, Computer. Deine Aufnahmen sind sofort auf allen Geräten sichtbar. Nimm im Wald auf, lies das Summary am Abend am Computer, höre es auf dem Handy beim Einschlafen.
+                </p>
+                <p className="text-indigo-400/60 text-xs mt-2">
+                  ✔ Kein Download nötig · einfach kiich.de im Browser öffnen
+                </p>
+              </div>
+            </div>
+
             {/* MA als Hüterin */}
             <div className="w-full max-w-sm mx-auto mb-8 px-2">
               <p className="text-white/40 text-xs leading-relaxed">
