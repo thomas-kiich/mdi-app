@@ -127,7 +127,7 @@ function useTTS() {
     return () => { window.speechSynthesis.onvoiceschanged = null; };
   }, [selectedVoiceURI]);
 
-  const speak = useCallback((text: string) => {
+  const speak = useCallback((text: string, onEnd?: () => void) => {
     if (!("speechSynthesis" in window)) {
       toast.error("Text-to-Speech wird von diesem Browser nicht unterstützt.");
       return;
@@ -146,8 +146,8 @@ function useTTS() {
     if (chosen) utterance.voice = chosen;
 
     utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onend = () => { setIsSpeaking(false); onEnd?.(); };
+    utterance.onerror = () => { setIsSpeaking(false); onEnd?.(); };
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
@@ -245,6 +245,25 @@ export default function Momentaufnahme() {
   const stopRecordingRef = useRef<(() => void) | null>(null);
 
   // Schlaf-Modus: Musik starten/stoppen
+  // Sanfter Fade-Out der Hintergrundmusik
+  const fadeOutAudio = useCallback((audio: HTMLAudioElement, durationMs = 5000) => {
+    const steps = 40;
+    const interval = durationMs / steps;
+    const startVol = audio.volume;
+    let step = 0;
+    const timer = setInterval(() => {
+      step++;
+      audio.volume = Math.max(0, startVol * (1 - step / steps));
+      if (step >= steps) {
+        clearInterval(timer);
+        audio.pause();
+        audio.currentTime = 0;
+        audio.volume = startVol; // für nächstes Mal zurücksetzen
+        setSchlafModusAktiv(false);
+      }
+    }, interval);
+  }, []);
+
   const startSchlafModus = useCallback(() => {
     setSchlafModusAktiv(true);
     // Audio initialisieren
@@ -253,23 +272,32 @@ export default function Momentaufnahme() {
       audio.loop = true;
       audio.volume = 0.35;
       schlafAudioRef.current = audio;
+    } else {
+      schlafAudioRef.current.volume = 0.35;
     }
     schlafAudioRef.current.currentTime = 0;
     schlafAudioRef.current.play().catch(() => {});
-    // Summary nach kurzem Delay vorlesen (Musik zuerst einsetzen lassen)
+    // Summary nach kurzem Delay vorlesen — nach Ende sanfter Fade-Out
     if (summaryText) {
-      setTimeout(() => speak(summaryText), 2500);
+      setTimeout(() => {
+        speak(summaryText, () => {
+          // TTS fertig → sanfter Fade-Out der Musik (5 Sekunden)
+          if (schlafAudioRef.current) {
+            fadeOutAudio(schlafAudioRef.current, 5000);
+          }
+        });
+      }, 2500);
     }
-  }, [summaryText, speak, SCHLAF_MUSIK_URL]);
+  }, [summaryText, speak, fadeOutAudio, SCHLAF_MUSIK_URL]);
 
   const stopSchlafModus = useCallback(() => {
     setSchlafModusAktiv(false);
     stop(); // TTS stoppen
     if (schlafAudioRef.current) {
-      schlafAudioRef.current.pause();
-      schlafAudioRef.current.currentTime = 0;
+      // Auch beim manuellen Stopp: sanfter Fade-Out (2 Sekunden)
+      fadeOutAudio(schlafAudioRef.current, 2000);
     }
-  }, [stop]);
+  }, [stop, fadeOutAudio]);
 
   // Cleanup beim Unmount
   useEffect(() => {
