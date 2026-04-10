@@ -653,16 +653,11 @@ export default function Home() {
                   
                   {/* Training Preview - PREMIUM LOCKED */}
                   <div 
-                    className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden cursor-not-allowed select-none"
+                    className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden cursor-pointer hover:border-orange-400/60 transition-all group"
+                    onClick={() => setShowPodcast(true)}
                   >
-                    {/* Premium Overlay */}
-                    <div className="absolute inset-0 bg-black/60 z-10 flex flex-col items-center justify-center rounded-2xl">
-                      <Lock className="w-8 h-8 text-amber-400 mb-2" />
-                      <span className="bg-amber-500 text-black text-xs font-black px-3 py-1 rounded-full tracking-wider">PREMIUM</span>
-                      <span className="text-zinc-400 text-xs mt-2">Bald verfügbar</span>
-                    </div>
-                    <div className="absolute top-4 right-4 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-white/10">
-                      23.04.2026
+                    <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
+                      30.04.2026
                     </div>
                     <h3 className="text-white text-base font-bold tracking-wider mb-2 mt-8">2026 PRAXIS 01</h3>
                     <h4 className="text-lg font-medium text-orange-400">ECHT KRASS!</h4>
@@ -710,13 +705,10 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* TRAININGSCENTER / METHODE 36 - Premium locked */}
-                    <div className="relative bg-zinc-900/60 border border-orange-500/20 rounded-2xl p-6 overflow-hidden cursor-not-allowed select-none">
-                      <div className="absolute inset-0 bg-black/55 z-10 flex flex-col items-center justify-center rounded-2xl">
-                        <Lock className="w-7 h-7 text-amber-400 mb-2" />
-                        <span className="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-wider">PREMIUM</span>
-                        <span className="text-zinc-500 text-xs mt-2">Bald verfügbar</span>
-                      </div>
+                    {/* TRAININGSCENTER / METHODE 36 */}
+                    <div className="relative bg-zinc-900/60 border border-orange-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-400/60 transition-all group"
+                      onClick={() => setLocation('/wissen')}
+                    >
                       <div className="mb-4">
                         <span className="text-2xl">⚡</span>
                       </div>
@@ -727,13 +719,10 @@ export default function Home() {
                       </p>
                     </div>
 
-                    {/* BEFINDLICHKEITSTRAINING - Premium locked */}
-                    <div className="relative bg-zinc-900/60 border border-red-500/20 rounded-2xl p-6 overflow-hidden cursor-not-allowed select-none">
-                      <div className="absolute inset-0 bg-black/55 z-10 flex flex-col items-center justify-center rounded-2xl">
-                        <Lock className="w-7 h-7 text-amber-400 mb-2" />
-                        <span className="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-wider">PREMIUM</span>
-                        <span className="text-zinc-500 text-xs mt-2">Bald verfügbar</span>
-                      </div>
+                    {/* BEFINDLICHKEITSTRAINING */}
+                    <div className="relative bg-zinc-900/60 border border-red-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-red-400/60 transition-all group"
+                      onClick={() => setLocation('/wissen')}
+                    >
                       <div className="mb-4">
                         <span className="text-2xl">🎯</span>
                       </div>
