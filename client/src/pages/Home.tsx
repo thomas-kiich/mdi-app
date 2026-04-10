@@ -506,7 +506,7 @@ export default function Home() {
                         VORSCHAU APRIL 2026
                       </button>
                       <button
-                        onClick={() => setCurrentStep("preparation")}
+                        onClick={() => document.getElementById('premium-angebote-section')?.scrollIntoView({behavior: 'smooth'})}
                         className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-700 text-zinc-300 hover:border-orange-500 hover:text-orange-400 transition-colors"
                       >
                         MOMENTAUFNAHME
@@ -676,7 +676,7 @@ export default function Home() {
                 </div>
                 
                 {/* ===== PREMIUM ANGEBOTE SEKTION ===== */}
-                <div className="mt-16 mb-8">
+                <div id="premium-angebote-section" className="mt-16 mb-8">
                   <div className="text-center mb-10">
                     <span className="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black tracking-widest px-4 py-1.5 rounded-full mb-4">PREMIUM ANGEBOTE</span>
                     <h2 className="text-2xl font-bold text-white mb-3 tracking-tight">Dein persönliches KIICH-Werkzeugset</h2>
