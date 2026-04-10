@@ -525,19 +525,19 @@ export default function Momentaufnahme() {
           {/* Archiv-Link */}
           <Link href="/momentaufnahme/archiv">
             <button
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-              title="Archiv"
+              className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             >
               <Archive className="w-4 h-4" />
+              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Alle Aufnahmen</span>
             </button>
           </Link>
           {/* Obsidian-Verbinden-Link */}
           <Link href="/momentaufnahme/obsidian">
             <button
-              className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-              title="Obsidian verbinden"
+              className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             >
               <Plug className="w-4 h-4" />
+              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Obsidian Export</span>
             </button>
           </Link>
           {anzahlHeute > 0 && (
@@ -546,29 +546,29 @@ export default function Momentaufnahme() {
               <button
                 onClick={startRecording}
                 disabled={isRecording || isProcessing}
-                className="p-2 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors text-white"
-                title="Neue Aufnahme starten"
+                className="group relative p-2 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors text-white"
               >
                 <Mic className="w-4 h-4" />
+                <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Neue Aufnahme</span>
               </button>
               <button
                 onClick={handleExport}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                title="Obsidian Export"
+                className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
               >
                 <Download className="w-4 h-4" />
+                <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Als Datei exportieren</span>
               </button>
               <button
                 onClick={handleTagesSummary}
                 disabled={isSummaryLoading}
-                className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-                title="Das war mein Tag"
+                className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
               >
                 {isSummaryLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <Headphones className="w-4 h-4" />
                 )}
+                <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Tages-Summary</span>
               </button>
             </>
           )}
