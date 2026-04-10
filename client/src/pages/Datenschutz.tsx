@@ -255,6 +255,27 @@ export function Datenschutz() {
 
         </div>
 
+        {/* DSGVO-Einwilligung widerrufen */}
+        <section className="space-y-3 bg-zinc-900/60 border border-zinc-800 rounded-xl p-5">
+          <h2 className="text-white text-xl font-medium">10. Einwilligung widerrufen</h2>
+          <p className="text-sm text-zinc-400">
+            Du kannst deine Einwilligung zur Verarbeitung deiner Spracheingaben (MOMENTAUFNAHME)
+            jederzeit widerrufen (Art. 7 Abs. 3 DSGVO). Nach dem Widerruf wird beim nächsten
+            Start einer Aufnahme erneut um Zustimmung gebeten. Bereits gespeicherte Aufnahmen
+            bleiben bestehen — für eine vollständige Löschung wende dich bitte per E-Mail an uns
+            (Art. 17 DSGVO).
+          </p>
+          <button
+            onClick={() => {
+              localStorage.removeItem("kiich_ma_consent");
+              alert("Einwilligung widerrufen. Beim nächsten Start einer Aufnahme wird erneut um Zustimmung gebeten.");
+            }}
+            className="mt-2 px-4 py-2 rounded-lg bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 text-sm font-medium transition-colors"
+          >
+            Einwilligung zur Sprachverarbeitung widerrufen
+          </button>
+        </section>
+
         <div className="pt-12 border-t border-zinc-800 text-center text-sm text-zinc-600">
           <p>© {new Date().getFullYear()} Thomas Chochola / KIICHwerke. Alle Rechte vorbehalten.</p>
           <p className="mt-1">Stand: April 2026 · Deutsches Recht (DSGVO + BDSG)</p>

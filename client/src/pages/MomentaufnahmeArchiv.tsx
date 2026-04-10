@@ -10,6 +10,7 @@ import {
   Loader2,
   Calendar,
   LogIn,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -87,9 +88,31 @@ function TagKarte({
 
 function TagDetail({ datum }: { datum: string }) {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
+  const utils = trpc.useUtils();
   const { data: aufnahmen, isLoading } = trpc.momentaufnahme.tagAbrufen.useQuery({ datum });
   const { data: exportData } = trpc.momentaufnahme.obsidianExportTag.useQuery({ datum });
+
+  const loeschenMutation = trpc.momentaufnahme.loeschen.useMutation({
+    onSuccess: () => {
+      utils.momentaufnahme.tagAbrufen.invalidate({ datum });
+      utils.momentaufnahme.archivTage.invalidate();
+      toast.success("Aufnahme gelöscht");
+      setDeletingId(null);
+    },
+    onError: () => {
+      toast.error("Löschen fehlgeschlagen");
+      setDeletingId(null);
+    },
+  });
+
+  const handleLoeschen = (id: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!confirm("Diese Aufnahme wirklich löschen? Das kann nicht rückgängig gemacht werden.")) return;
+    setDeletingId(id);
+    loeschenMutation.mutate({ id });
+  };
 
   const handleExport = () => {
     if (!exportData) return;
@@ -190,6 +213,19 @@ function TagDetail({ datum }: { datum: string }) {
                     <Download className="w-3.5 h-3.5" />
                   </a>
                 )}
+                {/* Löschen */}
+                <button
+                  onClick={(e) => handleLoeschen(aufnahme.id, e)}
+                  disabled={deletingId === aufnahme.id}
+                  className="p-1.5 rounded-full hover:bg-red-500/20 text-white/20 hover:text-red-400 transition-colors"
+                  title="Aufnahme löschen"
+                >
+                  {deletingId === aufnahme.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-3.5 h-3.5" />
+                  )}
+                </button>
                 {isExpanded ? (
                   <ChevronUp className="w-4 h-4 text-white/30" />
                 ) : (
