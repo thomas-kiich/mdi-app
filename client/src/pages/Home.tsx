@@ -686,10 +686,10 @@ export default function Home() {
 
                   <div className="grid md:grid-cols-3 gap-6">
 
-                    {/* MOMENTAUFNAHME - Einführungstext frei, Aufnahme gesperrt */}
+                    {/* MOMENTAUFNAHME - navigiert zur echten Momentaufnahme-Seite */}
                     <div
                       className="relative bg-zinc-900/60 border border-violet-500/40 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-violet-400/70 transition-all duration-200 group"
-                      onClick={() => setShowMomentaufnahme(true)}
+                      onClick={() => setLocation('/momentaufnahme')}
                     >
                       {/* Violetter Glanz oben */}
                       <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
