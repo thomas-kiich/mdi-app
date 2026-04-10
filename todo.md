@@ -809,3 +809,7 @@
 - [x] Einschlaf-Bibliothek: Frontend-Seite /einschlafen mit Kategorien-Auswahl
 - [x] Einschlaf-Bibliothek: Generierungs-Flow (Zielgruppe → Thema → KI generiert Text → ElevenLabs spricht)
 - [x] Einschlaf-Bibliothek: Archiv gespeicherter Einschlaf-Geschichten
+
+## Bugfixes Session M
+- [x] BUG: MA-Namens-Dialog blockiert Schlaf-Modus (Stimme spricht nicht wegen Dialog-Unterbrechung)
+- [x] BUG: Einschlaf-Bibliothek nicht sichtbar/erreichbar in der App-Navigation

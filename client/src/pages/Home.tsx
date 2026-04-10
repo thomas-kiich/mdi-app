@@ -760,6 +760,30 @@ export default function Home() {
                     </div>
 
                   </div>
+
+                  {/* EINSCHLAF-BIBLIOTHEK */}
+                  <div className="mt-6">
+                    <div
+                      className="relative bg-zinc-900/60 border border-indigo-500/30 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-indigo-400/60 transition-all duration-200 group"
+                      onClick={() => setLocation('/einschlafen')}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/8 to-violet-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">🌙</span>
+                          <div>
+                            <h3 className="text-white font-bold tracking-wider text-sm">EINSCHLAF-BIBLIOTHEK</h3>
+                            <p className="text-indigo-400 text-xs">Märchen · Abenteuer · Befindlichkeits-Metaphern</p>
+                          </div>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-indigo-400/50 group-hover:text-indigo-400 transition-colors" />
+                      </div>
+                      <p className="text-zinc-400 text-xs leading-relaxed">
+                        Von MA generierte Einschlaf-Geschichten — personalisiert für Kinder, Jugendliche und Erwachsene. Mit ElevenLabs-Stimme vorgelesen.
+                      </p>
+                    </div>
+                  </div>
+
                 </div>
                 {/* ===== END PREMIUM ANGEBOTE ===== */}
 

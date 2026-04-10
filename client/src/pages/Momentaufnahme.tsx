@@ -225,13 +225,17 @@ export default function Momentaufnahme() {
   );
 
   // Vorname aus Profil laden und ggf. Dialog zeigen
+  // Nur einmal fragen — wenn User "Später" geklickt hat, nicht mehr nerven
   useEffect(() => {
     if (profilData !== undefined) {
       if (profilData.vorname) {
         setVorname(profilData.vorname);
       } else {
-        // Noch kein Vorname gespeichert → MA fragt
-        setShowVornameDialog(true);
+        // Nur fragen wenn noch nie "Später" gedrückt wurde
+        const spaeter = localStorage.getItem("kiich_ma_name_spaeter");
+        if (!spaeter) {
+          setShowVornameDialog(true);
+        }
       }
     }
   }, [profilData]);
@@ -604,7 +608,10 @@ export default function Momentaufnahme() {
               {setVornameMutation.isPending ? "..." : "Bestätigen"}
             </button>
             <button
-              onClick={() => setShowVornameDialog(false)}
+              onClick={() => {
+                localStorage.setItem("kiich_ma_name_spaeter", "true");
+                setShowVornameDialog(false);
+              }}
               className="px-4 py-2.5 rounded-xl border border-white/10 text-white/40 hover:text-white/70 text-sm transition-colors"
             >
               Später
