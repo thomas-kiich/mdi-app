@@ -707,7 +707,7 @@ export default function Home() {
 
                     {/* TRAININGSCENTER / METHODE 36 */}
                     <div className="relative bg-zinc-900/60 border border-orange-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-400/60 transition-all group"
-                      onClick={() => setLocation('/wissen')}
+                      onClick={() => setShowTrainingCenter(true)}
                     >
                       <div className="mb-4">
                         <span className="text-2xl">⚡</span>
@@ -721,7 +721,7 @@ export default function Home() {
 
                     {/* BEFINDLICHKEITSTRAINING */}
                     <div className="relative bg-zinc-900/60 border border-red-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-red-400/60 transition-all group"
-                      onClick={() => setLocation('/wissen')}
+                      onClick={() => setShowTrainingCenter(true)}
                     >
                       <div className="mb-4">
                         <span className="text-2xl">🎯</span>
