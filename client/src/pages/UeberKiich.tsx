@@ -85,7 +85,7 @@ export default function UeberKiich() {
               Ein lebendiges System fordert ein harmonisches, sich selbst regulierendes Tun als Existenzgrundlage ein. Genau hier zieht der Autor die Trennlinie zwischen Mensch und Maschine. Die fundamentale Fähigkeit des <strong className="text-white">ATMENS</strong> wird dabei als entscheidender Qualitätsunterschied bestätigt.
             </p>
             <p className="text-zinc-400 leading-relaxed mt-4">
-              In beeindruckender Weise komprimiert der Autor wissenschaftlich-philosophische Darlegungen zu einer einfach zugänglichen Alltagspraxis – der <strong className="text-white">METHODE 36</strong>.
+              In beeindruckender Weise komprimiert der Autor wissenschaftlich-philosophische Darlegungen zu einfach zugänglichen Alltagspraktiken wie <strong className="text-white">METHODE 36</strong>, <strong className="text-white">MOMENTAUFNAHME</strong> und <strong className="text-white">BEFINDLICHKEITSTRAINING</strong> – Werkzeuge, die den Menschen wieder zum Dirigenten seines eigenen Lebens machen.
             </p>
           </section>
 
