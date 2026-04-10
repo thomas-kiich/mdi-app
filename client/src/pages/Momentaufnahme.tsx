@@ -36,11 +36,96 @@ const KATEGORIE_CONFIG = {
   WELT: { emoji: "🌍", farbe: "bg-orange-500/20 text-orange-300 border-orange-500/30" },
 } as const;
 
+// ─── Wissenschafts-Einschub: Schlaf & Traum ─────────────────────────────────────────────
+
+const SCHLAF_FAKTEN = [
+  {
+    icon: "🧠",
+    titel: "Das glymphatische System – Gehärnreinigung im Schlaf",
+    text: "Während des Tiefschlafs aktiviert das Gehirn sein eigenes Reinigungssystem: Das glymphatische System spült Abfallprodukte (u. a. Beta-Amyloid, Tau-Proteine) aus dem Hirngewebe. Dieser Prozess läuft tagseitig kaum ab – Schlaf ist buchstäblich die Gehärnwäsche. Chronischer Schlafmangel erhöht das Risiko für neurodegenerative Erkrankungen wie Alzheimer.",
+    quelle: "Nedergaard et al., Science 2013; Alzheimer Deutschland 2024",
+  },
+  {
+    icon: "💤",
+    titel: "Hippocampus & Gedächtniskonsolidierung",
+    text: "Der Hippocampus speichert tagseitig erlebte Inhalte als Kurzzeit-Gedächtnis. Im Schlaf – besonders im Tiefschlaf (SWS) – werden diese Inhalte in den Neokortex übertragen und als Langzeit-Gedächtnis verankert. Was du abends bewusst formulierst, wird nachts konsolidiert. Was du nicht formulierst, geht verloren.",
+    quelle: "Spektrum der Wissenschaft; Uni Lübeck Schlafforschung",
+  },
+  {
+    icon: "🌙",
+    titel: "REM-Schlaf & kreative Lösungsfindung",
+    text: "Im REM-Schlaf (Traumphase) verknüpft das Gehirn scheinbar unzusammenhängende Informationen zu neuen Mustern. Studien zeigen: Probanden, die ein Problem vor dem Schlafen formulierten, lösten es nach dem Aufwachen signifikant häufiger – ohne bewusst daran gearbeitet zu haben. Der Traum ist ein Kreativlabor.",
+    quelle: "Cai et al., Nature 2009; Trends in Cognitive Sciences 2018",
+  },
+  {
+    icon: "✨",
+    titel: "MA als Einschlaf-Begleitung – die Wissenschaft dahinter",
+    text: "Wenn du dein Tages-Summary am Abend vorliest oder hörst, gibst du deinem Hippocampus ein strukturiertes Konsolidierungsprogramm. Die Inhalte sind bereits kategorisiert, emotional bewertet und auf Essenz reduziert. Das Gehirn arbeitet in der Nacht genau mit diesem Material weiter – reinigt, verknüpft, löst. Du schenkst dir selbst die beste Vorbereitung für eine produktive Nacht.",
+    quelle: "KIICH-Konzept: MA als Brücke zwischen Tagesbewusstsein und Traumarbeit",
+  },
+];
+
+function WissenschaftsEinschub() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <div className="w-full max-w-sm mx-auto mb-8">
+      <button
+        onClick={() => setIsOpen(o => !o)}
+        className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-gradient-to-r from-indigo-900/30 to-violet-900/20 border border-indigo-500/20 hover:border-indigo-500/40 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <span className="text-base">🔬</span>
+          <span className="text-xs font-semibold text-indigo-300 tracking-wide uppercase">Warum Schlaf alles verändert</span>
+        </div>
+        <span className="text-indigo-400/60 text-xs">{isOpen ? "▲" : "▼"}</span>
+      </button>
+      {isOpen && (
+        <div className="mt-2 space-y-3 px-1">
+          {SCHLAF_FAKTEN.map((fakt, i) => (
+            <div key={i} className="p-4 rounded-xl bg-white/3 border border-white/8">
+              <div className="flex items-start gap-2 mb-2">
+                <span className="text-lg">{fakt.icon}</span>
+                <p className="text-xs font-semibold text-white/80 leading-snug">{fakt.titel}</p>
+              </div>
+              <p className="text-xs text-white/50 leading-relaxed mb-2">{fakt.text}</p>
+              <p className="text-[10px] text-indigo-400/50 italic">📚 {fakt.quelle}</p>
+            </div>
+          ))}
+          <p className="text-[10px] text-white/20 text-center px-2 pb-2">
+            Quellen: Nedergaard et al. (Science 2013), Alzheimer Deutschland (2024), Spektrum der Wissenschaft, Uni Lübeck, Cai et al. (Nature 2009), Trends in Cognitive Sciences (2018)
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── TTS Hook ─────────────────────────────────────────────────────────────────
 
 function useTTS() {
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoiceURI, setSelectedVoiceURI] = useState<string>("");
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+
+  // Stimmen laden (asynchron – Browser lädt sie verzögert)
+  useEffect(() => {
+    if (!("speechSynthesis" in window)) return;
+    const load = () => {
+      const all = window.speechSynthesis.getVoices();
+      const de = all.filter(v => v.lang.startsWith("de"));
+      const list = de.length > 0 ? de : all.slice(0, 10);
+      setVoices(list);
+      if (!selectedVoiceURI && list.length > 0) {
+        // Bevorzuge lokale deutsche Stimme
+        const preferred = list.find(v => v.localService) ?? list[0];
+        setSelectedVoiceURI(preferred.voiceURI);
+      }
+    };
+    load();
+    window.speechSynthesis.onvoiceschanged = load;
+    return () => { window.speechSynthesis.onvoiceschanged = null; };
+  }, [selectedVoiceURI]);
 
   const speak = useCallback((text: string) => {
     if (!("speechSynthesis" in window)) {
@@ -51,14 +136,14 @@ function useTTS() {
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "de-DE";
-    utterance.rate = 0.9;
+    utterance.rate = 0.85;
     utterance.pitch = 1.0;
 
-    // Deutschen Voice bevorzugen
-    const voices = window.speechSynthesis.getVoices();
-    const deVoice = voices.find(v => v.lang.startsWith("de") && v.localService) ||
-                    voices.find(v => v.lang.startsWith("de"));
-    if (deVoice) utterance.voice = deVoice;
+    const all = window.speechSynthesis.getVoices();
+    const chosen = all.find(v => v.voiceURI === selectedVoiceURI)
+      ?? all.find(v => v.lang.startsWith("de") && v.localService)
+      ?? all.find(v => v.lang.startsWith("de"));
+    if (chosen) utterance.voice = chosen;
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
@@ -66,7 +151,7 @@ function useTTS() {
 
     utteranceRef.current = utterance;
     window.speechSynthesis.speak(utterance);
-  }, []);
+  }, [selectedVoiceURI]);
 
   const stop = useCallback(() => {
     window.speechSynthesis?.cancel();
@@ -78,14 +163,14 @@ function useTTS() {
     return () => { window.speechSynthesis?.cancel(); };
   }, []);
 
-  return { speak, stop, isSpeaking };
+  return { speak, stop, isSpeaking, voices, selectedVoiceURI, setSelectedVoiceURI };
 }
 
 // ─── Hauptkomponente ──────────────────────────────────────────────────────────
 
 export default function Momentaufnahme() {
   const { loading, isAuthenticated } = useAuth();
-  const { speak, stop, isSpeaking } = useTTS();
+  const { speak, stop, isSpeaking, voices, selectedVoiceURI, setSelectedVoiceURI } = useTTS();
 
   // Aufnahme-Konstanten
   const MIN_DAUER_SEK = 2;
@@ -430,6 +515,21 @@ export default function Momentaufnahme() {
               <span className="text-xs font-medium text-violet-300">Das war mein Tag</span>
             </div>
             <div className="flex items-center gap-2">
+              {/* Stimmauswahl */}
+              {voices.length > 1 && (
+                <select
+                  value={selectedVoiceURI}
+                  onChange={e => setSelectedVoiceURI(e.target.value)}
+                  className="text-[10px] bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white/50 hover:text-white/80 transition-colors max-w-[120px] truncate"
+                  title="Stimme auswählen"
+                >
+                  {voices.map(v => (
+                    <option key={v.voiceURI} value={v.voiceURI} className="bg-[#1a1a2e]">
+                      {v.name.replace(/Microsoft |Google |Apple /, "")}
+                    </option>
+                  ))}
+                </select>
+              )}
               {/* TTS Play/Stop Button */}
               <button
                 onClick={handleSpeakSummary}
@@ -515,14 +615,17 @@ export default function Momentaufnahme() {
             {/* MA als Hüterin */}
             <div className="w-full max-w-sm mx-auto mb-8 px-2">
               <p className="text-white/40 text-xs leading-relaxed">
-                MA ist wie eine Mutter, die alles für dich bereithält – behutsam, strukturiert,
+                MA ist wie eine Mutter, die alles für dich bereit hält – behutsam, strukturiert,
                 vollständig.{" "}
                 <strong className="text-white/80">Am Abend bist du erstaunt und dankbar: ALLES DA! – was schon vergessen war – MA hat es aufbereitet und zusammengefasst.</strong>{" "}
                 Die Hüterin deines geistigen Potentials. Dein zweites Gehirn.
-                Deine Chefsekretärin. Alles nur für dich zugänglich –{" "}
+                Deine Chefsekretärin. Alles nur dir selbst zugänglich –{" "}
                 <strong className="text-white/80">gesichert als Schatz deiner einzigartigen IDENTITÄT.</strong>
               </p>
             </div>
+
+            {/* Wissenschaftseinschub: Schlaf & Traum */}
+            <WissenschaftsEinschub />
 
             {/* Aufnahme-Hinweis */}
             <div className="text-center">
