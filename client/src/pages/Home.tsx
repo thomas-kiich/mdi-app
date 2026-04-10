@@ -498,12 +498,15 @@ export default function Home() {
                       >
                         VORSCHAU APRIL 2026
                       </button>
-                      <a
-                        href="/momentaufnahme"
-                        className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-violet-500/50 text-violet-300 hover:border-violet-400 hover:text-violet-200 transition-all duration-200"
+                      <button
+                        onClick={() => {}}
+                        className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-700 text-zinc-600 cursor-not-allowed select-none"
+                        title="Premium – Bald verfügbar"
                       >
-                        📸 MOMENTAUFNAHME
-                      </a>
+                        <span className="absolute -top-2 -right-2 bg-amber-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded-full tracking-wider">PREMIUM</span>
+                        <Lock className="inline w-3 h-3 mr-1 opacity-60" />
+                        MOMENTAUFNAHME
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -643,15 +646,16 @@ export default function Home() {
                     </div>
                   </div>
                   
-                  {/* Training Preview */}
+                  {/* Training Preview - PREMIUM LOCKED */}
                   <div 
-                    onClick={() => {
-                      setShowPodcast(false);
-                      setShowPraxis01(true);
-                      window.scrollTo(0, 0);
-                    }}
-                    className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-orange-500/50 transition-colors"
+                    className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden cursor-not-allowed select-none"
                   >
+                    {/* Premium Overlay */}
+                    <div className="absolute inset-0 bg-black/60 z-10 flex flex-col items-center justify-center rounded-2xl">
+                      <Lock className="w-8 h-8 text-amber-400 mb-2" />
+                      <span className="bg-amber-500 text-black text-xs font-black px-3 py-1 rounded-full tracking-wider">PREMIUM</span>
+                      <span className="text-zinc-400 text-xs mt-2">Bald verfügbar</span>
+                    </div>
                     <div className="absolute top-4 right-4 bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg shadow-white/10">
                       23.04.2026
                     </div>
@@ -661,12 +665,77 @@ export default function Home() {
                       <span className="text-orange-400 block mb-2">Befindlichkeitstraining das ich selbst bestimme?</span>
                       So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
                     </p>
-                    <div className="flex items-center justify-center py-2 group-hover:scale-110 transition-transform">
-                      <Play className="w-10 h-10 text-orange-500 opacity-80" />
+                    <div className="flex items-center justify-center py-2">
+                      <Play className="w-10 h-10 text-orange-500 opacity-30" />
                     </div>
                   </div>
                 </div>
                 
+                {/* ===== PREMIUM ANGEBOTE SEKTION ===== */}
+                <div className="mt-16 mb-8">
+                  <div className="text-center mb-10">
+                    <span className="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black tracking-widest px-4 py-1.5 rounded-full mb-4">PREMIUM ANGEBOTE</span>
+                    <h2 className="text-2xl font-bold text-white mb-3 tracking-tight">Dein persönliches KIICH-Werkzeugset</h2>
+                    <p className="text-zinc-400 max-w-xl mx-auto text-sm leading-relaxed">Drei Praxiswerkzeuge, die dich vom Zuhörer zum Gestalter machen. Wir öffnen sie schrittweise — als logische Fortsetzung der Episoden.</p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-6">
+
+                    {/* MOMENTAUFNAHME - Premium locked */}
+                    <div className="relative bg-zinc-900/60 border border-violet-500/20 rounded-2xl p-6 overflow-hidden cursor-not-allowed select-none">
+                      <div className="absolute inset-0 bg-black/55 z-10 flex flex-col items-center justify-center rounded-2xl">
+                        <Lock className="w-7 h-7 text-amber-400 mb-2" />
+                        <span className="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-wider">PREMIUM</span>
+                        <span className="text-zinc-500 text-xs mt-2">Bald verfügbar</span>
+                      </div>
+                      <div className="mb-4">
+                        <span className="text-2xl">📸</span>
+                      </div>
+                      <h3 className="text-white font-bold tracking-wider text-base mb-1">MOMENTAUFNAHME</h3>
+                      <h4 className="text-violet-400 text-sm font-medium mb-3">Wo stehe ich gerade wirklich?</h4>
+                      <p className="text-zinc-400 text-sm leading-relaxed">
+                        Ein strukturierter Selbst-Check, der dir in wenigen Minuten ein klares Bild deiner aktuellen Lebenssituation gibt. Nicht als Bewertung — sondern als ehrlicher Kompass. Weil Klarheit der erste Schritt zur Veränderung ist.
+                      </p>
+                    </div>
+
+                    {/* TRAININGSCENTER / METHODE 36 - Premium locked */}
+                    <div className="relative bg-zinc-900/60 border border-orange-500/20 rounded-2xl p-6 overflow-hidden cursor-not-allowed select-none">
+                      <div className="absolute inset-0 bg-black/55 z-10 flex flex-col items-center justify-center rounded-2xl">
+                        <Lock className="w-7 h-7 text-amber-400 mb-2" />
+                        <span className="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-wider">PREMIUM</span>
+                        <span className="text-zinc-500 text-xs mt-2">Bald verfügbar</span>
+                      </div>
+                      <div className="mb-4">
+                        <span className="text-2xl">⚡</span>
+                      </div>
+                      <h3 className="text-white font-bold tracking-wider text-base mb-1">METHODE 36</h3>
+                      <h4 className="text-orange-400 text-sm font-medium mb-3">36 Tage. Dein Rhythmus. Dein Leben.</h4>
+                      <p className="text-zinc-400 text-sm leading-relaxed">
+                        Ein wissenschaftlich fundiertes Trainingsprogramm, das auf deinem persönlichen Klangprofil aufbaut. Keine Einheitsformel — sondern ein System, das sich deinem einzigartigen Lebenspuls anpasst. Wer seinen Rhythmus kennt, kann ihn gestalten.
+                      </p>
+                    </div>
+
+                    {/* BEFINDLICHKEITSTRAINING - Premium locked */}
+                    <div className="relative bg-zinc-900/60 border border-red-500/20 rounded-2xl p-6 overflow-hidden cursor-not-allowed select-none">
+                      <div className="absolute inset-0 bg-black/55 z-10 flex flex-col items-center justify-center rounded-2xl">
+                        <Lock className="w-7 h-7 text-amber-400 mb-2" />
+                        <span className="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-wider">PREMIUM</span>
+                        <span className="text-zinc-500 text-xs mt-2">Bald verfügbar</span>
+                      </div>
+                      <div className="mb-4">
+                        <span className="text-2xl">🎯</span>
+                      </div>
+                      <h3 className="text-white font-bold tracking-wider text-base mb-1">BEFINDLICHKEITSTRAINING</h3>
+                      <h4 className="text-red-400 text-sm font-medium mb-3">7 Minuten. Täglich. Selbstbestimmt.</h4>
+                      <p className="text-zinc-400 text-sm leading-relaxed">
+                        Das kürzeste und wirksamste Training, das du je gemacht hast. Du bestimmst wann, wo und wie — und dein Körper gibt dir sofort Rückmeldung. So empfindungsfähig für deine wahren Bedürfnisse warst du noch nie.
+                      </p>
+                    </div>
+
+                  </div>
+                </div>
+                {/* ===== END PREMIUM ANGEBOTE ===== */}
+
                 {/* Resonanz / Feedback Section */}
                 <div className="mt-24 mb-16 relative">
                   <div className="absolute inset-0 bg-gradient-to-b from-transparent via-orange-900/5 to-transparent pointer-events-none" />

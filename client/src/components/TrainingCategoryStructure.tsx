@@ -357,10 +357,10 @@ export function TrainingCategoryStructure({
               key={cat.id}
               className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 border-zinc-800 hover:border-orange-500/50 cursor-pointer transition-all group relative overflow-hidden"
               onClick={() => {
-                if (cat.id !== "befindlichkeit" && !isPremium) {
+                if (cat.id === "befindlichkeit") {
                   toast({
-                    title: "Premium Funktion",
-                    description: `Die Kategorie "${cat.name}" ist Teil der Premium-Version und aktuell gesperrt.`,
+                    title: "PREMIUM – Bald verfügbar",
+                    description: "Das Befindlichkeitstraining öffnen wir schrittweise für unsere Community.",
                   });
                   return;
                 }
@@ -370,10 +370,10 @@ export function TrainingCategoryStructure({
               <CardContent className="p-8">
                 <div className="flex justify-between items-start mb-4">
                   <div className="text-5xl">{cat.icon}</div>
-                  {cat.id !== "befindlichkeit" && !isPremium && (
-                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
+                  {cat.id === "befindlichkeit" && (
+                    <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold border border-amber-500/20">
                       <Lock className="w-3 h-3" />
-                      <span>Premium</span>
+                      <span>PREMIUM</span>
                     </div>
                   )}
                 </div>
