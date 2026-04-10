@@ -73,6 +73,32 @@ type WizardStep =
   | "analyzing" 
   | "result";
 
+function JohannesStatement() {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="space-y-4 text-zinc-300 leading-relaxed text-lg italic">
+      <p>"Ich komme gerade aus einer Phase, in der ich mich wirklich verloren gefühlt habe. Unzufriedenheit im Job, keinen wirklichen Antrieb und ein fehlendes Ziel haben mir sehr zugesetzt."</p>
+      {expanded && (
+        <>
+          <p>"Ich dachte, wenn ich meinen Job wechsle und alles auf eine Karte setze wird alles besser, doch das Schicksal hatte andere Pläne für mich. Der Frage WER oder WAS bin ich und WAS will ich? ging ich dabei leider viel zu lange aus dem Weg."</p>
+          <p>"Als ich an einem Tiefpunkt angekommen war, habe ich begonnen mich mit dieser Frage auseinander zu setzen, nahm mir die KI zur Seite um hier Antworten zu finden. Und ja diese Frage lässt sich mit einem Satz beantworten und ja diese Antwort ist wichtig."</p>
+          <p className="text-orange-400 font-medium not-italic mt-6">"Daher bin ich gespannt auf welcher Reise mich dieser Podcast noch begleitet."</p>
+        </>
+      )}
+      <button
+        onClick={() => setExpanded(e => !e)}
+        className="inline-flex items-center gap-1 text-sm not-italic text-orange-400 hover:text-orange-300 transition-colors mt-2"
+      >
+        {expanded ? (
+          <><span>Weniger anzeigen</span><span className="text-xs">▲</span></>
+        ) : (
+          <><span>Mehr lesen</span><span className="text-xs">▼</span></>
+        )}
+      </button>
+    </div>
+  );
+}
+
 export default function Home() {
   // The userAuth hooks provides authentication state
   // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
@@ -760,12 +786,7 @@ export default function Home() {
                         </div>
                       </div>
                       
-                      <div className="space-y-4 text-zinc-300 leading-relaxed text-lg italic">
-                        <p>"Ich komme gerade aus einer Phase, in der ich mich wirklich verloren gefühlt habe. Unzufriedenheit im Job, keinen wirklichen Antrieb und ein fehlendes Ziel haben mir sehr zugesetzt."</p>
-                        <p>"Ich dachte, wenn ich meinen Job wechsle und alles auf eine Karte setze wird alles besser, doch das Schicksal hatte andere Pläne für mich. Der Frage WER oder WAS bin ich und WAS will ich? ging ich dabei leider viel zu lange aus dem Weg."</p>
-                        <p>"Als ich an einem Tiefpunkt angekommen war, habe ich begonnen mich mit dieser Frage auseinander zu setzen, nahm mir die KI zur Seite um hier Antworten zu finden. Und ja diese Frage lässt sich mit einem Satz beantworten und ja diese Antwort ist wichtig."</p>
-                        <p className="text-orange-400 font-medium not-italic mt-6">"Daher bin ich gespannt auf welcher Reise mich dieser Podcast noch begleitet."</p>
-                      </div>
+                      <JohannesStatement />
                     </div>
                   </div>
                 </div>
