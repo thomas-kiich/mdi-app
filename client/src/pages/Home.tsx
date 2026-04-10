@@ -501,12 +501,9 @@ export default function Home() {
                         VORSCHAU APRIL 2026
                       </button>
                       <button
-                        onClick={() => {}}
-                        className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-700 text-zinc-600 cursor-not-allowed select-none"
-                        title="Premium – Bald verfügbar"
+                        onClick={() => setCurrentStep("preparation")}
+                        className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-700 text-zinc-300 hover:border-orange-500 hover:text-orange-400 transition-colors"
                       >
-                        <span className="absolute -top-2 -right-2 bg-amber-500 text-black text-[9px] font-black px-1.5 py-0.5 rounded-full tracking-wider">PREMIUM</span>
-                        <Lock className="inline w-3 h-3 mr-1 opacity-60" />
                         MOMENTAUFNAHME
                       </button>
                     </div>
@@ -617,9 +614,9 @@ export default function Home() {
                   </div>
                   
                   {/* Episode 2 Preview */}
-                  <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
-                    <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
-                      09.04.2026
+                  <div className="bg-zinc-900/50 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden group">
+                    <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+                      JETZT VERFÜGBAR
                     </div>
                     <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 02</h3>
                     <h4 className="text-lg font-medium text-orange-400">EXTREME ZEITEN!</h4>
@@ -668,7 +665,7 @@ export default function Home() {
                       So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
                     </p>
                     <div className="flex items-center justify-center py-2">
-                      <Play className="w-10 h-10 text-orange-500 opacity-30" />
+                      <span className="text-orange-400 text-xs font-bold tracking-wider">30.04.2026</span>
                     </div>
                   </div>
                 </div>
