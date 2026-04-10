@@ -839,6 +839,23 @@ export default function Momentaufnahme() {
             })}
           </div>
         )}
+        {/* Prominenter Tages-Summary Button */}
+        {aufnahmen && aufnahmen.length > 0 && (
+          <div className="mt-6 mb-4 px-2">
+            <button
+              onClick={handleTagesSummary}
+              disabled={isSummaryLoading}
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold text-base flex items-center justify-center gap-3 transition-all duration-200 shadow-lg shadow-violet-900/40 active:scale-95 disabled:opacity-60"
+            >
+              {isSummaryLoading ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> Tages-Summary wird erstellt…</>
+              ) : (
+                <><Sparkles className="w-5 h-5" /> 🌙  Mein Tages-Summary erstellen</>
+              )}
+            </button>
+            <p className="text-center text-white/30 text-xs mt-2">Vernetzt alle heutigen Aufnahmen · Schlaf-Modus inklusive</p>
+          </div>
+        )}
       </div>
 
       {/* Aufnahme-Button (fixiert unten) */}
