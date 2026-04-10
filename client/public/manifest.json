@@ -1,17 +1,43 @@
 {
-  "name": "MDI System",
-  "short_name": "MDI System",
-  "description": "Multidimensionales Identitätssystem",
+  "name": "KIICH – Multidimensionales Identitätssystem",
+  "short_name": "KIICH",
+  "description": "Deine persönliche KI-Begleiterin MA. Momentaufnahmen, Einschlaf-Bibliothek und mehr.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#09090b",
-  "theme_color": "#f97316",
+  "theme_color": "#09090b",
+  "lang": "de",
+  "categories": ["health", "lifestyle", "productivity"],
   "icons": [
+    {
+      "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
     {
       "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Momentaufnahme",
+      "short_name": "MA",
+      "description": "Neue Sprachnotiz aufnehmen",
+      "url": "/momentaufnahme",
+      "icons": [{ "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Einschlafen",
+      "short_name": "Einschlafen",
+      "description": "Einschlaf-Bibliothek öffnen",
+      "url": "/einschlafen",
+      "icons": [{ "src": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png", "sizes": "96x96" }]
     }
   ]
 }

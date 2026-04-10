@@ -818,3 +818,11 @@
 - [x] Hintergrundmusik beim Vorlesen in Einschlaf-Bibliothek einblenden (dieselbe URL wie Schlaf-Modus)
 - [x] ElevenLabs Sprechgeschwindigkeit reduzieren (stability erhöhen, speed reduzieren)
 - [x] Musik sanft einblenden wenn Audio startet, ausblenden wenn Audio endet
+
+## Firefox-Kompatibilität + PWA (Johannes-Feedback)
+- [x] Firefox: Audio-Format-Kompatibilität prüfen (webm/opus vs. ogg/opus)
+- [x] Firefox: Mikrofon-Aufnahme testen (MediaRecorder API)
+- [x] Firefox: Web Speech API Fallback (nicht unterstützt in Firefox — ElevenLabs ist primär)
+- [x] PWA: manifest.json vollständig (name KIICH, icons, display, shortcuts)
+- [x] PWA: Service Worker vorhanden und funktionsfähig
+- [x] PWA: Installationshinweis dokumentiert (Chrome/Safari empfohlen)

@@ -389,10 +389,15 @@ export default function Momentaufnahme() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
 
+      // Firefox unterstützt kein audio/webm — braucht audio/ogg;codecs=opus
       const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
         ? "audio/webm;codecs=opus"
         : MediaRecorder.isTypeSupported("audio/webm")
         ? "audio/webm"
+        : MediaRecorder.isTypeSupported("audio/ogg;codecs=opus")
+        ? "audio/ogg;codecs=opus"
+        : MediaRecorder.isTypeSupported("audio/ogg")
+        ? "audio/ogg"
         : "audio/mp4";
 
       const recorder = new MediaRecorder(stream, { mimeType });
@@ -439,7 +444,9 @@ export default function Momentaufnahme() {
 
         // Schritt 1: Audio direkt als multipart/form-data hochladen
         const formData = new FormData();
-        formData.append("audio", blob, "aufnahme.webm");
+        // Dateiendung an MIME-Type anpassen (Firefox liefert ogg, Chrome webm)
+        const ext = blob.type.includes("ogg") ? "ogg" : blob.type.includes("mp4") ? "mp4" : "webm";
+        formData.append("audio", blob, `aufnahme.${ext}`);
         formData.append("mimeType", blob.type);
 
         const uploadRes = await fetch("/api/audio/upload", {
