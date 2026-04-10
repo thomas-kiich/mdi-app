@@ -355,29 +355,23 @@ export function TrainingCategoryStructure({
           {TRAINING_CATEGORIES.map((cat) => (
             <Card
               key={cat.id}
-              className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 border-zinc-800 hover:border-orange-500/50 cursor-pointer transition-all group relative overflow-hidden"
+              className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 border-zinc-800 cursor-not-allowed transition-all group relative overflow-hidden select-none opacity-80"
               onClick={() => {
-                if (cat.id === "befindlichkeit") {
-                  toast({
-                    title: "PREMIUM – Bald verfügbar",
-                    description: "Das Befindlichkeitstraining öffnen wir schrittweise für unsere Community.",
-                  });
-                  return;
-                }
-                setSelectedCategory(cat.id);
+                toast({
+                  title: "PREMIUM – Bald verfügbar",
+                  description: "Wir öffnen die Trainings schrittweise für unsere Community.",
+                });
               }}
             >
               <CardContent className="p-8">
                 <div className="flex justify-between items-start mb-4">
                   <div className="text-5xl">{cat.icon}</div>
-                  {cat.id === "befindlichkeit" && (
-                    <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold border border-amber-500/20">
-                      <Lock className="w-3 h-3" />
-                      <span>PREMIUM</span>
-                    </div>
-                  )}
+                  <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold border border-amber-500/20">
+                    <Lock className="w-3 h-3" />
+                    <span>PREMIUM</span>
+                  </div>
                 </div>
-                <h2 className="text-2xl font-bold mb-3 group-hover:text-orange-500 transition-colors">
+                <h2 className="text-2xl font-bold mb-3">
                   {cat.name}
                 </h2>
                 <p className="text-sm text-zinc-400 line-clamp-3 mb-4">
@@ -385,9 +379,9 @@ export function TrainingCategoryStructure({
                 </p>
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-zinc-500">
-                    {cat.items.length} {cat.items.length === 1 ? "Training" : "Trainings"}
+                    Bald verfügbar
                   </span>
-                  <ChevronRight className="w-5 h-5 text-zinc-500 group-hover:text-orange-500 transition-colors" />
+                  <Lock className="w-4 h-4 text-amber-500/60" />
                 </div>
               </CardContent>
             </Card>
