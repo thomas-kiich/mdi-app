@@ -43,6 +43,7 @@ import { useLocation } from "wouter";
 import frequencyData from '@/lib/frequencyData.json';
 import { getToneNameFromMdiId, convertMdiDistributionToToneDistribution } from '@/lib/mdiToToneMapping';
 import { NewsletterSignup } from '@/components/NewsletterSignup';
+import { trpc } from "@/lib/trpc";
 import {
   Collapsible,
   CollapsibleContent,
@@ -174,7 +175,11 @@ export default function Home() {
   const [showSleepTheta, setShowSleepTheta] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
+  // Premium-Einstellungen dynamisch aus der Datenbank laden
+  const { data: premiumSettings } = trpc.premium.getSettings.useQuery();
+  const isPremiumMomentaufnahme = premiumSettings?.momentaufnahme ?? false;
+  const isPremiumBefindlichkeit = premiumSettings?.befindlichkeitstraining ?? false;
+  const isPremium = premiumSettings?.trainingscenter ?? false;
   const [showPodcast, setShowPodcast] = useState(false);
   const [showVisionsraum, setShowVisionsraum] = useState(false);
   const [showPraxis01, setShowPraxis01] = useState(false);
@@ -589,7 +594,7 @@ export default function Home() {
                   onOpenHistory={() => {}}
                   onOpenVisionsraum={() => setShowVisionsraum(true)}
                   isPremium={isPremium}
-                  onTogglePremium={() => setIsPremium(!isPremium)}
+                  onTogglePremium={() => {}}
                 />
               </div>
               

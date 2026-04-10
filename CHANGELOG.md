@@ -12,6 +12,8 @@
 - **PRAXIS 01-Kachel:** Datum 30.04.2026 sichtbar, kein Premium-Overlay
 - **Newsletter Episode 02 versendet:** Betreff „KIICH HÖRBUCH EPISODE 02 - EXTREME ZEITEN!" an 10 aktive Abonnenten
 
+- **Visionsraum – DIE ARCHITEKTEN:** Johannes durch MANUS (KI-Architekt & permanenter Mitgestalter) ersetzt; Leitsatz um „Die gelebte Ethik im gemeinsamen achtungsvollen Tun zwischen MENSCH & MASCHINE" ergänzt
+
 ### Premium-Sperrungen
 - **MOMENTAUFNAHME:** Öffnet sich normal, Aufnahme-Start-Button ist Premium-gesperrt
 - **BEFINDLICHKEITSTRAINING** (im Trainingscenter): Premium-gesperrt mit Einführungstext

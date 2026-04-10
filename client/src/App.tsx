@@ -17,6 +17,7 @@ import Momentaufnahme from "@/pages/Momentaufnahme";
 import MomentaufnahmeArchiv from "@/pages/MomentaufnahmeArchiv";
 import ObsidianVerbinden from "@/pages/ObsidianVerbinden";
 import Episoden from "@/pages/Episoden";
+import AdminPremium from "@/pages/AdminPremium";
 
 function Router() {
   return (
@@ -33,6 +34,7 @@ function Router() {
       <Route path="/momentaufnahme/archiv" component={MomentaufnahmeArchiv} />
       <Route path="/momentaufnahme/obsidian" component={ObsidianVerbinden} />
       <Route path="/episoden" component={Episoden} />
+      <Route path="/admin/premium" component={AdminPremium} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

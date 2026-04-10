@@ -277,3 +277,52 @@ export async function getNewsletterSubscriberCount() {
   const active = all.filter(s => s.active).length;
   return { active, total: all.length };
 }
+
+// ─── Premium Settings ─────────────────────────────────────────────────────────
+
+const PREMIUM_FEATURES = ["momentaufnahme", "befindlichkeitstraining", "trainingscenter"] as const;
+export type PremiumFeature = typeof PREMIUM_FEATURES[number];
+
+/**
+ * Alle Premium-Einstellungen laden. Initialisiert fehlende Einträge mit enabled=false.
+ */
+export async function getPremiumSettings(): Promise<Record<PremiumFeature, boolean>> {
+  const db = await getDb();
+  const defaults: Record<PremiumFeature, boolean> = {
+    momentaufnahme: false,
+    befindlichkeitstraining: false,
+    trainingscenter: false,
+  };
+  if (!db) return defaults;
+
+  const { premiumSettings } = await import("../drizzle/schema");
+
+  // Sicherstellen dass alle Features in der DB vorhanden sind
+  for (const feature of PREMIUM_FEATURES) {
+    await db
+      .insert(premiumSettings)
+      .values({ feature, enabled: false })
+      .onDuplicateKeyUpdate({ set: { feature } });
+  }
+
+  const rows = await db.select().from(premiumSettings);
+  for (const row of rows) {
+    if (PREMIUM_FEATURES.includes(row.feature as PremiumFeature)) {
+      defaults[row.feature as PremiumFeature] = row.enabled;
+    }
+  }
+  return defaults;
+}
+
+/**
+ * Einen Premium-Bereich ein- oder ausschalten.
+ */
+export async function setPremiumFeature(feature: PremiumFeature, enabled: boolean): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  const { premiumSettings } = await import("../drizzle/schema");
+  await db
+    .insert(premiumSettings)
+    .values({ feature, enabled })
+    .onDuplicateKeyUpdate({ set: { enabled } });
+}

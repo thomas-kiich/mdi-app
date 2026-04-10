@@ -114,3 +114,22 @@ export const apiTokens = mysqlTable("api_tokens", {
 
 export type ApiToken = typeof apiTokens.$inferSelect;
 export type InsertApiToken = typeof apiTokens.$inferInsert;
+
+/**
+ * Premium-Freischaltungen – Admin-Schalter
+ * Steuert welche Premium-Bereiche auf der Website zugänglich sind.
+ * Wird vom Admin per Klick im Admin-Panel gesteuert.
+ */
+export const premiumSettings = mysqlTable("premium_settings", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Eindeutiger Schlüssel des Bereichs: 'momentaufnahme' | 'befindlichkeitstraining' | 'trainingscenter' */
+  feature: varchar("feature", { length: 64 }).notNull().unique(),
+  /** true = freigeschaltet, false = gesperrt */
+  enabled: boolean("enabled").default(false).notNull(),
+  /** Optionale Notiz für den Admin */
+  note: text("note"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type PremiumSetting = typeof premiumSettings.$inferSelect;
+export type InsertPremiumSetting = typeof premiumSettings.$inferInsert;
