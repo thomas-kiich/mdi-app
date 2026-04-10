@@ -388,6 +388,15 @@ export default function Momentaufnahme() {
           </Link>
           {anzahlHeute > 0 && (
             <>
+              {/* Neue Aufnahme – immer sichtbar wenn bereits Aufnahmen vorhanden */}
+              <button
+                onClick={startRecording}
+                disabled={isRecording || isProcessing}
+                className="p-2 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors text-white"
+                title="Neue Aufnahme starten"
+              >
+                <Mic className="w-4 h-4" />
+              </button>
               <button
                 onClick={handleExport}
                 className="p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
