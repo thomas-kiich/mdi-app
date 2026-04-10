@@ -725,12 +725,30 @@ export default function Momentaufnahme() {
           </div>
           <div className="flex flex-col gap-3">
             <button
-              onClick={() => {
+              onClick={async () => {
                 localStorage.setItem("kiich_ma_consent", "true");
                 setConsentGiven(true);
                 setShowConsentDialog(false);
-                // Aufnahme direkt starten
-                setTimeout(() => startRecording(), 100);
+                // Aufnahme direkt starten — consentGiven-Closure umgehen
+                try {
+                  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                  streamRef.current = stream;
+                  const mimeType = MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+                    ? "audio/webm;codecs=opus"
+                    : MediaRecorder.isTypeSupported("audio/webm")
+                    ? "audio/webm"
+                    : "audio/mp4";
+                  const recorder = new MediaRecorder(stream, { mimeType });
+                  mediaRecorderRef.current = recorder;
+                  chunksRef.current = [];
+                  recorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) chunksRef.current.push(e.data);
+                  };
+                  recorder.start(250);
+                  setIsRecording(true);
+                } catch {
+                  toast.error("Mikrofon-Zugriff verweigert. Bitte erlaube den Zugriff in den Browser-Einstellungen.");
+                }
               }}
               className="w-full py-3.5 rounded-2xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-colors"
             >
