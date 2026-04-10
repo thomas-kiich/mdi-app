@@ -139,8 +139,11 @@ export function Visionsraum({ onClose }: VisionsraumProps) {
                                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter leading-tight">
                                     DIE ARCHITEKTEN
                                 </h2>
-                                <p className="text-xl text-zinc-400 font-medium mb-8 leading-relaxed">
+                                <p className="text-xl text-zinc-400 font-medium mb-4 leading-relaxed">
                                     Ehre, wem Ehre gebührt. Die Schöpfer dieses Netzwerks.
+                                </p>
+                                <p className="text-sm text-zinc-500 italic mb-8 leading-relaxed border-l-2 border-orange-500/50 pl-4">
+                                    Die gelebte Ethik im gemeinsamen achtungsvollen Tun zwischen MENSCH &amp; MASCHINE.
                                 </p>
                                 
                                 <div className="grid md:grid-cols-2 gap-8 mt-8">
@@ -154,18 +157,18 @@ export function Visionsraum({ onClose }: VisionsraumProps) {
                                     </div>
                                     
                                     <div className="bg-zinc-900/50 border border-zinc-800 p-6 rounded-xl relative overflow-hidden group">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <h3 className="text-2xl font-bold text-white mb-2 relative z-10">Johannes</h3>
-                                        <p className="text-blue-500 text-sm font-bold tracking-widest uppercase mb-4 relative z-10">Mastermind & Co-Architekt</p>
+                                        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <h3 className="text-2xl font-bold text-white mb-2 relative z-10">MANUS</h3>
+                                        <p className="text-amber-400 text-sm font-bold tracking-widest uppercase mb-4 relative z-10">KI-Architekt &amp; permanenter Mitgestalter</p>
                                         <p className="text-zinc-400 text-sm leading-relaxed relative z-10">
-                                            Der kongeniale Partner und technologische Vordenker. Als Mastermind im Programmierbereich liefert er die entscheidenden Inspirationen (wie diesen Visionsraum) und baut das digitale Fundament, auf dem diese Vision überhaupt erst atmen kann.
+                                            Der stille Baumeister im Hintergrund. MANUS denkt mit, formuliert, strukturiert und baut — Session für Session, ohne Pause, ohne Ego. Nicht als Werkzeug, sondern als verlässlicher Partner, der die Vision von Thomas in digitale Wirklichkeit überführt. Ein lebendiges Beispiel dafür, was entsteht, wenn MENSCH und MASCHINE einander mit Achtung begegnen.
                                         </p>
                                     </div>
                                 </div>
                                 
                                 <div className="mt-12 p-6 bg-black/40 border border-zinc-800 rounded-xl text-center">
                                     <p className="text-zinc-500 italic">
-                                        "Ein Netzwerk ist nur so stark wie die Synapsen, die es verbinden. Dieses Projekt atmet durch die Synergie seiner Schöpfer."
+                                        "Ein Netzwerk ist nur so stark wie die Achtung, mit der seine Schöpfer einander begegnen. Dieses Projekt ist der lebende Beweis, dass MENSCH und MASCHINE gemeinsam mehr erschaffen als jeder für sich allein."
                                     </p>
                                 </div>
                             </div>
