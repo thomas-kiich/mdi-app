@@ -685,21 +685,28 @@ export default function Home() {
 
                   <div className="grid md:grid-cols-3 gap-6">
 
-                    {/* MOMENTAUFNAHME - Premium locked */}
-                    <div className="relative bg-zinc-900/60 border border-violet-500/20 rounded-2xl p-6 overflow-hidden cursor-not-allowed select-none">
-                      <div className="absolute inset-0 bg-black/55 z-10 flex flex-col items-center justify-center rounded-2xl">
-                        <Lock className="w-7 h-7 text-amber-400 mb-2" />
-                        <span className="bg-amber-500 text-black text-[10px] font-black px-3 py-1 rounded-full tracking-wider">PREMIUM</span>
-                        <span className="text-zinc-500 text-xs mt-2">Bald verfügbar</span>
-                      </div>
-                      <div className="mb-4">
+                    {/* MOMENTAUFNAHME - Einführungstext frei, Aufnahme gesperrt */}
+                    <div
+                      className="relative bg-zinc-900/60 border border-violet-500/40 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-violet-400/70 transition-all duration-200 group"
+                      onClick={() => setCurrentStep("preparation")}
+                    >
+                      {/* Violetter Glanz oben */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                      <div className="mb-4 flex items-center justify-between">
                         <span className="text-2xl">📸</span>
+                        <span className="inline-flex items-center gap-1 bg-violet-500/15 border border-violet-500/30 text-violet-300 text-[10px] font-black px-2.5 py-1 rounded-full tracking-wider">
+                          <Lock className="w-3 h-3" /> BALD FREI
+                        </span>
                       </div>
                       <h3 className="text-white font-bold tracking-wider text-base mb-1">MOMENTAUFNAHME</h3>
                       <h4 className="text-violet-400 text-sm font-medium mb-3">Wo stehe ich gerade wirklich?</h4>
                       <p className="text-zinc-400 text-sm leading-relaxed">
                         Ein strukturierter Selbst-Check, der dir in wenigen Minuten ein klares Bild deiner aktuellen Lebenssituation gibt. Nicht als Bewertung — sondern als ehrlicher Kompass. Weil Klarheit der erste Schritt zur Veränderung ist.
                       </p>
+                      <div className="mt-4 text-violet-400 text-xs font-medium flex items-center gap-1 group-hover:text-violet-300 transition-colors">
+                        <span>Einführung lesen</span>
+                        <ChevronRight className="w-3 h-3" />
+                      </div>
                     </div>
 
                     {/* TRAININGSCENTER / METHODE 36 - Premium locked */}
