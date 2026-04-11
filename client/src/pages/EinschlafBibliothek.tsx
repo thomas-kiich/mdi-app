@@ -211,6 +211,10 @@ export default function EinschlafBibliothek() {
       return;
     }
 
+    // WICHTIG: Musik SOFORT beim Klick starten (Browser-Autoplay-Policy erfordert
+    // dass audio.play() direkt im Klick-Handler aufgerufen wird, nicht nach async-Wartezeit)
+    startMusik();
+
     if (geschichte.audioUrl) {
       // Bereits gecachtes Audio
       if (!audioRef.current || audioRef.current.src !== geschichte.audioUrl) {
@@ -220,12 +224,10 @@ export default function EinschlafBibliothek() {
           stopMusik(5000); // Musik sanft ausblenden nach Ende
         };
       }
-      // Musik und Sprache gleichzeitig starten (Musik faded sanft ein)
-      await startMusik();
       audioRef.current?.play().catch(e => console.warn("[Audio] Play blockiert:", e));
       setIsPlaying(true);
     } else {
-      // Audio generieren (ElevenLabs)
+      // Audio generieren — Musik läuft bereits, Sprache startet nach Generierung
       setAudioLaedt(true);
       try {
         const result = await audioGenerierenMutation.mutateAsync({ id: geschichte.id });
@@ -235,8 +237,6 @@ export default function EinschlafBibliothek() {
             setIsPlaying(false);
             stopMusik(5000); // Musik sanft ausblenden nach Ende
           };
-          // Musik und Sprache gleichzeitig starten
-          await startMusik();
           audioRef.current?.play().catch(e => console.warn("[Audio] Play blockiert:", e));
           setIsPlaying(true);
           // Lokale Geschichte aktualisieren

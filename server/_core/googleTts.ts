@@ -1,6 +1,6 @@
 /**
  * Google Cloud Text-to-Speech Helper
- * Stimme: de-DE-Chirp3-HD-Zephyr (weiblich, sanft, meditativ)
+ * Stimme: de-DE-Chirp3-HD-Leda (weiblich, weich, meditativ)
  * Free Tier: 1 Million Zeichen/Monat gratis (Chirp3 HD)
  *
  * Authentifizierung über Dienstkonto (Service Account JWT)
@@ -9,7 +9,7 @@
 import { ENV } from "./env";
 
 const TTS_API_URL = "https://texttospeech.googleapis.com/v1/text:synthesize";
-export const TTS_VOICE_NAME = "de-DE-Chirp3-HD-Zephyr";
+export const TTS_VOICE_NAME = "de-DE-Chirp3-HD-Leda";
 const LANGUAGE_CODE = "de-DE";
 
 // ─── JWT-Token für Google API erstellen ──────────────────────────────────────
@@ -90,7 +90,7 @@ export interface SynthesizeOptions {
 }
 
 /**
- * Text in Sprache umwandeln mit MA-Stimme (Zephyr).
+ * Text in Sprache umwandeln mit MA-Stimme (Leda).
  * Gibt einen Buffer mit MP3-Audio zurück.
  */
 export async function synthesizeSpeech(text: string, opts?: SynthesizeOptions): Promise<Buffer> {
@@ -129,7 +129,7 @@ export async function synthesizeSpeech(text: string, opts?: SynthesizeOptions): 
         },
         audioConfig: {
           audioEncoding: "MP3",
-          speakingRate: 0.75,   // Reduziert für meditativere, ruhigere Wirkung (vorher: 0.85)
+          speakingRate: 0.65,   // Deutlich reduziert für trance-artige, meditative Wirkung (vorher: 0.75)
           // Hinweis: Chirp3 HD unterstützt keinen pitch-Parameter
           volumeGainDb: 0.0,
         },

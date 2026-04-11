@@ -318,17 +318,35 @@ export default function Momentaufnahme() {
     setSchlafModusAktiv(true);
     setSchlafMetapherLaedt(true);
 
-    // Hintergrundmusik sofort starten
+    // WICHTIG: Musik und Sprach-Audio-Element SOFORT beim Klick initialisieren
+    // (Browser-Autoplay-Policy: audio.play() muss direkt im Klick-Handler aufgerufen werden)
     if (!schlafAudioRef.current) {
       const audio = new Audio(SCHLAF_MUSIK_URL);
       audio.loop = true;
-      audio.volume = 0.35;
+      audio.volume = 0;
       schlafAudioRef.current = audio;
-    } else {
-      schlafAudioRef.current.volume = 0.35;
     }
     schlafAudioRef.current.currentTime = 0;
-    schlafAudioRef.current.play().catch(() => {});
+    schlafAudioRef.current.volume = 0;
+    // Musik starten und sanft einblenden
+    schlafAudioRef.current.play().then(() => {
+      // Fade-in auf 0.30 in 3 Sekunden
+      const steps = 30;
+      const interval = 3000 / steps;
+      let step = 0;
+      const timer = setInterval(() => {
+        step++;
+        if (schlafAudioRef.current) schlafAudioRef.current.volume = Math.min(0.30, 0.30 * (step / steps));
+        if (step >= steps) clearInterval(timer);
+      }, interval);
+    }).catch(err => console.warn("[Schlaf-Musik] Autoplay blockiert:", err));
+
+    // Sprach-Audio-Element vorab erstellen (im Klick-Kontext) damit Browser play() später erlaubt
+    const sprachAudio = new Audio();
+    sprachAudio.volume = 0.9;
+    // Kurz abspielen und sofort pausieren — "entsperrt" das Element für spätere Nutzung
+    sprachAudio.play().catch(() => {});
+    sprachAudio.pause();
 
     // Schritt 1: KI-Metapher generieren
     let textZumVorlesen = summaryText;
@@ -341,33 +359,28 @@ export default function Momentaufnahme() {
       setSchlafMetapherLaedt(false);
     }
 
-    // Schritt 2: ElevenLabs TTS versuchen, dann Web Speech als Fallback
+    // Schritt 2: Google TTS, dann Web Speech als Fallback
     const onAudioEnde = () => {
       if (schlafAudioRef.current) fadeOutAudio(schlafAudioRef.current, 5000);
     };
 
-    setTimeout(async () => {
-      try {
-        const ttsResult = await elevenLabsTTSMutation.mutateAsync({ text: textZumVorlesen });
-        if (ttsResult.audioBase64 && !ttsResult.fallback) {
-          // ElevenLabs Audio abspielen
-          const audioSrc = `data:${ttsResult.mimeType};base64,${ttsResult.audioBase64}`;
-          const elAudio = new Audio(audioSrc);
-          elAudio.volume = 0.9;
-          elAudio.onended = onAudioEnde;
-          elAudio.play().catch(() => {
-            // Autoplay blockiert — Web Speech Fallback
-            speak(textZumVorlesen, onAudioEnde);
-          });
-        } else {
-          // Kein ElevenLabs — Web Speech
+    try {
+      const ttsResult = await elevenLabsTTSMutation.mutateAsync({ text: textZumVorlesen });
+      if (ttsResult.audioBase64 && !ttsResult.fallback) {
+        // Google TTS Audio über vorbereitetes Element abspielen
+        const audioSrc = `data:${ttsResult.mimeType};base64,${ttsResult.audioBase64}`;
+        sprachAudio.src = audioSrc;
+        sprachAudio.onended = onAudioEnde;
+        sprachAudio.play().catch(() => {
+          // Fallback: Web Speech
           speak(textZumVorlesen, onAudioEnde);
-        }
-      } catch {
-        // Fehler — Web Speech Fallback
+        });
+      } else {
         speak(textZumVorlesen, onAudioEnde);
       }
-    }, 1500);
+    } catch {
+      speak(textZumVorlesen, onAudioEnde);
+    }
   }, [summaryText, speak, fadeOutAudio, SCHLAF_MUSIK_URL, schlafMetapherMutation, elevenLabsTTSMutation]);
 
   const stopSchlafModus = useCallback(() => {

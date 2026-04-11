@@ -875,3 +875,6 @@
 - [ ] BUG: Hintergrundmusik in Einschlaf-Bibliothek nicht hörbar
 - [ ] BUG: Audio-Cache löschen (neues Sprechtempo 0.75 wirkt nur bei neu generierten Audios)
 - [x] MOMENTAUFNAHME Erklärungstext: Selbstbestimmungs-Prinzip "Keine Ratschläge" prominent einbauen
+- [x] Stimme: Wechsel von Zephyr auf Leda (weicher, meditativ)
+- [x] Tempo: von 0.75 auf 0.65 reduzieren
+- [x] BUG: Hintergrundmusik nicht hörbar — Musik sofort im Klick-Handler starten (Autoplay-Fix)
