@@ -890,3 +890,7 @@
 - [x] Mikrofon-Button neben Personalisierungsfeld in Einschlaf-Bibliothek
 - [x] Web Speech API (SpeechRecognition) für Browser-seitige Transkription
 - [x] Fallback-Hinweis wenn Browser kein Web Speech API unterstützt
+
+## Audio-Verbesserungen (Priorität hoch)
+- [x] BUG FINAL: Hintergrundmusik nicht hörbar — Audio-Element im DOM vorhalten
+- [x] FEATURE: Raumhall (Reverb) via Web Audio API auf MA-Stimme

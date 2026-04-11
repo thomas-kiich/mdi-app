@@ -168,51 +168,41 @@ export default function EinschlafBibliothek() {
   // Schlaf-Musik URL (dieselbe wie im Schlaf-Modus)
   const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlauntermalung_MAapp_3deef3ee.wav";
 
-  // Musik sanft einblenden
-  const startMusik = useCallback(async () => {
-    if (!musikRef.current) {
-      musikRef.current = new Audio(SCHLAF_MUSIK_URL);
-      musikRef.current.loop = true;
-      musikRef.current.volume = 0;
-      musikRef.current.preload = "auto";
+  // Musik: DOM-Audio-Element per Ref (preload="auto" im JSX)
+  const startMusik = useCallback(() => {
+    const el = musikRef.current;
+    if (!el) return;
+    el.volume = 0;
+    el.currentTime = 0;
+    const playPromise = el.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(err => console.warn("[Musik] Autoplay blockiert:", err));
     }
-    musikRef.current.currentTime = 0;
-    musikRef.current.volume = 0;
-    try {
-      await musikRef.current.play();
-    } catch (err) {
-      console.warn("[Musik] Autoplay blockiert:", err);
-      // Trotzdem Fade-in versuchen (manche Browser erlauben es nach kurzer Zeit)
-    }
-    // Fade-in auf 0.30 in 3 Sekunden
-    const steps = 30;
-    const interval = 3000 / steps;
+    // Fade-in auf 0.28 in 4 Sekunden
     let step = 0;
+    const steps = 40;
     const timer = setInterval(() => {
       step++;
-      if (musikRef.current) musikRef.current.volume = Math.min(0.30, 0.30 * (step / steps));
+      if (el) el.volume = Math.min(0.28, 0.28 * (step / steps));
       if (step >= steps) clearInterval(timer);
-    }, interval);
-  }, [SCHLAF_MUSIK_URL]);
+    }, 4000 / steps);
+  }, []);
 
   // Musik sanft ausblenden
   const stopMusik = useCallback((durationMs = 5000) => {
-    if (!musikRef.current) return;
-    const audio = musikRef.current;
-    const startVol = audio.volume;
+    const el = musikRef.current;
+    if (!el) return;
+    const startVol = el.volume;
     const steps = 40;
-    const interval = durationMs / steps;
     let step = 0;
     const timer = setInterval(() => {
       step++;
-      audio.volume = Math.max(0, startVol * (1 - step / steps));
+      if (el) el.volume = Math.max(0, startVol * (1 - step / steps));
       if (step >= steps) {
         clearInterval(timer);
-        audio.pause();
-        audio.currentTime = 0;
-        audio.volume = 0.30;
+        if (el) { el.pause(); el.currentTime = 0; el.volume = 0.28; }
       }
-    }, interval);
+    }, durationMs / steps);
   }, []);
 
   // tRPC
@@ -302,44 +292,84 @@ export default function EinschlafBibliothek() {
     }
   }, [aktiveGeschichte, korrekturAbschnitt, korrekturHinweis, stelleKorrigierenMutation, refetch]);
 
+  // Web Audio Context für Raumhall
+  const audioCtxRef = useRef<AudioContext | null>(null);
+
+  // Synthetischer Reverb: Impulsantwort aus weissem Rauschen
+  const createReverbBuffer = (ctx: AudioContext, durationSec: number, decay: number): AudioBuffer => {
+    const rate = ctx.sampleRate;
+    const length = rate * durationSec;
+    const buffer = ctx.createBuffer(2, length, rate);
+    for (let ch = 0; ch < 2; ch++) {
+      const data = buffer.getChannelData(ch);
+      for (let i = 0; i < length; i++) {
+        data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, decay);
+      }
+    }
+    return buffer;
+  };
+
+  // Spielt Audio-URL mit Raumhall ab
+  const playWithReverb = useCallback((url: string, onEnded: () => void) => {
+    if (!audioCtxRef.current || audioCtxRef.current.state === "closed") {
+      audioCtxRef.current = new AudioContext();
+    }
+    const ctx = audioCtxRef.current;
+
+    const el = new Audio(url);
+    el.crossOrigin = "anonymous";
+    audioRef.current = el;
+
+    const source = ctx.createMediaElementSource(el);
+
+    // Reverb
+    const convolver = ctx.createConvolver();
+    convolver.buffer = createReverbBuffer(ctx, 2.5, 3.0);
+
+    // Dry/Wet Mix: 70% trocken, 30% Hall
+    const dryGain = ctx.createGain();
+    dryGain.gain.value = 0.70;
+    const wetGain = ctx.createGain();
+    wetGain.gain.value = 0.30;
+
+    source.connect(dryGain);
+    source.connect(convolver);
+    convolver.connect(wetGain);
+    dryGain.connect(ctx.destination);
+    wetGain.connect(ctx.destination);
+
+    el.onended = onEnded;
+    el.play().catch(e => console.warn("[Audio+Reverb] Play blockiert:", e));
+  }, []);
+
   // Audio abspielen / pausieren
   const handleAudio = useCallback(async (geschichte: Geschichte) => {
     if (isPlaying && audioRef.current) {
       audioRef.current.pause();
       setIsPlaying(false);
-      stopMusik(2000); // Musik sanft ausblenden beim Pausieren
+      stopMusik(2000);
       return;
     }
 
-    // WICHTIG: Musik SOFORT beim Klick starten (Browser-Autoplay-Policy erfordert
-    // dass audio.play() direkt im Klick-Handler aufgerufen wird, nicht nach async-Wartezeit)
+    // WICHTIG: Musik SOFORT beim Klick starten (Browser-Autoplay-Policy)
     startMusik();
 
+    const onEnded = () => {
+      setIsPlaying(false);
+      stopMusik(5000);
+    };
+
     if (geschichte.audioUrl) {
-      // Bereits gecachtes Audio
-      if (!audioRef.current || audioRef.current.src !== geschichte.audioUrl) {
-        audioRef.current = new Audio(geschichte.audioUrl);
-        audioRef.current.onended = () => {
-          setIsPlaying(false);
-          stopMusik(5000); // Musik sanft ausblenden nach Ende
-        };
-      }
-      audioRef.current?.play().catch(e => console.warn("[Audio] Play blockiert:", e));
+      playWithReverb(geschichte.audioUrl, onEnded);
       setIsPlaying(true);
     } else {
-      // Audio generieren — Musik läuft bereits, Sprache startet nach Generierung
+      // Audio generieren — Musik läuft bereits
       setAudioLaedt(true);
       try {
         const result = await audioGenerierenMutation.mutateAsync({ id: geschichte.id });
         if (result.audioUrl) {
-          audioRef.current = new Audio(result.audioUrl);
-          audioRef.current.onended = () => {
-            setIsPlaying(false);
-            stopMusik(5000); // Musik sanft ausblenden nach Ende
-          };
-          audioRef.current?.play().catch(e => console.warn("[Audio] Play blockiert:", e));
+          playWithReverb(result.audioUrl, onEnded);
           setIsPlaying(true);
-          // Lokale Geschichte aktualisieren
           setAktiveGeschichte(prev => prev ? { ...prev, audioUrl: result.audioUrl } : prev);
           refetch();
         }
@@ -347,7 +377,7 @@ export default function EinschlafBibliothek() {
         setAudioLaedt(false);
       }
     }
-  }, [isPlaying, audioGenerierenMutation, refetch, startMusik, stopMusik]);
+  }, [isPlaying, audioGenerierenMutation, refetch, startMusik, stopMusik, playWithReverb]);
 
   const handleGenerieren = useCallback(() => {
     if (!gewaehlteKategorie || !gewaehlteThema.trim()) {
@@ -397,6 +427,14 @@ export default function EinschlafBibliothek() {
     const info = KATEGORIE_INFO[aktiveGeschichte.kategorie];
     return (
       <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
+        {/* Verstecktes Musik-Audio-Element — preload="auto" lädt im Hintergrund vor */}
+        <audio
+          ref={musikRef}
+          src={SCHLAF_MUSIK_URL}
+          loop
+          preload="auto"
+          style={{ display: "none" }}
+        />
         {/* Header */}
         <header className="px-5 pt-6 pb-4 flex items-center justify-between">
           <button
