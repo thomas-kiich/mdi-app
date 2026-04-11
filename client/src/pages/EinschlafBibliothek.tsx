@@ -172,7 +172,19 @@ export default function EinschlafBibliothek() {
   });
 
   const favoritMutation = trpc.einschlafBibliothek.favoritToggle.useMutation({
+    onMutate: ({ id }) => {
+      // Optimistisches Update: Stern sofort umschalten
+      if (aktiveGeschichte?.id === id) {
+        setAktiveGeschichte(prev => prev ? { ...prev, favorit: !prev.favorit } : prev);
+      }
+    },
     onSuccess: () => refetch(),
+    onError: () => {
+      // Rollback: Stern zurücksetzen
+      if (aktiveGeschichte) {
+        setAktiveGeschichte(prev => prev ? { ...prev, favorit: !prev.favorit } : prev);
+      }
+    },
   });
 
   const loeschenMutation = trpc.einschlafBibliothek.loeschen.useMutation({

@@ -849,3 +849,8 @@
 
 ## Bugfix Einschlaf-Bibliothek
 - [x] BUG: "Neue Geschichte erstellen"-Button verschwindet wenn bereits eine Geschichte vorhanden ist — Button im Header violett + unter der Liste als zusätzlicher Button
+
+## Favoriten Einschlaf-Bibliothek
+- [x] Favoriten-Button in Lese-Ansicht: Stern-Button zum Markieren/Entmarkieren (war bereits implementiert, optimistisches Update hinzugefügt)
+- [x] Backend: favorit.setzen Mutation (toggle favorit-Feld in DB — war bereits vorhanden)
+- [x] Favoriten erscheinen oben in der Bibliotheksliste (war bereits implementiert)
