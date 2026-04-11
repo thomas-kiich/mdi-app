@@ -169,3 +169,20 @@ export const einschlafBibliothek = mysqlTable("einschlaf_bibliothek", {
 
 export type EinschlafBibliothek = typeof einschlafBibliothek.$inferSelect;
 export type InsertEinschlafBibliothek = typeof einschlafBibliothek.$inferInsert;
+
+/**
+ * Gespeicherte Tages-Summaries — damit das letzte Summary beim nächsten Öffnen sofort sichtbar ist.
+ * Pro User wird immer nur das letzte Summary gespeichert (upsert auf userId).
+ */
+export const tagesSummaries = mysqlTable("tages_summaries", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  text: text("text").notNull(),
+  datum: varchar("datum", { length: 100 }).notNull(),
+  anzahlAufnahmen: int("anzahlAufnahmen").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TagesSummary = typeof tagesSummaries.$inferSelect;
+export type InsertTagesSummary = typeof tagesSummaries.$inferInsert;

@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { desc, eq, and, gte } from "drizzle-orm";
 import { z } from "zod";
-import { momentaufnahmen, users } from "../../drizzle/schema";
+import { momentaufnahmen, users, tagesSummaries } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
 import { transcribeAudio } from "../_core/voiceTranscription";
 import { protectedProcedure, router } from "../_core/trpc";
@@ -322,12 +322,36 @@ Wichtig: Beginne DIREKT mit dem Inhalt. Kein Einleitungssatz wie "Hier ist dein 
 
     const rawSummary = response.choices?.[0]?.message?.content;
     const summaryText = typeof rawSummary === "string" ? rawSummary : "Heute war ein besonderer Tag.";
+    const datum = new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+    // Summary in DB speichern (upsert: altes überschreiben)
+    try {
+      const existing = await db.select({ id: tagesSummaries.id }).from(tagesSummaries).where(eq(tagesSummaries.userId, ctx.user.id)).limit(1);
+      if (existing.length > 0) {
+        await db.update(tagesSummaries).set({ text: summaryText, datum, anzahlAufnahmen: aufnahmen.length }).where(eq(tagesSummaries.userId, ctx.user.id));
+      } else {
+        await db.insert(tagesSummaries).values({ userId: ctx.user.id, text: summaryText, datum, anzahlAufnahmen: aufnahmen.length });
+      }
+    } catch {
+      // Speicherfehler ignorieren — Summary trotzdem zurückgeben
+    }
 
     return {
       text: summaryText,
       anzahl: aufnahmen.length,
-      datum: new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" }),
+      datum,
     };
+  }),
+
+  /**
+   * Letztes gespeichertes Summary abrufen — für sofortige Anzeige beim Öffnen der Seite.
+   */
+  letztesSummary: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) return null;
+    const rows = await db.select().from(tagesSummaries).where(eq(tagesSummaries.userId, ctx.user.id)).limit(1);
+    if (rows.length === 0) return null;
+    return rows[0];
   }),
 
   /**

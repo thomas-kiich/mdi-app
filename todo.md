@@ -829,3 +829,7 @@
 
 ## Premium-Lock Bugfix
 - [x] BUG: Premium-Lock fehlt bei Stimmklang-Analyse, Vital Monitor, Frequenz-Labor, Wissenspool, Schlafoptimierung, Visionsraum, Lichtklangtabelle (DB-Werte auf false gesetzt)
+
+## Momentaufnahme UX-Fix
+- [x] BUG: Momentaufnahme zeigt beim Öffnen immer die Startseite mit Allgemeintexten, auch wenn Aufnahmen/Summary vorhanden — letztes Summary wird jetzt persistent in DB gespeichert und beim Öffnen sofort angezeigt
+- [x] BUG: Kein Summary und keine Optionen sichtbar obwohl Aufnahmen von gestern gespeichert sind — letztesSummary-Query lädt beim Start automatisch

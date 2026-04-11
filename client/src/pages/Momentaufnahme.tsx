@@ -223,6 +223,10 @@ export default function Momentaufnahme() {
     undefined,
     { enabled: isAuthenticated }
   );
+  const { data: letztesSummaryData } = trpc.momentaufnahme.letztesSummary.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
 
   // Vorname aus Profil laden und ggf. Dialog zeigen
   // Nur einmal fragen — wenn User "Später" geklickt hat, nicht mehr nerven
@@ -377,6 +381,15 @@ export default function Momentaufnahme() {
       }
     };
   }, []);
+
+  // Letztes gespeichertes Summary beim Öffnen sofort anzeigen
+  useEffect(() => {
+    if (letztesSummaryData && letztesSummaryData.text && !summaryText) {
+      setSummaryText(letztesSummaryData.text);
+      setSummaryDatum(letztesSummaryData.datum);
+      setShowSummary(true);
+    }
+  }, [letztesSummaryData, summaryText]);
 
   // Aufnahme starten — mit DSGVO-Einwilligungsprüfung
   const startRecording = useCallback(async () => {
@@ -834,7 +847,21 @@ export default function Momentaufnahme() {
       <div className="flex-1 overflow-y-auto px-5 pb-44">
         {anzahlHeute === 0 ? (
           <div className="flex flex-col items-center pt-6 pb-44 text-center">
-            {/* Tagline + Claim */}
+            {/* Wenn letztes Summary vorhanden: kompakter Hinweis statt langer Werbetexte */}
+            {letztesSummaryData ? (
+              <div className="w-full max-w-sm mx-auto mb-8 px-2">
+                <p className="text-white/40 text-xs text-center mb-6">
+                  Noch keine neuen Aufnahmen heute · Dein letztes Summary ist oben sichtbar.
+                </p>
+                <div className="text-center">
+                  <div className="text-4xl mb-3 opacity-40">🎤</div>
+                  <p className="text-white/30 text-xs">Tippe auf den Mikrofon-Button und sprich deinen ersten Gedanken.</p>
+                  <p className="text-white/20 text-xs mt-1">MA ordnet ihn automatisch in eines der 6 Gravitationszentren ein.</p>
+                </div>
+              </div>
+            ) : null}
+            {/* Tagline + Claim — nur anzeigen wenn noch kein Summary vorhanden */}
+            {!letztesSummaryData && <div>
             <div className="mb-8 px-2">
               <p className="text-xs font-semibold tracking-[0.2em] text-violet-400 uppercase mb-3">
                 NIE WIEDER VERGESSEN WAS DU BEHALTEN MÖCHTEST
@@ -892,7 +919,7 @@ export default function Momentaufnahme() {
 
             {/* Aufnahme-Hinweis */}
             <div className="text-center">
-              <div className="text-4xl mb-3 opacity-40">🎙️</div>
+              <div className="text-4xl mb-3 opacity-40">🎤️</div>
               <p className="text-white/30 text-xs">
                 Tippe auf den Mikrofon-Button und sprich deinen ersten Gedanken.
               </p>
@@ -900,6 +927,7 @@ export default function Momentaufnahme() {
                 MA ordnet ihn automatisch in eines der 6 Gravitationszentren ein.
               </p>
             </div>
+            </div>}
           </div>
         ) : (
           <div className="space-y-3">

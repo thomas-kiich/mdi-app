@@ -57,6 +57,13 @@
       "when": 1775847755027,
       "tag": "0007_nice_magma",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1775889900871,
+      "tag": "0008_nifty_doctor_doom",
+      "breakpoints": true
     }
   ]
 }
