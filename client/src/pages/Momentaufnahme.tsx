@@ -666,6 +666,15 @@ export default function Momentaufnahme() {
           </div>
         </div>
         <div className="flex gap-2">
+          {/* Einschlaf-Bibliothek-Link */}
+          <Link href="/einschlafen">
+            <button
+              className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <span className="text-sm leading-none">🌙</span>
+              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Einschlaf-Bibliothek</span>
+            </button>
+          </Link>
           {/* Archiv-Link */}
           <Link href="/momentaufnahme/archiv">
             <button
@@ -930,74 +939,25 @@ export default function Momentaufnahme() {
                 </div>
               </div>
             ) : null}
-            {/* Tagline + Claim — nur anzeigen wenn noch kein Summary vorhanden */}
-            {!letztesSummaryData && <div>
-            <div className="mb-8 px-2">
-              <p className="text-xs font-semibold tracking-[0.2em] text-violet-400 uppercase mb-3">
-                NIE WIEDER VERGESSEN WAS DU BEHALTEN MÖCHTEST
-              </p>
-              <p className="text-white/70 text-sm leading-relaxed max-w-sm">
-                Sichere deine besten Ideen, die wichtigsten Erkenntnisse, die echten Eindrücke
-                und deine tiefsten Empfindungen – in jedem Moment deines Tages.
-              </p>
-              <p className="text-white/50 text-sm leading-relaxed max-w-sm mt-3">
-                Organisiere dein Leben neu – in nie dagewesener Qualität und Übersicht.
-                Erstelle dein <span className="text-white font-semibold">ZWEITES GEHIRN</span> –
-                nur dir selbst zugänglich, bestens aufbereitet, optimal nutzbar.
-              </p>
-            </div>
-
-            {/* Zitat-Karte */}
-            <div className="w-full max-w-sm mx-auto mb-8 p-4 rounded-2xl bg-gradient-to-br from-violet-900/30 to-blue-900/20 border border-violet-500/20">
-              <p className="text-white/60 text-sm italic leading-relaxed">
-                „Die besten Ideen fallen ein, wenn man loslässt – beim Duschen, auf der Toilette,
-                beim Spazierengehen, beim Angeln..."
-              </p>
-              <p className="text-violet-400 text-xs mt-3 font-medium">
-                ✦ Der MOMENT entscheidet – erlöse deine wichtigsten Momente in die Zeitlosigkeit.
-              </p>
-            </div>
-
-            {/* Mobilgeräte-Vorteil */}
-            <div className="w-full max-w-sm mx-auto mb-8 p-4 rounded-2xl bg-gradient-to-br from-indigo-900/20 to-violet-900/20 border border-indigo-500/20 flex items-start gap-3">
-              <span className="text-2xl mt-0.5">📱</span>
-              <div>
-                <p className="text-indigo-300 text-xs font-semibold tracking-wide uppercase mb-1">Immer dabei · überall</p>
-                <p className="text-white/60 text-sm leading-relaxed">
-                  MA läuft auf jedem Gerät — Handy, Tablet, Computer. Deine Aufnahmen sind sofort auf allen Geräten sichtbar. Nimm im Wald auf, lies das Summary am Abend am Computer, höre es auf dem Handy beim Einschlafen.
-                </p>
-                <p className="text-indigo-400/60 text-xs mt-2">
-                  ✔ Kein Download nötig · einfach kiich.de im Browser öffnen
-                </p>
+            {/* Erster Start — kompakter Willkommenstext */}
+            {!letztesSummaryData && (
+              <div className="w-full max-w-sm mx-auto px-2">
+                <div className="mb-8 p-5 rounded-2xl bg-gradient-to-br from-violet-900/30 to-blue-900/20 border border-violet-500/20 text-center">
+                  <p className="text-violet-300 text-xs font-semibold tracking-widest uppercase mb-3">Willkommen bei MA</p>
+                  <p className="text-white/70 text-sm leading-relaxed">
+                    Sprich deinen ersten Gedanken — MA hört zu, ordnet ein und fasst zusammen.
+                  </p>
+                  <p className="text-white/40 text-xs mt-3 leading-relaxed">
+                    Nach deiner ersten Aufnahme erscheint hier dein persönliches Tages-Summary.
+                  </p>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl mb-3 opacity-40">🎤</div>
+                  <p className="text-white/30 text-xs">Tippe auf den Mikrofon-Button und sprich deinen ersten Gedanken.</p>
+                  <p className="text-white/20 text-xs mt-1">MA ordnet ihn automatisch in eines der 6 Gravitationszentren ein.</p>
+                </div>
               </div>
-            </div>
-
-            {/* MA als Hüterin */}
-            <div className="w-full max-w-sm mx-auto mb-8 px-2">
-              <p className="text-white/40 text-xs leading-relaxed">
-                MA ist wie eine Mutter, die alles für dich bereit hält – behutsam, strukturiert,
-                vollständig.{" "}
-                <strong className="text-white/80">Am Abend bist du erstaunt und dankbar: ALLES DA! – was schon vergessen war – MA hat es aufbereitet und zusammengefasst.</strong>{" "}
-                Die Hüterin deines geistigen Potentials. Dein zweites Gehirn.
-                Deine Chefsekretärin. Alles nur dir selbst zugänglich –{" "}
-                <strong className="text-white/80">gesichert als Schatz deiner einzigartigen IDENTITÄT.</strong>
-              </p>
-            </div>
-
-            {/* Wissenschaftseinschub: Schlaf & Traum */}
-            <WissenschaftsEinschub />
-
-            {/* Aufnahme-Hinweis */}
-            <div className="text-center">
-              <div className="text-4xl mb-3 opacity-40">🎤️</div>
-              <p className="text-white/30 text-xs">
-                Tippe auf den Mikrofon-Button und sprich deinen ersten Gedanken.
-              </p>
-              <p className="text-white/20 text-xs mt-1">
-                MA ordnet ihn automatisch in eines der 6 Gravitationszentren ein.
-              </p>
-            </div>
-            </div>}
+            )}
           </div>
         ) : (
           <div className="space-y-3">

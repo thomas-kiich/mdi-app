@@ -842,3 +842,7 @@
 - [x] Button-Text "Summary aktualisieren" wenn bereits Summary vorhanden
 - [x] Summary-Archiv: letzte 7 Einträge abrufbar (Datum + erste Zeile + Volltext)
 - [x] Vorname in Einschlaf-Bibliothek einbinden (Märchen + Abenteuer personalisiert — war bereits implementiert)
+
+## Bugs Session N (11.04.2026)
+- [x] BUG: Momentaufnahme-Startseite zeigt immer noch Allgemeintext + Mikrofon statt letztem Summary (DB war leer nach Migration; Leerseite durch kompakten Willkommenstext ersetzt)
+- [x] BUG: Einschlaf-Bibliothek nicht auffindbar — 🌙-Button im Header der Momentaufnahme-Seite eingebaut
