@@ -859,3 +859,9 @@
 - [x] BUG: Audio-Generierung in Einschlaf-Bibliothek schlägt fehl — "Audio konnte nicht generiert werden ElevenLabs"
 - [x] FIX: Text vor ElevenLabs-Aufruf auf max. 2500 Zeichen kürzen (Timeout auf kiich.de)
 - [x] FIX: Bessere Fehlermeldung bei ElevenLabs-Timeout
+
+## Google Cloud TTS Umstieg (statt ElevenLabs)
+- [x] Google Cloud API-Key einrichten (Chirp3 HD, de-DE-Chirp3-HD-Zephyr)
+- [x] Backend: Google Cloud TTS statt ElevenLabs in einschlafBibliothek.ts
+- [x] Backend: Google Cloud TTS statt ElevenLabs in momentaufnahme.ts
+- [x] ENV: Google TTS Dienstkonto-Credentials als Secrets gesetzt

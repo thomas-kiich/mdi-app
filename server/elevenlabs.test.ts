@@ -1,10 +1,11 @@
 import { describe, it, expect } from "vitest";
 
 /**
- * Validiert den ElevenLabs API-Key durch einen TTS-Aufruf mit minimalem Text.
- * Prüft ob der Key die text_to_speech Berechtigung hat (die für unsere App benötigt wird).
+ * ElevenLabs wurde durch Google Cloud TTS (de-DE-Chirp3-HD-Zephyr) ersetzt.
+ * Diese Tests sind deaktiviert (ElevenLabs Free Tier ist auf Cloud-Servern gesperrt).
+ * Siehe: server/googleTts.test.ts für die aktiven TTS-Tests.
  */
-describe("ElevenLabs API-Key Validierung", () => {
+describe.skip("ElevenLabs API-Key Validierung (deaktiviert – Google TTS wird verwendet)", () => {
   it("sollte TTS mit dem API-Key und der Voice-ID aufrufen können", async () => {
     const apiKey = process.env.ELEVENLABS_API_KEY;
     const voiceId = process.env.ELEVENLABS_VOICE_ID;

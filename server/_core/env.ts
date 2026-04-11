@@ -9,4 +9,8 @@ export const ENV = {
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
   elevenLabsApiKey: process.env.ELEVENLABS_API_KEY ?? "",
   elevenLabsVoiceId: process.env.ELEVENLABS_VOICE_ID ?? "",
+  googleTtsClientEmail: process.env.GOOGLE_TTS_CLIENT_EMAIL ?? "",
+  googleTtsPrivateKey: process.env.GOOGLE_TTS_PRIVATE_KEY ?? "",
+  googleTtsPrivateKeyId: process.env.GOOGLE_TTS_PRIVATE_KEY_ID ?? "",
+  googleTtsProjectId: process.env.GOOGLE_TTS_PROJECT_ID ?? "",
 };

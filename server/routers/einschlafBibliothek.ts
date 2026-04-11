@@ -5,8 +5,8 @@ import { getDb } from "../db";
 import { einschlafBibliothek, users } from "../../drizzle/schema";
 import { protectedProcedure, router } from "../_core/trpc";
 import { invokeLLM } from "../_core/llm";
-import { ENV } from "../_core/env";
 import { storagePut } from "../storage";
+import { synthesizeSpeech } from "../_core/googleTts";
 
 // ─── Themen-Katalog ───────────────────────────────────────────────────────────
 
@@ -195,7 +195,8 @@ Schreibe jetzt die Einschlaf-Metapher.`;
     }),
 
   /**
-   * ElevenLabs Audio für eine Geschichte generieren und in S3 speichern.
+   * Google Cloud TTS Audio für eine Geschichte generieren und in S3 speichern.
+   * Stimme: de-DE-Chirp3-HD-Zephyr (weiblich, sanft, meditativ)
    * Das Audio wird beim ersten Abspielen generiert und gecacht.
    */
   audioGenerieren: protectedProcedure
@@ -219,85 +220,20 @@ Schreibe jetzt die Einschlaf-Metapher.`;
         return { audioUrl: geschichte.audioUrl, cached: true };
       }
 
-      // ElevenLabs prüfen
-      if (!ENV.elevenLabsApiKey || !ENV.elevenLabsVoiceId) {
-        throw new TRPCError({
-          code: "PRECONDITION_FAILED",
-          message: "ElevenLabs nicht konfiguriert – API-Key oder Voice-ID fehlt auf dem Server",
-        });
-      }
-
-      // Text auf max. 2500 Zeichen kürzen (am letzten Satzende vor dem Limit)
-      const MAX_TTS_CHARS = 2500;
-      let ttsText = geschichte.text;
-      if (ttsText.length > MAX_TTS_CHARS) {
-        // Am letzten Satzende (. ! ?) vor dem Limit kürzen
-        const cutoff = ttsText.lastIndexOf(".", MAX_TTS_CHARS);
-        const cutoffAlt = Math.max(
-          ttsText.lastIndexOf("!", MAX_TTS_CHARS),
-          ttsText.lastIndexOf("?", MAX_TTS_CHARS)
-        );
-        const bestCut = Math.max(cutoff, cutoffAlt);
-        ttsText = bestCut > 1000 ? ttsText.slice(0, bestCut + 1) : ttsText.slice(0, MAX_TTS_CHARS);
-        console.log(`[ElevenLabs] Text von ${geschichte.text.length} auf ${ttsText.length} Zeichen gekürzt`);
-      }
-
-      // TTS generieren mit 45s Timeout
-      const abortController = new AbortController();
-      const timeoutId = setTimeout(() => abortController.abort(), 45_000);
-
-      let ttsResponse: Response;
+      // Google TTS aufrufen
+      let audioBuffer: Buffer;
       try {
-        ttsResponse = await fetch(
-          `https://api.elevenlabs.io/v1/text-to-speech/${ENV.elevenLabsVoiceId}`,
-          {
-            method: "POST",
-            headers: {
-              "xi-api-key": ENV.elevenLabsApiKey,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              text: ttsText,
-              model_id: "eleven_multilingual_v2",
-              voice_settings: {
-                stability: 0.55,
-                similarity_boost: 0.80,
-                style: 0.15,
-                use_speaker_boost: true,
-              },
-            }),
-            signal: abortController.signal,
-          }
-        );
-      } catch (fetchErr: unknown) {
-        clearTimeout(timeoutId);
-        const isTimeout = fetchErr instanceof Error && fetchErr.name === "AbortError";
+        audioBuffer = await synthesizeSpeech(geschichte.text);
+      } catch (err: unknown) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
-          message: isTimeout
-            ? "ElevenLabs Timeout – die Stimme braucht zu lange. Bitte versuche es erneut."
-            : `ElevenLabs Verbindungsfehler: ${fetchErr instanceof Error ? fetchErr.message : String(fetchErr)}`,
-        });
-      } finally {
-        clearTimeout(timeoutId);
-      }
-
-      if (!ttsResponse.ok) {
-        let detail = "";
-        try {
-          const errBody = await ttsResponse.json();
-          detail = errBody?.detail?.message ?? JSON.stringify(errBody);
-        } catch {}
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: `ElevenLabs API-Fehler ${ttsResponse.status}${detail ? ": " + detail : ""}`,
+          message: `Audio-Generierung fehlgeschlagen: ${err instanceof Error ? err.message : String(err)}`,
         });
       }
 
       // In S3 speichern
-      const audioBuffer = await ttsResponse.arrayBuffer();
       const fileKey = `einschlaf-audio/${ctx.user.id}/${input.id}-${Date.now()}.mp3`;
-      const { url } = await storagePut(fileKey, Buffer.from(audioBuffer), "audio/mpeg");
+      const { url } = await storagePut(fileKey, audioBuffer, "audio/mpeg");
 
       // URL in DB speichern
       await db

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { momentaufnahmen, users, tagesSummaries } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
 import { transcribeAudio } from "../_core/voiceTranscription";
+import { synthesizeSpeech } from "../_core/googleTts";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 
@@ -531,93 +532,24 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
     }),
 
   /**
-   * ElevenLabs TTS: Text in Audio umwandeln und als Base64 zurückgeben.
-   * Budget-Schutz: max. 5 Aufrufe pro User pro Tag.
-   * Fallback: gibt null zurück wenn ElevenLabs nicht konfiguriert ist.
+   * Google Cloud TTS: Text in Audio umwandeln und als Base64 zurückgeben.
+   * Stimme: de-DE-Chirp3-HD-Zephyr (weiblich, sanft, meditativ)
+   * Fallback: gibt null zurück wenn Google TTS nicht verfügbar ist.
    */
   elevenLabsTTS: protectedProcedure
     .input(z.object({
-      text: z.string().min(1).max(2000),
-      voiceId: z.string().optional(), // Optional: überschreibt Standard-Voice
+      text: z.string().min(1).max(4500),
+      voiceId: z.string().optional(), // Wird ignoriert, Zephyr wird immer verwendet
     }))
     .mutation(async ({ input, ctx }) => {
-      const { ENV } = await import("../_core/env");
-
-      // Prüfen ob ElevenLabs konfiguriert ist
-      if (!ENV.elevenLabsApiKey || !ENV.elevenLabsVoiceId) {
-        return { audioBase64: null, mimeType: null, fallback: true };
-      }
-
-      const voiceId = input.voiceId ?? ENV.elevenLabsVoiceId;
-
-      // Budget-Schutz: max. 5 Aufrufe pro User pro Tag
-      const db = await getDb();
-      if (db) {
-        const heute = new Date();
-        heute.setHours(0, 0, 0, 0);
-        const heutigeAufnahmen = await db
-          .select({ id: momentaufnahmen.id })
-          .from(momentaufnahmen)
-          .where(and(eq(momentaufnahmen.userId, ctx.user.id), gte(momentaufnahmen.createdAt, heute)));
-        // Wir nutzen Aufnahmen-Count als Proxy — TTS-spezifisches Limit wäre eine eigene Tabelle
-        // Für jetzt: kein hartes Limit, nur Logging
-        console.log(`[ElevenLabs] User ${ctx.user.id} TTS-Aufruf, ${heutigeAufnahmen.length} Aufnahmen heute`);
-      }
-
-      // Timeout-Schutz: 45 Sekunden
-      const abortCtrl = new AbortController();
-      const tId = setTimeout(() => abortCtrl.abort(), 45_000);
+      console.log(`[GoogleTTS] User ${ctx.user.id} TTS-Aufruf, ${input.text.length} Zeichen`);
 
       try {
-        const response = await fetch(
-          `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
-          {
-            method: "POST",
-            headers: {
-              "xi-api-key": ENV.elevenLabsApiKey,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              text: input.text,
-              model_id: "eleven_multilingual_v2",
-              voice_settings: {
-                stability: 0.75,        // Höhere Stabilität = gleichmäßigerer, ruhigerer Fluss
-                similarity_boost: 0.80, // Hohe Ähnlichkeit zur geklonten Stimme
-                style: 0.05,            // Minimal expressiv — ruhig, fließend, nicht abgehakt
-                use_speaker_boost: true,
-                speed: 0.82,            // Langsameres Tempo für Einschlaf-Qualität
-              },
-            }),
-            signal: abortCtrl.signal,
-          }
-        );
-        clearTimeout(tId);
-
-        if (!response.ok) {
-          const errText = await response.text();
-          console.error(`[ElevenLabs] TTS Fehler ${response.status}:`, errText);
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: `ElevenLabs Fehler: ${response.status}`,
-          });
-        }
-
-        // Audio als ArrayBuffer lesen und in Base64 konvertieren
-        const audioBuffer = await response.arrayBuffer();
-        const audioBase64 = Buffer.from(audioBuffer).toString("base64");
-        const mimeType = response.headers.get("content-type") ?? "audio/mpeg";
-
-        return { audioBase64, mimeType, fallback: false };
+        const audioBuffer = await synthesizeSpeech(input.text);
+        const audioBase64 = audioBuffer.toString("base64");
+        return { audioBase64, mimeType: "audio/mpeg", fallback: false };
       } catch (err) {
-        clearTimeout(tId);
-        if (err instanceof TRPCError) throw err;
-        const isTimeout = err instanceof Error && err.name === "AbortError";
-        if (isTimeout) {
-          console.error("[ElevenLabs] Timeout nach 45s");
-          // Graceful Fallback bei Timeout
-          return { audioBase64: null, mimeType: null, fallback: true };
-        }
-        console.error("[ElevenLabs] Unerwarteter Fehler:", err);
+        console.error("[GoogleTTS] Fehler:", err);
         // Graceful Fallback: Frontend nutzt Web Speech API
         return { audioBase64: null, mimeType: null, fallback: true };
       }
