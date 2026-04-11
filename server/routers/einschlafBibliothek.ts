@@ -7,6 +7,7 @@ import { protectedProcedure, router } from "../_core/trpc";
 import { invokeLLM } from "../_core/llm";
 import { storagePut } from "../storage";
 import { synthesizeSpeech } from "../_core/googleTts";
+import { ttsNutzungslog } from "../../drizzle/schema";
 
 // ─── Themen-Katalog ───────────────────────────────────────────────────────────
 
@@ -220,10 +221,19 @@ Schreibe jetzt die Einschlaf-Metapher.`;
         return { audioUrl: geschichte.audioUrl, cached: true };
       }
 
-      // Google TTS aufrufen
+      // Google TTS aufrufen (mit Nutzungslogging)
       let audioBuffer: Buffer;
       try {
-        audioBuffer = await synthesizeSpeech(geschichte.text);
+        audioBuffer = await synthesizeSpeech(geschichte.text, {
+          onSuccess: (zeichen) => {
+            // Fire-and-forget Logging
+            db.insert(ttsNutzungslog).values({
+              userId: ctx.user.id,
+              zeichen,
+              kontext: "einschlaf_bibliothek",
+            }).catch(e => console.error("[TTS-Log] Fehler:", e));
+          },
+        });
       } catch (err: unknown) {
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",

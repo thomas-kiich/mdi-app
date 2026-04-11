@@ -5,6 +5,7 @@ import { momentaufnahmen, users, tagesSummaries } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
 import { transcribeAudio } from "../_core/voiceTranscription";
 import { synthesizeSpeech } from "../_core/googleTts";
+import { ttsNutzungslog } from "../../drizzle/schema";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 
@@ -544,8 +545,19 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
     .mutation(async ({ input, ctx }) => {
       console.log(`[GoogleTTS] User ${ctx.user.id} TTS-Aufruf, ${input.text.length} Zeichen`);
 
+      const db = await getDb();
       try {
-        const audioBuffer = await synthesizeSpeech(input.text);
+        const audioBuffer = await synthesizeSpeech(input.text, {
+          onSuccess: (zeichen) => {
+            if (db) {
+              db.insert(ttsNutzungslog).values({
+                userId: ctx.user.id,
+                zeichen,
+                kontext: "momentaufnahme",
+              }).catch(e => console.error("[TTS-Log] Fehler:", e));
+            }
+          },
+        });
         const audioBase64 = audioBuffer.toString("base64");
         return { audioBase64, mimeType: "audio/mpeg", fallback: false };
       } catch (err) {

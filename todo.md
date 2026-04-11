@@ -867,6 +867,6 @@
 - [x] ENV: Google TTS Dienstkonto-Credentials als Secrets gesetzt
 
 ## Google TTS Nutzungszähler
-- [ ] DB: ttsNutzungslog Tabelle (userId, zeichen, kontext, createdAt)
-- [ ] Backend: TTS-Logging in synthesizeSpeech() + tRPC-Procedure für Admin-Stats
-- [ ] Frontend: Admin-Ansicht mit Monats-Verbrauch, Gesamt-Zeichen, Balkendiagramm
+- [x] DB: ttsNutzungslog Tabelle (userId, zeichen, kontext, createdAt)
+- [x] Backend: TTS-Logging in synthesizeSpeech() + tRPC-Procedure für Admin-Stats
+- [x] Frontend: Admin-Ansicht mit Monats-Verbrauch, Gesamt-Zeichen, Balkendiagramm
