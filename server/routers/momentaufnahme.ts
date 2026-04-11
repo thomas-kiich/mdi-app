@@ -4,7 +4,7 @@ import { z } from "zod";
 import { momentaufnahmen, users, tagesSummaries } from "../../drizzle/schema";
 import { invokeLLM } from "../_core/llm";
 import { transcribeAudio } from "../_core/voiceTranscription";
-import { synthesizeSpeech } from "../_core/googleTts";
+import { generiereAudioMitVoxtral } from "../_core/voxtralTts";
 import { ttsNutzungslog } from "../../drizzle/schema";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
@@ -533,24 +533,25 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
     }),
 
   /**
-   * Google Cloud TTS: Text in Audio umwandeln und als Base64 zurückgeben.
-   * Stimme: de-DE-Chirp3-HD-Zephyr (weiblich, sanft, meditativ)
-   * Fallback: gibt null zurück wenn Google TTS nicht verfügbar ist.
+   * Voxtral TTS: Text in Audio umwandeln und als Base64 zurückgeben.
+   * Stimme: MA - Meditativ (geklonte Stimme via Voxtral Mini TTS)
+   * Fallback: gibt null zurück wenn Voxtral nicht verfügbar ist.
    */
   elevenLabsTTS: protectedProcedure
     .input(z.object({
       text: z.string().min(1).max(4500),
-      voiceId: z.string().optional(), // Wird ignoriert, Zephyr wird immer verwendet
+      voiceId: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {
-      console.log(`[GoogleTTS] User ${ctx.user.id} TTS-Aufruf, ${input.text.length} Zeichen`);
+      console.log(`[VoxtralTTS] User ${ctx.user.id} TTS-Aufruf, ${input.text.length} Zeichen`);
 
       const db = await getDb();
       try {
-        const audioBuffer = await synthesizeSpeech(input.text, {
-          onSuccess: (zeichen) => {
+        const audioBuffer = await generiereAudioMitVoxtral({
+          text: input.text,
+          onLog: async (zeichen) => {
             if (db) {
-              db.insert(ttsNutzungslog).values({
+              await db.insert(ttsNutzungslog).values({
                 userId: ctx.user.id,
                 zeichen,
                 kontext: "momentaufnahme",
@@ -561,7 +562,7 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
         const audioBase64 = audioBuffer.toString("base64");
         return { audioBase64, mimeType: "audio/mpeg", fallback: false };
       } catch (err) {
-        console.error("[GoogleTTS] Fehler:", err);
+        console.error("[VoxtralTTS] Fehler:", err);
         // Graceful Fallback: Frontend nutzt Web Speech API
         return { audioBase64: null, mimeType: null, fallback: true };
       }

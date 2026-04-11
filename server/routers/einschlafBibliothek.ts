@@ -6,7 +6,7 @@ import { einschlafBibliothek, users } from "../../drizzle/schema";
 import { protectedProcedure, router } from "../_core/trpc";
 import { invokeLLM } from "../_core/llm";
 import { storagePut } from "../storage";
-import { synthesizeSpeech } from "../_core/googleTts";
+import { generiereAudioMitVoxtral } from "../_core/voxtralTts";
 import { ttsNutzungslog } from "../../drizzle/schema";
 
 // ─── Themen-Katalog ───────────────────────────────────────────────────────────
@@ -196,8 +196,8 @@ Schreibe jetzt die Einschlaf-Metapher.`;
     }),
 
   /**
-   * Google Cloud TTS Audio für eine Geschichte generieren und in S3 speichern.
-   * Stimme: de-DE-Chirp3-HD-Zephyr (weiblich, sanft, meditativ)
+   * Voxtral TTS Audio für eine Geschichte generieren und in S3 speichern.
+   * Stimme: MA - Meditativ (geklonte Stimme via Voxtral Mini TTS)
    * Das Audio wird beim ersten Abspielen generiert und gecacht.
    */
   audioGenerieren: protectedProcedure
@@ -225,13 +225,13 @@ Schreibe jetzt die Einschlaf-Metapher.`;
         return { audioUrl: geschichte.audioUrl, cached: true };
       }
 
-      // Google TTS aufrufen (mit Nutzungslogging)
+      // Voxtral TTS aufrufen (mit Nutzungslogging)
       let audioBuffer: Buffer;
       try {
-        audioBuffer = await synthesizeSpeech(geschichte.text, {
-          onSuccess: (zeichen) => {
-            // Fire-and-forget Logging
-            db.insert(ttsNutzungslog).values({
+        audioBuffer = await generiereAudioMitVoxtral({
+          text: geschichte.text,
+          onLog: async (zeichen) => {
+            await db.insert(ttsNutzungslog).values({
               userId: ctx.user.id,
               zeichen,
               kontext: "einschlaf_bibliothek",

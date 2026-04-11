@@ -894,3 +894,10 @@
 ## Audio-Verbesserungen (Priorität hoch)
 - [x] BUG FINAL: Hintergrundmusik nicht hörbar — Audio-Element im DOM vorhalten
 - [x] FEATURE: Raumhall (Reverb) via Web Audio API auf MA-Stimme
+
+## Voxtral TTS Umstieg (statt Google TTS)
+- [ ] Mistral API-Key als Secret einrichten
+- [ ] voxtralTts.ts Helper erstellen
+- [ ] einschlafBibliothek.ts auf Voxtral umstellen
+- [ ] momentaufnahme.ts auf Voxtral umstellen
+- [ ] Tests aktualisieren

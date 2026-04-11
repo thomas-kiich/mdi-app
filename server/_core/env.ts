@@ -13,4 +13,5 @@ export const ENV = {
   googleTtsPrivateKey: process.env.GOOGLE_TTS_PRIVATE_KEY ?? "",
   googleTtsPrivateKeyId: process.env.GOOGLE_TTS_PRIVATE_KEY_ID ?? "",
   googleTtsProjectId: process.env.GOOGLE_TTS_PROJECT_ID ?? "",
+  mistralApiKey: process.env.MISTRAL_API_KEY ?? "",
 };
