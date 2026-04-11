@@ -554,11 +554,11 @@ export default function EinschlafBibliothek() {
           </div>
         </div>
         <button
-          onClick={() => { setGewaehlteKategorie(null); setGewaehlteThema(""); setPersonalisierung(""); setAnsicht("neu"); }}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/15 transition-colors text-sm font-medium"
+          onClick={() => { setGewaehlteKategorie(filterKategorie); setGewaehlteThema(""); setPersonalisierung(""); setAnsicht("neu"); }}
+          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 transition-colors text-sm font-semibold text-white"
         >
           <Sparkles className="w-3.5 h-3.5" />
-          Neu
+          Neue Geschichte
         </button>
       </header>
 
@@ -629,6 +629,14 @@ export default function EinschlafBibliothek() {
                 <GeschichteKarte key={g.id} geschichte={g} onOeffnen={() => { setAktiveGeschichte(g); setAnsicht("lesen"); }} />
               ))}
             </div>
+            {/* Weitere Geschichte erstellen */}
+            <button
+              onClick={() => { setGewaehlteKategorie(filterKategorie); setGewaehlteThema(""); setPersonalisierung(""); setAnsicht("neu"); }}
+              className="mt-4 w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl border border-white/10 hover:bg-white/6 transition-colors text-sm text-white/50 hover:text-white/80"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              {filterKategorie ? `Neue ${KATEGORIE_INFO[filterKategorie].label}-Geschichte erstellen` : "Neue Geschichte erstellen"}
+            </button>
           </div>
         )}
       </div>

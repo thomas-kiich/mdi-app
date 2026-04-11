@@ -846,3 +846,6 @@
 ## Bugs Session N (11.04.2026)
 - [x] BUG: Momentaufnahme-Startseite zeigt immer noch Allgemeintext + Mikrofon statt letztem Summary (DB war leer nach Migration; Leerseite durch kompakten Willkommenstext ersetzt)
 - [x] BUG: Einschlaf-Bibliothek nicht auffindbar — 🌙-Button im Header der Momentaufnahme-Seite eingebaut
+
+## Bugfix Einschlaf-Bibliothek
+- [x] BUG: "Neue Geschichte erstellen"-Button verschwindet wenn bereits eine Geschichte vorhanden ist — Button im Header violett + unter der Liste als zusätzlicher Button
