@@ -833,3 +833,7 @@
 ## Momentaufnahme UX-Fix
 - [x] BUG: Momentaufnahme zeigt beim Öffnen immer die Startseite mit Allgemeintexten, auch wenn Aufnahmen/Summary vorhanden — letztes Summary wird jetzt persistent in DB gespeichert und beim Öffnen sofort angezeigt
 - [x] BUG: Kein Summary und keine Optionen sichtbar obwohl Aufnahmen von gestern gespeichert sind — letztesSummary-Query lädt beim Start automatisch
+
+## Summary UX-Verbesserungen
+- [x] Vorname-Eingabe-Link direkt unter dem Summary (ohne Cache leeren)
+- [x] Datum bei jedem Summary anzeigen (gespeichertes + frisch generiertes)

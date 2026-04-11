@@ -762,7 +762,25 @@ export default function Momentaufnahme() {
               </button>
             </div>
           </div>
-          <p className="text-xs text-white/60 mb-2">{summaryDatum}</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-white/60">{summaryDatum}</p>
+            {vorname ? (
+              <button
+                onClick={() => setShowVornameDialog(true)}
+                className="text-[10px] text-violet-400/50 hover:text-violet-300 transition-colors"
+                title="Namen ändern"
+              >
+                • {vorname} · ändern
+              </button>
+            ) : (
+              <button
+                onClick={() => setShowVornameDialog(true)}
+                className="text-[10px] text-violet-400/60 hover:text-violet-300 transition-colors"
+              >
+                + Vorname eingeben
+              </button>
+            )}
+          </div>
           <p className="text-sm text-white/80 leading-relaxed">{summaryText}</p>
           {/* KI-Kennzeichnung (EU AI Act Art. 50) */}
           <div className="mt-3 pt-3 border-t border-violet-500/10 flex items-center gap-1.5">
