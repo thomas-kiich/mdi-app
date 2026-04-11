@@ -19,6 +19,9 @@ import {
   Heart,
   Sword,
   Moon,
+  RefreshCw,
+  Scissors,
+  X,
 } from "lucide-react";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
@@ -107,6 +110,13 @@ export default function EinschlafBibliothek() {
   const musikRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [audioLaedt, setAudioLaedt] = useState(false);
+
+  // Bearbeitungs-State
+  const [neuSchreibenLaedt, setNeuSchreibenLaedt] = useState(false);
+  const [korrekturDialogOffen, setKorrekturDialogOffen] = useState(false);
+  const [korrekturAbschnitt, setKorrekturAbschnitt] = useState("");
+  const [korrekturHinweis, setKorrekturHinweis] = useState("");
+  const [korrekturLaedt, setKorrekturLaedt] = useState(false);
 
   // Schlaf-Musik URL (dieselbe wie im Schlaf-Modus)
   const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlauntermalung_MAapp_3deef3ee.wav";
@@ -201,6 +211,49 @@ export default function EinschlafBibliothek() {
       toast.success("Geschichte gelöscht");
     },
   });
+
+  const neuSchreibenMutation = trpc.einschlafBibliothek.neuSchreiben.useMutation({
+    onError: (err) => toast.error("Neu-Schreiben fehlgeschlagen: " + err.message),
+  });
+
+  const stelleKorrigierenMutation = trpc.einschlafBibliothek.stelleKorrigieren.useMutation({
+    onError: (err) => toast.error("Korrektur fehlgeschlagen: " + err.message),
+  });
+
+  const handleNeuSchreiben = useCallback(async () => {
+    if (!aktiveGeschichte) return;
+    setNeuSchreibenLaedt(true);
+    if (audioRef.current) { audioRef.current.pause(); setIsPlaying(false); }
+    try {
+      const result = await neuSchreibenMutation.mutateAsync({ id: aktiveGeschichte.id });
+      setAktiveGeschichte(prev => prev ? { ...prev, titel: result.titel, text: result.text, audioUrl: null } : prev);
+      refetch();
+      toast.success("Geschichte neu geschrieben!");
+    } finally {
+      setNeuSchreibenLaedt(false);
+    }
+  }, [aktiveGeschichte, neuSchreibenMutation, refetch]);
+
+  const handleKorrekturAbsenden = useCallback(async () => {
+    if (!aktiveGeschichte || !korrekturAbschnitt.trim() || !korrekturHinweis.trim()) return;
+    setKorrekturLaedt(true);
+    if (audioRef.current) { audioRef.current.pause(); setIsPlaying(false); }
+    try {
+      const result = await stelleKorrigierenMutation.mutateAsync({
+        id: aktiveGeschichte.id,
+        abschnitt: korrekturAbschnitt,
+        hinweis: korrekturHinweis,
+      });
+      setAktiveGeschichte(prev => prev ? { ...prev, text: result.neuerText, audioUrl: null } : prev);
+      refetch();
+      setKorrekturDialogOffen(false);
+      setKorrekturAbschnitt("");
+      setKorrekturHinweis("");
+      toast.success("Stelle umformuliert!");
+    } finally {
+      setKorrekturLaedt(false);
+    }
+  }, [aktiveGeschichte, korrekturAbschnitt, korrekturHinweis, stelleKorrigierenMutation, refetch]);
 
   // Audio abspielen / pausieren
   const handleAudio = useCallback(async (geschichte: Geschichte) => {
@@ -397,13 +450,84 @@ export default function EinschlafBibliothek() {
         </div>
 
         {/* Text */}
-        <div className="px-5 pb-12 flex-1">
+        <div className="px-5 pb-4 flex-1">
           <div className="prose prose-invert prose-sm max-w-none">
             {aktiveGeschichte.text.split("\n\n").map((absatz, i) => (
               <p key={i} className="text-white/80 leading-relaxed mb-4 text-[15px]">{absatz}</p>
             ))}
           </div>
         </div>
+
+        {/* Bearbeitungs-Buttons */}
+        <div className="px-5 pb-10 flex gap-3 flex-wrap">
+          <button
+            onClick={handleNeuSchreiben}
+            disabled={neuSchreibenLaedt || korrekturLaedt}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white/40 hover:text-white/70 hover:bg-white/5 transition-all disabled:opacity-40"
+          >
+            {neuSchreibenLaedt ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            {neuSchreibenLaedt ? "Wird neu geschrieben…" : "Geschichte neu schreiben"}
+          </button>
+          <button
+            onClick={() => setKorrekturDialogOffen(true)}
+            disabled={neuSchreibenLaedt || korrekturLaedt}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm text-white/40 hover:text-white/70 hover:bg-white/5 transition-all disabled:opacity-40"
+          >
+            <Scissors className="w-4 h-4" />
+            Stelle korrigieren
+          </button>
+        </div>
+
+        {/* Korrektur-Dialog */}
+        {korrekturDialogOffen && (
+          <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-end justify-center p-4">
+            <div className="bg-[#111118] border border-white/10 rounded-2xl w-full max-w-lg p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h3 className="text-white font-semibold">Stelle korrigieren</h3>
+                <button onClick={() => { setKorrekturDialogOffen(false); setKorrekturAbschnitt(""); setKorrekturHinweis(""); }} className="text-white/30 hover:text-white/70">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs text-white/40 mb-1.5 block">Abschnitt einfügen (kopiere den Textabschnitt der geändert werden soll)</label>
+                  <textarea
+                    value={korrekturAbschnitt}
+                    onChange={e => setKorrekturAbschnitt(e.target.value)}
+                    placeholder="Hier den Abschnitt einfügen…"
+                    rows={4}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white/80 placeholder:text-white/20 resize-none focus:outline-none focus:border-white/30"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1.5 block">Was soll geändert werden?</label>
+                  <textarea
+                    value={korrekturHinweis}
+                    onChange={e => setKorrekturHinweis(e.target.value)}
+                    placeholder="z.B. klingt zu rational, mehr Bilder aus der Natur"
+                    rows={2}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white/80 placeholder:text-white/20 resize-none focus:outline-none focus:border-white/30"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => { setKorrekturDialogOffen(false); setKorrekturAbschnitt(""); setKorrekturHinweis(""); }}
+                  className="flex-1 py-2.5 rounded-xl text-sm text-white/40 hover:text-white/70 border border-white/10 hover:bg-white/5 transition-all"
+                >
+                  Abbrechen
+                </button>
+                <button
+                  onClick={handleKorrekturAbsenden}
+                  disabled={korrekturLaedt || !korrekturAbschnitt.trim() || !korrekturHinweis.trim()}
+                  className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-white/10 hover:bg-white/20 text-white transition-all disabled:opacity-40 flex items-center justify-center gap-2"
+                >
+                  {korrekturLaedt ? <><Loader2 className="w-4 h-4 animate-spin" /> Wird umformuliert…</> : "Stelle umformulieren"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }

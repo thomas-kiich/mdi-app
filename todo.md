@@ -878,3 +878,10 @@
 - [x] Stimme: Wechsel von Zephyr auf Leda (weicher, meditativ)
 - [x] Tempo: von 0.75 auf 0.65 reduzieren
 - [x] BUG: Hintergrundmusik nicht hörbar — Musik sofort im Klick-Handler starten (Autoplay-Fix)
+
+## Geschichte bearbeiten
+- [x] Backend: neuSchreiben Procedure (komplett neue Version mit gleichem Thema)
+- [x] Backend: stelleKorrigieren Procedure (gezieltes Umformulieren mit Hinweis)
+- [x] Frontend: "Neu schreiben"-Button in Lesen-Ansicht
+- [x] Frontend: "Stelle korrigieren"-Dialog mit Hinweis-Eingabe
+- [x] Audio-Cache bei Überarbeitung automatisch löschen
