@@ -195,7 +195,7 @@ export default function Momentaufnahme() {
   const [schlafMetapherLaedt, setSchlafMetapherLaedt] = useState(false);
 
   // Schlaf-Modus Hintergrundmusik
-  const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlauntermalung_MAapp_3deef3ee.wav";
+  const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlafmusik_ma_5b2eb01f.mp3";
   const schlafAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -359,7 +359,7 @@ export default function Momentaufnahme() {
       setSchlafMetapherLaedt(false);
     }
 
-    // Schritt 2: Google TTS, dann Web Speech als Fallback
+    // Schritt 2: Voxtral TTS (MA-Stimme), dann Web Speech als Fallback
     const onAudioEnde = () => {
       if (schlafAudioRef.current) fadeOutAudio(schlafAudioRef.current, 5000);
     };

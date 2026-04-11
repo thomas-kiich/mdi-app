@@ -872,7 +872,7 @@
 - [x] Frontend: Admin-Ansicht mit Monats-Verbrauch, Gesamt-Zeichen, Balkendiagramm
 
 ## Bugs (11. April 2026)
-- [ ] BUG: Hintergrundmusik in Einschlaf-Bibliothek nicht hörbar
+- [x] BUG: Hintergrundmusik in Einschlaf-Bibliothek nicht hörbar
 - [ ] BUG: Audio-Cache löschen (neues Sprechtempo 0.75 wirkt nur bei neu generierten Audios)
 - [x] MOMENTAUFNAHME Erklärungstext: Selbstbestimmungs-Prinzip "Keine Ratschläge" prominent einbauen
 - [x] Stimme: Wechsel von Zephyr auf Leda (weicher, meditativ)
@@ -901,3 +901,7 @@
 - [ ] einschlafBibliothek.ts auf Voxtral umstellen
 - [ ] momentaufnahme.ts auf Voxtral umstellen
 - [ ] Tests aktualisieren
+
+## Musik-Fix (final)
+- [x] BUG: Hintergrundmusik in Einschlaf-Bibliothek nicht hörbar — AudioContext unlock + preload
+- [x] BUG: Hintergrundmusik in Momentaufnahme Schlaf-Modus nicht hörbar
