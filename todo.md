@@ -826,3 +826,6 @@
 - [x] PWA: manifest.json vollständig (name KIICH, icons, display, shortcuts)
 - [x] PWA: Service Worker vorhanden und funktionsfähig
 - [x] PWA: Installationshinweis dokumentiert (Chrome/Safari empfohlen)
+
+## Premium-Lock Bugfix
+- [x] BUG: Premium-Lock fehlt bei Stimmklang-Analyse, Vital Monitor, Frequenz-Labor, Wissenspool, Schlafoptimierung, Visionsraum, Lichtklangtabelle (DB-Werte auf false gesetzt)
