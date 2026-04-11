@@ -14,14 +14,17 @@ const TIMEOUT_MS = 60_000;
 
 /**
  * Fügt nach Satzenden eine meditativ Pause ein.
- * Technik: Mehrere Leerzeichen zwischen Sätzen — viele TTS-Modelle
- * interpretieren große Whitespace-Lücken als kurze Sprechpause.
+ * Technik: Punkt/Ausrufe/Fragezeichen wird durch Komma ersetzt —
+ * Voxtral macht bei Komma eine natürliche Atempause (wie bei Beistrichen
+ * innerhalb der Sätze, die bereits gut funktionieren).
+ * Das Satzzeichen wird durch ein Komma ersetzt, damit kein Sonderzeichen
+ * vorgelesen wird.
  */
 function fuegeSprechpausenEin(text: string): string {
-  // Nach echtem Satzende (. ! ?) gefolgt von Leerzeichen + Großbuchstabe:
-  // 5 Leerzeichen einfügen — erzeugt eine spürbare Atempause
+  // Satzende (. ! ?) gefolgt von Leerzeichen + Großbuchstabe:
+  // Satzzeichen durch Komma ersetzen — Voxtral pausiert bei Komma natürlich
   return text
-    .replace(/([.!?])(\s+)([A-ZÄÖÜ\u00C0-\u00DC])/g, '$1     $3');
+    .replace(/([.!?])(\s+)([A-ZÄÖÜ\u00C0-\u00DC])/g, ', $3');
 }
 
 /**
