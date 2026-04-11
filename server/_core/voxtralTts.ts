@@ -13,19 +13,15 @@ const MAX_TEXT_LENGTH = 2500;
 const TIMEOUT_MS = 60_000;
 
 /**
- * Fügt nach Satzenden eine längere meditativ Pause ein.
- * Technik: Komma + Auslassungspunkte = Voxtral macht eine spürbare Atempause.
- * Bestehende Auslassungspunkte bleiben unverändert (kein Doppeln).
+ * Fügt nach Satzenden eine meditativ Pause ein.
+ * Technik: Mehrere Leerzeichen zwischen Sätzen — viele TTS-Modelle
+ * interpretieren große Whitespace-Lücken als kurze Sprechpause.
  */
 function fuegeSprechpausenEin(text: string): string {
-  // Schritt 1: Bestehende "..." schützen
-  const normalized = text.replace(/\.{2,}/g, '\x00DOTS\x00');
-  // Schritt 2: Nach echtem Satzende (. ! ?) + Leerzeichen + Großbuchstabe
-  // ", ..." = Komma signalisiert Pause, dann Auslassungspunkte verstärken sie
-  const withPauses = normalized
-    .replace(/([.!?])(\s+)([A-ZÄÖÜ\u00C0-\u00DC])/g, '$1, ...$2$3');
-  // Schritt 3: Platzhalter zurück
-  return withPauses.replace(/\x00DOTS\x00/g, '...');
+  // Nach echtem Satzende (. ! ?) gefolgt von Leerzeichen + Großbuchstabe:
+  // 5 Leerzeichen einfügen — erzeugt eine spürbare Atempause
+  return text
+    .replace(/([.!?])(\s+)([A-ZÄÖÜ\u00C0-\u00DC])/g, '$1     $3');
 }
 
 /**
