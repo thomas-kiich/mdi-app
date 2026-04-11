@@ -112,14 +112,21 @@ export default function EinschlafBibliothek() {
   const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlauntermalung_MAapp_3deef3ee.wav";
 
   // Musik sanft einblenden
-  const startMusik = useCallback(() => {
+  const startMusik = useCallback(async () => {
     if (!musikRef.current) {
       musikRef.current = new Audio(SCHLAF_MUSIK_URL);
       musikRef.current.loop = true;
       musikRef.current.volume = 0;
+      musikRef.current.preload = "auto";
     }
     musikRef.current.currentTime = 0;
-    musikRef.current.play().catch(() => {});
+    musikRef.current.volume = 0;
+    try {
+      await musikRef.current.play();
+    } catch (err) {
+      console.warn("[Musik] Autoplay blockiert:", err);
+      // Trotzdem Fade-in versuchen (manche Browser erlauben es nach kurzer Zeit)
+    }
     // Fade-in auf 0.30 in 3 Sekunden
     const steps = 30;
     const interval = 3000 / steps;
@@ -213,12 +220,10 @@ export default function EinschlafBibliothek() {
           stopMusik(5000); // Musik sanft ausblenden nach Ende
         };
       }
-      startMusik(); // Musik einblenden
-      // Kurze Verzögerung damit Musik zuerst einsetzt
-      setTimeout(() => {
-        audioRef.current?.play();
-        setIsPlaying(true);
-      }, 1500);
+      // Musik und Sprache gleichzeitig starten (Musik faded sanft ein)
+      await startMusik();
+      audioRef.current?.play().catch(e => console.warn("[Audio] Play blockiert:", e));
+      setIsPlaying(true);
     } else {
       // Audio generieren (ElevenLabs)
       setAudioLaedt(true);
@@ -230,12 +235,10 @@ export default function EinschlafBibliothek() {
             setIsPlaying(false);
             stopMusik(5000); // Musik sanft ausblenden nach Ende
           };
-          startMusik(); // Musik einblenden
-          // Kurze Verzögerung damit Musik zuerst einsetzt
-          setTimeout(() => {
-            audioRef.current?.play();
-            setIsPlaying(true);
-          }, 1500);
+          // Musik und Sprache gleichzeitig starten
+          await startMusik();
+          audioRef.current?.play().catch(e => console.warn("[Audio] Play blockiert:", e));
+          setIsPlaying(true);
           // Lokale Geschichte aktualisieren
           setAktiveGeschichte(prev => prev ? { ...prev, audioUrl: result.audioUrl } : prev);
           refetch();
@@ -367,7 +370,29 @@ export default function EinschlafBibliothek() {
             <p className="text-xs text-white/25 mt-2 ml-1">Beim ersten Abspielen wird die Stimme generiert (20–30 Sek.)</p>
           )}
           {audioLaedt && (
-            <p className="text-xs text-white/30 mt-2 ml-1 animate-pulse">MA’s Stimme wird vorbereitet — bitte warte einen Moment…</p>
+            <p className="text-xs text-white/30 mt-2 ml-1 animate-pulse">MA's Stimme wird vorbereitet — bitte warte einen Moment…</p>
+          )}
+          {/* Audio neu erstellen (für Tempo-Updates) */}
+          {aktiveGeschichte.audioUrl && !isPlaying && !audioLaedt && (
+            <button
+              onClick={async () => {
+                if (audioRef.current) { audioRef.current.pause(); }
+                setAktiveGeschichte(prev => prev ? { ...prev, audioUrl: null } : prev);
+                setAudioLaedt(true);
+                try {
+                  const result = await audioGenerierenMutation.mutateAsync({ id: aktiveGeschichte.id, force: true });
+                  if (result.audioUrl) {
+                    setAktiveGeschichte(prev => prev ? { ...prev, audioUrl: result.audioUrl } : prev);
+                    refetch();
+                  }
+                } finally {
+                  setAudioLaedt(false);
+                }
+              }}
+              className="mt-2 ml-1 text-xs text-white/20 hover:text-white/50 transition-colors flex items-center gap-1"
+            >
+              ↺ Stimme neu generieren
+            </button>
           )}
         </div>
 

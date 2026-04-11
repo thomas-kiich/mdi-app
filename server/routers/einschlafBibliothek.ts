@@ -201,7 +201,11 @@ Schreibe jetzt die Einschlaf-Metapher.`;
    * Das Audio wird beim ersten Abspielen generiert und gecacht.
    */
   audioGenerieren: protectedProcedure
-    .input(z.object({ id: z.number() }))
+    .input(z.object({
+      id: z.number(),
+      /** Wenn true: bestehendes Audio ignorieren und neu generieren (für Tempo-Updates) */
+      force: z.boolean().optional().default(false),
+    }))
     .mutation(async ({ input, ctx }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Datenbank nicht verfügbar" });
@@ -216,8 +220,8 @@ Schreibe jetzt die Einschlaf-Metapher.`;
         throw new TRPCError({ code: "NOT_FOUND", message: "Geschichte nicht gefunden" });
       }
 
-      // Falls bereits Audio vorhanden, direkt zurückgeben
-      if (geschichte.audioUrl) {
+      // Falls bereits Audio vorhanden und kein Force-Refresh, direkt zurückgeben
+      if (geschichte.audioUrl && !input.force) {
         return { audioUrl: geschichte.audioUrl, cached: true };
       }
 

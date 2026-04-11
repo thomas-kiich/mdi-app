@@ -870,3 +870,7 @@
 - [x] DB: ttsNutzungslog Tabelle (userId, zeichen, kontext, createdAt)
 - [x] Backend: TTS-Logging in synthesizeSpeech() + tRPC-Procedure für Admin-Stats
 - [x] Frontend: Admin-Ansicht mit Monats-Verbrauch, Gesamt-Zeichen, Balkendiagramm
+
+## Bugs (11. April 2026)
+- [ ] BUG: Hintergrundmusik in Einschlaf-Bibliothek nicht hörbar
+- [ ] BUG: Audio-Cache löschen (neues Sprechtempo 0.75 wirkt nur bei neu generierten Audios)

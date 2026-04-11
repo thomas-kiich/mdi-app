@@ -129,7 +129,7 @@ export async function synthesizeSpeech(text: string, opts?: SynthesizeOptions): 
         },
         audioConfig: {
           audioEncoding: "MP3",
-          speakingRate: 0.85,   // Leicht langsamer für meditative Wirkung
+          speakingRate: 0.75,   // Reduziert für meditativere, ruhigere Wirkung (vorher: 0.85)
           // Hinweis: Chirp3 HD unterstützt keinen pitch-Parameter
           volumeGainDb: 0.0,
         },
