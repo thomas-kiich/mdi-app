@@ -13,6 +13,21 @@ const MAX_TEXT_LENGTH = 2500;
 const TIMEOUT_MS = 60_000;
 
 /**
+ * Fügt nach Satzenden eine meditativ Pause ein ("...").
+ * Voxtral interpretiert "..." als natürliche Sprechpause.
+ * Bestehende Auslassungspunkte bleiben unverändert (kein Doppeln).
+ */
+function fuegeSprechpausenEin(text: string): string {
+  // Schritt 1: Bestehende "..." schützen
+  const normalized = text.replace(/\.{2,}/g, '\x00DOTS\x00');
+  // Schritt 2: Nach echtem Satzende (. ! ?) gefolgt von Leerzeichen + Großbuchstabe
+  const withPauses = normalized
+    .replace(/([.!?])(\s+)([A-ZÄÖÜ\u00C0-\u00DC])/g, '$1...$2$3');
+  // Schritt 3: Platzhalter zurück
+  return withPauses.replace(/\x00DOTS\x00/g, '...');
+}
+
+/**
  * Kürzt Text auf maximal MAX_TEXT_LENGTH Zeichen,
  * schneidet am letzten Satzende ab.
  */
@@ -47,7 +62,9 @@ export async function generiereAudioMitVoxtral(
     );
   }
 
-  const gekuerzterText = kuerzeText(text);
+  // Sprechpausen einfügen ("..." nach Satzenden) für meditativen Rhythmus
+  const textMitPausen = fuegeSprechpausenEin(text);
+  const gekuerzterText = kuerzeText(textMitPausen);
   const zeichenAnzahl = gekuerzterText.length;
 
   const controller = new AbortController();
