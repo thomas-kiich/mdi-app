@@ -179,12 +179,12 @@ export default function EinschlafBibliothek() {
     el.volume = 0;
     musikRef.current = el;
     el.play().then(() => {
-      // Fade-in auf 0.28 in 4 Sekunden
+      // Fade-in auf 0.12 in 4 Sekunden (leise Hintergrundmusik)
       let step = 0;
       const steps = 40;
       const timer = setInterval(() => {
         step++;
-        el.volume = Math.min(0.28, 0.28 * (step / steps));
+        el.volume = Math.min(0.12, 0.12 * (step / steps));
         if (step >= steps) clearInterval(timer);
       }, 4000 / steps);
     }).catch(err => console.warn("[Musik] Autoplay blockiert:", err));
