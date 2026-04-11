@@ -537,6 +537,36 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
    * Stimme: MA - Meditativ (geklonte Stimme via Voxtral Mini TTS)
    * Fallback: gibt null zurück wenn Voxtral nicht verfügbar ist.
    */
+  /**
+   * Alias: vorlesen — identisch mit elevenLabsTTS, für neue Frontend-Aufrufe
+   */
+  vorlesen: protectedProcedure
+    .input(z.object({
+      text: z.string().min(1).max(4500),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      console.log(`[VoxtralTTS/vorlesen] User ${ctx.user.id}, ${input.text.length} Zeichen`);
+      const db = await getDb();
+      try {
+        const audioBuffer = await generiereAudioMitVoxtral({
+          text: input.text,
+          onLog: async (zeichen) => {
+            if (db) {
+              await db.insert(ttsNutzungslog).values({
+                userId: ctx.user.id,
+                zeichen,
+                kontext: "momentaufnahme-vorlesen",
+              }).catch(e => console.error("[TTS-Log] Fehler:", e));
+            }
+          },
+        });
+        return { audioBase64: audioBuffer.toString("base64"), mimeType: "audio/mpeg" };
+      } catch (err) {
+        console.error("[VoxtralTTS/vorlesen] Fehler:", err);
+        return { audioBase64: null, mimeType: null };
+      }
+    }),
+
   elevenLabsTTS: protectedProcedure
     .input(z.object({
       text: z.string().min(1).max(4500),

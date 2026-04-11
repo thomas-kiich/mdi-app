@@ -370,6 +370,9 @@ export default function Momentaufnahme() {
         // Google TTS Audio über vorbereitetes Element abspielen
         const audioSrc = `data:${ttsResult.mimeType};base64,${ttsResult.audioBase64}`;
         sprachAudio.src = audioSrc;
+        // Sprechtempo: 0.85 = 15% langsamer, preservesPitch hält Tonhöhe stabil
+        sprachAudio.playbackRate = 0.85;
+        sprachAudio.preservesPitch = true;
         sprachAudio.onended = onAudioEnde;
         sprachAudio.play().catch(() => {
           // Fallback: Web Speech

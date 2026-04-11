@@ -905,3 +905,8 @@
 ## Musik-Fix (final)
 - [x] BUG: Hintergrundmusik in Einschlaf-Bibliothek nicht hörbar — AudioContext unlock + preload
 - [x] BUG: Hintergrundmusik in Momentaufnahme Schlaf-Modus nicht hörbar
+
+## MA-Stimme Rollout (Voxtral überall)
+- [ ] Momentaufnahme: Tages-Feedback (speak/useTTS) auf Voxtral umstellen
+- [ ] Momentaufnahme: Schlaf-Modus Fallback (Web Speech) entfernen
+- [ ] Alle weiteren Browser-Stimmen-Aufrufe prüfen und ersetzen

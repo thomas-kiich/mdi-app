@@ -168,25 +168,27 @@ export default function EinschlafBibliothek() {
   // Schlaf-Musik URL (dieselbe wie im Schlaf-Modus)
   const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlafmusik_ma_5b2eb01f.mp3";
 
-  // Musik: DOM-Audio-Element per Ref (preload="auto" im JSX)
+  // Musik: new Audio() direkt erstellen (zuverlässiger als DOM-Ref für Browser-Autoplay)
   const startMusik = useCallback(() => {
-    const el = musikRef.current;
-    if (!el) return;
-    el.volume = 0;
-    el.currentTime = 0;
-    const playPromise = el.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(err => console.warn("[Musik] Autoplay blockiert:", err));
+    // Altes Element stoppen falls vorhanden
+    if (musikRef.current) {
+      musikRef.current.pause();
     }
-    // Fade-in auf 0.28 in 4 Sekunden
-    let step = 0;
-    const steps = 40;
-    const timer = setInterval(() => {
-      step++;
-      if (el) el.volume = Math.min(0.28, 0.28 * (step / steps));
-      if (step >= steps) clearInterval(timer);
-    }, 4000 / steps);
-  }, []);
+    const el = new Audio(SCHLAF_MUSIK_URL);
+    el.loop = true;
+    el.volume = 0;
+    musikRef.current = el;
+    el.play().then(() => {
+      // Fade-in auf 0.28 in 4 Sekunden
+      let step = 0;
+      const steps = 40;
+      const timer = setInterval(() => {
+        step++;
+        el.volume = Math.min(0.28, 0.28 * (step / steps));
+        if (step >= steps) clearInterval(timer);
+      }, 4000 / steps);
+    }).catch(err => console.warn("[Musik] Autoplay blockiert:", err));
+  }, [SCHLAF_MUSIK_URL]);
 
   // Musik sanft ausblenden
   const stopMusik = useCallback((durationMs = 5000) => {
@@ -197,10 +199,11 @@ export default function EinschlafBibliothek() {
     let step = 0;
     const timer = setInterval(() => {
       step++;
-      if (el) el.volume = Math.max(0, startVol * (1 - step / steps));
+      el.volume = Math.max(0, startVol * (1 - step / steps));
       if (step >= steps) {
         clearInterval(timer);
-        if (el) { el.pause(); el.currentTime = 0; el.volume = 0.28; }
+        el.pause();
+        musikRef.current = null;
       }
     }, durationMs / steps);
   }, []);
@@ -318,6 +321,9 @@ export default function EinschlafBibliothek() {
 
     const el = new Audio(url);
     el.crossOrigin = "anonymous";
+    // Sprechtempo: 0.85 = 15% langsamer, preservesPitch verhindert Tonhöhenänderung
+    el.playbackRate = 0.85;
+    el.preservesPitch = true;
     audioRef.current = el;
 
     const source = ctx.createMediaElementSource(el);
@@ -427,14 +433,7 @@ export default function EinschlafBibliothek() {
     const info = KATEGORIE_INFO[aktiveGeschichte.kategorie];
     return (
       <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
-        {/* Verstecktes Musik-Audio-Element — preload="auto" lädt im Hintergrund vor */}
-        <audio
-          ref={musikRef}
-          src={SCHLAF_MUSIK_URL}
-          loop
-          preload="auto"
-          style={{ display: "none" }}
-        />
+        {/* Musik wird per new Audio() im handleAudio gestartet (Browser-Autoplay-Policy) */}
         {/* Header */}
         <header className="px-5 pt-6 pb-4 flex items-center justify-between">
           <button
