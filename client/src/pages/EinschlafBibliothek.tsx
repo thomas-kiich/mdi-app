@@ -364,7 +364,10 @@ export default function EinschlafBibliothek() {
             </span>
           </button>
           {!aktiveGeschichte.audioUrl && !audioLaedt && (
-            <p className="text-xs text-white/25 mt-2 ml-1">Beim ersten Abspielen wird die Stimme generiert (~10 Sek.)</p>
+            <p className="text-xs text-white/25 mt-2 ml-1">Beim ersten Abspielen wird die Stimme generiert (20–30 Sek.)</p>
+          )}
+          {audioLaedt && (
+            <p className="text-xs text-white/30 mt-2 ml-1 animate-pulse">MA’s Stimme wird vorbereitet — bitte warte einen Moment…</p>
           )}
         </div>
 

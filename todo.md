@@ -854,3 +854,8 @@
 - [x] Favoriten-Button in Lese-Ansicht: Stern-Button zum Markieren/Entmarkieren (war bereits implementiert, optimistisches Update hinzugefügt)
 - [x] Backend: favorit.setzen Mutation (toggle favorit-Feld in DB — war bereits vorhanden)
 - [x] Favoriten erscheinen oben in der Bibliotheksliste (war bereits implementiert)
+
+## ElevenLabs Audio-Bug
+- [x] BUG: Audio-Generierung in Einschlaf-Bibliothek schlägt fehl — "Audio konnte nicht generiert werden ElevenLabs"
+- [x] FIX: Text vor ElevenLabs-Aufruf auf max. 2500 Zeichen kürzen (Timeout auf kiich.de)
+- [x] FIX: Bessere Fehlermeldung bei ElevenLabs-Timeout

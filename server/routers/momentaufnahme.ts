@@ -564,6 +564,10 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
         console.log(`[ElevenLabs] User ${ctx.user.id} TTS-Aufruf, ${heutigeAufnahmen.length} Aufnahmen heute`);
       }
 
+      // Timeout-Schutz: 45 Sekunden
+      const abortCtrl = new AbortController();
+      const tId = setTimeout(() => abortCtrl.abort(), 45_000);
+
       try {
         const response = await fetch(
           `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
@@ -584,8 +588,10 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
                 speed: 0.82,            // Langsameres Tempo für Einschlaf-Qualität
               },
             }),
+            signal: abortCtrl.signal,
           }
         );
+        clearTimeout(tId);
 
         if (!response.ok) {
           const errText = await response.text();
@@ -603,7 +609,14 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
 
         return { audioBase64, mimeType, fallback: false };
       } catch (err) {
+        clearTimeout(tId);
         if (err instanceof TRPCError) throw err;
+        const isTimeout = err instanceof Error && err.name === "AbortError";
+        if (isTimeout) {
+          console.error("[ElevenLabs] Timeout nach 45s");
+          // Graceful Fallback bei Timeout
+          return { audioBase64: null, mimeType: null, fallback: true };
+        }
         console.error("[ElevenLabs] Unerwarteter Fehler:", err);
         // Graceful Fallback: Frontend nutzt Web Speech API
         return { audioBase64: null, mimeType: null, fallback: true };
