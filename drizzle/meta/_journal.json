@@ -71,6 +71,13 @@
       "when": 1775891681044,
       "tag": "0009_slow_blonde_phantom",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1775901698104,
+      "tag": "0010_solid_ser_duncan",
+      "breakpoints": true
     }
   ]
 }

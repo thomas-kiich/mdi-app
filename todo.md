@@ -865,3 +865,8 @@
 - [x] Backend: Google Cloud TTS statt ElevenLabs in einschlafBibliothek.ts
 - [x] Backend: Google Cloud TTS statt ElevenLabs in momentaufnahme.ts
 - [x] ENV: Google TTS Dienstkonto-Credentials als Secrets gesetzt
+
+## Google TTS Nutzungszähler
+- [ ] DB: ttsNutzungslog Tabelle (userId, zeichen, kontext, createdAt)
+- [ ] Backend: TTS-Logging in synthesizeSpeech() + tRPC-Procedure für Admin-Stats
+- [ ] Frontend: Admin-Ansicht mit Monats-Verbrauch, Gesamt-Zeichen, Balkendiagramm

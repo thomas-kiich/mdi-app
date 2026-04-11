@@ -9,7 +9,7 @@
 import { ENV } from "./env";
 
 const TTS_API_URL = "https://texttospeech.googleapis.com/v1/text:synthesize";
-const VOICE_NAME = "de-DE-Chirp3-HD-Zephyr";
+export const TTS_VOICE_NAME = "de-DE-Chirp3-HD-Zephyr";
 const LANGUAGE_CODE = "de-DE";
 
 // ─── JWT-Token für Google API erstellen ──────────────────────────────────────
@@ -84,11 +84,16 @@ async function getAccessToken(): Promise<string> {
 
 // ─── TTS-Aufruf ──────────────────────────────────────────────────────────────
 
+export interface SynthesizeOptions {
+  /** Optionaler Callback zum Loggen der Nutzung (userId, Zeichenanzahl, Kontext) */
+  onSuccess?: (zeichen: number) => void;
+}
+
 /**
  * Text in Sprache umwandeln mit MA-Stimme (Zephyr).
  * Gibt einen Buffer mit MP3-Audio zurück.
  */
-export async function synthesizeSpeech(text: string): Promise<Buffer> {
+export async function synthesizeSpeech(text: string, opts?: SynthesizeOptions): Promise<Buffer> {
   // Text auf max. 4500 Zeichen kürzen (Chirp3 HD Limit: 5000)
   const MAX_CHARS = 4500;
   let ttsText = text;
@@ -120,12 +125,12 @@ export async function synthesizeSpeech(text: string): Promise<Buffer> {
         input: { text: ttsText },
         voice: {
           languageCode: LANGUAGE_CODE,
-          name: VOICE_NAME,
+          name: TTS_VOICE_NAME,
         },
         audioConfig: {
           audioEncoding: "MP3",
           speakingRate: 0.85,   // Leicht langsamer für meditative Wirkung
-          pitch: -1.0,           // Minimal tiefer für Wärme
+          // Hinweis: Chirp3 HD unterstützt keinen pitch-Parameter
           volumeGainDb: 0.0,
         },
       }),
@@ -157,5 +162,15 @@ export async function synthesizeSpeech(text: string): Promise<Buffer> {
     throw new Error("Google TTS hat keinen Audio-Inhalt zurückgegeben");
   }
 
+  // Logging-Callback aufrufen (fire-and-forget, Fehler werden nur geloggt)
+  if (opts?.onSuccess) {
+    try {
+      opts.onSuccess(ttsText.length);
+    } catch (logErr) {
+      console.error("[GoogleTTS] Logging-Fehler (nicht kritisch):", logErr);
+    }
+  }
+
+  console.log(`[GoogleTTS] Erfolgreich: ${ttsText.length} Zeichen, Stimme: ${TTS_VOICE_NAME}`);
   return Buffer.from(data.audioContent, "base64");
 }

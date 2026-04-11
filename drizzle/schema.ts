@@ -188,3 +188,23 @@ export const tagesSummaries = mysqlTable("tages_summaries", {
 
 export type TagesSummary = typeof tagesSummaries.$inferSelect;
 export type InsertTagesSummary = typeof tagesSummaries.$inferInsert;
+
+/**
+ * TTS-Nutzungslog — erfasst alle Google Cloud TTS Aufrufe.
+ * Dient zur Überwachung des monatlichen Zeichenkontingents (1 Mio. gratis).
+ * Alle User zusammen teilen das Kontingent → globale Auswertung nötig.
+ */
+export const ttsNutzungslog = mysqlTable("tts_nutzungslog", {
+  id: int("id").autoincrement().primaryKey(),
+  /** User-ID (null = System-Aufruf) */
+  userId: int("userId"),
+  /** Anzahl der verarbeiteten Zeichen */
+  zeichen: int("zeichen").notNull(),
+  /** Kontext: 'einschlaf_bibliothek' | 'momentaufnahme' | 'sonstige' */
+  kontext: varchar("kontext", { length: 64 }).notNull().default("sonstige"),
+  /** Stimme (für spätere Auswertung bei Stimmwechsel) */
+  stimme: varchar("stimme", { length: 64 }).default("de-DE-Chirp3-HD-Zephyr"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type TtsNutzungslog = typeof ttsNutzungslog.$inferSelect;
+export type InsertTtsNutzungslog = typeof ttsNutzungslog.$inferInsert;
