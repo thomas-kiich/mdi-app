@@ -179,12 +179,12 @@ export default function EinschlafBibliothek() {
     el.volume = 0;
     musikRef.current = el;
     el.play().then(() => {
-      // Fade-in auf 0.096 in 4 Sekunden (sehr leise Hintergrundmusik)
+      // Fade-in auf 0.05 in 4 Sekunden (minimal leise Hintergrundmusik)
       let step = 0;
       const steps = 40;
       const timer = setInterval(() => {
         step++;
-        el.volume = Math.min(0.096, 0.096 * (step / steps));
+        el.volume = Math.min(0.05, 0.05 * (step / steps));
         if (step >= steps) clearInterval(timer);
       }, 4000 / steps);
     }).catch(err => console.warn("[Musik] Autoplay blockiert:", err));
@@ -332,11 +332,11 @@ export default function EinschlafBibliothek() {
     const convolver = ctx.createConvolver();
     convolver.buffer = createReverbBuffer(ctx, 2.5, 3.0);
 
-    // Dry/Wet Mix: 70% trocken, 30% Hall
+    // Dry/Wet Mix: 90% trocken, 10% Hall
     const dryGain = ctx.createGain();
-    dryGain.gain.value = 0.70;
+    dryGain.gain.value = 0.90;
     const wetGain = ctx.createGain();
-    wetGain.gain.value = 0.30;
+    wetGain.gain.value = 0.10;
 
     source.connect(dryGain);
     source.connect(convolver);

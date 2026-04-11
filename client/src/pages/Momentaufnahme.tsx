@@ -330,13 +330,13 @@ export default function Momentaufnahme() {
     schlafAudioRef.current.volume = 0;
     // Musik starten und sanft einblenden
     schlafAudioRef.current.play().then(() => {
-      // Fade-in auf 0.096 in 3 Sekunden (sehr leise Hintergrundmusik)
+      // Fade-in auf 0.05 in 3 Sekunden (minimal leise Hintergrundmusik)
       const steps = 30;
       const interval = 3000 / steps;
       let step = 0;
       const timer = setInterval(() => {
         step++;
-        if (schlafAudioRef.current) schlafAudioRef.current.volume = Math.min(0.096, 0.096 * (step / steps));
+        if (schlafAudioRef.current) schlafAudioRef.current.volume = Math.min(0.05, 0.05 * (step / steps));
         if (step >= steps) clearInterval(timer);
       }, interval);
     }).catch(err => console.warn("[Schlaf-Musik] Autoplay blockiert:", err));
