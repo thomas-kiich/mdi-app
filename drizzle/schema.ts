@@ -179,6 +179,8 @@ export const tagesSummaries = mysqlTable("tages_summaries", {
   userId: int("userId").notNull(),
   text: text("text").notNull(),
   datum: varchar("datum", { length: 100 }).notNull(),
+  /** ISO-Datum YYYY-MM-DD für Archiv-Abfragen und Upsert-Logik */
+  datumISO: varchar("datumISO", { length: 10 }).notNull().default("2026-01-01"),
   anzahlAufnahmen: int("anzahlAufnahmen").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),

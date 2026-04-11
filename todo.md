@@ -837,3 +837,8 @@
 ## Summary UX-Verbesserungen
 - [x] Vorname-Eingabe-Link direkt unter dem Summary (ohne Cache leeren)
 - [x] Datum bei jedem Summary anzeigen (gespeichertes + frisch generiertes)
+
+## Summary & Bibliothek Verbesserungen
+- [x] Button-Text "Summary aktualisieren" wenn bereits Summary vorhanden
+- [x] Summary-Archiv: letzte 7 Einträge abrufbar (Datum + erste Zeile + Volltext)
+- [x] Vorname in Einschlaf-Bibliothek einbinden (Märchen + Abenteuer personalisiert — war bereits implementiert)

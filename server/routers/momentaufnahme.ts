@@ -324,13 +324,17 @@ Wichtig: Beginne DIREKT mit dem Inhalt. Kein Einleitungssatz wie "Hier ist dein 
     const summaryText = typeof rawSummary === "string" ? rawSummary : "Heute war ein besonderer Tag.";
     const datum = new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 
-    // Summary in DB speichern (upsert: altes überschreiben)
+    // Summary in DB speichern (upsert: pro Tag ein Eintrag)
+    const datumISO = new Date().toISOString().split("T")[0];
     try {
-      const existing = await db.select({ id: tagesSummaries.id }).from(tagesSummaries).where(eq(tagesSummaries.userId, ctx.user.id)).limit(1);
+      const existing = await db.select({ id: tagesSummaries.id }).from(tagesSummaries)
+        .where(and(eq(tagesSummaries.userId, ctx.user.id), eq(tagesSummaries.datumISO, datumISO)))
+        .limit(1);
       if (existing.length > 0) {
-        await db.update(tagesSummaries).set({ text: summaryText, datum, anzahlAufnahmen: aufnahmen.length }).where(eq(tagesSummaries.userId, ctx.user.id));
+        await db.update(tagesSummaries).set({ text: summaryText, datum, anzahlAufnahmen: aufnahmen.length })
+          .where(and(eq(tagesSummaries.userId, ctx.user.id), eq(tagesSummaries.datumISO, datumISO)));
       } else {
-        await db.insert(tagesSummaries).values({ userId: ctx.user.id, text: summaryText, datum, anzahlAufnahmen: aufnahmen.length });
+        await db.insert(tagesSummaries).values({ userId: ctx.user.id, text: summaryText, datum, datumISO, anzahlAufnahmen: aufnahmen.length });
       }
     } catch {
       // Speicherfehler ignorieren — Summary trotzdem zurückgeben
@@ -349,9 +353,25 @@ Wichtig: Beginne DIREKT mit dem Inhalt. Kein Einleitungssatz wie "Hier ist dein 
   letztesSummary: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
     if (!db) return null;
-    const rows = await db.select().from(tagesSummaries).where(eq(tagesSummaries.userId, ctx.user.id)).limit(1);
+    const rows = await db.select().from(tagesSummaries)
+      .where(eq(tagesSummaries.userId, ctx.user.id))
+      .orderBy(desc(tagesSummaries.createdAt))
+      .limit(1);
     if (rows.length === 0) return null;
     return rows[0];
+  }),
+
+  /**
+   * Archiv der letzten 7 Summaries — für Rückblick und Langzeitmotivation.
+   */
+  summaryArchiv: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) return [];
+    const rows = await db.select().from(tagesSummaries)
+      .where(eq(tagesSummaries.userId, ctx.user.id))
+      .orderBy(desc(tagesSummaries.createdAt))
+      .limit(7);
+    return rows;
   }),
 
   /**

@@ -1,0 +1,1 @@
+ALTER TABLE `tages_summaries` ADD `datumISO` varchar(10) DEFAULT '2026-01-01' NOT NULL;

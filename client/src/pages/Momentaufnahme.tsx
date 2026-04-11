@@ -227,6 +227,12 @@ export default function Momentaufnahme() {
     undefined,
     { enabled: isAuthenticated }
   );
+  const { data: archivData } = trpc.momentaufnahme.summaryArchiv.useQuery(
+    undefined,
+    { enabled: isAuthenticated }
+  );
+  const [showArchiv, setShowArchiv] = useState(false);
+  const [archivExpandedId, setArchivExpandedId] = useState<number | null>(null);
 
   // Vorname aus Profil laden und ggf. Dialog zeigen
   // Nur einmal fragen — wenn User "Später" geklickt hat, nicht mehr nerven
@@ -861,6 +867,52 @@ export default function Momentaufnahme() {
         </div>
       )}
 
+      {/* Summary-Archiv */}
+      {archivData && archivData.length > 1 && (
+        <div className="mx-5 mb-3">
+          <button
+            onClick={() => setShowArchiv(v => !v)}
+            className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white/3 hover:bg-white/5 border border-white/5 hover:border-white/10 transition-all"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-sm">📖</span>
+              <span className="text-xs text-white/50">Summary-Archiv</span>
+              <span className="text-[10px] text-white/25">{archivData.length} Einträge</span>
+            </div>
+            <span className="text-[10px] text-white/30">{showArchiv ? '▲' : '▼'}</span>
+          </button>
+          {showArchiv && (
+            <div className="mt-2 space-y-2">
+              {archivData.map((entry) => (
+                <div
+                  key={entry.id}
+                  className="rounded-xl bg-white/3 border border-white/5 overflow-hidden"
+                >
+                  <button
+                    onClick={() => setArchivExpandedId(archivExpandedId === entry.id ? null : entry.id)}
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-left hover:bg-white/3 transition-colors"
+                  >
+                    <div>
+                      <p className="text-xs text-violet-300/70 font-medium">{entry.datum}</p>
+                      <p className="text-[11px] text-white/40 mt-0.5 line-clamp-1">
+                        {entry.text.slice(0, 80)}{entry.text.length > 80 ? '…' : ''}
+                      </p>
+                    </div>
+                    <span className="text-[10px] text-white/20 ml-2 shrink-0">{archivExpandedId === entry.id ? '▲' : '▼'}</span>
+                  </button>
+                  {archivExpandedId === entry.id && (
+                    <div className="px-3 pb-3 border-t border-white/5">
+                      <p className="text-xs text-white/60 leading-relaxed pt-2">{entry.text}</p>
+                      <p className="text-[10px] text-white/20 mt-2">{entry.anzahlAufnahmen} Aufnahmen · {entry.datum}</p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Aufnahmeliste */}
       <div className="flex-1 overflow-y-auto px-5 pb-44">
         {anzahlHeute === 0 ? (
@@ -1042,8 +1094,10 @@ export default function Momentaufnahme() {
             >
               {isSummaryLoading ? (
                 <><Loader2 className="w-5 h-5 animate-spin" /> Tages-Summary wird erstellt…</>
+              ) : summaryText ? (
+                <><Sparkles className="w-5 h-5" /> 🔄  Summary aktualisieren</>
               ) : (
-                <><Sparkles className="w-5 h-5" /> 🌙  Mein Tages-Summary erstellen</>
+                <><Sparkles className="w-5 h-5" /> 🌙  Mein Tages-Summary erstellen</>
               )}
             </button>
             <p className="text-center text-white/30 text-xs mt-2">Vernetzt alle heutigen Aufnahmen · Schlaf-Modus inklusive</p>
