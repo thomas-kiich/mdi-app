@@ -950,6 +950,16 @@ export default function Momentaufnahme() {
                   <p className="text-white/40 text-xs mt-3 leading-relaxed">
                     Nach deiner ersten Aufnahme erscheint hier dein persönliches Tages-Summary.
                   </p>
+                  {/* Selbstbestimmungs-Prinzip */}
+                  <div className="mt-4 pt-4 border-t border-violet-500/15">
+                    <p className="text-[11px] text-violet-300/60 font-semibold tracking-wider uppercase mb-2">MA's Grundsatz</p>
+                    <p className="text-white/50 text-xs leading-relaxed">
+                      MA gibt <span className="text-white/80 font-medium">keine Ratschläge</span>. Sie spiegelt, verdichtet und begleitet — ohne zu lenken.
+                    </p>
+                    <p className="text-white/30 text-xs mt-2 leading-relaxed italic">
+                      „Selbstbestimmt bleiben bei gleichzeitiger optimierter Nutzung aller Qualitäten der Technologie.“
+                    </p>
+                  </div>
                 </div>
                 <div className="text-center">
                   <div className="text-4xl mb-3 opacity-40">🎤</div>
@@ -1164,7 +1174,8 @@ export default function Momentaufnahme() {
             <p>✦ Die Aufnahme wird nach der Verarbeitung nicht dauerhaft gespeichert.</p>
             <p>✦ Deine Daten werden nicht für das Training von KI-Modellen verwendet.</p>
             <p>✦ Du kannst deine Einwilligung jederzeit widerrufen (Einstellungen → Datenschutz).</p>
-            <p>✦ Die KI-generierten Auswertungen dienen ausschließlich der persönlichen Reflexion — kein medizinisches Angebot.</p>
+            <p>❖ Die KI-generierten Auswertungen dienen ausschließlich der persönlichen Reflexion — kein medizinisches Angebot.</p>
+            <p className="text-violet-300/60 border-t border-white/10 pt-2 mt-2">❖ MA gibt <span className="text-violet-300/90 font-medium">keine Ratschläge</span>. Sie spiegelt und begleitet — die Entscheidungshoheit bleibt bei dir.</p>
           </div>
           <div className="flex flex-col gap-3">
             <button
