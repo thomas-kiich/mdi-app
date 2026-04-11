@@ -22,6 +22,8 @@ import {
   RefreshCw,
   Scissors,
   X,
+  Mic,
+  MicOff,
 } from "lucide-react";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
@@ -117,6 +119,51 @@ export default function EinschlafBibliothek() {
   const [korrekturAbschnitt, setKorrekturAbschnitt] = useState("");
   const [korrekturHinweis, setKorrekturHinweis] = useState("");
   const [korrekturLaedt, setKorrekturLaedt] = useState(false);
+
+  // Spracheingabe-State
+  const [sprichtGerade, setSprichtGerade] = useState(false);
+  const erkennungRef = useRef<any>(null);
+
+  const handleSprachEingabe = useCallback(() => {
+    const SpeechRecognitionAPI =
+      (window as any).SpeechRecognition ||
+      (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognitionAPI) {
+      toast.error("Spracheingabe wird von diesem Browser nicht unterstützt. Bitte Chrome oder Safari verwenden.");
+      return;
+    }
+
+    if (sprichtGerade && erkennungRef.current) {
+      erkennungRef.current.stop();
+      return;
+    }
+
+    const erkennung: any = new SpeechRecognitionAPI();
+    erkennung.lang = "de-DE";
+    erkennung.continuous = true;
+    erkennung.interimResults = false;
+    erkennungRef.current = erkennung;
+
+    erkennung.onstart = () => setSprichtGerade(true);
+    erkennung.onend = () => setSprichtGerade(false);
+    erkennung.onerror = (e: any) => {
+      setSprichtGerade(false);
+      if (e.error !== "no-speech" && e.error !== "aborted") {
+        toast.error("Spracheingabe-Fehler: " + e.error);
+      }
+    };
+    erkennung.onresult = (e: any) => {
+      const transkript = Array.from(e.results as any[])
+        .map((r: any) => r[0].transcript)
+        .join(" ");
+      setPersonalisierung((prev) =>
+        prev ? prev.trim() + " " + transkript : transkript
+      );
+    };
+
+    erkennung.start();
+  }, [sprichtGerade]);
 
   // Schlaf-Musik URL (dieselbe wie im Schlaf-Modus)
   const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlauntermalung_MAapp_3deef3ee.wav";
@@ -656,13 +703,33 @@ export default function EinschlafBibliothek() {
                   ? "Beschreibe deine konkrete Herausforderung — der Held erlebt sie als Abenteuer"
                   : "Deine persönliche Situation — für eine maßgeschneiderte Metapher"}
               </p>
-              <textarea
-                value={personalisierung}
-                onChange={e => setPersonalisierung(e.target.value)}
-                placeholder="..."
-                rows={3}
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/25 text-sm focus:outline-none focus:border-white/30 resize-none"
-              />
+              <div className="relative">
+                <textarea
+                  value={personalisierung}
+                  onChange={e => setPersonalisierung(e.target.value)}
+                  placeholder="..."
+                  rows={3}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white placeholder-white/25 text-sm focus:outline-none focus:border-white/30 resize-none"
+                />
+                <button
+                  type="button"
+                  onClick={handleSprachEingabe}
+                  title={sprichtGerade ? "Aufnahme stoppen" : "Einsprechen"}
+                  className={`absolute right-3 bottom-3 p-1.5 rounded-full transition-all ${
+                    sprichtGerade
+                      ? "bg-red-500/20 text-red-400 animate-pulse"
+                      : "text-white/30 hover:text-white/70 hover:bg-white/10"
+                  }`}
+                >
+                  {sprichtGerade ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </button>
+              </div>
+              {sprichtGerade && (
+                <p className="text-xs text-red-400/70 mt-1.5 flex items-center gap-1">
+                  <span className="inline-block w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+                  Hört zu — tippe auf das Mikrofon zum Stoppen
+                </p>
+              )}
             </div>
           )}
 

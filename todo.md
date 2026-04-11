@@ -885,3 +885,8 @@
 - [x] Frontend: "Neu schreiben"-Button in Lesen-Ansicht
 - [x] Frontend: "Stelle korrigieren"-Dialog mit Hinweis-Eingabe
 - [x] Audio-Cache bei Überarbeitung automatisch löschen
+
+## Spracheingabe für Personalisierungsfeld
+- [x] Mikrofon-Button neben Personalisierungsfeld in Einschlaf-Bibliothek
+- [x] Web Speech API (SpeechRecognition) für Browser-seitige Transkription
+- [x] Fallback-Hinweis wenn Browser kein Web Speech API unterstützt
