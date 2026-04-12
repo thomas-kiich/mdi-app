@@ -1,75 +1,191 @@
 import { useState, useEffect } from "react";
-import { Sparkles, X } from "lucide-react";
+import { ChevronRight, ChevronLeft, X } from "lucide-react";
 
 /**
- * Willkommens-Dialog für neue Nutzer die über einen Einladungslink beigetreten sind.
+ * Willkommens- und Einführungsdialog für neue Nutzer.
  * Wird angezeigt wenn ?willkommen=1 in der URL steht.
+ * Führt in 4 Schritten durch das Wesen von kiich.de / MA.
  */
+
+const SCHRITTE = [
+  {
+    emoji: "🌙",
+    titel: "Willkommen.",
+    text: [
+      "Jemand, dem du vertraust, hat dich hierher eingeladen.",
+      "kiich.de ist kein soziales Netzwerk. Keine Ablenkung. Keine Bewertung.",
+      "Es ist ein stiller Raum — für dich allein.",
+    ],
+    zitat: null,
+  },
+  {
+    emoji: "🎤",
+    titel: "Was ist MA?",
+    text: [
+      "MA ist deine persönliche Begleiterin — eine KI-Stimme, die zuhört, ohne zu urteilen.",
+      "Du sprichst einen Gedanken ein. MA transkribiert, ordnet ein und fasst zusammen.",
+      "Sie gibt keine Ratschläge. Sie spiegelt — was du sagst, wer du bist.",
+    ],
+    zitat: "MA gibt keine Ratschläge. Sie spiegelt, verdichtet und begleitet — ohne zu lenken.",
+  },
+  {
+    emoji: "⚡",
+    titel: "Die 6 Gravitationszentren",
+    text: [
+      "Jeder Gedanke, den du einsprichst, wird einem von 6 Bereichen zugeordnet:",
+    ],
+    kategorien: [
+      { emoji: "👤", name: "ICH", beschreibung: "Selbstwahrnehmung, Gefühle, Körper" },
+      { emoji: "⚡", name: "QUELL", beschreibung: "Intuition, Träume, innere Stimme" },
+      { emoji: "🧠", name: "KONZEPT", beschreibung: "Ideen, Erkenntnisse, Theorien" },
+      { emoji: "🎯", name: "PROJEKT", beschreibung: "Pläne, Aufgaben, Vorhaben" },
+      { emoji: "💬", name: "DIALOG", beschreibung: "Beziehungen, Gespräche, Begegnungen" },
+      { emoji: "🌍", name: "WELT", beschreibung: "Gesellschaft, Natur, das Größere" },
+    ],
+    zitat: null,
+  },
+  {
+    emoji: "✨",
+    titel: "Dein erster Schritt",
+    text: [
+      "Tippe auf den Mikrofon-Button und sprich deinen ersten Gedanken.",
+      "Es muss nichts Besonderes sein. Ein Satz genügt.",
+      "MA hört zu.",
+    ],
+    zitat: "2 minds · 1 source",
+  },
+];
+
 export function WillkommensDialog() {
   const [sichtbar, setSichtbar] = useState(false);
+  const [schritt, setSchritt] = useState(0);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("willkommen") === "1") {
       setSichtbar(true);
       // URL bereinigen ohne Reload
-      const neueUrl = window.location.pathname;
-      window.history.replaceState({}, "", neueUrl);
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, []);
 
   if (!sichtbar) return null;
 
+  const aktuellerSchritt = SCHRITTE[schritt];
+  const istLetzter = schritt === SCHRITTE.length - 1;
+  const istErster = schritt === 0;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-6">
-      <div className="w-full max-w-sm bg-[#12101a] border border-violet-500/30 rounded-2xl p-7 shadow-2xl shadow-violet-900/30">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/85 backdrop-blur-sm px-4 pb-4 sm:pb-0">
+      <div className="w-full max-w-sm bg-[#0f0d1a] border border-violet-500/25 rounded-2xl shadow-2xl shadow-violet-900/30 overflow-hidden">
+        {/* Fortschrittsbalken */}
+        <div className="flex gap-1 p-4 pb-0">
+          {SCHRITTE.map((_, i) => (
+            <div
+              key={i}
+              className={`h-0.5 flex-1 rounded-full transition-all duration-300 ${
+                i <= schritt ? "bg-violet-500" : "bg-white/10"
+              }`}
+            />
+          ))}
+        </div>
+
         {/* Schließen-Button */}
-        <button
-          onClick={() => setSichtbar(false)}
-          className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-white/10 text-white/30 hover:text-white/70 transition-colors"
-        >
-          <X className="w-4 h-4" />
-        </button>
-
-        {/* Avatar */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-3xl mb-4 shadow-lg shadow-violet-900/50">
-            🌙
-          </div>
-          <div className="flex items-center gap-2 mb-1">
-            <Sparkles className="w-4 h-4 text-violet-400" />
-            <p className="text-[10px] font-semibold tracking-[0.2em] text-violet-400 uppercase">Herzlich Willkommen</p>
-            <Sparkles className="w-4 h-4 text-violet-400" />
-          </div>
+        <div className="flex justify-end px-4 pt-3">
+          <button
+            onClick={() => setSichtbar(false)}
+            className="p-1.5 rounded-full hover:bg-white/10 text-white/20 hover:text-white/50 transition-colors"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        {/* Text */}
-        <div className="text-center space-y-4 mb-7">
-          <p className="text-white text-lg font-semibold leading-snug">
-            Schön, dass du da bist.
-          </p>
-          <p className="text-white/70 text-sm leading-relaxed">
-            Jemand, dem du vertraust, hat dich hierher eingeladen —
-            zu einem Werkzeug für Selbstwahrnehmung, innere Klarheit
-            und den Dialog mit dir selbst.
-          </p>
-          <p className="text-white/50 text-sm leading-relaxed">
-            <strong className="text-white/70">kiich.de</strong> ist ein stiller Begleiter.
-            Kein soziales Netzwerk, keine Ablenkung —
-            nur du, deine Gedanken und eine Stimme, die zuhört.
-          </p>
-          <p className="text-violet-300/80 text-xs leading-relaxed italic">
-            „2 minds · 1 source"
-          </p>
+        {/* Inhalt */}
+        <div className="px-6 pb-2 min-h-[260px]">
+          {/* Emoji */}
+          <div className="text-4xl mb-4 text-center">{aktuellerSchritt.emoji}</div>
+
+          {/* Titel */}
+          <h2 className="text-white font-bold text-lg text-center mb-4">
+            {aktuellerSchritt.titel}
+          </h2>
+
+          {/* Text */}
+          <div className="space-y-2 mb-4">
+            {aktuellerSchritt.text.map((zeile, i) => (
+              <p key={i} className="text-white/65 text-sm leading-relaxed text-center">
+                {zeile}
+              </p>
+            ))}
+          </div>
+
+          {/* Kategorien (nur Schritt 3) */}
+          {"kategorien" in aktuellerSchritt && aktuellerSchritt.kategorien && (
+            <div className="grid grid-cols-2 gap-2 mt-3">
+              {aktuellerSchritt.kategorien.map((kat) => (
+                <div
+                  key={kat.name}
+                  className="flex items-start gap-2 p-2.5 rounded-xl bg-white/5 border border-white/5"
+                >
+                  <span className="text-base leading-none mt-0.5">{kat.emoji}</span>
+                  <div>
+                    <p className="text-white/80 text-[11px] font-semibold">{kat.name}</p>
+                    <p className="text-white/35 text-[10px] leading-tight">{kat.beschreibung}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Zitat */}
+          {aktuellerSchritt.zitat && (
+            <p className="text-violet-300/60 text-xs text-center italic mt-4 leading-relaxed">
+              {aktuellerSchritt.zitat}
+            </p>
+          )}
         </div>
 
-        {/* Button */}
-        <button
-          onClick={() => setSichtbar(false)}
-          className="w-full py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-colors"
-        >
-          Ich bin bereit
-        </button>
+        {/* Navigation */}
+        <div className="flex items-center gap-3 px-6 py-5">
+          {!istErster ? (
+            <button
+              onClick={() => setSchritt(s => s - 1)}
+              className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/40 hover:text-white/70 transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          ) : (
+            <div className="w-10" />
+          )}
+
+          {istLetzter ? (
+            <button
+              onClick={() => setSichtbar(false)}
+              className="flex-1 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-colors"
+            >
+              Ich bin bereit ✨
+            </button>
+          ) : (
+            <button
+              onClick={() => setSchritt(s => s + 1)}
+              className="flex-1 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+            >
+              Weiter
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+
+          {!istLetzter ? (
+            <button
+              onClick={() => setSichtbar(false)}
+              className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-white/25 hover:text-white/50 transition-colors text-xs"
+            >
+              Überspringen
+            </button>
+          ) : (
+            <div className="w-10" />
+          )}
+        </div>
       </div>
     </div>
   );
