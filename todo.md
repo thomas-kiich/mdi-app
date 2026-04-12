@@ -970,3 +970,6 @@
 - [x] Frontend: Gespeichertes strategisches Summary beim Öffnen laden
 - [ ] Frontend: Strategie-Archiv (analog zum Reflexions-Archiv) – spätere Iteration
 - [x] Tests: 16 neue Tests (Checkliste, Filter, Persistenz) – 106 Tests gesamt, alle grün
+
+## Disclaimer/Haftungsausschluss (12. April 2026)
+- [x] Österreich (AT) im Haftungsausschluss neben Deutschland (DE) und Schweiz (CH) ergänzt

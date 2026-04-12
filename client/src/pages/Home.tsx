@@ -1763,6 +1763,10 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       <span className="text-zinc-500 shrink-0">🇨🇭 Schweiz:</span>
                       <span><span className="text-zinc-200 font-medium">143</span> <span className="text-zinc-500">(Die Dargebotene Hand, kostenlos, 24h)</span></span>
                     </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-zinc-500 shrink-0">🇦🇹 Österreich:</span>
+                      <span><span className="text-zinc-200 font-medium">142</span> <span className="text-zinc-500">(Telefonseelsorge, kostenlos, 24h)</span></span>
+                    </div>
                   </div>
 
                 </div>
