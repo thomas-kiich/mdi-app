@@ -947,3 +947,8 @@
 - [ ] Frontend: Upgrade-Dialog wenn Limit erreicht (nach Stripe-Integration)
 - [x] Frontend: Abo-Seite /abo mit Ebenen-Vergleich (Ebene I/II/III, Preise, Features)
 - [ ] Stripe-Integration (nach Konto-Einrichtung) – AUSSTEHEND
+
+## Marketing & Navigation (April 2026)
+- [ ] Kühlschranktür-Bild als "Kennst du das?"-Marketing-Element auf Startseite
+- [ ] Admin-FAQ-Interface unter /admin/faq
+- [ ] Abo-Link in Navigationsleiste der Momentaufnahme

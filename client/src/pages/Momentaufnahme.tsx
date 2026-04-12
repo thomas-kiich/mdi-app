@@ -21,6 +21,7 @@ import {
   Archive,
   Plug,
   Smartphone,
+  CreditCard,
 } from "lucide-react";
 import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { EinladungsLink } from "@/components/EinladungsLink";
@@ -738,6 +739,15 @@ export default function Momentaufnahme() {
             <Smartphone className="w-4 h-4" />
             <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">App installieren</span>
           </button>
+          {/* Abo-Link */}
+          <Link href="/abo">
+            <button
+              className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <CreditCard className="w-4 h-4" />
+              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Abo & Ebenen</span>
+            </button>
+          </Link>
           {/* Einschlaf-Bibliothek-Link */}
           <Link href="/einschlafen">
             <button
