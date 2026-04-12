@@ -910,3 +910,21 @@
 - [ ] Momentaufnahme: Tages-Feedback (speak/useTTS) auf Voxtral umstellen
 - [ ] Momentaufnahme: Schlaf-Modus Fallback (Web Speech) entfernen
 - [ ] Alle weiteren Browser-Stimmen-Aufrufe prüfen und ersetzen
+
+## Monetarisierung & Abonnement-System
+- [ ] Fehler unten links auf kiich.de diagnostizieren und beheben
+- [ ] Datenbankschema: subscription-Tabelle (userId, ebene, trialStart, trialEnd, stripeSubscriptionId)
+- [ ] 7-Tage-Trial-Logik: neuer User bekommt automatisch Trial-Start-Datum
+- [ ] Ebenen-Middleware: getUserEbene() Hilfsfunktion (trial/I/II/III)
+- [ ] Rate-Limiting: max. TTS-Generierungen pro Tag je Ebene
+- [ ] Server: Aufnahmen-Limit je Ebene (3/9/unbegrenzt)
+- [ ] Server: Feature-Gates für Schlaf-Modus (ab Ebene II), Einschlaf-Bibliothek (ab Ebene III)
+- [ ] Frontend: Upgrade-Banner wenn Limit erreicht
+- [ ] Frontend: Abo-Übersicht (aktuelle Ebene, Verbrauch, Upgrade-Button)
+- [ ] Frontend: Trial-Countdown-Anzeige
+- [ ] Stripe-Integration für Ebene II (9 €/Monat) und Ebene III (17 €/Monat)
+- [ ] Stripe Webhook: Abo-Status synchronisieren
+
+## Bugs (aktuell)
+- [x] Einschlaf-Geschichte stoppt abrupt vor dem Ende - Zeitlimit auf 8000 Zeichen erhöht (vorher 2500)
+- [x] Vite-Error-Indikator im Vorschaufenster - gecachter alter Fehler, kein echter Bug im Code

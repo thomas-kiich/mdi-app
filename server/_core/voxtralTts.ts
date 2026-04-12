@@ -9,7 +9,7 @@ import { ENV } from "./env";
 const VOXTRAL_API_URL = "https://api.mistral.ai/v1/audio/speech";
 const VOXTRAL_MODEL = "voxtral-mini-tts-latest";
 const MA_VOICE_ID = "89bc29eb-c96b-44bd-8a0b-712d89ede7e0";
-const MAX_TEXT_LENGTH = 2500;
+const MAX_TEXT_LENGTH = 8000; // Erhöht für vollständige Einschlaf-Geschichten (vorher: 2500)
 const TIMEOUT_MS = 60_000;
 
 /**
