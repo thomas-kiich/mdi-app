@@ -197,6 +197,9 @@ export default function Momentaufnahme() {
   const [showConsentDialog, setShowConsentDialog] = useState(false);
   const [schlafModusAktiv, setSchlafModusAktiv] = useState(false);
   const [schlafMetapherLaedt, setSchlafMetapherLaedt] = useState(false);
+  // MA-Tages-Vorlesen: klar, ohne Effekte
+  const [isMASpeaking, setIsMASpeaking] = useState(false);
+  const maAudioRef = useRef<HTMLAudioElement | null>(null);
 
   // Schlaf-Modus Hintergrundmusik
   const SCHLAF_MUSIK_URL = "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/schlafmusik_ma_5b2eb01f.mp3";
@@ -562,7 +565,7 @@ export default function Momentaufnahme() {
     }
   }, [tagesSummaryMutation]);
 
-  // TTS für Zusammenfassung
+  // TTS für Zusammenfassung (Browser-Stimme, Fallback)
   const handleSpeakSummary = useCallback(() => {
     if (isSpeaking) {
       stop();
@@ -570,6 +573,45 @@ export default function Momentaufnahme() {
       speak(summaryText);
     }
   }, [isSpeaking, summaryText, speak, stop]);
+
+  // MA-Stimme für Tages-Summary: klar, ohne Hall, ohne Musik
+  const handleMASpeakSummary = useCallback(async () => {
+    // Stoppen wenn bereits läuft
+    if (isMASpeaking) {
+      if (maAudioRef.current) {
+        maAudioRef.current.pause();
+        maAudioRef.current = null;
+      }
+      setIsMASpeaking(false);
+      return;
+    }
+    if (!summaryText) return;
+    setIsMASpeaking(true);
+    try {
+      const ttsResult = await elevenLabsTTSMutation.mutateAsync({ text: summaryText });
+      if (ttsResult.audioBase64 && !ttsResult.fallback) {
+        const audio = new Audio(`data:${ttsResult.mimeType};base64,${ttsResult.audioBase64}`);
+        // Klar und direkt: kein Hall, kein Reverb, kein Effekt
+        audio.playbackRate = 0.85;
+        audio.preservesPitch = true;
+        audio.volume = 1.0;
+        maAudioRef.current = audio;
+        audio.onended = () => setIsMASpeaking(false);
+        audio.onerror = () => setIsMASpeaking(false);
+        audio.play().catch(() => {
+          // Fallback: Browser-Stimme
+          setIsMASpeaking(false);
+          speak(summaryText);
+        });
+      } else {
+        setIsMASpeaking(false);
+        speak(summaryText);
+      }
+    } catch {
+      setIsMASpeaking(false);
+      speak(summaryText);
+    }
+  }, [isMASpeaking, summaryText, elevenLabsTTSMutation, speak]);
 
   // Aufnahme löschen
   const handleLoeschen = useCallback(async (id: number) => {
@@ -781,22 +823,27 @@ export default function Momentaufnahme() {
                   ))}
                 </select>
               )}
-              {/* TTS Play/Stop Button */}
+              {/* MA-Stimme Button: klar, ohne Effekte */}
               <button
-                onClick={handleSpeakSummary}
+                onClick={handleMASpeakSummary}
+                disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
                 className={cn(
-                  "p-1.5 rounded-full transition-colors",
-                  isSpeaking
+                  "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-medium transition-colors",
+                  isMASpeaking
                     ? "bg-violet-500/30 text-violet-300"
-                    : "hover:bg-white/10 text-white/40 hover:text-white/70"
+                    : "hover:bg-white/10 text-white/40 hover:text-white/70",
+                  elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait"
                 )}
-                title={isSpeaking ? "Vorlesen stoppen" : "Vorlesen"}
+                title={isMASpeaking ? "MA stoppen" : "MA vorlesen lassen"}
               >
-                {isSpeaking ? (
-                  <Square className="w-3.5 h-3.5 fill-current" />
+                {elevenLabsTTSMutation.isPending && !isMASpeaking ? (
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                ) : isMASpeaking ? (
+                  <Square className="w-3 h-3 fill-current" />
                 ) : (
-                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <Play className="w-3 h-3 fill-current" />
                 )}
+                <span>MA</span>
               </button>
               <button
                 onClick={() => { stop(); setShowSummary(false); }}
@@ -832,7 +879,7 @@ export default function Momentaufnahme() {
             <span className="text-[10px] text-white/25">· Dieser Text wurde automatisch durch ein KI-Sprachmodell erstellt und dient ausschließlich der persönlichen Reflexion.</span>
           </div>
           {/* Pulsierender Indikator beim Vorlesen */}
-          {isSpeaking && (
+          {(isSpeaking || isMASpeaking) && (
             <div className="flex items-center gap-1.5 mt-3">
               {[0, 1, 2, 3].map(i => (
                 <span
@@ -844,7 +891,9 @@ export default function Momentaufnahme() {
                   }}
                 />
               ))}
-              <span className="text-xs text-violet-400 ml-1">wird vorgelesen...</span>
+              <span className="text-xs text-violet-400 ml-1">
+                {isMASpeaking ? "MA spricht..." : "wird vorgelesen..."}
+              </span>
             </div>
           )}
 
