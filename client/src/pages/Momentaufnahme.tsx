@@ -25,6 +25,7 @@ import {
 import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { EinladungsLink } from "@/components/EinladungsLink";
 import { WillkommensDialog } from "@/components/WillkommensDialog";
+import { TrialBanner } from "@/components/TrialBanner";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link } from "wouter";
@@ -798,6 +799,11 @@ export default function Momentaufnahme() {
           )}
         </div>
       </header>
+
+      {/* Trial-Banner */}
+      <div className="px-5 pt-4">
+        <TrialBanner />
+      </div>
 
       {/* Tages-Zusammenfassung */}
       {showSummary && summaryText && (

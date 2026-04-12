@@ -935,3 +935,15 @@
 - [x] Frontend: FAQ-Seite mit aufklappbaren Antworten (Accordion) + Frage-Formular
 - [x] FAQ-Link in Hauptnavigation (kiich.de) einbauen
 - [x] Admin-Benachrichtigung bei neuer Frage
+
+## Abonnement-System (Vorbereitung für Stripe)
+- [x] Datenbankschema: abonnements-Tabelle (userId, ebene I/II/III, status trial/active/cancelled/expired, trialStartedAt, trialEndsAt, stripeCustomerId, stripeSubscriptionId)
+- [x] Datenbankschema: nutzungsLimits-Tabelle (userId, monat, aufnahmenCount, ttsCount, geschichtenCount)
+- [x] Server: getAboInfo(), getLimitInfo(), inkrementierNutzung() in server/abo.ts
+- [x] Server: checkLimit via inkrementierNutzung() - prüft und inkrementiert Nutzungszähler
+- [ ] Server: Momentaufnahme-Router mit Ebenen-Prüfung absichern (nach Stripe-Integration)
+- [ ] Server: TTS-Router mit Ebenen-Prüfung absichern (nach Stripe-Integration)
+- [x] Frontend: TrialBanner-Komponente mit Countdown + Upgrade-CTA in Momentaufnahme
+- [ ] Frontend: Upgrade-Dialog wenn Limit erreicht (nach Stripe-Integration)
+- [x] Frontend: Abo-Seite /abo mit Ebenen-Vergleich (Ebene I/II/III, Preise, Features)
+- [ ] Stripe-Integration (nach Konto-Einrichtung) – AUSSTEHEND

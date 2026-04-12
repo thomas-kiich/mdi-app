@@ -273,3 +273,72 @@ export const faqFragen = mysqlTable("faq_fragen", {
 
 export type FaqFrage = typeof faqFragen.$inferSelect;
 export type InsertFaqFrage = typeof faqFragen.$inferInsert;
+
+/**
+ * ABONNEMENT-SYSTEM
+ * 
+ * Drei Ebenen (nach 7-Tage-Trial):
+ * - Ebene I:   kostenlos | nur schriftlich | max. 3 Aufnahmen/Monat | kein TTS | kein Schlaf-Modus
+ * - Ebene II:  9 €/Monat | schriftlich + TTS | max. 9 Aufnahmen/Monat | Schlaf-Modus
+ * - Ebene III: 17 €/Monat | unbegrenzt | alle Features | individuelle Geschichten
+ * 
+ * Status-Lifecycle:
+ *   trial → active (nach Zahlung) | trial → expired (nach 7 Tagen ohne Zahlung)
+ *   active → cancelled (Kündigung, läuft bis Periodenende) | active → expired
+ * 
+ * Stripe-Integration: stripeCustomerId und stripeSubscriptionId werden nach
+ * erfolgreicher Zahlung gesetzt. Bis dahin null (Trial-Phase).
+ */
+export const abonnements = mysqlTable("abonnements", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  /** Aktuelle Ebene: I | II | III */
+  ebene: mysqlEnum("ebene", ["I", "II", "III"]).default("I").notNull(),
+  /** Status des Abonnements */
+  status: mysqlEnum("status", ["trial", "active", "cancelled", "expired"]).default("trial").notNull(),
+  /** Beginn der 7-Tage-Testphase (= Registrierungszeitpunkt) */
+  trialStartedAt: timestamp("trialStartedAt").defaultNow().notNull(),
+  /** Ende der Testphase (trialStartedAt + 7 Tage) */
+  trialEndsAt: timestamp("trialEndsAt").notNull(),
+  /** Beginn des aktuellen Abrechnungszeitraums (nach Trial) */
+  currentPeriodStart: timestamp("currentPeriodStart"),
+  /** Ende des aktuellen Abrechnungszeitraums */
+  currentPeriodEnd: timestamp("currentPeriodEnd"),
+  /** Stripe Customer ID (nach erster Zahlung gesetzt) */
+  stripeCustomerId: varchar("stripeCustomerId", { length: 128 }),
+  /** Stripe Subscription ID (nach erster Zahlung gesetzt) */
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Abonnement = typeof abonnements.$inferSelect;
+export type InsertAbonnement = typeof abonnements.$inferInsert;
+
+/**
+ * NUTZUNGSLIMITS – Rate-Limiting pro User und Monat
+ * 
+ * Wird bei jeder Aufnahme und TTS-Generierung geprüft und inkrementiert.
+ * Limits nach Ebene:
+ * - Ebene I:   3 Aufnahmen/Monat, 0 TTS-Generierungen, kein Schlaf-Modus
+ * - Ebene II:  9 Aufnahmen/Monat, 20 TTS-Generierungen, Schlaf-Modus
+ * - Ebene III: unbegrenzt (999999)
+ * - Trial:     wie Ebene III (voller Zugang für 7 Tage)
+ */
+export const nutzungsLimits = mysqlTable("nutzungs_limits", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Abrechnungsmonat im Format YYYY-MM */
+  monat: varchar("monat", { length: 7 }).notNull(),
+  /** Anzahl erstellter Aufnahmen in diesem Monat */
+  aufnahmenCount: int("aufnahmenCount").default(0).notNull(),
+  /** Anzahl TTS-Generierungen (MA-Stimme) in diesem Monat */
+  ttsCount: int("ttsCount").default(0).notNull(),
+  /** Anzahl generierter Einschlaf-Geschichten in diesem Monat */
+  geschichtenCount: int("geschichtenCount").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type NutzungsLimit = typeof nutzungsLimits.$inferSelect;
+export type InsertNutzungsLimit = typeof nutzungsLimits.$inferInsert;
