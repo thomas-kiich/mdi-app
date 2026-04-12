@@ -1,7 +1,7 @@
 import { and, desc, eq, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { randomBytes } from "crypto";
-import { InsertNewsletterSubscriber, InsertUser, newsletterSubscribers, users } from "../drizzle/schema";
+import { InsertNewsletterSubscriber, InsertUser, newsletterSubscribers, users, einladungsCodes, referrals } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -325,4 +325,123 @@ export async function setPremiumFeature(feature: PremiumFeature, enabled: boolea
     .insert(premiumSettings)
     .values({ feature, enabled })
     .onDuplicateKeyUpdate({ set: { enabled } });
+}
+
+// ─── Empfehlungssystem (Referral) ────────────────────────────────────────────
+
+/**
+ * Generiert einen kurzen alphanumerischen Einladungscode (8 Zeichen).
+ */
+function generiereEinladungsCode(): string {
+  const zeichen = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // ohne 0/O/1/I (Verwechslungsgefahr)
+  return Array.from({ length: 8 }, () =>
+    zeichen[Math.floor(Math.random() * zeichen.length)]
+  ).join("");
+}
+
+/**
+ * Gibt den Einladungscode eines Users zurück.
+ * Falls noch keiner existiert, wird einer erstellt.
+ */
+export async function getOrCreateEinladungsCode(userId: number): Promise<string> {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  const existing = await db
+    .select()
+    .from(einladungsCodes)
+    .where(eq(einladungsCodes.userId, userId))
+    .limit(1);
+
+  if (existing.length > 0) return existing[0].code;
+
+  // Neuen Code generieren (Kollisions-sicher: bis zu 5 Versuche)
+  for (let i = 0; i < 5; i++) {
+    const code = generiereEinladungsCode();
+    try {
+      await db.insert(einladungsCodes).values({ userId, code });
+      return code;
+    } catch {
+      // Kollision → nächster Versuch
+    }
+  }
+  throw new Error("Konnte keinen eindeutigen Einladungscode generieren");
+}
+
+/**
+ * Verarbeitet einen Einladungscode beim ersten Login eines neuen Users.
+ * Gibt den Einladenden zurück (für Benachrichtigung), oder null wenn Code ungültig.
+ */
+export async function verarbeiteEinladungsCode(params: {
+  code: string;
+  neuenUserId: number;
+}): Promise<{ referrerId: number; referrerName: string | null } | null> {
+  const db = await getDb();
+  if (!db) return null;
+
+  // Code nachschlagen
+  const codeEintrag = await db
+    .select()
+    .from(einladungsCodes)
+    .where(eq(einladungsCodes.code, params.code.toUpperCase()))
+    .limit(1);
+
+  if (codeEintrag.length === 0) return null;
+  const referrerId = codeEintrag[0].userId;
+
+  // Nicht sich selbst einladen
+  if (referrerId === params.neuenUserId) return null;
+
+  // Prüfen ob neuer User bereits eingeladen wurde
+  const bereitsEingeladen = await db
+    .select()
+    .from(referrals)
+    .where(eq(referrals.referredUserId, params.neuenUserId))
+    .limit(1);
+
+  if (bereitsEingeladen.length > 0) return null;
+
+  // Referral speichern
+  await db.insert(referrals).values({
+    referrerId,
+    referredUserId: params.neuenUserId,
+  });
+
+  // Zähler erhöhen
+  await db
+    .update(einladungsCodes)
+    .set({ anzahlEinladungen: codeEintrag[0].anzahlEinladungen + 1 })
+    .where(eq(einladungsCodes.userId, referrerId));
+
+  // Einladenden-Name für Benachrichtigung holen
+  const referrer = await db
+    .select({ name: users.name })
+    .from(users)
+    .where(eq(users.id, referrerId))
+    .limit(1);
+
+  return {
+    referrerId,
+    referrerName: referrer[0]?.name ?? null,
+  };
+}
+
+/**
+ * Gibt alle Referrals eines Users zurück (wer wurde eingeladen).
+ */
+export async function getReferralsVonUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+
+  return db
+    .select({
+      id: referrals.id,
+      referredUserId: referrals.referredUserId,
+      createdAt: referrals.createdAt,
+      name: users.name,
+    })
+    .from(referrals)
+    .leftJoin(users, eq(referrals.referredUserId, users.id))
+    .where(eq(referrals.referrerId, userId))
+    .orderBy(desc(referrals.createdAt));
 }

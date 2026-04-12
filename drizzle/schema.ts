@@ -208,3 +208,40 @@ export const ttsNutzungslog = mysqlTable("tts_nutzungslog", {
 });
 export type TtsNutzungslog = typeof ttsNutzungslog.$inferSelect;
 export type InsertTtsNutzungslog = typeof ttsNutzungslog.$inferInsert;
+
+/**
+ * EMPFEHLUNGSSYSTEM (Referral)
+ * Jeder User hat einen eindeutigen Einladungscode.
+ * Wenn jemand über diesen Code beitritt, wird die Verbindung gespeichert
+ * und der Einladende erhält eine Benachrichtigung.
+ */
+export const referrals = mysqlTable("referrals", {
+  id: int("id").autoincrement().primaryKey(),
+  /** User der die Einladung ausgesprochen hat */
+  referrerId: int("referrerId").notNull(),
+  /** User der über den Einladungslink beigetreten ist */
+  referredUserId: int("referredUserId").notNull().unique(),
+  /** Zeitpunkt des Beitritts */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Referral = typeof referrals.$inferSelect;
+export type InsertReferral = typeof referrals.$inferInsert;
+
+/**
+ * Einladungscodes – ein Code pro User, wird beim ersten Abruf generiert.
+ * Der Code ist ein kurzer alphanumerischer String (8 Zeichen).
+ */
+export const einladungsCodes = mysqlTable("einladungs_codes", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  /** Eindeutiger Einladungscode (8 alphanumerische Zeichen) */
+  code: varchar("code", { length: 16 }).notNull().unique(),
+  /** Anzahl der erfolgreichen Einladungen */
+  anzahlEinladungen: int("anzahlEinladungen").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type EinladungsCode = typeof einladungsCodes.$inferSelect;
+export type InsertEinladungsCode = typeof einladungsCodes.$inferInsert;

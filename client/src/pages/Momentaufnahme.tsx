@@ -23,6 +23,8 @@ import {
   Smartphone,
 } from "lucide-react";
 import { AppInstallGuide } from "@/components/AppInstallGuide";
+import { EinladungsLink } from "@/components/EinladungsLink";
+import { WillkommensDialog } from "@/components/WillkommensDialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link } from "wouter";
@@ -993,6 +995,10 @@ export default function Momentaufnahme() {
                   <p className="text-white/30 text-xs">Tippe auf den Mikrofon-Button und sprich deinen ersten Gedanken.</p>
                   <p className="text-white/20 text-xs mt-1">MA ordnet ihn automatisch in eines der 6 Gravitationszentren ein.</p>
                 </div>
+                {/* Einladungslink */}
+                <div className="mt-8">
+                  <EinladungsLink />
+                </div>
               </div>
             )}
           </div>
@@ -1098,6 +1104,10 @@ export default function Momentaufnahme() {
               )}
             </button>
             <p className="text-center text-white/30 text-xs mt-2">Vernetzt alle heutigen Aufnahmen · Schlaf-Modus inklusive</p>
+            {/* Einladungslink */}
+            <div className="mt-6">
+              <EinladungsLink />
+            </div>
           </div>
         )}
       </div>
@@ -1248,6 +1258,7 @@ export default function Momentaufnahme() {
     {showAppInstallGuide && (
       <AppInstallGuide onClose={() => setShowAppInstallGuide(false)} />
     )}
+    <WillkommensDialog />
     </>
   );
 }
