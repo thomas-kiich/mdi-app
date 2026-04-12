@@ -1,0 +1,1 @@
+ALTER TABLE `tages_summaries` ADD `strategischesText` text;

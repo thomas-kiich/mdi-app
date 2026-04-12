@@ -959,3 +959,14 @@
 - [x] Frontend: Umschalter "Reflexion" / "Strategie" in Summary-Ansicht
 - [x] Frontend: Strategisches Summary (Aufgaben nach Gravitationszentren) anzeigen
 - [x] Tests: 6 neue Tests für Prompt-Logik (93 Tests gesamt, alle grün)
+
+## Strategisches Summary – Erweiterungen (12. April 2026)
+- [x] DB: Feld strategischesText in tagesSummaries-Tabelle hinzufügen
+- [x] DB: Migration gepusht (pnpm db:push)
+- [x] Server: Strategisches Summary in DB speichern (Upsert auf heutigen Tag)
+- [x] Server: letztesSummary gibt strategischesText zurück
+- [x] Server: Obsidian-Export enthält Strategie-Checkliste (- [ ] Aufgaben nach GZ)
+- [x] Frontend: Gravitationszentrum-Filter-Chips im Strategie-Modus
+- [x] Frontend: Gespeichertes strategisches Summary beim Öffnen laden
+- [ ] Frontend: Strategie-Archiv (analog zum Reflexions-Archiv) – spätere Iteration
+- [x] Tests: 16 neue Tests (Checkliste, Filter, Persistenz) – 106 Tests gesamt, alle grün

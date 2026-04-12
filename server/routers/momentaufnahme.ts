@@ -82,6 +82,32 @@ Antworte IMMER im folgenden JSON-Format:
   }
 }
 
+/**
+ * Konvertiert ein strategisches Summary (Freitext) in eine Markdown-Checkliste.
+ * Jede Zeile die mit einem Aufzählungszeichen oder Zahl beginnt wird zu einem Checkbox-Item.
+ */
+function konvertiereStrategieZuChecklist(strategieText: string): string {
+  const zeilen = strategieText.split("\n");
+  const result: string[] = [];
+  for (const zeile of zeilen) {
+    const trimmed = zeile.trim();
+    if (!trimmed) {
+      result.push("");
+      continue;
+    }
+    // Aufgaben-Zeilen: beginnen mit -, *, •, oder Zahl+Punkt
+    if (/^[-*•]\s+/.test(trimmed) || /^\d+\.\s+/.test(trimmed)) {
+      // Entferne das Aufzählungszeichen und ersetze durch Checkbox
+      const aufgabe = trimmed.replace(/^[-*•]\s+/, "").replace(/^\d+\.\s+/, "");
+      result.push(`- [ ] ${aufgabe}`);
+    } else {
+      // Überschriften und Erklärungszeilen unverändert lassen
+      result.push(zeile);
+    }
+  }
+  return result.join("\n");
+}
+
 function generiereObsidianMarkdown(aufnahmen: Array<{
   id: number;
   text: string;
@@ -90,7 +116,7 @@ function generiereObsidianMarkdown(aufnahmen: Array<{
   audioUrl?: string | null;
   dauerSekunden?: number | null;
   createdAt: Date;
-}>): string {
+}>, strategischesText?: string | null): string {
   const datum = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
   const datumISO = new Date().toISOString().split("T")[0];
 
@@ -150,6 +176,12 @@ typ: tagesaufnahme
         md += `[🎙️ Audio-Aufnahme herunterladen](${a.audioUrl})\n\n`;
       }
     }
+  }
+
+  // Strategisches Summary als Checkliste anhängen (wenn vorhanden)
+  if (strategischesText && strategischesText.trim()) {
+    const checkliste = konvertiereStrategieZuChecklist(strategischesText);
+    md += `\n## 🎯 Offene Aufgaben (Strategisches Summary)\n\n${checkliste}\n\n`;
   }
 
   md += `---\n*Exportiert aus KIICH MOMENTAUFNAHME*\n`;
@@ -252,6 +284,7 @@ export const momentaufnahmeRouter = router({
 
     const heute = new Date();
     heute.setHours(0, 0, 0, 0);
+    const datumISO = new Date().toISOString().split("T")[0];
 
     const aufnahmen = await db
       .select()
@@ -259,8 +292,14 @@ export const momentaufnahmeRouter = router({
       .where(and(eq(momentaufnahmen.userId, ctx.user.id), gte(momentaufnahmen.createdAt, heute)))
       .orderBy(desc(momentaufnahmen.createdAt));
 
-    const markdown = generiereObsidianMarkdown(aufnahmen);
-    const datumISO = new Date().toISOString().split("T")[0];
+    // Strategisches Summary für heute aus DB laden
+    const summaryRow = await db.select({ strategischesText: tagesSummaries.strategischesText })
+      .from(tagesSummaries)
+      .where(and(eq(tagesSummaries.userId, ctx.user.id), eq(tagesSummaries.datumISO, datumISO)))
+      .limit(1);
+    const strategischesText = summaryRow[0]?.strategischesText ?? null;
+
+    const markdown = generiereObsidianMarkdown(aufnahmen, strategischesText);
     const filename = `${datumISO} – Momentaufnahmen.md`;
 
     return { markdown, filename, anzahl: aufnahmen.length };
@@ -360,7 +399,15 @@ Wichtig: Beginne DIREKT mit dem Inhalt. Kein Einleitungssatz wie "Hier ist dein 
       .orderBy(desc(tagesSummaries.createdAt))
       .limit(1);
     if (rows.length === 0) return null;
-    return rows[0];
+    // Gibt text (Reflexion) + strategischesText (Strategie) zurück
+    return {
+      id: rows[0].id,
+      text: rows[0].text,
+      datum: rows[0].datum,
+      datumISO: rows[0].datumISO,
+      anzahlAufnahmen: rows[0].anzahlAufnahmen,
+      strategischesText: rows[0].strategischesText ?? null,
+    };
   }),
 
   /**
@@ -632,6 +679,31 @@ Regeln:
     const rawText = response.choices?.[0]?.message?.content;
     const summaryText = typeof rawText === "string" ? rawText : "Keine Aufgaben gefunden.";
     const datum = new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+    const datumISO = new Date().toISOString().split("T")[0];
+
+    // Strategisches Summary in DB speichern (upsert auf heutigen Tag)
+    try {
+      const existing = await db.select({ id: tagesSummaries.id }).from(tagesSummaries)
+        .where(and(eq(tagesSummaries.userId, ctx.user.id), eq(tagesSummaries.datumISO, datumISO)))
+        .limit(1);
+      if (existing.length > 0) {
+        await db.update(tagesSummaries)
+          .set({ strategischesText: summaryText })
+          .where(and(eq(tagesSummaries.userId, ctx.user.id), eq(tagesSummaries.datumISO, datumISO)));
+      } else {
+        // Kein Reflexions-Summary für heute vorhanden: neuen Eintrag mit Platzhalter anlegen
+        await db.insert(tagesSummaries).values({
+          userId: ctx.user.id,
+          text: "",
+          datum,
+          datumISO,
+          anzahlAufnahmen: aufnahmen.length,
+          strategischesText: summaryText,
+        });
+      }
+    } catch {
+      // Speicherfehler ignorieren
+    }
 
     return {
       text: summaryText,

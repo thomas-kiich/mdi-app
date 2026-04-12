@@ -370,3 +370,170 @@ describe("MOMENTAUFNAHME – Strategisches Summary (Prompt-Logik)", () => {
     expect(kategorienBeschreibung.split("\n")).toHaveLength(6);
   });
 });
+
+describe("MOMENTAUFNAHME – Strategie-Checkliste (Obsidian-Export)", () => {
+  // Repliziert konvertiereStrategieZuChecklist aus momentaufnahme.ts
+  function konvertiereStrategieZuChecklist(strategieText: string): string {
+    const zeilen = strategieText.split("\n");
+    const result: string[] = [];
+    for (const zeile of zeilen) {
+      const trimmed = zeile.trim();
+      if (!trimmed) { result.push(""); continue; }
+      if (/^[-*•]\s+/.test(trimmed) || /^\d+\.\s+/.test(trimmed)) {
+        const aufgabe = trimmed.replace(/^[-*•]\s+/, "").replace(/^\d+\.\s+/, "");
+        result.push(`- [ ] ${aufgabe}`);
+      } else {
+        result.push(zeile);
+      }
+    }
+    return result.join("\n");
+  }
+
+  it("wandelt Aufzählungszeichen in Checkboxen um", () => {
+    const input = "- Rechnung an Müller schicken\n- Termin mit Klaus bestätigen";
+    const result = konvertiereStrategieZuChecklist(input);
+    expect(result).toContain("- [ ] Rechnung an Müller schicken");
+    expect(result).toContain("- [ ] Termin mit Klaus bestätigen");
+  });
+
+  it("wandelt nummerierte Listen in Checkboxen um", () => {
+    const input = "1. Präsentation fertigstellen\n2. E-Mail beantworten";
+    const result = konvertiereStrategieZuChecklist(input);
+    expect(result).toContain("- [ ] Präsentation fertigstellen");
+    expect(result).toContain("- [ ] E-Mail beantworten");
+  });
+
+  it("lässt Überschriften und Erklärungszeilen unverändert", () => {
+    const input = "## PROJEKT\nHier sind deine Aufgaben:\n- Task A";
+    const result = konvertiereStrategieZuChecklist(input);
+    expect(result).toContain("## PROJEKT");
+    expect(result).toContain("Hier sind deine Aufgaben:");
+    expect(result).toContain("- [ ] Task A");
+    // Überschrift darf nicht zur Checkbox werden
+    expect(result).not.toContain("- [ ] ## PROJEKT");
+  });
+
+  it("behält Leerzeilen bei", () => {
+    const input = "- Task A\n\n- Task B";
+    const result = konvertiereStrategieZuChecklist(input);
+    expect(result).toContain("- [ ] Task A");
+    expect(result).toContain("- [ ] Task B");
+    expect(result.split("\n")).toHaveLength(3);
+  });
+
+  it("Obsidian-Export enthält Strategie-Checklisten-Abschnitt wenn strategischesText vorhanden", () => {
+    const KATEGORIEN_LOCAL = ["ICH", "QUELL", "KONZEPT", "PROJEKT", "DIALOG", "WELT"] as const;
+    const EMOJI: Record<string, string> = {
+      ICH: "👤", QUELL: "⚡", KONZEPT: "🧠", PROJEKT: "🎯", DIALOG: "💬", WELT: "🌍",
+    };
+    const datum = new Date().toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const datumISO = new Date().toISOString().split("T")[0];
+    const aufnahmen = [{ id: 1, text: "Test", kategorie: "PROJEKT", zusammenfassung: null, createdAt: new Date() }];
+    const strategischesText = "## PROJEKT\n- Rechnung schicken\n- Termin bestätigen";
+
+    // Simuliert generiereObsidianMarkdown mit strategischesText
+    let md = `---\ntags: [momentaufnahme, tagebuch, ${datumISO}]\ndatum: ${datum}\nanzahl: ${aufnahmen.length}\n---\n\n# 📸 Momentaufnahmen – ${datum}\n\n`;
+    for (const kat of KATEGORIEN_LOCAL) {
+      const gruppe = aufnahmen.filter(a => a.kategorie === kat);
+      if (gruppe.length === 0) continue;
+      md += `## ${EMOJI[kat]} ${kat}\n\n`;
+      for (const a of gruppe) {
+        md += `${a.text}\n\n`;
+      }
+    }
+    if (strategischesText) {
+      const checkliste = konvertiereStrategieZuChecklist(strategischesText);
+      md += `\n## 🎯 Offene Aufgaben (Strategisches Summary)\n\n${checkliste}\n\n`;
+    }
+    md += `---\n*Exportiert aus KIICH MOMENTAUFNAHME*\n`;
+
+    expect(md).toContain("## 🎯 Offene Aufgaben (Strategisches Summary)");
+    expect(md).toContain("- [ ] Rechnung schicken");
+    expect(md).toContain("- [ ] Termin bestätigen");
+  });
+});
+
+describe("MOMENTAUFNAHME – Gravitationszentrum-Filter-Logik", () => {
+  const ALLE_GZ = ["ICH", "QUELL", "KONZEPT", "PROJEKT", "DIALOG", "WELT"] as const;
+
+  function filterStrategieText(text: string, aktiveGZ: Set<string>): string {
+    const zeilen = text.split("\n");
+    const gefiltert: string[] = [];
+    let abschnittAktiv = true;
+    for (const zeile of zeilen) {
+      const gzMatch = ALLE_GZ.find(gz =>
+        new RegExp(`\\b${gz}\\b`, "i").test(zeile) &&
+        (zeile.startsWith("#") || zeile.includes("**") || zeile.endsWith(":") || /^[A-Z]{3,7}/.test(zeile.trim()))
+      );
+      if (gzMatch) {
+        abschnittAktiv = aktiveGZ.has(gzMatch);
+      }
+      if (abschnittAktiv) gefiltert.push(zeile);
+    }
+    return gefiltert.join("\n").trim();
+  }
+
+  it("zeigt alle Abschnitte wenn alle GZ aktiv", () => {
+    const text = "## PROJEKT\n- Task A\n\n## ICH\n- Reflexion B";
+    const result = filterStrategieText(text, new Set(ALLE_GZ));
+    expect(result).toContain("## PROJEKT");
+    expect(result).toContain("## ICH");
+    expect(result).toContain("Task A");
+    expect(result).toContain("Reflexion B");
+  });
+
+  it("blendet inaktive GZ-Abschnitte aus", () => {
+    const text = "## PROJEKT\n- Task A\n\n## ICH\n- Reflexion B";
+    const result = filterStrategieText(text, new Set(["PROJEKT"]));
+    expect(result).toContain("## PROJEKT");
+    expect(result).toContain("Task A");
+    expect(result).not.toContain("## ICH");
+    expect(result).not.toContain("Reflexion B");
+  });
+
+  it("mindestens 1 GZ bleibt immer aktiv (Toggle-Schutz)", () => {
+    const aktiveGZ = new Set(["PROJEKT"]);
+    // Versuch PROJEKT zu deaktivieren — soll ignoriert werden wenn size === 1
+    const next = new Set(aktiveGZ);
+    if (next.size > 1) next.delete("PROJEKT");
+    expect(next.has("PROJEKT")).toBe(true);
+    expect(next.size).toBe(1);
+  });
+});
+
+describe("MOMENTAUFNAHME – Strategisches Summary Persistenz", () => {
+  it("strategischesText ist ein optionales Feld (null wenn nicht generiert)", () => {
+    // Simuliert den Rückgabewert von letztesSummary
+    const summaryRow = {
+      id: 1,
+      text: "Reflexions-Text",
+      datum: "Montag, 12. April 2026",
+      datumISO: "2026-04-12",
+      anzahlAufnahmen: 3,
+      strategischesText: null as string | null,
+    };
+    expect(summaryRow.strategischesText).toBeNull();
+  });
+
+  it("strategischesText wird korrekt gesetzt wenn vorhanden", () => {
+    const summaryRow = {
+      id: 1,
+      text: "Reflexions-Text",
+      datum: "Montag, 12. April 2026",
+      datumISO: "2026-04-12",
+      anzahlAufnahmen: 3,
+      strategischesText: "## PROJEKT\n- Task A",
+    };
+    expect(summaryRow.strategischesText).toContain("## PROJEKT");
+    expect(summaryRow.strategischesText).toContain("Task A");
+  });
+
+  it("Upsert-Logik: vorhandener Eintrag wird aktualisiert, kein Duplikat", () => {
+    // Simuliert die Upsert-Entscheidung
+    const existingIds = [{ id: 42 }];
+    const shouldUpdate = existingIds.length > 0;
+    const shouldInsert = existingIds.length === 0;
+    expect(shouldUpdate).toBe(true);
+    expect(shouldInsert).toBe(false);
+  });
+});

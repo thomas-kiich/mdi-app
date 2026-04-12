@@ -196,6 +196,21 @@ export default function Momentaufnahme() {
   const [strategischesText, setStrategischesText] = useState("");
   const [strategischesDatum, setStrategischesDatum] = useState("");
   const [isStrategischLaden, setIsStrategischLaden] = useState(false);
+  // Gravitationszentrum-Filter im Strategie-Modus (alle aktiv = kein Filter)
+  const ALLE_GZ = ["ICH", "QUELL", "KONZEPT", "PROJEKT", "DIALOG", "WELT"] as const;
+  const [aktiveGZ, setAktiveGZ] = useState<Set<string>>(new Set(ALLE_GZ));
+  const toggleGZ = (gz: string) => {
+    setAktiveGZ(prev => {
+      const next = new Set(prev);
+      if (next.has(gz)) {
+        // Mindestens 1 muss aktiv bleiben
+        if (next.size > 1) next.delete(gz);
+      } else {
+        next.add(gz);
+      }
+      return next;
+    });
+  };
   const [expandedId, setExpandedId] = useState<number | null>(null);
   // DSGVO-Einwilligung: einmalig pro Session
   const [consentGiven, setConsentGiven] = useState(() => {
@@ -420,14 +435,20 @@ export default function Momentaufnahme() {
     };
   }, []);
 
-  // Letztes gespeichertes Summary beim Öffnen sofort anzeigen
+  // Letztes gespeichertes Summary beim Öffnen sofort anzeigen (Reflexion + Strategie)
   useEffect(() => {
-    if (letztesSummaryData && letztesSummaryData.text && !summaryText) {
+    if (!letztesSummaryData) return;
+    if (letztesSummaryData.text && !summaryText) {
       setSummaryText(letztesSummaryData.text);
       setSummaryDatum(letztesSummaryData.datum);
       setShowSummary(true);
     }
-  }, [letztesSummaryData, summaryText]);
+    if (letztesSummaryData.strategischesText && !strategischesText) {
+      setStrategischesText(letztesSummaryData.strategischesText);
+      setStrategischesDatum(letztesSummaryData.datum);
+      if (!letztesSummaryData.text) setShowSummary(true);
+    }
+  }, [letztesSummaryData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Aufnahme starten — mit DSGVO-Einwilligungsprüfung
   const startRecording = useCallback(async () => {
@@ -964,10 +985,72 @@ export default function Momentaufnahme() {
             <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">{summaryText}</p>
           ) : (
             !isStrategischLaden && (
-              <div className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">
-                {strategischesText || (
-                  <span className="text-white/30 italic">Noch kein strategisches Summary vorhanden.</span>
+              <div>
+                {/* Gravitationszentrum-Filter-Chips */}
+                {strategischesText && (
+                  <div className="flex flex-wrap gap-1.5 mb-3">
+                    {ALLE_GZ.map(gz => {
+                      const cfg = KATEGORIE_CONFIG[gz as keyof typeof KATEGORIE_CONFIG];
+                      const aktiv = aktiveGZ.has(gz);
+                      return (
+                        <button
+                          key={gz}
+                          onClick={() => toggleGZ(gz)}
+                          className={cn(
+                            "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-all",
+                            aktiv ? cfg.farbe : "bg-white/3 text-white/20 border-white/10 hover:text-white/40"
+                          )}
+                          title={aktiv ? `${gz} ausblenden` : `${gz} einblenden`}
+                        >
+                          <span>{cfg.emoji}</span>
+                          <span>{gz}</span>
+                        </button>
+                      );
+                    })}
+                    {aktiveGZ.size < ALLE_GZ.length && (
+                      <button
+                        onClick={() => setAktiveGZ(new Set(ALLE_GZ))}
+                        className="px-2 py-0.5 rounded-full text-[10px] text-white/30 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all"
+                      >
+                        Alle
+                      </button>
+                    )}
+                  </div>
                 )}
+                {/* Gefilterter Strategie-Text */}
+                <div className="text-sm text-white/80 leading-relaxed">
+                  {strategischesText ? (
+                    (() => {
+                      // Abschnitte nach Gravitationszentrum filtern
+                      const zeilen = strategischesText.split("\n");
+                      const gefiltert: string[] = [];
+                      let aktuellesGZ: string | null = null;
+                      let abschnittAktiv = true;
+                      for (const zeile of zeilen) {
+                        // Erkennt GZ-Überschriften wie "## PROJEKT", "**PROJEKT**", "PROJEKT:"
+                        const gzMatch = ALLE_GZ.find(gz =>
+                          new RegExp(`\\b${gz}\\b`, "i").test(zeile) &&
+                          (zeile.startsWith("#") || zeile.includes("**") || zeile.endsWith(":") || /^[A-Z]{3,7}/.test(zeile.trim()))
+                        );
+                        if (gzMatch) {
+                          aktuellesGZ = gzMatch;
+                          abschnittAktiv = aktiveGZ.has(gzMatch);
+                        }
+                        if (abschnittAktiv) gefiltert.push(zeile);
+                      }
+                      const gefilterterText = gefiltert.join("\n").trim();
+                      return (
+                        <p className="whitespace-pre-wrap">
+                          {gefilterterText || (
+                            <span className="text-white/30 italic">Keine Aufgaben für die gewählten Gravitationszentren.</span>
+                          )}
+                        </p>
+                      );
+                    })()
+                  ) : (
+                    <span className="text-white/30 italic">Noch kein strategisches Summary vorhanden.</span>
+                  )}
+                </div>
               </div>
             )
           )}

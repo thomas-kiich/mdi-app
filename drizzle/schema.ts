@@ -182,6 +182,8 @@ export const tagesSummaries = mysqlTable("tages_summaries", {
   /** ISO-Datum YYYY-MM-DD für Archiv-Abfragen und Upsert-Logik */
   datumISO: varchar("datumISO", { length: 10 }).notNull().default("2026-01-01"),
   anzahlAufnahmen: int("anzahlAufnahmen").default(0).notNull(),
+  /** Strategisches Summary (Aufgaben/To-Dos nach Gravitationszentren) */
+  strategischesText: text("strategischesText"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
