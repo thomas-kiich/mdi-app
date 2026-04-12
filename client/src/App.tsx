@@ -20,6 +20,7 @@ import Episoden from "@/pages/Episoden";
 import AdminPremium from "@/pages/AdminPremium";
 import EinschlafBibliothek from "@/pages/EinschlafBibliothek";
 import AdminTts from "@/pages/AdminTts";
+import FAQ from "@/pages/FAQ";
 
 function Router() {
   return (
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/admin/premium" component={AdminPremium} />
       <Route path="/admin/tts" component={AdminTts} />
       <Route path="/einschlafen" component={EinschlafBibliothek} />
+      <Route path="/faq" component={FAQ} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

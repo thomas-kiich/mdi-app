@@ -10,6 +10,7 @@ import { profilRouter } from "./routers/profil";
 import { einschlafBibliothekRouter } from "./routers/einschlafBibliothek";
 import { adminTtsRouter } from "./routers/adminTts";
 import { referralRouter } from "./routers/referral";
+import { faqRouter } from "./routers/faq";
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -33,6 +34,7 @@ export const appRouter = router({
   einschlafBibliothek: einschlafBibliothekRouter,
   adminTts: adminTtsRouter,
   referral: referralRouter,
+  faq: faqRouter,
 });
 
 export type AppRouter = typeof appRouter;

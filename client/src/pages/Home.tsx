@@ -1704,6 +1704,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                   <div>&copy; {new Date().getFullYear()} KIICH. Alle Rechte vorbehalten.</div>
                   <div className="flex gap-6">
+                      <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
                       <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
                       <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
                   </div>

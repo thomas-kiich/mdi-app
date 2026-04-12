@@ -245,3 +245,31 @@ export const einladungsCodes = mysqlTable("einladungs_codes", {
 
 export type EinladungsCode = typeof einladungsCodes.$inferSelect;
 export type InsertEinladungsCode = typeof einladungsCodes.$inferInsert;
+
+/**
+ * FAQ-Fragen – öffentlich einreichbar, von Admin beantwortbar.
+ * Workflow:
+ * 1. Nutzer stellt Frage (name optional, email optional) → status: "offen"
+ * 2. Admin beantwortet → status: "beantwortet", antwort gesetzt
+ * 3. Öffentliche FAQ-Seite zeigt nur beantwortete Fragen
+ */
+export const faqFragen = mysqlTable("faq_fragen", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Name des Fragestellers (optional) */
+  name: varchar("name", { length: 128 }),
+  /** E-Mail des Fragestellers (optional, für Benachrichtigung) */
+  email: varchar("email", { length: 320 }),
+  /** Die gestellte Frage */
+  frage: text("frage").notNull(),
+  /** Antwort von Thomas/Admin */
+  antwort: text("antwort"),
+  /** Status: offen | beantwortet | archiviert */
+  status: mysqlEnum("status", ["offen", "beantwortet", "archiviert"]).default("offen").notNull(),
+  /** Soll diese Frage öffentlich in der FAQ erscheinen? */
+  oeffentlich: boolean("oeffentlich").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type FaqFrage = typeof faqFragen.$inferSelect;
+export type InsertFaqFrage = typeof faqFragen.$inferInsert;

@@ -928,3 +928,10 @@
 ## Bugs (aktuell)
 - [x] Einschlaf-Geschichte stoppt abrupt vor dem Ende - Zeitlimit auf 8000 Zeichen erhöht (vorher 2500)
 - [x] Vite-Error-Indikator im Vorschaufenster - gecachter alter Fehler, kein echter Bug im Code
+
+## FAQ-Seite
+- [x] Datenbankschema: faqFragen-Tabelle (id, name, email, frage, antwort, status, createdAt)
+- [x] Server-Router: Frage einreichen (öffentlich), Fragen auflisten (öffentlich: nur beantwortet), Admin: alle Fragen + antworten
+- [x] Frontend: FAQ-Seite mit aufklappbaren Antworten (Accordion) + Frage-Formular
+- [x] FAQ-Link in Hauptnavigation (kiich.de) einbauen
+- [x] Admin-Benachrichtigung bei neuer Frage

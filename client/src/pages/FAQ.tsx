@@ -1,0 +1,248 @@
+import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
+import { ChevronDown, ChevronUp, MessageCircleQuestion, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Link } from "wouter";
+
+// Einige vordefinierte FAQs die immer angezeigt werden (bevor echte Antworten aus der DB kommen)
+const STATISCHE_FAQS = [
+  {
+    id: -1,
+    frage: "Was ist MOMENTAUFNAHME und für wen ist es gedacht?",
+    antwort:
+      "MOMENTAUFNAHME ist ein digitales Tagebuch für deine innere Stimme. Du sprichst oder schreibst deine Gedanken, Gefühle und Beobachtungen ein — MA, unsere KI-Begleiterin, hört zu, fasst zusammen und spiegelt dir zurück, was wirklich wichtig war. Gedacht für alle, die sich selbst besser verstehen möchten: von Jugendlichen bis zu Senioren, von Einsteigern bis zu erfahrenen Selbstreflexions-Praktizierenden.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -2,
+    frage: "Wie funktioniert die Einschlaf-Bibliothek?",
+    antwort:
+      "In der Einschlaf-Bibliothek kannst du persönliche Geschichten, Metaphern oder Befindlichkeitsreisen erstellen lassen — zugeschnitten auf dein aktuelles Thema. MA liest sie dir mit ihrer Stimme vor, begleitet von sanfter Hintergrundmusik. Viele Nutzer berichten von tieferen Träumen und einer veränderten Traumarbeit bereits nach der ersten Nacht.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -3,
+    frage: "Sind meine Aufnahmen privat und sicher?",
+    antwort:
+      "Ja. Deine Aufnahmen sind ausschließlich für dich sichtbar — kein anderer Nutzer, kein Mitarbeiter hat Zugang zu deinen persönlichen Einträgen. Die Daten werden verschlüsselt gespeichert und nicht für Werbung oder Dritte verwendet. Du kannst deine Daten jederzeit löschen.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -4,
+    frage: "Was kostet MOMENTAUFNAHME?",
+    antwort:
+      "Der Einstieg ist kostenlos: 7 Tage voller Zugang zu allen Ebenen. Danach gibt es drei Möglichkeiten: Ebene I (kostenlos, rein schriftlich, 3 Aufnahmen), Ebene II (9 €/Monat, Sprachausgabe, 9 Aufnahmen, Schlaf-Modus), Ebene III (17 €/Monat, unbegrenzt, alle Features inkl. individuelle Geschichten). Das Abonnement-System wird in Kürze freigeschaltet.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -5,
+    frage: "Wie kann ich die App auf meinem Handy installieren?",
+    antwort:
+      "MOMENTAUFNAHME ist eine Progressive Web App (PWA) — du kannst sie direkt aus dem Browser auf deinem Homescreen installieren, ohne App Store. Auf der Momentaufnahme-Seite findest du oben rechts das 📱-Symbol mit einer Schritt-für-Schritt-Anleitung für iOS und Android.",
+    name: null,
+    createdAt: new Date(),
+  },
+];
+
+export default function FAQ() {
+  const [offeneId, setOffeneId] = useState<number | null>(null);
+  const [formName, setFormName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formFrage, setFormFrage] = useState("");
+  const [gesendet, setGesendet] = useState(false);
+
+  const { data: dbFaqs = [] } = trpc.faq.getOeffentlicheFaqs.useQuery();
+
+  const frageEinreichenMutation = trpc.faq.frageEinreichen.useMutation({
+    onSuccess: () => {
+      setGesendet(true);
+      setFormName("");
+      setFormEmail("");
+      setFormFrage("");
+    },
+    onError: (err) => {
+      toast.error(err.message || "Fehler beim Senden. Bitte erneut versuchen.");
+    },
+  });
+
+  const alleFaqs = [...STATISCHE_FAQS, ...dbFaqs];
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formFrage.trim().length < 10) {
+      toast.error("Bitte mindestens 10 Zeichen eingeben.");
+      return;
+    }
+    frageEinreichenMutation.mutate({
+      frage: formFrage.trim(),
+      name: formName.trim() || undefined,
+      email: formEmail.trim() || undefined,
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Header */}
+      <div className="border-b border-white/10 px-4 py-4 flex items-center justify-between">
+        <Link href="/">
+          <span className="text-amber-400 font-bold text-lg cursor-pointer hover:text-amber-300 transition-colors">
+            ← kiich.de
+          </span>
+        </Link>
+        <span className="text-white/40 text-sm">FAQ</span>
+      </div>
+
+      <div className="max-w-2xl mx-auto px-4 py-12">
+        {/* Titel */}
+        <div className="mb-10 text-center">
+          <div className="inline-flex items-center gap-2 bg-amber-400/10 border border-amber-400/30 rounded-full px-4 py-1.5 mb-4">
+            <MessageCircleQuestion className="w-4 h-4 text-amber-400" />
+            <span className="text-amber-400 text-sm font-medium">Häufige Fragen</span>
+          </div>
+          <h1 className="text-3xl font-bold text-white mb-3">
+            Fragen & Antworten
+          </h1>
+          <p className="text-white/50 text-sm leading-relaxed">
+            Alles was du über MOMENTAUFNAHME wissen möchtest.
+            <br />
+            Deine Frage ist nicht dabei? Stell sie uns unten.
+          </p>
+        </div>
+
+        {/* FAQ Accordion */}
+        <div className="space-y-2 mb-16">
+          {alleFaqs.map((faq) => (
+            <div
+              key={faq.id}
+              className="border border-white/10 rounded-xl overflow-hidden bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
+            >
+              <button
+                className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
+                onClick={() => setOffeneId(offeneId === faq.id ? null : faq.id)}
+              >
+                <span className="text-white/90 font-medium text-sm leading-relaxed">
+                  {faq.frage}
+                </span>
+                <span className="text-amber-400 mt-0.5 flex-shrink-0">
+                  {offeneId === faq.id ? (
+                    <ChevronUp className="w-4 h-4" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4" />
+                  )}
+                </span>
+              </button>
+              {offeneId === faq.id && faq.antwort && (
+                <div className="px-5 pb-5 border-t border-white/10">
+                  <p className="text-white/60 text-sm leading-relaxed pt-4">
+                    {faq.antwort}
+                  </p>
+                  {faq.name && (
+                    <p className="text-white/30 text-xs mt-3">
+                      Gefragt von: {faq.name}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Frage stellen */}
+        <div className="border border-white/10 rounded-2xl p-6 bg-white/[0.03]">
+          <h2 className="text-white font-semibold text-lg mb-1 flex items-center gap-2">
+            <MessageCircleQuestion className="w-5 h-5 text-amber-400" />
+            Deine Frage stellen
+          </h2>
+          <p className="text-white/40 text-sm mb-6">
+            Wir antworten persönlich und veröffentlichen die besten Fragen hier.
+          </p>
+
+          {gesendet ? (
+            <div className="flex flex-col items-center gap-3 py-6 text-center">
+              <CheckCircle2 className="w-10 h-10 text-green-400" />
+              <p className="text-white/80 font-medium">Danke für deine Frage!</p>
+              <p className="text-white/40 text-sm">
+                Wir melden uns so bald wie möglich.
+              </p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-2 border-white/20 text-white/60 hover:text-white"
+                onClick={() => setGesendet(false)}
+              >
+                Weitere Frage stellen
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-white/50 text-xs mb-1.5 block">
+                    Name (optional)
+                  </label>
+                  <Input
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value)}
+                    placeholder="Dein Name"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-amber-400/50"
+                  />
+                </div>
+                <div>
+                  <label className="text-white/50 text-xs mb-1.5 block">
+                    E-Mail (optional)
+                  </label>
+                  <Input
+                    type="email"
+                    value={formEmail}
+                    onChange={(e) => setFormEmail(e.target.value)}
+                    placeholder="fuer@antwort.de"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-amber-400/50"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-white/50 text-xs mb-1.5 block">
+                  Deine Frage *
+                </label>
+                <Textarea
+                  value={formFrage}
+                  onChange={(e) => setFormFrage(e.target.value)}
+                  placeholder="Was möchtest du wissen?"
+                  rows={4}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-amber-400/50 resize-none"
+                />
+                <p className="text-white/20 text-xs mt-1 text-right">
+                  {formFrage.length}/1000
+                </p>
+              </div>
+              <Button
+                type="submit"
+                disabled={frageEinreichenMutation.isPending || formFrage.trim().length < 10}
+                className="w-full bg-amber-400 hover:bg-amber-300 text-black font-semibold"
+              >
+                {frageEinreichenMutation.isPending ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Wird gesendet...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Frage absenden
+                  </>
+                )}
+              </Button>
+            </form>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
