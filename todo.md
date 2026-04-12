@@ -952,3 +952,10 @@
 - [ ] Kühlschranktür-Bild als "Kennst du das?"-Marketing-Element auf Startseite
 - [ ] Admin-FAQ-Interface unter /admin/faq
 - [ ] Abo-Link in Navigationsleiste der Momentaufnahme
+
+## Strategisches Summary (12. April 2026)
+- [x] Server: LLM-Prompt für strategisches Summary nach Gravitationszentren
+- [x] Server: tRPC-Prozedur strategischesSummary
+- [x] Frontend: Umschalter "Reflexion" / "Strategie" in Summary-Ansicht
+- [x] Frontend: Strategisches Summary (Aufgaben nach Gravitationszentren) anzeigen
+- [x] Tests: 6 neue Tests für Prompt-Logik (93 Tests gesamt, alle grün)

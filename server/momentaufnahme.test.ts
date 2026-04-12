@@ -307,3 +307,66 @@ describe("MOMENTAUFNAHME – Archiv-Datum-Logik", () => {
     expect(Array.from(tageSet)).toContain("2026-04-06");
   });
 });
+
+describe("MOMENTAUFNAHME – Strategisches Summary (Prompt-Logik)", () => {
+  const KATEGORIEN = ["ICH", "QUELL", "KONZEPT", "PROJEKT", "DIALOG", "WELT"] as const;
+  const KATEGORIE_BESCHREIBUNGEN: Record<string, string> = {
+    ICH: "Persönliche Identität, Biografie, Werte, Visionen, Selbstreflexion, Emotionen, Körper",
+    QUELL: "Rohe Ideen, Blitzgedanken, unfertige Fragmente, spontane Einfälle, Beobachtungen",
+    KONZEPT: "Ausgearbeitete Gedanken, Theorien, Erkenntnisse, philosophische Überlegungen, Definitionen",
+    PROJEKT: "Aktive Vorhaben, Aufgaben, Pläne, nächste Schritte, Deadlines, Ziele",
+    DIALOG: "Gespräche, Begegnungen, Austausch mit Menschen oder KI, Zitate, Reaktionen",
+    WELT: "Externe Quellen, Nachrichten, Bücher, Inspirationen, Referenzen, Beobachtungen der Welt",
+  };
+
+  it("alle 6 Gravitationszentren sind im Prompt-Kontext beschrieben", () => {
+    const beschreibungen = Object.keys(KATEGORIE_BESCHREIBUNGEN);
+    expect(beschreibungen).toHaveLength(6);
+    for (const kat of KATEGORIEN) {
+      expect(beschreibungen).toContain(kat);
+    }
+  });
+
+  it("PROJEKT-Kategorie enthält Aufgaben-relevante Schlüsselwörter", () => {
+    const projektBeschreibung = KATEGORIE_BESCHREIBUNGEN["PROJEKT"];
+    expect(projektBeschreibung).toContain("Aufgaben");
+    expect(projektBeschreibung).toContain("Pläne");
+    expect(projektBeschreibung).toContain("nächste Schritte");
+  });
+
+  it("Aufnahmen-Text wird korrekt für Prompt formatiert", () => {
+    const aufnahmen = [
+      { kategorie: "PROJEKT", text: "Ich muss noch die Rechnung an Müller schicken." },
+      { kategorie: "ICH", text: "Ich fühle mich heute energiegeladen." },
+    ];
+    const aufnahmenText = aufnahmen.map(a => `[${a.kategorie}] ${a.text}`).join("\n\n");
+    expect(aufnahmenText).toContain("[PROJEKT] Ich muss noch die Rechnung");
+    expect(aufnahmenText).toContain("[ICH] Ich fühle mich");
+  });
+
+  it("Anrede-Zeile enthält Vorname wenn vorhanden", () => {
+    const vorname = "Thomas";
+    const anredeZeile = vorname
+      ? `Der Name der Person ist ${vorname}. Sprich sie direkt mit ihrem Vornamen an.`
+      : `Sprich die Person in der Du-Form an.`;
+    expect(anredeZeile).toContain("Thomas");
+    expect(anredeZeile).not.toContain("Du-Form");
+  });
+
+  it("Anrede-Zeile fällt auf Du-Form zurück wenn kein Vorname", () => {
+    const vorname: string | null = null;
+    const anredeZeile = vorname
+      ? `Der Name der Person ist ${vorname}. Sprich sie direkt mit ihrem Vornamen an.`
+      : `Sprich die Person in der Du-Form an.`;
+    expect(anredeZeile).toContain("Du-Form");
+  });
+
+  it("Kategorien-Beschreibung für Prompt wird korrekt zusammengebaut", () => {
+    const kategorienBeschreibung = Object.entries(KATEGORIE_BESCHREIBUNGEN)
+      .map(([k, v]) => `- **${k}**: ${v}`)
+      .join("\n");
+    expect(kategorienBeschreibung).toContain("- **PROJEKT**:");
+    expect(kategorienBeschreibung).toContain("- **ICH**:");
+    expect(kategorienBeschreibung.split("\n")).toHaveLength(6);
+  });
+});

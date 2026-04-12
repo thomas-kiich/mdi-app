@@ -567,6 +567,79 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
       }
     }),
 
+  /**
+   * Strategisches Summary: Analysiert Aufnahmen auf Aufgaben, To-Dos und offene Punkte,
+   * ordnet sie nach Gravitationszentren und gibt eine strukturierte Übersicht zurück.
+   */
+  strategischesSummary: protectedProcedure.mutation(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Datenbank nicht verfügbar" });
+
+    const heute = new Date();
+    heute.setHours(0, 0, 0, 0);
+
+    const aufnahmen = await db
+      .select()
+      .from(momentaufnahmen)
+      .where(and(eq(momentaufnahmen.userId, ctx.user.id), gte(momentaufnahmen.createdAt, heute)))
+      .orderBy(desc(momentaufnahmen.createdAt));
+
+    if (aufnahmen.length === 0) {
+      throw new TRPCError({ code: "BAD_REQUEST", message: "Keine Aufnahmen für heute gefunden" });
+    }
+
+    // Vorname für persönliche Anrede
+    const userRow = await db.select({ vorname: users.vorname }).from(users).where(eq(users.id, ctx.user.id)).limit(1);
+    const vorname = userRow[0]?.vorname ?? null;
+    const anredeZeile = vorname
+      ? `Der Name der Person ist ${vorname}. Sprich sie direkt mit ihrem Vornamen an.`
+      : `Sprich die Person in der Du-Form an.`;
+
+    const aufnahmenText = aufnahmen
+      .map(a => `[${a.kategorie}] ${a.text}`)
+      .join("\n\n");
+
+    const kategorienBeschreibung = Object.entries(KATEGORIE_BESCHREIBUNGEN)
+      .map(([k, v]) => `- **${k}**: ${v}`)
+      .join("\n");
+
+    const response = await invokeLLM({
+      messages: [
+        {
+          role: "system",
+          content: `Du bist MA – eine strategisch denkende, klare Begleiterin. ${anredeZeile}
+
+Deine Aufgabe: Analysiere die heutigen Sprachaufnahmen und extrahiere alle offenen Aufgaben, To-Dos, Vorhaben und nächsten Schritte.
+Ordne sie nach den 6 Gravitationszentren:
+${kategorienBeschreibung}
+
+Regeln:
+- Nur echte Aufgaben und Handlungspunkte aufnehmen – keine allgemeinen Reflexionen
+- Pro Gravitationszentrum: kurze Einleitung (1 Satz) + Aufzählung der Aufgaben
+- Wenn ein Gravitationszentrum keine Aufgaben enthält, weglassen
+- Sprache: direkt, klar, handlungsorientiert – kein poetischer Ton
+- Am Ende: ein kurzer "Fokus für heute/morgen" (max. 2 Sätze) – die 1–2 wichtigsten nächsten Schritte
+- Auf Deutsch
+- Beginne DIREKT mit dem Inhalt. Kein Einleitungssatz.`,
+        },
+        {
+          role: "user",
+          content: `Meine heutigen Aufnahmen:\n\n${aufnahmenText}\n\nErstelle meine strategische Aufgaben-Übersicht.`,
+        },
+      ],
+    });
+
+    const rawText = response.choices?.[0]?.message?.content;
+    const summaryText = typeof rawText === "string" ? rawText : "Keine Aufgaben gefunden.";
+    const datum = new Date().toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+
+    return {
+      text: summaryText,
+      anzahl: aufnahmen.length,
+      datum,
+    };
+  }),
+
   elevenLabsTTS: protectedProcedure
     .input(z.object({
       text: z.string().min(1).max(4500),

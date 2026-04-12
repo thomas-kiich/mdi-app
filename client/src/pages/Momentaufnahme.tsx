@@ -191,6 +191,11 @@ export default function Momentaufnahme() {
   const [summaryText, setSummaryText] = useState("");
   const [summaryDatum, setSummaryDatum] = useState("");
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
+  // Strategisches Summary
+  const [summaryModus, setSummaryModus] = useState<"reflexion" | "strategie">("reflexion");
+  const [strategischesText, setStrategischesText] = useState("");
+  const [strategischesDatum, setStrategischesDatum] = useState("");
+  const [isStrategischLaden, setIsStrategischLaden] = useState(false);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   // DSGVO-Einwilligung: einmalig pro Session
   const [consentGiven, setConsentGiven] = useState(() => {
@@ -220,6 +225,7 @@ export default function Momentaufnahme() {
   // tRPC
   const aufnehmenMutation = trpc.momentaufnahme.aufnehmen.useMutation();
   const tagesSummaryMutation = trpc.momentaufnahme.tagesSummary.useMutation();
+  const strategischesSummaryMutation = trpc.momentaufnahme.strategischesSummary.useMutation();
   const loeschenMutation = trpc.momentaufnahme.loeschen.useMutation();
   const schlafMetapherMutation = trpc.momentaufnahme.schlafMetapher.useMutation();
   const { data: profilData } = trpc.profil.getVorname.useQuery(undefined, { enabled: isAuthenticated });
@@ -567,6 +573,23 @@ export default function Momentaufnahme() {
     }
   }, [tagesSummaryMutation]);
 
+  // Strategisches Summary generieren
+  const handleStrategischesSummary = useCallback(async () => {
+    setIsStrategischLaden(true);
+    try {
+      const result = await strategischesSummaryMutation.mutateAsync();
+      setStrategischesText(typeof result.text === "string" ? result.text : "");
+      setStrategischesDatum(result.datum);
+      setShowSummary(true);
+      setSummaryModus("strategie");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Strategisches Summary fehlgeschlagen";
+      toast.error(msg);
+    } finally {
+      setIsStrategischLaden(false);
+    }
+  }, [strategischesSummaryMutation]);
+
   // TTS für Zusammenfassung (Browser-Stimme, Fallback)
   const handleSpeakSummary = useCallback(() => {
     if (isSpeaking) {
@@ -587,10 +610,11 @@ export default function Momentaufnahme() {
       setIsMASpeaking(false);
       return;
     }
-    if (!summaryText) return;
+    const aktiverText = summaryModus === "strategie" ? strategischesText : summaryText;
+    if (!aktiverText) return;
     setIsMASpeaking(true);
     try {
-      const ttsResult = await elevenLabsTTSMutation.mutateAsync({ text: summaryText });
+      const ttsResult = await elevenLabsTTSMutation.mutateAsync({ text: aktiverText });
       if (ttsResult.audioBase64 && !ttsResult.fallback) {
         const audio = new Audio(`data:${ttsResult.mimeType};base64,${ttsResult.audioBase64}`);
         // Klar und direkt: kein Hall, kein Reverb, kein Effekt
@@ -603,17 +627,17 @@ export default function Momentaufnahme() {
         audio.play().catch(() => {
           // Fallback: Browser-Stimme
           setIsMASpeaking(false);
-          speak(summaryText);
+          speak(aktiverText);
         });
       } else {
         setIsMASpeaking(false);
-        speak(summaryText);
+        speak(aktiverText);
       }
     } catch {
       setIsMASpeaking(false);
-      speak(summaryText);
+      speak(aktiverText);
     }
-  }, [isMASpeaking, summaryText, elevenLabsTTSMutation, speak]);
+  }, [isMASpeaking, summaryModus, summaryText, strategischesText, elevenLabsTTSMutation, speak]);
 
   // Aufnahme löschen
   const handleLoeschen = useCallback(async (id: number) => {
@@ -816,12 +840,48 @@ export default function Momentaufnahme() {
       </div>
 
       {/* Tages-Zusammenfassung */}
-      {showSummary && summaryText && (
+      {showSummary && (summaryText || strategischesText) && (
         <div className="mx-5 mb-4 p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-blue-900/40 border border-violet-500/20">
+          {/* Toggle Reflexion / Strategie */}
+          <div className="flex items-center gap-1 mb-3 bg-white/5 rounded-xl p-1">
+            <button
+              onClick={() => setSummaryModus("reflexion")}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium transition-all",
+                summaryModus === "reflexion"
+                  ? "bg-violet-600 text-white shadow-sm"
+                  : "text-white/40 hover:text-white/70"
+              )}
+            >
+              <Sparkles className="w-3 h-3" />
+              Reflexion
+            </button>
+            <button
+              onClick={() => {
+                setSummaryModus("strategie");
+                // Strategisches Summary laden wenn noch nicht vorhanden
+                if (!strategischesText) handleStrategischesSummary();
+              }}
+              className={cn(
+                "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium transition-all",
+                summaryModus === "strategie"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-white/40 hover:text-white/70"
+              )}
+            >
+              <span className="text-xs">🎯</span>
+              Strategie
+            </button>
+          </div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-violet-400" />
-              <span className="text-xs font-medium text-violet-300">Das war mein Tag</span>
+              {summaryModus === "reflexion" ? (
+                <><Sparkles className="w-4 h-4 text-violet-400" />
+                <span className="text-xs font-medium text-violet-300">Das war mein Tag</span></>
+              ) : (
+                <><span className="text-sm">🎯</span>
+                <span className="text-xs font-medium text-emerald-300">Meine offenen Aufgaben</span></>
+              )}
             </div>
             <div className="flex items-center gap-2">
               {/* Stimmauswahl */}
@@ -870,25 +930,47 @@ export default function Momentaufnahme() {
             </div>
           </div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-white/60">{summaryDatum}</p>
-            {vorname ? (
-              <button
-                onClick={() => setShowVornameDialog(true)}
-                className="text-[10px] text-violet-400/50 hover:text-violet-300 transition-colors"
-                title="Namen ändern"
-              >
-                • {vorname} · ändern
-              </button>
-            ) : (
-              <button
-                onClick={() => setShowVornameDialog(true)}
-                className="text-[10px] text-violet-400/60 hover:text-violet-300 transition-colors"
-              >
-                + Vorname eingeben
-              </button>
+            <p className="text-xs text-white/60">
+              {summaryModus === "strategie" ? strategischesDatum : summaryDatum}
+            </p>
+            {summaryModus === "reflexion" && (
+              vorname ? (
+                <button
+                  onClick={() => setShowVornameDialog(true)}
+                  className="text-[10px] text-violet-400/50 hover:text-violet-300 transition-colors"
+                  title="Namen ändern"
+                >
+                  • {vorname} · ändern
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowVornameDialog(true)}
+                  className="text-[10px] text-violet-400/60 hover:text-violet-300 transition-colors"
+                >
+                  + Vorname eingeben
+                </button>
+              )
             )}
           </div>
-          <p className="text-sm text-white/80 leading-relaxed">{summaryText}</p>
+          {/* Ladeindikator für strategisches Summary */}
+          {summaryModus === "strategie" && isStrategischLaden && (
+            <div className="flex items-center justify-center gap-2 py-4">
+              <Loader2 className="w-4 h-4 text-emerald-400 animate-spin" />
+              <span className="text-xs text-emerald-300">MA analysiert deine Aufgaben...</span>
+            </div>
+          )}
+          {/* Summary-Text je nach Modus */}
+          {summaryModus === "reflexion" ? (
+            <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">{summaryText}</p>
+          ) : (
+            !isStrategischLaden && (
+              <div className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">
+                {strategischesText || (
+                  <span className="text-white/30 italic">Noch kein strategisches Summary vorhanden.</span>
+                )}
+              </div>
+            )
+          )}
           {/* KI-Kennzeichnung (EU AI Act Art. 50) */}
           <div className="mt-3 pt-3 border-t border-violet-500/10 flex items-center gap-1.5">
             <span className="text-[10px] text-violet-400/60 font-medium tracking-wide">✦ KI-GENERIERT</span>
@@ -913,20 +995,37 @@ export default function Momentaufnahme() {
             </div>
           )}
 
-          {/* Einschlaf-Bibliothek Link */}
-          <div className="mt-3">
-            <Link href="/einschlafen">
-              <button className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white/3 hover:bg-white/6 border border-white/5 hover:border-white/10 transition-all">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm">📚</span>
-                  <span className="text-xs text-white/50">Einschlaf-Bibliothek</span>
-                </div>
-                <span className="text-[10px] text-white/25">Märchen · Abenteuer · Metaphern ›</span>
+          {/* Strategie: Aktualisieren-Button */}
+          {summaryModus === "strategie" && strategischesText && !isStrategischLaden && (
+            <div className="mt-3">
+              <button
+                onClick={handleStrategischesSummary}
+                disabled={isStrategischLaden}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-xl bg-white/3 hover:bg-white/6 border border-white/5 hover:border-emerald-500/20 text-white/40 hover:text-emerald-300 text-xs transition-all"
+              >
+                <Loader2 className={cn("w-3 h-3", isStrategischLaden ? "animate-spin" : "")} />
+                Aufgaben neu analysieren
               </button>
-            </Link>
-          </div>
+            </div>
+          )}
 
-          {/* Schlaf-Modus Button */}
+          {/* Einschlaf-Bibliothek Link – nur im Reflexions-Modus */}
+          {summaryModus === "reflexion" && (
+            <div className="mt-3">
+              <Link href="/einschlafen">
+                <button className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-white/3 hover:bg-white/6 border border-white/5 hover:border-white/10 transition-all">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm">📚</span>
+                    <span className="text-xs text-white/50">Einschlaf-Bibliothek</span>
+                  </div>
+                  <span className="text-[10px] text-white/25">Märchen · Abenteuer · Metaphern ›</span>
+                </button>
+              </Link>
+            </div>
+          )}
+
+          {/* Schlaf-Modus Button – nur im Reflexions-Modus */}
+          {summaryModus === "reflexion" && (
           <div className="mt-4 pt-3 border-t border-indigo-500/10">
             {!schlafModusAktiv ? (
               <button
@@ -967,6 +1066,7 @@ export default function Momentaufnahme() {
               </div>
             )}
           </div>
+          )}
         </div>
       )}
 
