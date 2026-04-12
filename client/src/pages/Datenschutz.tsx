@@ -15,7 +15,7 @@ export function Datenschutz() {
         <div className="space-y-4">
           <h1 className="text-4xl font-light text-white tracking-tight">Datenschutzerklärung</h1>
           <p className="text-zinc-500 text-sm uppercase tracking-widest">
-            Gemäß DSGVO (EU) 2016/679, BDSG (Deutschland) und DSG (Österreich) · Stand: April 2026
+            Gemäß DSGVO (EU) 2016/679, BDSG (DE), DSG (AT) und nDSG (CH) · Stand: April 2026
           </p>
         </div>
 
@@ -51,7 +51,9 @@ export function Datenschutz() {
               deutsches Datenschutzrecht (DSGVO in Verbindung mit dem BDSG) als vorrangiges
               anwendbares Recht. Für Nutzer aus Österreich gilt zusätzlich das österreichische
               Datenschutzgesetz (DSG, BGBl. I Nr. 165/1999 i.d.g.F.), soweit es über die DSGVO
-              hinausgehende nationale Regelungen enthält.
+              hinausgehende nationale Regelungen enthält. Für Nutzer aus der Schweiz gilt das
+              neue Bundesgesetz über den Datenschutz (nDSG, in Kraft seit 1. September 2023)
+              in Verbindung mit der Datenschutzverordnung (DSV).
             </p>
           </section>
 
@@ -258,6 +260,24 @@ export function Datenschutz() {
                   className="text-orange-400 hover:underline"
                 >
                   www.dsb.gv.at
+                </a>
+              </p>
+            </div>
+            <p className="mt-3">
+              Für Nutzer aus der <strong className="text-zinc-300">Schweiz</strong> ist die zuständige Aufsichtsbehörde:
+            </p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
+              <p className="text-white font-medium">Eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter (EDÖB)</p>
+              <p>Feldeggweg 1, 3003 Bern</p>
+              <p>
+                Web:{" "}
+                <a
+                  href="https://www.edoeb.admin.ch"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-400 hover:underline"
+                >
+                  www.edoeb.admin.ch
                 </a>
               </p>
             </div>

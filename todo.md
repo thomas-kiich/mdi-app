@@ -977,3 +977,8 @@
 ## Impressum & Datenschutz AT-Erweiterung (12. April 2026)
 - [x] Impressum: Geltungsbereich um Österreich ergänzen
 - [x] Datenschutz: DSG (Datenschutzgesetz AT) neben DSGVO + BDSG ergänzen
+
+## Datenschutz CH + Kontaktformular Impressum (12. April 2026)
+- [x] Datenschutz: nDSG (Schweiz) ergänzen – Hinweis + EDÖB als Aufsichtsbehörde
+- [x] Impressum: Kontaktformular für Datenschutzanfragen (Art. 15–22 DSGVO) einbauen
+- [x] Server: tRPC-Mutation für Kontaktformular (E-Mail-Versand via Brevo)
