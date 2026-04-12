@@ -538,6 +538,13 @@ export default function Home() {
                       >
                         MOMENTAUFNAHME
                       </button>
+                      <button
+                        onClick={() => setShowAppInstallGuide(true)}
+                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-600 hover:border-orange-500/60 text-zinc-400 hover:text-orange-300 transition-all duration-200 group"
+                      >
+                        <Smartphone className="w-4 h-4 text-orange-500 group-hover:scale-110 transition-transform" />
+                        APP LADEN
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -1745,8 +1752,19 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg px-5 py-4 text-zinc-400 text-xs leading-relaxed">
                   <p className="font-semibold text-zinc-300 mb-1">Haftungsausschluss</p>
                   <p>
-                    KIICH ist kein medizinisches Angebot. Die Inhalte und KI-generierten Auswertungen dienen ausschließlich der persönlichen Selbstreflexion und stellen keine medizinische Diagnose, psychologische Beratung oder Therapie dar. Bei psychischen Krisen wenden Sie sich bitte an eine qualifizierte Fachkraft. Krisentelefon Österreich: <span className="text-zinc-300">0800 277 000</span> (kostenlos, 24h).
+                    KIICH ist kein medizinisches Angebot. Die Inhalte und KI-generierten Auswertungen dienen ausschließlich der persönlichen Selbstreflexion und stellen keine medizinische Diagnose, psychologische Beratung oder Therapie dar. Bei psychischen Krisen wenden Sie sich bitte an eine qualifizierte Fachkraft.
                   </p>
+                  <div className="mt-3 flex flex-col sm:flex-row gap-3 text-[11px]">
+                    <div className="flex items-start gap-2">
+                      <span className="text-zinc-500 shrink-0">🇩🇪 Deutschland:</span>
+                      <span><span className="text-zinc-200 font-medium">0800 111 0 111</span> oder <span className="text-zinc-200 font-medium">0800 111 0 222</span> <span className="text-zinc-500">(Telefonseelsorge, kostenlos, 24h)</span></span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span className="text-zinc-500 shrink-0">🇨🇭 Schweiz:</span>
+                      <span><span className="text-zinc-200 font-medium">143</span> <span className="text-zinc-500">(Die Dargebotene Hand, kostenlos, 24h)</span></span>
+                    </div>
+                  </div>
+
                 </div>
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                   <div>&copy; {new Date().getFullYear()} KIICH. Alle Rechte vorbehalten.</div>
