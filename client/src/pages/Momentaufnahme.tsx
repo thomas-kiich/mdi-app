@@ -20,7 +20,9 @@ import {
   ArrowLeft,
   Archive,
   Plug,
+  Smartphone,
 } from "lucide-react";
+import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link } from "wouter";
@@ -233,6 +235,7 @@ export default function Momentaufnahme() {
   );
   const [showArchiv, setShowArchiv] = useState(false);
   const [archivExpandedId, setArchivExpandedId] = useState<number | null>(null);
+  const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
 
   // Vorname aus Profil laden und ggf. Dialog zeigen
   // Nur einmal fragen — wenn User "Später" geklickt hat, nicht mehr nerven
@@ -682,6 +685,14 @@ export default function Momentaufnahme() {
           </div>
         </div>
         <div className="flex gap-2">
+          {/* App installieren */}
+          <button
+            onClick={() => setShowAppInstallGuide(true)}
+            className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+          >
+            <Smartphone className="w-4 h-4" />
+            <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">App installieren</span>
+          </button>
           {/* Einschlaf-Bibliothek-Link */}
           <Link href="/einschlafen">
             <button
@@ -1233,6 +1244,9 @@ export default function Momentaufnahme() {
           </div>
         </div>
       </div>
+    )}
+    {showAppInstallGuide && (
+      <AppInstallGuide onClose={() => setShowAppInstallGuide(false)} />
     )}
     </>
   );
