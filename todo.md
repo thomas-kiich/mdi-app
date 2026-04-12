@@ -973,3 +973,7 @@
 
 ## Disclaimer/Haftungsausschluss (12. April 2026)
 - [x] Österreich (AT) im Haftungsausschluss neben Deutschland (DE) und Schweiz (CH) ergänzt
+
+## Impressum & Datenschutz AT-Erweiterung (12. April 2026)
+- [x] Impressum: Geltungsbereich um Österreich ergänzen
+- [x] Datenschutz: DSG (Datenschutzgesetz AT) neben DSGVO + BDSG ergänzen

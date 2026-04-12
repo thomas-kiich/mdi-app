@@ -15,7 +15,7 @@ export function Datenschutz() {
         <div className="space-y-4">
           <h1 className="text-4xl font-light text-white tracking-tight">Datenschutzerklärung</h1>
           <p className="text-zinc-500 text-sm uppercase tracking-widest">
-            Gemäß DSGVO (EU) 2016/679 und BDSG (Deutschland) · Stand: April 2026
+            Gemäß DSGVO (EU) 2016/679, BDSG (Deutschland) und DSG (Österreich) · Stand: April 2026
           </p>
         </div>
 
@@ -49,7 +49,9 @@ export function Datenschutz() {
             <p className="text-sm text-zinc-500">
               Da der Verantwortliche seinen gewöhnlichen Aufenthalt in Deutschland hat, gilt
               deutsches Datenschutzrecht (DSGVO in Verbindung mit dem BDSG) als vorrangiges
-              anwendbares Recht.
+              anwendbares Recht. Für Nutzer aus Österreich gilt zusätzlich das österreichische
+              Datenschutzgesetz (DSG, BGBl. I Nr. 165/1999 i.d.g.F.), soweit es über die DSGVO
+              hinausgehende nationale Regelungen enthält.
             </p>
           </section>
 
@@ -238,6 +240,24 @@ export function Datenschutz() {
                   className="text-orange-400 hover:underline"
                 >
                   www.bfdi.bund.de
+                </a>
+              </p>
+            </div>
+            <p className="mt-3">
+              Für Nutzer aus <strong className="text-zinc-300">Österreich</strong> ist die zuständige Aufsichtsbehörde:
+            </p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
+              <p className="text-white font-medium">Österreichische Datenschutzbehörde (DSB)</p>
+              <p>Barichgasse 40–42, 1030 Wien</p>
+              <p>
+                Web:{" "}
+                <a
+                  href="https://www.dsb.gv.at"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-orange-400 hover:underline"
+                >
+                  www.dsb.gv.at
                 </a>
               </p>
             </div>

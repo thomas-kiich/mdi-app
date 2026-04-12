@@ -14,7 +14,7 @@ export function Impressum() {
 
         <div className="space-y-4">
           <h1 className="text-4xl font-light text-white tracking-tight">Impressum</h1>
-          <p className="text-zinc-500 text-sm uppercase tracking-widest">Angaben gemäß § 5 TMG</p>
+          <p className="text-zinc-500 text-sm uppercase tracking-widest">Angaben gemäß § 5 TMG (DE) · ECG (AT) · UWG (CH)</p>
         </div>
 
         <div className="space-y-8 text-lg font-light leading-relaxed">
@@ -25,7 +25,8 @@ export function Impressum() {
               <p className="text-white font-medium">Thomas Chochola</p>
               <p>Lindacher Weg 17</p>
               <p>D-93128 Regenstauf</p>
-              <p>Deutschland</p>
+                <p>Deutschland</p>
+              <p className="text-zinc-500 text-xs mt-2">Dieses Impressum gilt auch für Nutzer aus Österreich (gemäß § 5 ECG) und der Schweiz (gemäß Art. 3 UWG).</p>
             </div>
           </section>
 
@@ -62,8 +63,8 @@ export function Impressum() {
             <div className="space-y-4 text-base text-zinc-400">
               <p>
                 <strong className="text-zinc-300">Haftung für Inhalte</strong><br />
-                Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG für eigene Inhalte auf diesen
-                Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG sind wir
+                Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG (DE) / § 16 ECG (AT) für eigene Inhalte auf diesen
+                Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG (DE) / §§ 13 ff. ECG (AT) sind wir
                 als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde
                 Informationen zu überwachen oder nach Umständen zu forschen, die auf eine
                 rechtswidrige Tätigkeit hinweisen.
@@ -77,7 +78,7 @@ export function Impressum() {
               <p>
                 <strong className="text-zinc-300">Urheberrecht</strong><br />
                 Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten
-                unterliegen dem deutschen Urheberrecht. Die Vervielfältigung, Bearbeitung,
+                unterliegen dem deutschen Urheberrecht (UrhG) sowie dem österreichischen Urheberrechtsgesetz (UrhG AT). Die Vervielfältigung, Bearbeitung,
                 Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes
                 bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
               </p>
