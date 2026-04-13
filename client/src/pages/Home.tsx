@@ -612,6 +612,66 @@ export default function Home() {
                   }
                 />
               </div>
+
+              {/* ===== METHODE 36 KACHELN ===== */}
+              <div className="container max-w-6xl mx-auto px-4 mt-10 mb-4">
+                <div className="grid md:grid-cols-3 gap-6">
+
+                  {/* MOMENTAUFNAHME */}
+                  <div
+                    className="relative bg-zinc-900/60 border border-violet-500/40 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-violet-400/70 transition-all duration-200 group"
+                    onClick={() => setLocation('/momentaufnahme')}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                    <div className="mb-4 flex items-center justify-between">
+                      <span className="text-2xl">📸</span>
+                      <span className="inline-flex items-center gap-1 bg-violet-500/15 border border-violet-500/30 text-violet-300 text-[10px] font-black px-2.5 py-1 rounded-full tracking-wider">
+                        <Lock className="w-3 h-3" /> BALD FREI
+                      </span>
+                    </div>
+                    <h3 className="text-white font-bold tracking-wider text-base mb-1">MOMENTAUFNAHME</h3>
+                    <h4 className="text-violet-400 text-sm font-medium mb-3">Wo stehe ich gerade wirklich?</h4>
+                    <p className="text-zinc-400 text-sm leading-relaxed">
+                      Ein strukturierter Selbst-Check, der dir in wenigen Minuten ein klares Bild deiner aktuellen Lebenssituation gibt. Nicht als Bewertung — sondern als ehrlicher Kompass.
+                    </p>
+                    <div className="mt-4 text-violet-400 text-xs font-medium flex items-center gap-1 group-hover:text-violet-300 transition-colors">
+                      <span>Einführung lesen</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </div>
+                  </div>
+
+                  {/* METHODE 36 */}
+                  <div className="relative bg-zinc-900/60 border border-orange-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-400/60 transition-all group"
+                    onClick={() => setShowTrainingCenter(true)}
+                  >
+                    <div className="mb-4">
+                      <span className="text-2xl">⚡</span>
+                    </div>
+                    <h3 className="text-white font-bold tracking-wider text-base mb-1">METHODE 36</h3>
+                    <h4 className="text-orange-400 text-sm font-medium mb-3">36 Tage. Dein Rhythmus. Dein Leben.</h4>
+                    <p className="text-zinc-400 text-sm leading-relaxed">
+                      Ein wissenschaftlich fundiertes Trainingsprogramm, das auf deinem persönlichen Klangprofil aufbaut. Keine Einheitsformel — sondern ein System, das sich deinem einzigartigen Lebenspuls anpasst.
+                    </p>
+                  </div>
+
+                  {/* BEFINDLICHKEITSTRAINING */}
+                  <div className="relative bg-zinc-900/60 border border-red-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-red-400/60 transition-all group"
+                    onClick={() => setShowTrainingCenter(true)}
+                  >
+                    <div className="mb-4">
+                      <span className="text-2xl">🎯</span>
+                    </div>
+                    <h3 className="text-white font-bold tracking-wider text-base mb-1">BEFINDLICHKEITSTRAINING</h3>
+                    <h4 className="text-red-400 text-sm font-medium mb-3">7 Minuten. Täglich. Selbstbestimmt.</h4>
+                    <p className="text-zinc-400 text-sm leading-relaxed">
+                      Das kürzeste und wirksamste Training, das du je gemacht hast. Du bestimmst wann, wo und wie — und dein Körper gibt dir sofort Rückmeldung.
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+              {/* ===== END METHODE 36 KACHELN ===== */}
+
               <div id="vorschau-april-2026" className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
 
                 {/* PREMIUM ANGEBOTE: deaktiviert für Marktauftritt */}
