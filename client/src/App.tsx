@@ -14,6 +14,7 @@ import NewsletterBestaetigen from "@/pages/NewsletterBestaetigen";
 import NewsletterAbmelden from "@/pages/NewsletterAbmelden";
 import NotFound from "@/pages/NotFound";
 import Momentaufnahme from "@/pages/Momentaufnahme";
+import MomentaufnahmeTeaser from "@/pages/MomentaufnahmeTeaser";
 import MomentaufnahmeArchiv from "@/pages/MomentaufnahmeArchiv";
 import ObsidianVerbinden from "@/pages/ObsidianVerbinden";
 import Episoden from "@/pages/Episoden";
@@ -35,7 +36,8 @@ function Router() {
       <Route path="/newsletter/bestaetigen" component={NewsletterBestaetigen} />
       <Route path="/newsletter/abmelden" component={NewsletterAbmelden} />
       <Route path="/ueber-kiich" component={UeberKiich} />
-      <Route path="/momentaufnahme" component={Momentaufnahme} />
+      <Route path="/momentaufnahme" component={MomentaufnahmeTeaser} />
+      <Route path="/momentaufnahme/app" component={Momentaufnahme} />
       <Route path="/momentaufnahme/archiv" component={MomentaufnahmeArchiv} />
       <Route path="/momentaufnahme/obsidian" component={ObsidianVerbinden} />
       <Route path="/episoden" component={Episoden} />
