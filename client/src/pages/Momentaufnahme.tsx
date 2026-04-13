@@ -954,8 +954,10 @@ export default function Momentaufnahme() {
                   className="text-[10px] bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-white/50 hover:text-white/80 transition-colors max-w-[120px] truncate"
                   title="Stimme auswählen"
                 >
-                  {voices.map(v => (
-                    <option key={v.voiceURI} value={v.voiceURI} className="bg-[#1a1a2e]">
+                  {voices
+                    .filter((v, i, arr) => arr.findIndex(x => x.voiceURI === v.voiceURI) === i)
+                    .map((v, i) => (
+                    <option key={`${v.voiceURI}-${i}`} value={v.voiceURI} className="bg-[#1a1a2e]">
                       {v.name.replace(/Microsoft |Google |Apple /, "")}
                     </option>
                   ))}
