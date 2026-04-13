@@ -79,7 +79,7 @@ export default function MomentaufnahmeTeaser() {
             {/* Text darunter */}
             <div className="bg-[#0d0d14] p-6 flex flex-col justify-center">
               <div className="mb-2">
-                <span className="text-violet-400 text-xs font-black tracking-widest uppercase">Kennst du das?</span>
+                <span className="text-white text-sm font-black tracking-widest uppercase">Kennst du das?</span>
               </div>
               <h3 className="text-lg font-bold text-white mb-2 leading-tight">
                 Die Zettelwirtschaft <span className="text-violet-400">hat ein Ende.</span>
