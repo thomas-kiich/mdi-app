@@ -278,26 +278,30 @@ export type InsertFaqFrage = typeof faqFragen.$inferInsert;
 
 /**
  * ABONNEMENT-SYSTEM
- * 
- * Drei Ebenen (nach 7-Tage-Trial):
- * - Ebene I:   kostenlos | nur schriftlich | max. 3 Aufnahmen/Monat | kein TTS | kein Schlaf-Modus
- * - Ebene II:  9 €/Monat | schriftlich + TTS | max. 9 Aufnahmen/Monat | Schlaf-Modus
- * - Ebene III: 17 €/Monat | unbegrenzt | alle Features | individuelle Geschichten
- * 
+ *
+ * Vier Ebenen:
+ * - free:      kostenlos | max. 10 Aufnahmen/Monat | kein TTS | kein Schlaf-Modus | kein Summary
+ * - essential: € 9,90/Monat | unbegrenzte Aufnahmen | Reflexions-Summary | Obsidian-Export | TTS
+ * - complete:  € 19,90/Monat | alles + Strategisches Summary | YOHN-Training | MDI-Analyse | Archiv
+ * - pro:       € 49,90/Monat | alles + persönliche MDI-Stimmklanganalyse | individuelle Trainingsempfehlungen
+ *
+ * Beta-Phase:
+ * - beta: kostenloser Vollzugang (= complete) für eingeladene Beta-Nutzer
+ *
  * Status-Lifecycle:
  *   trial → active (nach Zahlung) | trial → expired (nach 7 Tagen ohne Zahlung)
  *   active → cancelled (Kündigung, läuft bis Periodenende) | active → expired
- * 
+ *
  * Stripe-Integration: stripeCustomerId und stripeSubscriptionId werden nach
- * erfolgreicher Zahlung gesetzt. Bis dahin null (Trial-Phase).
+ * erfolgreicher Zahlung gesetzt. Bis dahin null (Trial/Beta-Phase).
  */
 export const abonnements = mysqlTable("abonnements", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull().unique(),
-  /** Aktuelle Ebene: I | II | III */
-  ebene: mysqlEnum("ebene", ["I", "II", "III"]).default("I").notNull(),
+  /** Aktuelle Ebene: free | essential | complete | pro | beta */
+  ebene: mysqlEnum("ebene", ["free", "essential", "complete", "pro", "beta"]).default("free").notNull(),
   /** Status des Abonnements */
-  status: mysqlEnum("status", ["trial", "active", "cancelled", "expired"]).default("trial").notNull(),
+  status: mysqlEnum("status", ["trial", "active", "cancelled", "expired", "beta"]).default("trial").notNull(),
   /** Beginn der 7-Tage-Testphase (= Registrierungszeitpunkt) */
   trialStartedAt: timestamp("trialStartedAt").defaultNow().notNull(),
   /** Ende der Testphase (trialStartedAt + 7 Tage) */
@@ -344,3 +348,37 @@ export const nutzungsLimits = mysqlTable("nutzungs_limits", {
 
 export type NutzungsLimit = typeof nutzungsLimits.$inferSelect;
 export type InsertNutzungsLimit = typeof nutzungsLimits.$inferInsert;
+
+/**
+ * BETA-EINLADUNGEN
+ *
+ * Einladungscodes für die geschlossene Beta-Phase.
+ * Admin generiert Codes, Nutzer lösen sie ein und erhalten Beta-Zugang (= complete).
+ *
+ * Workflow:
+ * 1. Admin erstellt Code (optional mit Ziel-E-Mail und Notiz)
+ * 2. Nutzer gibt Code beim Login/Profil ein
+ * 3. Abonnement wird auf ebene=beta, status=beta gesetzt
+ * 4. Beta-Zugang gilt bis betaEndsAt (Standard: 60 Tage)
+ */
+export const betaInvites = mysqlTable("beta_invites", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Eindeutiger Einladungscode (z.B. KIICH-BETA-XXXX) */
+  code: varchar("code", { length: 32 }).notNull().unique(),
+  /** Optionale Ziel-E-Mail (nur zur Information, kein Pflichtfeld) */
+  email: varchar("email", { length: 320 }),
+  /** Optionale Notiz für den Admin (z.B. Name des Eingeladenen) */
+  notiz: varchar("notiz", { length: 256 }),
+  /** User-ID des Einlösenden (null = noch nicht eingelöst) */
+  usedByUserId: int("usedByUserId"),
+  /** Zeitpunkt der Einlösung */
+  usedAt: timestamp("usedAt"),
+  /** Ablaufdatum des Beta-Zugangs (Standard: 60 Tage nach Einlösung) */
+  betaEndsAt: timestamp("betaEndsAt"),
+  /** Ist der Code noch gültig? (Admin kann deaktivieren) */
+  aktiv: boolean("aktiv").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type BetaInvite = typeof betaInvites.$inferSelect;
+export type InsertBetaInvite = typeof betaInvites.$inferInsert;

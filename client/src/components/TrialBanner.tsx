@@ -11,15 +11,16 @@ import { useState } from "react";
 export function TrialBanner() {
   const [dismissed, setDismissed] = useState(false);
   const { data } = trpc.abo.getLimitInfo.useQuery(undefined, {
-    staleTime: 5 * 60 * 1000, // 5 Minuten cachen
+    staleTime: 5 * 60 * 1000,
   });
 
   if (!data || dismissed) return null;
 
   const { aboInfo } = data;
 
-  // Kein Banner wenn aktives Abo Ebene II oder III
-  if (aboInfo.status === "active" && (aboInfo.ebene === "II" || aboInfo.ebene === "III")) return null;
+  // Kein Banner wenn aktives Abo (essential/complete/pro) oder Beta
+  if (aboInfo.status === "active" && aboInfo.ebene !== "free") return null;
+  if (aboInfo.status === "beta") return null;
   // Kein Banner wenn gekündigt aber noch aktiv
   if (aboInfo.status === "cancelled") return null;
 
@@ -73,15 +74,15 @@ export function TrialBanner() {
     );
   }
 
-  // Ebene I Banner (kostenlos, aber eingeschränkt)
-  if (aboInfo.status === "active" && aboInfo.ebene === "I") {
+  // Free-Ebene Banner (kostenlos, aber eingeschränkt)
+  if (aboInfo.status === "active" && aboInfo.ebene === "free") {
     return (
       <div className="relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm mb-4 bg-white/5 border border-white/10 text-white/50">
         <Sparkles className="w-4 h-4 flex-shrink-0 text-amber-400/60" />
         <span className="flex-1">
-          Du nutzt die kostenlose Ebene I (3 Aufnahmen/Monat).{" "}
+          Du nutzt die kostenlose Free-Ebene (10 Aufnahmen/Monat).{" "}
           <Link href="/abo" className="text-amber-400/80 underline underline-offset-2 hover:text-amber-400 transition-colors">
-            Auf Ebene II oder III upgraden →
+            Auf Essential, Complete oder Pro upgraden →
           </Link>
         </span>
         <button

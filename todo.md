@@ -982,3 +982,17 @@
 - [x] Datenschutz: nDSG (Schweiz) ergänzen – Hinweis + EDÖB als Aufsichtsbehörde
 - [x] Impressum: Kontaktformular für Datenschutzanfragen (Art. 15–22 DSGVO) einbauen
 - [x] Server: tRPC-Mutation für Kontaktformular (E-Mail-Versand via Brevo)
+
+## Monetarisierungsinfrastruktur (April 2026)
+- [ ] DB: Tabelle subscriptions (userId, plan, status, stripeCustomerId, stripeSubscriptionId, currentPeriodEnd)
+- [ ] DB: Tabelle betaInvites (code, email, usedBy, usedAt, createdAt)
+- [ ] DB: Migration pushen (pnpm db:push)
+- [x] Server: Feature-Gate-Logik (free/essential/complete/pro) als Middleware
+- [ ] Server: Abo-Prozeduren (getMyPlan, getPlans)
+- [ ] Server: Beta-Einladungs-Prozeduren (createInvite, redeemInvite, listInvites)
+- [ ] Server: Feature-Gate in MOMENTAUFNAHME-Prozeduren einbauen
+- [ ] Frontend: Preisseite /pricing mit 4 Stufen
+- [ ] Frontend: Upgrade-Banner/Modal wenn Feature-Gate greift
+- [ ] Frontend: Beta-Einladungs-UI (Admin: Codes generieren, User: Code einlösen)
+- [ ] Frontend: Aktuellen Plan in Profil/Dashboard anzeigen
+- [ ] Tests: Feature-Gate-Logik, Beta-Code-Einlösung
