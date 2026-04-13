@@ -996,3 +996,12 @@
 - [ ] Frontend: Beta-Einladungs-UI (Admin: Codes generieren, User: Code einlösen)
 - [ ] Frontend: Aktuellen Plan in Profil/Dashboard anzeigen
 - [ ] Tests: Feature-Gate-Logik, Beta-Code-Einlösung
+
+## Launch-Vorbereitung 17. April 2026
+- [ ] Startseite: Hero-Section mit klarem CTA "Jetzt kostenlos starten"
+- [ ] Startseite: Feature-Übersicht (MOMENTAUFNAHME · MDI · YOHN) visuell aufwerten
+- [ ] Startseite: Beta-Hinweis und Preisvorschau einbauen
+- [ ] Preisseite (/abo): Visuelles Design aufwerten, Pläne klar differenzieren
+- [ ] Preisseite: Beta-Code-Bereich prominent hervorheben
+- [ ] Beta-Codes: 20 Codes in der Datenbank generieren
+- [ ] Checkpoint vor Launch speichern

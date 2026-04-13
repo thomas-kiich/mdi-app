@@ -550,6 +550,93 @@ export default function Home() {
                 </div>
               </div>
               {/* ===== END KIICH HERO ===== */}
+
+              {/* ===== BETA LAUNCH BANNER ===== */}
+              <div className="relative overflow-hidden" style={{background: 'linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(245,166,35,0.10) 100%)', borderTop: '1px solid rgba(124,58,237,0.3)', borderBottom: '1px solid rgba(124,58,237,0.3)'}}>
+                <div className="container max-w-4xl mx-auto px-4 py-8">
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div className="text-center md:text-left">
+                      <div className="inline-flex items-center gap-2 bg-violet-500/20 border border-violet-500/40 rounded-full px-4 py-1 mb-3">
+                        <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
+                        <span className="text-violet-300 text-xs font-bold tracking-widest uppercase">Beta-Launch · 17. April 2026</span>
+                      </div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">KIICH ist jetzt verfügbar.</h2>
+                      <p className="text-zinc-400 text-sm md:text-base max-w-md">
+                        Starte kostenlos mit MOMENTAUFNAHME – deiner täglichen KI-gestützten Selbstreflexion. Kein Kreditkarte, kein Risiko.
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center gap-3 shrink-0">
+                      <button
+                        onClick={() => setLocation('/momentaufnahme')}
+                        className="relative px-8 py-3.5 text-base font-bold tracking-widest uppercase text-white transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/30"
+                        style={{background: 'linear-gradient(135deg, #7c3aed, #a855f7)'}}
+                      >
+                        JETZT KOSTENLOS STARTEN
+                      </button>
+                      <button
+                        onClick={() => setLocation('/abo')}
+                        className="text-zinc-400 hover:text-violet-300 text-sm underline underline-offset-4 transition-colors"
+                      >
+                        Alle Pläne & Preise ansehen
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* ===== END BETA LAUNCH BANNER ===== */}
+
+              {/* ===== FEATURE OVERVIEW ===== */}
+              <div className="container max-w-6xl mx-auto px-4 py-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* MOMENTAUFNAHME */}
+                  <div
+                    className="group cursor-pointer bg-zinc-900/60 border border-violet-500/20 hover:border-violet-500/50 rounded-2xl p-6 transition-all duration-300 hover:bg-zinc-900/80"
+                    onClick={() => setLocation('/momentaufnahme')}
+                  >
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{background: 'linear-gradient(135deg, rgba(124,58,237,0.3), rgba(168,85,247,0.2))'}}>
+                      <span className="text-xl">🌙</span>
+                    </div>
+                    <h3 className="text-white font-bold text-lg mb-2 tracking-wide">MOMENTAUFNAHME</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">Täglich 3 Minuten sprechen. KI analysiert deine Befindlichkeit und erstellt ein persönliches Reflexions-Summary.</p>
+                    <div className="mt-4 flex items-center gap-1 text-violet-400 text-xs font-semibold">
+                      <span>Kostenlos starten</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                  {/* MDI ANALYSE */}
+                  <div
+                    className="group cursor-pointer bg-zinc-900/60 border border-orange-500/20 hover:border-orange-500/50 rounded-2xl p-6 transition-all duration-300 hover:bg-zinc-900/80"
+                    onClick={() => setCurrentStep('preparation')}
+                  >
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{background: 'linear-gradient(135deg, rgba(245,166,35,0.3), rgba(230,51,41,0.2))'}}>
+                      <span className="text-xl">🎵</span>
+                    </div>
+                    <h3 className="text-white font-bold text-lg mb-2 tracking-wide">MDI STIMMKLANG</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">Deine Stimme verrät deinen Lebensklang. Die MDI-Analyse bestimmt deinen persönlichen Frequenztyp aus 24 Klangfeldern.</p>
+                    <div className="mt-4 flex items-center gap-1 text-orange-400 text-xs font-semibold">
+                      <span>Analyse starten</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                  {/* YOHN TRAINING */}
+                  <div
+                    className="group cursor-pointer bg-zinc-900/60 border border-green-500/20 hover:border-green-500/50 rounded-2xl p-6 transition-all duration-300 hover:bg-zinc-900/80"
+                    onClick={() => setShowTrainingCenter(true)}
+                  >
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{background: 'linear-gradient(135deg, rgba(34,197,94,0.3), rgba(16,185,129,0.2))'}}>
+                      <span className="text-xl">✨</span>
+                    </div>
+                    <h3 className="text-white font-bold text-lg mb-2 tracking-wide">YOHN TRAINING</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">Methode 36: 7 Minuten tägliches Befindlichkeitstraining mit Lichtfrequenz und Klang. Aktiviere deine Gravitationszentren.</p>
+                    <div className="mt-4 flex items-center gap-1 text-green-400 text-xs font-semibold">
+                      <span>Training öffnen</span>
+                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* ===== END FEATURE OVERVIEW ===== */}
+
               <div className="container max-w-6xl mx-auto px-4 pt-8">
                 <PodcastFeature
                   coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/2_30109d8c.png"
