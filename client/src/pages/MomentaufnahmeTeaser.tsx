@@ -1,7 +1,7 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LogIn, Bell } from "lucide-react";
+import { ArrowLeft, LogIn } from "lucide-react";
 import { Link } from "wouter";
 
 export default function MomentaufnahmeTeaser() {
@@ -132,12 +132,7 @@ export default function MomentaufnahmeTeaser() {
             <span className="text-violet-300 text-xs font-bold tracking-widest uppercase">Demnächst verfügbar</span>
           </div>
 
-          {isAuthenticated ? (
-            <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
-              <Bell className="w-3.5 h-3.5" />
-              <span>Du wirst benachrichtigt, sobald MOMENTAUFNAHME verfügbar ist.</span>
-            </div>
-          ) : (
+          {!isAuthenticated && (
             <Button
               onClick={() => (window.location.href = getLoginUrl())}
               className="bg-violet-600 hover:bg-violet-500 text-white gap-2 px-6"
