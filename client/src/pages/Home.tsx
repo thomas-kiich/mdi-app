@@ -551,39 +551,7 @@ export default function Home() {
               </div>
               {/* ===== END KIICH HERO ===== */}
 
-              {/* ===== BETA LAUNCH BANNER ===== */}
-              <div className="relative overflow-hidden" style={{background: 'linear-gradient(135deg, rgba(124,58,237,0.15) 0%, rgba(245,166,35,0.10) 100%)', borderTop: '1px solid rgba(124,58,237,0.3)', borderBottom: '1px solid rgba(124,58,237,0.3)'}}>
-                <div className="container max-w-4xl mx-auto px-4 py-8">
-                  <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="text-center md:text-left">
-                      <div className="inline-flex items-center gap-2 bg-violet-500/20 border border-violet-500/40 rounded-full px-4 py-1 mb-3">
-                        <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse"></span>
-                        <span className="text-violet-300 text-xs font-bold tracking-widest uppercase">Beta-Launch · 17. April 2026</span>
-                      </div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">KIICH ist jetzt verfügbar.</h2>
-                      <p className="text-zinc-400 text-sm md:text-base max-w-md">
-                        Starte kostenlos mit MOMENTAUFNAHME – deiner täglichen KI-gestützten Selbstreflexion. Kein Kreditkarte, kein Risiko.
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-center gap-3 shrink-0">
-                      <button
-                        onClick={() => setLocation('/momentaufnahme')}
-                        className="relative px-8 py-3.5 text-base font-bold tracking-widest uppercase text-white transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-violet-500/30"
-                        style={{background: 'linear-gradient(135deg, #7c3aed, #a855f7)'}}
-                      >
-                        JETZT KOSTENLOS STARTEN
-                      </button>
-                      <button
-                        onClick={() => setLocation('/abo')}
-                        className="text-zinc-400 hover:text-violet-300 text-sm underline underline-offset-4 transition-colors"
-                      >
-                        Alle Pläne & Preise ansehen
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* ===== END BETA LAUNCH BANNER ===== */}
+              {/* BETA LAUNCH BANNER: deaktiviert – zu früh für Veröffentlichung */}
 
               {/* ===== FEATURE OVERVIEW ===== */}
               <div className="container max-w-6xl mx-auto px-4 py-4">
