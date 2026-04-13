@@ -1,11 +1,13 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, LogIn } from "lucide-react";
+import { ArrowLeft, LogIn, ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "wouter";
+import { useState } from "react";
 
 export default function MomentaufnahmeTeaser() {
   const { isAuthenticated, loading } = useAuth();
+  const [teaserOpen, setTeaserOpen] = useState(false);
 
   if (loading) {
     return (
@@ -119,9 +121,31 @@ export default function MomentaufnahmeTeaser() {
             Deine Chefsekretärin. Alles nur dir selbst zugänglich –{" "}
             <strong className="text-white/90">gesichert als Schatz deiner einzigartigen IDENTITÄT.</strong>
           </p>
-          <p className="text-violet-400/80 text-sm font-semibold mt-4 tracking-wide">
+          <p
+            className="text-violet-400/80 text-sm font-semibold mt-4 tracking-wide cursor-pointer flex items-center gap-2 hover:text-violet-300 transition-colors select-none"
+            onClick={() => setTeaserOpen(o => !o)}
+          >
             MA kann aber noch vieles mehr.......
+            {teaserOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </p>
+          {teaserOpen && (
+            <div className="mt-4 space-y-3">
+              {[
+                { icon: "🌙", title: "Schlaf-Modus", text: "MA liest dir deine Tages-Erkenntnisse vor und begleitet dich sanft in den Schlaf – mit Entspannungsmusik und deinen eigenen Gedanken als Einschlaf-Ritual." },
+                { icon: "📋", title: "Tages-Summary", text: "Am Abend fasst MA alle deine Momentaufnahmen zu einem persönlichen Tages-Summary zusammen – strukturiert, reflektiert und sofort abrufbar." },
+                { icon: "🧲", title: "6 Gravitationszentren", text: "Jede Aufnahme wird automatisch einem der 6 Lebensbereiche zugeordnet: ICH · QUELL · KONZEPT · PROJEKT · DIALOG · WELT. So entsteht ein lebendiges Bild deiner inneren Welt." },
+                { icon: "🔗", title: "Obsidian-Export", text: "Alle Aufnahmen lassen sich mit einem Klick in dein Obsidian-Wissensnetz exportieren – als strukturierte Markdown-Dateien, bereit für tiefere Reflexion." },
+              ].map((item, i) => (
+                <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-white/5 border border-violet-500/10">
+                  <span className="text-xl mt-0.5">{item.icon}</span>
+                  <div>
+                    <p className="text-white/80 text-xs font-bold uppercase tracking-wide mb-1">{item.title}</p>
+                    <p className="text-white/45 text-xs leading-relaxed">{item.text}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 8) Demnächst verfügbar + Login */}
