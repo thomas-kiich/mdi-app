@@ -128,10 +128,7 @@ export default function MomentaufnahmeTeaser() {
             <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
             <span className="text-violet-300 text-xs font-bold tracking-widest uppercase">Demnächst verfügbar</span>
           </div>
-          <p className="text-white/30 text-xs mb-6">
-            MOMENTAUFNAHME befindet sich in der finalen Entwicklungsphase.<br />
-            Sei dabei, wenn es losgeht.
-          </p>
+
           {isAuthenticated ? (
             <div className="flex items-center justify-center gap-2 text-white/30 text-xs">
               <Bell className="w-3.5 h-3.5" />
