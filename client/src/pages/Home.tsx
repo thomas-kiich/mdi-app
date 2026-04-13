@@ -765,7 +765,35 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-                
+
+                {/* ===== WORKFLOW & NOTEBOOKLM HINWEIS ===== */}
+                <div className="mt-10 mb-2">
+                  <div className="bg-zinc-900/60 border border-orange-500/15 rounded-2xl px-6 py-5 flex flex-col md:flex-row md:items-center gap-5">
+                    {/* Linke Seite: Workflow-Beschreibung */}
+                    <div className="flex-1">
+                      <p className="text-orange-400 text-xs font-black tracking-widest uppercase mb-2">Wie dieses Hörbuch entsteht</p>
+                      <p className="text-zinc-300 text-sm leading-relaxed">
+                        Jede Episode beginnt mit dem <span className="text-white font-semibold">Originalrohtext des Autors</span>. Dieser wird mit einer gezielten Prompt-Vorgabe auf Anschaulichkeit und Praxisorientierung hin interpretiert – und anschließend als <span className="text-white font-semibold">lebendiger, lockerer Dialog</span> mit zwei Stimmen umgesetzt. Wöchentlich. In verdaulichen Häppchen. Mit konkreten Praxistipps direkt aus der METHODE 36.
+                      </p>
+                    </div>
+                    {/* Rechte Seite: NotebookLM-Badge */}
+                    <div className="flex-shrink-0 flex flex-col items-center md:items-end gap-1.5">
+                      <span className="text-zinc-500 text-xs uppercase tracking-widest">Stimmen generiert mit</span>
+                      <a
+                        href="https://notebooklm.google.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 bg-zinc-800/80 hover:bg-zinc-800 border border-zinc-700/60 hover:border-zinc-500/60 px-4 py-2 rounded-full transition-all group"
+                      >
+                        <span className="text-base">🎙️</span>
+                        <span className="text-zinc-200 text-sm font-semibold tracking-wide">Google NotebookLM</span>
+                      </a>
+                      <span className="text-zinc-600 text-xs">KI-generierte Audiodialoge</span>
+                    </div>
+                  </div>
+                </div>
+                {/* ===== END WORKFLOW ===== */}
+
                 {/* ===== PREMIUM ANGEBOTE SEKTION ===== */}
                 <div id="premium-angebote-section" className="mt-16 mb-8">
                   <div className="text-center mb-10">
