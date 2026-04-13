@@ -120,6 +120,9 @@ export default function MomentaufnahmeTeaser() {
             Deine Chefsekretärin. Alles nur dir selbst zugänglich –{" "}
             <strong className="text-white/90">gesichert als Schatz deiner einzigartigen IDENTITÄT.</strong>
           </p>
+          <p className="text-violet-400/80 text-sm font-semibold mt-4 tracking-wide">
+            MA kann aber noch vieles mehr.......
+          </p>
         </div>
 
         {/* 8) Demnächst verfügbar + Login */}
