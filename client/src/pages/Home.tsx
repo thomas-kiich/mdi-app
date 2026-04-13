@@ -614,8 +614,8 @@ export default function Home() {
               </div>
               <div id="vorschau-april-2026" className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
 
-                {/* ===== PREMIUM ANGEBOTE SEKTION ===== */}
-                <div id="premium-angebote-section" className="mt-16 mb-8">
+                {/* PREMIUM ANGEBOTE: deaktiviert für Marktauftritt */}
+                <div id="premium-angebote-section" className="mt-16 mb-8" style={{display:'none'}}>
                   <div className="text-center mb-10">
                     <span className="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black tracking-widest px-4 py-1.5 rounded-full mb-4">PREMIUM ANGEBOTE</span>
                     <h2 className="text-2xl font-bold text-white mb-3 tracking-tight">Dein persönliches KIICH-Werkzeugset</h2>
