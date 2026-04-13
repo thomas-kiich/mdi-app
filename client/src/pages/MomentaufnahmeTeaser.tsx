@@ -80,8 +80,7 @@ export default function MomentaufnahmeTeaser() {
                 <span className="text-violet-400 text-xs font-black tracking-widest uppercase">Kennst du das?</span>
               </div>
               <h3 className="text-lg font-bold text-white mb-2 leading-tight">
-                Die Zettelwirtschaft<br />
-                <span className="text-violet-400">hat ein Ende.</span>
+                Die Zettelwirtschaft <span className="text-violet-400">hat ein Ende.</span>
               </h3>
               <p className="text-zinc-400 text-sm leading-relaxed mb-3">
                 Kühlschranktür, Schreibtisch, Notizbuch — überall Zettel, Post-its und handgeschriebene Listen. Gedanken, die flüchtig sind. Erkenntnisse, die verloren gehen.
