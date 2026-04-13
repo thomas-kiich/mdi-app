@@ -553,57 +553,7 @@ export default function Home() {
 
               {/* BETA LAUNCH BANNER: deaktiviert – zu früh für Veröffentlichung */}
 
-              {/* ===== FEATURE OVERVIEW ===== */}
-              <div className="container max-w-6xl mx-auto px-4 py-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* MOMENTAUFNAHME */}
-                  <div
-                    className="group cursor-pointer bg-zinc-900/60 border border-violet-500/20 hover:border-violet-500/50 rounded-2xl p-6 transition-all duration-300 hover:bg-zinc-900/80"
-                    onClick={() => setLocation('/momentaufnahme')}
-                  >
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{background: 'linear-gradient(135deg, rgba(124,58,237,0.3), rgba(168,85,247,0.2))'}}>
-                      <span className="text-xl">🌙</span>
-                    </div>
-                    <h3 className="text-white font-bold text-lg mb-2 tracking-wide">MOMENTAUFNAHME</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Täglich 3 Minuten sprechen. KI analysiert deine Befindlichkeit und erstellt ein persönliches Reflexions-Summary.</p>
-                    <div className="mt-4 flex items-center gap-1 text-violet-400 text-xs font-semibold">
-                      <span>Kostenlos starten</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                  {/* MDI ANALYSE */}
-                  <div
-                    className="group cursor-pointer bg-zinc-900/60 border border-orange-500/20 hover:border-orange-500/50 rounded-2xl p-6 transition-all duration-300 hover:bg-zinc-900/80"
-                    onClick={() => setCurrentStep('preparation')}
-                  >
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{background: 'linear-gradient(135deg, rgba(245,166,35,0.3), rgba(230,51,41,0.2))'}}>
-                      <span className="text-xl">🎵</span>
-                    </div>
-                    <h3 className="text-white font-bold text-lg mb-2 tracking-wide">MDI STIMMKLANG</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Deine Stimme verrät deinen Lebensklang. Die MDI-Analyse bestimmt deinen persönlichen Frequenztyp aus 24 Klangfeldern.</p>
-                    <div className="mt-4 flex items-center gap-1 text-orange-400 text-xs font-semibold">
-                      <span>Analyse starten</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                  {/* YOHN TRAINING */}
-                  <div
-                    className="group cursor-pointer bg-zinc-900/60 border border-green-500/20 hover:border-green-500/50 rounded-2xl p-6 transition-all duration-300 hover:bg-zinc-900/80"
-                    onClick={() => setShowTrainingCenter(true)}
-                  >
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{background: 'linear-gradient(135deg, rgba(34,197,94,0.3), rgba(16,185,129,0.2))'}}>
-                      <span className="text-xl">✨</span>
-                    </div>
-                    <h3 className="text-white font-bold text-lg mb-2 tracking-wide">YOHN TRAINING</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">Methode 36: 7 Minuten tägliches Befindlichkeitstraining mit Lichtfrequenz und Klang. Aktiviere deine Gravitationszentren.</p>
-                    <div className="mt-4 flex items-center gap-1 text-green-400 text-xs font-semibold">
-                      <span>Training öffnen</span>
-                      <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {/* ===== END FEATURE OVERVIEW ===== */}
+
 
               <div className="container max-w-6xl mx-auto px-4 pt-8">
                 <PodcastFeature
