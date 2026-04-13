@@ -695,87 +695,6 @@ export default function Home() {
                 />
               </div>
               <div id="vorschau-april-2026" className="container max-w-6xl mx-auto px-4 mt-12 mb-24">
-                <h2 className="text-2xl font-bold text-center text-white mb-8">SZENARIO - Die Vorschau April 2026</h2>
-                
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {/* Episode 1 Preview */}
-                  <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all" onClick={() => setShowPodcast(true)}>
-                    <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
-                      JETZT VERFÜGBAR
-                    </div>
-                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 01</h3>
-                    <h4 className="text-lg font-medium text-orange-400">BEFEHL ERTEILT!</h4>
-                    <p className="text-white text-sm leading-relaxed mb-6">
-                      <span className="text-orange-400 block mb-2">Wer lenkt mein Leben im Agentenzeitalter?</span>
-                      Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet...
-                    </p>
-                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
-                      <div className="w-full h-full bg-orange-500"></div>
-                    </div>
-                  </div>
-                  
-                  {/* Episode 2 Preview */}
-                  <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all" onClick={() => setShowPodcast(true)}>
-                    <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
-                      JETZT VERFÜGBAR
-                    </div>
-                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 02</h3>
-                    <h4 className="text-lg font-medium text-orange-400">EXTREME ZEITEN!</h4>
-                    <p className="text-white text-sm leading-relaxed mb-6">
-                      <span className="text-orange-400 block mb-2">Wie verschaffe ich mir den Überblick?</span>
-                      Wo und wie ich mein wahres Zentrum finde und so der Dirigent meines Lebens bleibe....
-                    </p>
-                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
-                      <div className="w-1/3 h-full bg-zinc-600"></div>
-                    </div>
-                  </div>
-                  
-                  {/* Episode 3 Preview */}
-                  <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
-                    <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
-                      16.04.2026
-                    </div>
-                    <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 03</h3>
-                    <h4 className="text-lg font-medium text-orange-400">ALLES KLAR!</h4>
-                    <p className="text-white text-sm leading-relaxed mb-6">
-                      <span className="text-orange-400 block mb-2">Ich muss was tun und weiß jetzt wie?</span>
-                      Warum ich sofort den Schalter umlegen muss und die Überforderung in den Mülleimer schmeiße...
-                    </p>
-                    <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
-                      <div className="w-1/4 h-full bg-zinc-600"></div>
-                    </div>
-                  </div>
-                  
-                  {/* Training Preview - PREMIUM LOCKED */}
-                  <div 
-                    className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden cursor-pointer hover:border-orange-400/60 transition-all group"
-                    onClick={() => setShowPodcast(true)}
-                  >
-                    <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
-                      30.04.2026
-                    </div>
-                    <h3 className="text-white text-base font-bold tracking-wider mb-2 mt-8">2026 PRAXIS 01</h3>
-                    <h4 className="text-lg font-medium text-orange-400">ECHT KRASS!</h4>
-                    <p className="text-white text-sm leading-relaxed mb-6">
-                      <span className="text-orange-400 block mb-2">Befindlichkeitstraining das ich selbst bestimme?</span>
-                      So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
-                    </p>
-                    <div className="flex items-center justify-center py-2">
-                      <span className="text-orange-400 text-xs font-bold tracking-wider">30.04.2026</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* ===== WORKFLOW & NOTEBOOKLM HINWEIS ===== */}
-                <div className="mt-10 mb-2">
-                  <div className="bg-zinc-900/60 border border-orange-500/15 rounded-2xl px-6 py-5">
-                    <p className="text-orange-400 text-xs font-black tracking-widest uppercase mb-3">Wie dieses Hörbuch entsteht</p>
-                    <p className="text-zinc-300 text-sm leading-relaxed">
-                      Im Sinne der KIICH Philosophie werden die originalen Rohtexte des Autors von KI-Stimmen <span className="text-zinc-400">(Google NotebookLM)</span> dialogmässig interpretiert. Die inhaltliche Aufbereitung legt dabei das Hauptaugenmerk auf leichte Verständlichkeit und praxisnaher Interpretation der Originaltexte.
-                    </p>
-                  </div>
-                </div>
-                {/* ===== END WORKFLOW ===== */}
 
                 {/* ===== PREMIUM ANGEBOTE SEKTION ===== */}
                 <div id="premium-angebote-section" className="mt-16 mb-8">
@@ -1511,6 +1430,91 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 </Button>
                 
 	                <div className="mt-8 flex flex-col gap-10">
+
+                  {/* ===== SZENARIO VORSCHAU APRIL 2026 ===== */}
+                  <div>
+                    <h2 className="text-2xl font-bold text-center text-white mb-8">SZENARIO – Die Vorschau April 2026</h2>
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {/* Episode 1 Preview */}
+                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all">
+                        <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+                          JETZT VERFÜGBAR
+                        </div>
+                        <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 01</h3>
+                        <h4 className="text-lg font-medium text-orange-400">BEFEHL ERTEILT!</h4>
+                        <p className="text-white text-sm leading-relaxed mb-6">
+                          <span className="text-orange-400 block mb-2">Wer lenkt mein Leben im Agentenzeitalter?</span>
+                          Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet...
+                        </p>
+                        <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="w-full h-full bg-orange-500"></div>
+                        </div>
+                      </div>
+
+                      {/* Episode 2 Preview */}
+                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all">
+                        <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+                          JETZT VERFÜGBAR
+                        </div>
+                        <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 02</h3>
+                        <h4 className="text-lg font-medium text-orange-400">EXTREME ZEITEN!</h4>
+                        <p className="text-white text-sm leading-relaxed mb-6">
+                          <span className="text-orange-400 block mb-2">Wie verschaffe ich mir den Überblick?</span>
+                          Wo und wie ich mein wahres Zentrum finde und so der Dirigent meines Lebens bleibe....
+                        </p>
+                        <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="w-1/3 h-full bg-zinc-600"></div>
+                        </div>
+                      </div>
+
+                      {/* Episode 3 Preview */}
+                      <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
+                        <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
+                          16.04.2026
+                        </div>
+                        <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 03</h3>
+                        <h4 className="text-lg font-medium text-orange-400">ALLES KLAR!</h4>
+                        <p className="text-white text-sm leading-relaxed mb-6">
+                          <span className="text-orange-400 block mb-2">Ich muss was tun und weiß jetzt wie?</span>
+                          Warum ich sofort den Schalter umlegen muss und die Überforderung in den Mülleimer schmeiße...
+                        </p>
+                        <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="w-1/4 h-full bg-zinc-600"></div>
+                        </div>
+                      </div>
+
+                      {/* PRAXIS 01 Preview */}
+                      <div className="bg-gradient-to-b from-orange-900/20 to-red-900/20 border border-orange-500/30 rounded-2xl p-6 relative overflow-hidden">
+                        <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
+                          30.04.2026
+                        </div>
+                        <h3 className="text-white text-base font-bold tracking-wider mb-2 mt-8">2026 PRAXIS 01</h3>
+                        <h4 className="text-lg font-medium text-orange-400">ECHT KRASS!</h4>
+                        <p className="text-white text-sm leading-relaxed mb-6">
+                          <span className="text-orange-400 block mb-2">Befindlichkeitstraining das ich selbst bestimme?</span>
+                          So empfindungsfähig für meine wahren Bedürfnisse war ich nie zuvor! Und das mit sieben Minuten selbstbestimmten Trainings zwischendurch...
+                        </p>
+                        <div className="flex items-center justify-center py-2">
+                          <span className="text-orange-400 text-xs font-bold tracking-wider">30.04.2026</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Disclaimer */}
+                    <div className="mt-8">
+                      <div className="bg-zinc-900/60 border border-orange-500/15 rounded-2xl px-6 py-5">
+                        <p className="text-orange-400 text-xs font-black tracking-widest uppercase mb-3">Wie dieses Hörbuch entsteht</p>
+                        <p className="text-zinc-300 text-sm leading-relaxed">
+                          Im Sinne der KIICH Philosophie werden die originalen Rohtexte des Autors von KI-Stimmen <span className="text-zinc-400">(Google NotebookLM)</span> dialogmässig interpretiert. Die inhaltliche Aufbereitung legt dabei das Hauptaugenmerk auf leichte Verständlichkeit und praxisnaher Interpretation der Originaltexte.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-zinc-800 pt-4">
+                    <p className="text-zinc-500 text-xs uppercase tracking-widest mb-6 text-center">Aktuell freigeschaltete Episoden</p>
+                  </div>
+
                   <PodcastFeature 
                     title={<>2026 EPISODE 02<br/><span className="text-orange-400 block mt-1">EXTREME ZEITEN!</span></>}
                     subtitle="Wie bleibe ich der Dirigent meines Lebens? _ Warum es enorme Vorteile für dich bietet, wenn du deinen Körper verstehst und ihm gibst was er wirklich braucht..."
