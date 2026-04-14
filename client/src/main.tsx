@@ -59,14 +59,26 @@ createRoot(document.getElementById("root")!).render(
   </trpc.Provider>
 );
 
-// Alte Service-Worker deregistrieren (verhindert Reload-Schleifen)
+// Service-Worker-Management
 if ('serviceWorker' in navigator) {
+  // 1. Alten /service-worker.js deregistrieren (verhindert Reload-Schleifen)
   navigator.serviceWorker.getRegistrations().then(registrations => {
     for (const reg of registrations) {
-      // Nur den alten /service-worker.js entfernen, nicht /wecker-sw.js
       if (reg.active?.scriptURL?.includes('/service-worker.js')) {
         reg.unregister();
+        console.log('[SW] Alter service-worker.js deregistriert');
       }
     }
+  });
+
+  // 2. Neuen Workbox-Offline-SW registrieren (kein Auto-Reload)
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' })
+      .then(reg => {
+        console.log('[SW] Workbox-SW registriert:', reg.scope);
+        // Stündlich auf Updates prüfen – aber KEIN automatisches Reload
+        setInterval(() => reg.update(), 60 * 60 * 1000);
+      })
+      .catch(err => console.warn('[SW] Workbox-SW Registrierung fehlgeschlagen:', err));
   });
 }

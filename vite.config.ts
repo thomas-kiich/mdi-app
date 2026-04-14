@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { defineConfig, type Plugin, type ViteDevServer } from "vite";
 import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
+import { VitePWA } from "vite-plugin-pwa";
 
 // =============================================================================
 // Manus Debug Collector - Vite Plugin
@@ -150,7 +151,60 @@ function vitePluginManusDebugCollector(): Plugin {
   };
 }
 
-const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
+const pwaPlugin = VitePWA({
+  registerType: "prompt", // Kein Auto-Update-Reload – Nutzer entscheidet
+  injectRegister: null,   // Wir registrieren manuell in main.tsx
+  strategies: "generateSW",
+  workbox: {
+    // Cache-First für statische Assets (JS, CSS, Fonts, Bilder)
+    runtimeCaching: [
+      {
+        urlPattern: /\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|webp|ico)$/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "mdi-static-v1",
+          expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 }, // 30 Tage
+        },
+      },
+      {
+        // Network-First für API-Calls – nie cachen
+        urlPattern: /^\/api\//,
+        handler: "NetworkOnly",
+      },
+      {
+        // Network-First für HTML (immer frisch)
+        urlPattern: /^\/(?!api)/,
+        handler: "NetworkFirst",
+        options: {
+          cacheName: "mdi-pages-v1",
+          expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 }, // 1 Tag
+          networkTimeoutSeconds: 5,
+        },
+      },
+    ],
+    // Kein Auto-Reload bei neuem SW – verhindert Blink-Schleifen
+    skipWaiting: false,
+    clientsClaim: false,
+    // Alten /service-worker.js und /wecker-sw.js nicht überschreiben
+    navigateFallback: null,
+  },
+  manifest: {
+    name: "kiich – KI-Bewusstsein",
+    short_name: "kiich",
+    description: "Multidimensionales Identitätssystem",
+    theme_color: "#0a0a0a",
+    background_color: "#0a0a0a",
+    display: "standalone",
+    orientation: "portrait",
+    start_url: "/",
+    icons: [
+      { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+});
+
+const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector(), pwaPlugin];
 
 export default defineConfig({
   plugins,

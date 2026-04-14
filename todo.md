@@ -1070,3 +1070,8 @@
 - [x] Service-Worker: Wecker-Auslösung (Musik + MA-Morgentext zur eingestellten Uhrzeit)
 - [x] RitualeTab: Abend-Ritual-Bereich (Dankbarkeit 3 Felder + Atemübung 4-7-8)
 - [x] RitualeTab: Streak-Anzeige (Flammen-Symbol, Tages-Übersicht)
+
+## Stabilitäts-Verbesserungen (14. April 2026)
+- [x] PushJob: Retry-Mechanismus bei ECONNRESET (exponentielles Backoff, max. 3 Versuche)
+- [x] PushJob: DB-Reconnect bei Verbindungsabbruch
+- [x] Workbox-Offline-Service-Worker (Cache-First für Assets, Network-First für API, kein Auto-Reload)
