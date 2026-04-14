@@ -321,6 +321,11 @@ export default function Momentaufnahme() {
   const [planerNeueErinnerung, setPlanerNeueErinnerung] = useState("");
   const [planerLaedt, setPlanerLaedt] = useState(false);
   const [neuerArtikel, setNeuerArtikel] = useState("");
+  // Sprach-Einkaufsliste
+  const einkaufsartikelPerSpracheMutation = trpc.planer.einkaufsartikelPerSprache.useMutation();
+  const [sprachEinkaufAktiv, setSprachEinkaufAktiv] = useState(false);
+  const sprachEinkaufRecorderRef = useRef<MediaRecorder | null>(null);
+  const sprachEinkaufChunksRef = useRef<Blob[]>([]);
   // Sprach-Erinnerung
   const erinnerungPerSpracheMutation = trpc.planer.erinnerungPerSprache.useMutation();
   const [sprachErinnerungAktiv, setSprachErinnerungAktiv] = useState(false);
@@ -440,6 +445,50 @@ export default function Momentaufnahme() {
       toast.error("Mikrofon-Zugriff verweigert");
     }
   }, [sprachErinnerungAktiv, erinnerungPerSpracheMutation, refetchErinnerungen]);
+
+  // Sprach-Einkaufsliste: Aufnahme starten/stoppen
+  const handleSprachEinkaufStart = useCallback(async () => {
+    if (sprachEinkaufAktiv) {
+      // Aufnahme stoppen
+      sprachEinkaufRecorderRef.current?.stop();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      sprachEinkaufChunksRef.current = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) sprachEinkaufChunksRef.current.push(e.data); };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        setSprachEinkaufAktiv(false);
+        const blob = new Blob(sprachEinkaufChunksRef.current, { type: "audio/webm" });
+        try {
+          setPlanerLaedt(true);
+          const formData = new FormData();
+          formData.append("audio", blob, `einkauf-${Date.now()}.webm`);
+          const uploadResp = await fetch("/api/audio/upload", { method: "POST", body: formData, credentials: "include" });
+          if (!uploadResp.ok) throw new Error("Upload fehlgeschlagen");
+          const { audioUrl } = await uploadResp.json();
+          const r = await einkaufsartikelPerSpracheMutation.mutateAsync({ audioUrl });
+          await refetchEinkaufsliste();
+          if (r.artikel.length > 1) {
+            toast.success(`${r.artikel.length} Artikel hinzugefügt`);
+          } else if (r.artikel.length === 1) {
+            toast.success(`"${r.artikel[0].artikel}" hinzugefügt`);
+          }
+        } catch (err: any) {
+          toast.error(err?.message ?? "Sprach-Einkaufsliste fehlgeschlagen");
+        } finally {
+          setPlanerLaedt(false);
+        }
+      };
+      recorder.start();
+      sprachEinkaufRecorderRef.current = recorder;
+      setSprachEinkaufAktiv(true);
+    } catch {
+      toast.error("Mikrofon-Zugriff verweigert");
+    }
+  }, [sprachEinkaufAktiv, einkaufsartikelPerSpracheMutation, refetchEinkaufsliste]);
   // Fällige Erinnerungen (Polling alle 30 Sek)
   // jetztMs wird alle 30 Sekunden aktualisiert – damit der Query immer mit der echten Zeit läuft
   const [jetztMs, setJetztMs] = useState(() => Date.now());
@@ -1723,10 +1772,29 @@ export default function Momentaufnahme() {
                 >
                   {planerLaedt ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                 </button>
+                {/* Sprach-Eingabe für Einkaufsliste */}
+                <button
+                  onClick={handleSprachEinkaufStart}
+                  disabled={planerLaedt && !sprachEinkaufAktiv}
+                  title={sprachEinkaufAktiv ? "Aufnahme stoppen" : "Artikel einsprechen"}
+                  className={cn(
+                    "p-2 rounded-xl text-white transition-all",
+                    sprachEinkaufAktiv
+                      ? "bg-red-500 hover:bg-red-400 animate-pulse"
+                      : "bg-white/10 hover:bg-teal-600/60"
+                  )}
+                >
+                  {sprachEinkaufAktiv ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                </button>
               </div>
+              {sprachEinkaufAktiv && (
+                <p className="text-xs text-red-400 animate-pulse text-center -mt-1 mb-2">
+                  ● Sprich jetzt: "Milch, Brot, 2 Liter Orangensaft"
+                </p>
+              )}
               {/* Liste */}
               {(einkaufslisteData ?? []).length === 0 ? (
-                <p className="text-xs text-white/30 italic text-center py-4">Noch keine Artikel. Tippe oben einen Artikel ein.</p>
+                <p className="text-xs text-white/30 italic text-center py-4">Noch keine Artikel. Tippe oder sprich einen Artikel ein 🎤</p>
               ) : (
                 <div className="space-y-1.5">
                   {(einkaufslisteData ?? []).map(item => (

@@ -371,6 +371,89 @@ Antworte NUR mit JSON: {"text": "...", "faelligkeitISO": "..."}`,
       return { ok: true };
     }),
 
+  // Einkaufsartikel per Sprache hinzufügen (Transkription + LLM-Extraktion mehrerer Artikel)
+  einkaufsartikelPerSprache: protectedProcedure
+    .input(z.object({ audioUrl: z.string().url() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+
+      // 1. Transkribieren
+      const { transcribeAudio } = await import("../_core/voiceTranscription");
+      const transkription = await transcribeAudio({ audioUrl: input.audioUrl, language: "de" });
+      const sprachbefehl = ('text' in transkription ? transkription.text : '') ?? '';
+      if (!sprachbefehl.trim()) throw new Error("Keine Spracheingabe erkannt");
+
+      // 2. LLM: Artikel-Liste extrahieren (mehrere Artikel möglich)
+      const { invokeLLM } = await import("../_core/llm");
+      const llmResponse = await invokeLLM({
+        messages: [
+          {
+            role: "system",
+            content: `Du bist ein Einkaufslisten-Assistent. Extrahiere alle genannten Einkaufsartikel aus dem Sprachbefehl.
+Gib JEDEN Artikel einzeln zurück. Erkenne auch Mengenangaben (z.B. "2 Liter Milch" → menge: "2 Liter", artikel: "Milch").
+Antworte NUR mit JSON: {"artikel": [{"artikel": "...", "menge": "..."}]}
+Wenn keine Menge angegeben, lasse menge leer ("").`,
+          },
+          { role: "user", content: sprachbefehl },
+        ],
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "einkauf_extraktion",
+            strict: true,
+            schema: {
+              type: "object",
+              properties: {
+                artikel: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      artikel: { type: "string" },
+                      menge: { type: "string" },
+                    },
+                    required: ["artikel", "menge"],
+                    additionalProperties: false,
+                  },
+                },
+              },
+              required: ["artikel"],
+              additionalProperties: false,
+            },
+          },
+        },
+      });
+
+      let artikelListe: { artikel: string; menge: string }[] = [];
+      try {
+        const parsed = JSON.parse(llmResponse.choices[0].message.content as string);
+        if (Array.isArray(parsed.artikel)) artikelListe = parsed.artikel;
+      } catch {
+        // Fallback: gesamten Text als einen Artikel
+        artikelListe = [{ artikel: sprachbefehl, menge: "" }];
+      }
+
+      if (artikelListe.length === 0) {
+        artikelListe = [{ artikel: sprachbefehl, menge: "" }];
+      }
+
+      // 3. Alle Artikel in die Datenbank einfügen
+      const eingefuegt: { id: number; artikel: string; menge: string }[] = [];
+      for (const a of artikelListe) {
+        if (!a.artikel?.trim()) continue;
+        const [result] = await db.insert(einkaufsliste).values({
+          userId: ctx.user.id,
+          artikel: a.artikel.trim(),
+          menge: a.menge?.trim() || null,
+          gekauft: false,
+        });
+        eingefuegt.push({ id: (result as any).insertId, artikel: a.artikel.trim(), menge: a.menge?.trim() || "" });
+      }
+
+      return { ok: true, artikel: eingefuegt, originalText: sprachbefehl };
+    }),
+
   // ─── WEB PUSH ──────────────────────────────────────────────────────────────
 
   // VAPID Public Key für Frontend (public, kein Auth nötig)

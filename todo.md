@@ -1078,3 +1078,10 @@
 
 ## Testimonials
 - [x] Barbara Mohr-Modes (USA/Deutschland) – Podcast-Feedback in "Stimmen aus dem Feld" eingefügt
+
+## Bugfix: Spracheingabe Einkaufsliste
+- [x] Spracheingabe im Einkaufsliste-Tab: dedizierter Mikrofon-Button + einkaufsartikelPerSprache-Procedure (LLM extrahiert Artikel + Mengen, mehrere Artikel gleichzeitig möglich)
+
+## Build-Fix
+- [x] Workbox maximumFileSizeToCacheInBytes erhöht (5 MiB), globPatterns auf Nicht-JS-Assets beschränkt
+- [x] Spracheingabe Einkaufsliste Bug – LLM-Prompt korrigieren

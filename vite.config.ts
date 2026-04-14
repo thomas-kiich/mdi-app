@@ -156,6 +156,9 @@ const pwaPlugin = VitePWA({
   injectRegister: null,   // Wir registrieren manuell in main.tsx
   strategies: "generateSW",
   workbox: {
+    // Nur kleine Dateien precachen – große JS-Bundles werden via runtimeCaching geladen
+    globPatterns: ['**/*.{html,css,woff,woff2,ttf,eot,svg,png,jpg,jpeg,webp,ico,json}'],
+    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB – für KaTeX-Fonts und große Assets
     // Cache-First für statische Assets (JS, CSS, Fonts, Bilder)
     runtimeCaching: [
       {
