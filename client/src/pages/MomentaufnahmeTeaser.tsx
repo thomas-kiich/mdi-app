@@ -3,13 +3,22 @@ import { getLoginUrl } from "@/const";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, LogIn, ChevronDown, ChevronUp } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 
 export default function MomentaufnahmeTeaser() {
   const { isAuthenticated, loading } = useAuth();
   const [teaserOpen, setTeaserOpen] = useState(false);
+  const [, navigate] = useLocation();
 
-  if (loading) {
+  // Eingeloggte Nutzer werden automatisch zur vollständigen App weitergeleitet
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      navigate("/momentaufnahme/app");
+    }
+  }, [loading, isAuthenticated, navigate]);
+
+  if (loading || isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-violet-400/30 border-t-violet-400 rounded-full animate-spin" />
