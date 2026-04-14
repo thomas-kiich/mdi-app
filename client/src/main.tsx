@@ -59,37 +59,14 @@ createRoot(document.getElementById("root")!).render(
   </trpc.Provider>
 );
 
+// Alte Service-Worker deregistrieren (verhindert Reload-Schleifen)
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js').then(registration => {
-      console.log('SW registered: ', registration);
-
-      // Check for updates periodically
-      setInterval(() => {
-        registration.update();
-      }, 1000 * 60 * 60); // Every hour
-
-      registration.addEventListener('updatefound', () => {
-        const newWorker = registration.installing;
-        if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
-            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              console.log('New version available, reloading...');
-              window.location.reload();
-            }
-          });
-        }
-      });
-    }).catch(registrationError => {
-      console.log('SW registration failed: ', registrationError);
-    });
-
-    let refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (!refreshing) {
-        refreshing = true;
-        window.location.reload();
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (const reg of registrations) {
+      // Nur den alten /service-worker.js entfernen, nicht /wecker-sw.js
+      if (reg.active?.scriptURL?.includes('/service-worker.js')) {
+        reg.unregister();
       }
-    });
+    }
   });
 }
