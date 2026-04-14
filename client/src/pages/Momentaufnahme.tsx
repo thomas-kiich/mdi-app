@@ -998,15 +998,15 @@ export default function Momentaufnahme() {
     )}
     <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
       {/* Header */}
-      <header className="px-5 pt-6 pb-4 flex items-center justify-between">
+      <header className="px-3 pt-5 pb-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-3">
           <Link href="/">
-            <button className="p-1.5 rounded-full hover:bg-white/10 transition-colors text-white/40 hover:text-white/70">
-              <ArrowLeft className="w-4 h-4" />
+            <button className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/50 hover:text-white/80 flex-shrink-0">
+              <ArrowLeft className="w-5 h-5" />
             </button>
           </Link>
-          <div>
-            <h1 className="text-lg font-bold tracking-wide">MOMENTAUFNAHME</h1>
+          <div className="min-w-0">
+            <h1 className="text-base font-bold tracking-widest text-white">MA</h1>
             <p className="text-xs text-white/40">
               {anzahlHeute === 0
                 ? "Noch keine Aufnahmen heute"
@@ -1014,48 +1014,48 @@ export default function Momentaufnahme() {
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           {/* App installieren */}
           <button
             onClick={() => setShowAppInstallGuide(true)}
-            className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
           >
-            <Smartphone className="w-4 h-4" />
+            <Smartphone className="w-5 h-5" />
             <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">App installieren</span>
           </button>
           {/* Abo-Link */}
           <Link href="/abo">
             <button
-              className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             >
-              <CreditCard className="w-4 h-4" />
+              <CreditCard className="w-5 h-5" />
               <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Abo & Ebenen</span>
             </button>
           </Link>
           {/* Einschlaf-Bibliothek-Link */}
           <Link href="/einschlafen">
             <button
-              className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             >
-              <span className="text-sm leading-none">🌙</span>
+              <span className="text-base leading-none">🌙</span>
               <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Einschlaf-Bibliothek</span>
             </button>
           </Link>
           {/* Archiv-Link */}
           <Link href="/momentaufnahme/archiv">
             <button
-              className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             >
-              <Archive className="w-4 h-4" />
+              <Archive className="w-5 h-5" />
               <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Alle Aufnahmen</span>
             </button>
           </Link>
           {/* Obsidian-Verbinden-Link */}
           <Link href="/momentaufnahme/obsidian">
             <button
-              className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
             >
-              <Plug className="w-4 h-4" />
+              <Plug className="w-5 h-5" />
               <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Obsidian Export</span>
             </button>
           </Link>
@@ -1065,27 +1065,27 @@ export default function Momentaufnahme() {
               <button
                 onClick={startRecording}
                 disabled={isRecording || isProcessing}
-                className="group relative p-2 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors text-white"
+                className="group relative p-2.5 rounded-full bg-violet-600 hover:bg-violet-500 transition-colors text-white"
               >
-                <Mic className="w-4 h-4" />
+                <Mic className="w-5 h-5" />
                 <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Neue Aufnahme</span>
               </button>
               <button
                 onClick={handleExport}
-                className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
               >
-                <Download className="w-4 h-4" />
+                <Download className="w-5 h-5" />
                 <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Als Datei exportieren</span>
               </button>
               <button
                 onClick={handleTagesSummary}
                 disabled={isSummaryLoading}
-                className="group relative p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
               >
                 {isSummaryLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  <Headphones className="w-4 h-4" />
+                  <Headphones className="w-5 h-5" />
                 )}
                 <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Tages-Summary</span>
               </button>
