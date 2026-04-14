@@ -1024,3 +1024,8 @@
 
 ## Einkaufsliste Teilen
 - [x] Teilen-Button im Einkaufsliste-Tab (navigator.share mit Fallback auf Zwischenablage)
+
+## Datenschutzerklärung
+- [x] Mitbewerber-Datenschutzerklärungen recherchieren (Otter.ai, Notion AI, Reflect, Mem.ai, Superhuman)
+- [x] Relevante Klauseln filtern und DSGVO-konforme Datenschutzerklärung für kiich.de verfassen
+- [x] Datenschutzerklärung als eigene Seite in die App einbauen (/datenschutz)
