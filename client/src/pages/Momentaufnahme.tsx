@@ -28,6 +28,7 @@ import {
   Eye,
   Volume2,
   X,
+  Share2,
 } from "lucide-react";
 import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { EinladungsLink } from "@/components/EinladungsLink";
@@ -1783,6 +1784,33 @@ export default function Momentaufnahme() {
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                     <span>Erledigte Artikel löschen</span>
+                  </button>
+                )}
+                {/* Teilen */}
+                {(einkaufslisteData ?? []).length > 0 && (
+                  <button
+                    onClick={async () => {
+                      const offene = (einkaufslisteData ?? []).filter(a => !a.gekauft);
+                      const alle = (einkaufslisteData ?? []);
+                      const zeilen = alle.map(a =>
+                        `${a.gekauft ? "✓" : "○"} ${a.menge ? a.menge + " " : ""}${a.artikel}`
+                      ).join("\n");
+                      const text = `🛒 Einkaufsliste (${offene.length} offen)\n\n${zeilen}`;
+                      if (navigator.share) {
+                        try {
+                          await navigator.share({ title: "Einkaufsliste", text });
+                        } catch {
+                          // Nutzer hat Teilen abgebrochen – kein Fehler
+                        }
+                      } else {
+                        await navigator.clipboard.writeText(text);
+                        toast.success("Einkaufsliste in Zwischenablage kopiert");
+                      }
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-medium bg-white/5 hover:bg-teal-500/10 border border-white/10 hover:border-teal-500/20 text-white/40 hover:text-teal-300 transition-all"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
+                    <span>Einkaufsliste teilen</span>
                   </button>
                 )}
               </div>

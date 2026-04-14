@@ -1021,3 +1021,6 @@
 - [x] MA-Vorlesen-Button für Einkaufsliste
 - [x] Backend-Procedures: einkaufslisteLaden, einkaufsartikelHinzufuegen, einkaufsartikelToggle, einkaufsartikelLoeschen, einkaufslisteGekauftLoeschen (bereits vorhanden)
 - [x] Datenbankschema: einkaufsliste-Tabelle bereits vorhanden, keine Migration nötig
+
+## Einkaufsliste Teilen
+- [x] Teilen-Button im Einkaufsliste-Tab (navigator.share mit Fallback auf Zwischenablage)
