@@ -1085,3 +1085,10 @@
 ## Build-Fix
 - [x] Workbox maximumFileSizeToCacheInBytes erhöht (5 MiB), globPatterns auf Nicht-JS-Assets beschränkt
 - [x] Spracheingabe Einkaufsliste Bug – LLM-Prompt korrigieren
+
+## Executive Summary – Referenzen
+- [x] Echobell-Website recherchieren
+- [x] Referenzen-Abschnitt mit ALADIN, Echobell und AUMEGA-CD einbauen (Thomas Cavar, TCenergydesign)
+
+## Namenskorrektur
+- [x] "Thomas Cavar" → "Thomas Chochola" in Executive Summary (MD + PDF) korrigiert (Impressum war bereits korrekt)
