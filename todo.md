@@ -1092,3 +1092,8 @@
 
 ## Namenskorrektur
 - [x] "Thomas Cavar" → "Thomas Chochola" in Executive Summary (MD + PDF) korrigiert (Impressum war bereits korrekt)
+
+## Startseite – Gründer & Partner-Download
+- [x] Executive Summary als PDF-Download im Footer (Für Partner & Investoren)
+- [x] "Über den Gründer"-Block auf Startseite (ALADIN, Echobell, AUMEGA)
+- [x] Dieter Broers Testimonial-Platzhalter in "Stimmen aus dem Feld" (amber-Farbe, "Anfrage ausstehend"-Badge)
