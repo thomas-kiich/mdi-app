@@ -370,6 +370,34 @@ export default function Momentaufnahme() {
     });
   }, []);
 
+  // ─── MORGEN-BRIEFING ────────────────────────────────────────────────────────
+  // briefingZeit: "" = deaktiviert, sonst "HH:MM"
+  const [briefingZeit, setBriefingZeit] = useState<string>(() =>
+    localStorage.getItem("kiich_briefing_zeit") ?? ""
+  );
+  const [showBriefingSettings, setShowBriefingSettings] = useState(false);
+  const briefingZeitRef = useRef(briefingZeit);
+  useEffect(() => { briefingZeitRef.current = briefingZeit; }, [briefingZeit]);
+  // Prüft jede Minute ob Briefing-Zeit erreicht
+  const briefingAusgeloestRef = useRef<string>(""); // verhindert Doppel-Auslösung
+  useEffect(() => {
+    if (!briefingZeit) return;
+    const interval = setInterval(() => {
+      const jetzt = new Date();
+      const hhmm = `${String(jetzt.getHours()).padStart(2, "0")}:${String(jetzt.getMinutes()).padStart(2, "0")}`;
+      if (hhmm === briefingZeitRef.current && briefingAusgeloestRef.current !== hhmm) {
+        briefingAusgeloestRef.current = hhmm;
+        // Briefing auslösen – wechselt zu Erledigungen-Tab und liest vor
+        setSummaryModus("erledigungen");
+        // Kurze Verzögerung damit Tab-Wechsel abgeschlossen ist
+        setTimeout(() => {
+          handleMASpeakBriefingRef.current?.();
+        }, 800);
+      }
+    }, 15000); // alle 15 Sekunden prüfen
+    return () => clearInterval(interval);
+  }, [briefingZeit]);
+
   // Vorname aus Profil laden und ggf. Dialog zeigen
   // Nur einmal fragen — wenn User "Später" geklickt hat, nicht mehr nerven
   useEffect(() => {
@@ -830,6 +858,46 @@ export default function Momentaufnahme() {
       speak(aktiverText);
     }
   }, [isMASpeaking, summaryModus, summaryText, gefilterterStrategieText, erledigungenData, visionenData, erinnerungenData, vorname, elevenLabsTTSMutation, speak]);
+
+  // Briefing-Ref: wird nach handleMASpeakSummary gesetzt damit Timer darauf zugreifen kann
+  const handleMASpeakBriefingRef = useRef<(() => void) | null>(null);
+  // Briefing-Funktion: liest alle Erledigungen charmant vor
+  const handleMASpeakBriefing = useCallback(async () => {
+    const stunde = new Date().getHours();
+    const tagesgruss = stunde >= 5 && stunde < 11 ? "Guten Morgen" : stunde >= 11 && stunde < 18 ? "Hallo" : "Guten Abend";
+    const namenszusatz = vorname ? `, ${vorname}` : "";
+    const aufgaben = (erledigungenData ?? []);
+    if (aufgaben.length === 0) return;
+    const liste = aufgaben.map((e, i) => `${i + 1}. ${e.text}`).join("\n");
+    const anzahl = aufgaben.length;
+    const einleitung = anzahl === 1
+      ? `${tagesgruss}${namenszusatz}. Du hast heute eine offene Erledigung:\n\n`
+      : `${tagesgruss}${namenszusatz}. Du hast heute ${anzahl} offene Erledigungen:\n\n`;
+    const abschluss = "\n\nViel Erfolg heute!";
+    const text = einleitung + liste + abschluss;
+    setIsMASpeaking(true);
+    try {
+      const ttsResult = await elevenLabsTTSMutation.mutateAsync({ text });
+      if (ttsResult.audioBase64 && !ttsResult.fallback) {
+        const audio = new Audio(`data:${ttsResult.mimeType};base64,${ttsResult.audioBase64}`);
+        audio.playbackRate = 0.85;
+        audio.preservesPitch = true;
+        audio.volume = 1.0;
+        maAudioRef.current = audio;
+        audio.onended = () => setIsMASpeaking(false);
+        audio.onerror = () => setIsMASpeaking(false);
+        audio.play().catch(() => { setIsMASpeaking(false); speak(text); });
+      } else {
+        setIsMASpeaking(false);
+        speak(text);
+      }
+    } catch {
+      setIsMASpeaking(false);
+      speak(text);
+    }
+  }, [erledigungenData, vorname, elevenLabsTTSMutation, speak]);
+  // Ref aktuell halten
+  useEffect(() => { handleMASpeakBriefingRef.current = handleMASpeakBriefing; }, [handleMASpeakBriefing]);
 
   // Aufnahme löschen
   const handleLoeschen = useCallback(async (id: number) => {
@@ -1318,16 +1386,77 @@ export default function Momentaufnahme() {
                   </div>
                 ))
               )}
-              {/* MA vorlesen */}
-              {(erledigungenData ?? []).length > 0 && (
-                <button onClick={handleMASpeakSummary} disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
-                  className={cn("w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold mt-2 transition-all",
-                    isMASpeaking ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300" : "bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400",
-                    elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait")}>
-                  {isMASpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : <Volume2 className="w-3.5 h-3.5" />}
-                  <span>{isMASpeaking ? "MA stoppen" : "MA liest Erledigungen vor"}</span>
+              {/* MA Briefing-Bereich */}
+              <div className="mt-3 space-y-2">
+                {/* Briefing auf Knopfdruck */}
+                <button
+                  onClick={handleMASpeakBriefing}
+                  disabled={(erledigungenData ?? []).length === 0 || (elevenLabsTTSMutation.isPending && !isMASpeaking)}
+                  className={cn(
+                    "w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-semibold transition-all",
+                    isMASpeaking
+                      ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300"
+                      : "bg-emerald-600/80 hover:bg-emerald-500 text-white",
+                    (erledigungenData ?? []).length === 0 && "opacity-40 cursor-not-allowed"
+                  )}
+                >
+                  {isMASpeaking ? <Square className="w-4 h-4 fill-current" /> : <Volume2 className="w-4 h-4" />}
+                  <span>{isMASpeaking ? "MA stoppen" : "MA liest Briefing vor"}</span>
                 </button>
-              )}
+
+                {/* Zeiteinstellung */}
+                <button
+                  onClick={() => setShowBriefingSettings(s => !s)}
+                  className={cn(
+                    "w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-semibold transition-all border",
+                    briefingZeit
+                      ? "bg-emerald-500/15 border-emerald-500/30 text-emerald-300"
+                      : "bg-white/5 border-white/10 text-white/40"
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <span className="text-base">⏰</span>
+                    {briefingZeit
+                      ? `Automatisches Briefing um ${briefingZeit} Uhr`
+                      : "Automatisches Briefing einrichten"}
+                  </span>
+                  <span className="text-white/30">{showBriefingSettings ? "▲" : "▼"}</span>
+                </button>
+
+                {showBriefingSettings && (
+                  <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
+                    <p className="text-xs text-white/40">MA liest deine Erledigungen automatisch vor – jeden Tag zur gewählten Uhrzeit.</p>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="time"
+                        value={briefingZeit}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setBriefingZeit(val);
+                          localStorage.setItem("kiich_briefing_zeit", val);
+                        }}
+                        className="flex-1 bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500/50"
+                      />
+                      {briefingZeit && (
+                        <button
+                          onClick={() => {
+                            setBriefingZeit("");
+                            localStorage.removeItem("kiich_briefing_zeit");
+                          }}
+                          className="px-3 py-2 rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 text-red-400 text-xs font-semibold transition-colors"
+                        >
+                          Deaktivieren
+                        </button>
+                      )}
+                    </div>
+                    {briefingZeit && (
+                      <p className="text-xs text-emerald-400/70">
+                        ✓ Aktiv – MA meldet sich täglich um {briefingZeit} Uhr
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           )}
 
