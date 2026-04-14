@@ -352,9 +352,14 @@ export default function Momentaufnahme() {
     }
   }, [sprachErinnerungAktiv, erinnerungPerSpracheMutation, refetchErinnerungen]);
   // Fällige Erinnerungen (Polling alle 30 Sek)
-  const [jetztMs] = useState(() => Date.now());
+  // jetztMs wird alle 30 Sekunden aktualisiert – damit der Query immer mit der echten Zeit läuft
+  const [jetztMs, setJetztMs] = useState(() => Date.now());
+  useEffect(() => {
+    const interval = setInterval(() => setJetztMs(Date.now()), 30000);
+    return () => clearInterval(interval);
+  }, []);
   const { data: faelligeErinnerungen, refetch: refetchFaellige } = trpc.planer.faelligeErinnerungen.useQuery(
-    { jetztMs: Date.now() },
+    { jetztMs },
     { enabled: isAuthenticated, refetchInterval: 30000 }
   );
   const [erinnerungsPopup, setErinnerungsPopup] = useState<{ id: number; text: string } | null>(null);
