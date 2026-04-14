@@ -1005,3 +1005,6 @@
 - [ ] Preisseite: Beta-Code-Bereich prominent hervorheben
 - [ ] Beta-Codes: 20 Codes in der Datenbank generieren
 - [ ] Checkpoint vor Launch speichern
+
+## Bugfixes
+- [x] Zurück-Button in MA-App springt auf kiich.de-Startseite – soll innerhalb der App navigieren
