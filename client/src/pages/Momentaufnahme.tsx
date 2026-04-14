@@ -649,8 +649,13 @@ export default function Momentaufnahme() {
       setIsMASpeaking(false);
       return;
     }
-    const aktiverText = summaryModus === "strategie" ? gefilterterStrategieText : summaryText;
-    if (!aktiverText) return;
+    const basisText = summaryModus === "strategie" ? gefilterterStrategieText : summaryText;
+    if (!basisText) return;
+    // Natürliche Einleitung je nach Modus
+    const einleitung = summaryModus === "strategie"
+      ? "Hier sind deine offenen Aufgaben für heute:\n\n"
+      : "";
+    const aktiverText = einleitung + basisText;
     setIsMASpeaking(true);
     try {
       const ttsResult = await elevenLabsTTSMutation.mutateAsync({ text: aktiverText });
@@ -1004,7 +1009,34 @@ export default function Momentaufnahme() {
           )}
           {/* Summary-Text je nach Modus */}
           {summaryModus === "reflexion" ? (
-            <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">{summaryText}</p>
+            <div>
+              <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">{summaryText}</p>
+              {/* MA Vorlesen – Reflexion */}
+              {summaryText && (
+                <div className="mt-3">
+                  <button
+                    onClick={handleMASpeakSummary}
+                    disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
+                    className={cn(
+                      "w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold transition-all",
+                      isMASpeaking
+                        ? "bg-violet-500/20 border border-violet-500/40 text-violet-300"
+                        : "bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/40 text-violet-400 hover:text-violet-300",
+                      elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait"
+                    )}
+                  >
+                    {elevenLabsTTSMutation.isPending && !isMASpeaking ? (
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    ) : isMASpeaking ? (
+                      <Square className="w-3.5 h-3.5 fill-current" />
+                    ) : (
+                      <Play className="w-3.5 h-3.5 fill-current" />
+                    )}
+                    <span>{isMASpeaking ? "MA stoppen" : "MA liest Reflexion vor"}</span>
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             !isStrategischLaden && (
               <div>
