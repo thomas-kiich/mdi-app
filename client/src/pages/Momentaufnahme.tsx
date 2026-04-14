@@ -298,6 +298,7 @@ export default function Momentaufnahme() {
   const visionHinzufuegenMutation = trpc.planer.visionHinzufuegen.useMutation();
   const visionLoeschenMutation = trpc.planer.visionLoeschen.useMutation();
   const erinnerungHinzufuegenMutation = trpc.planer.erinnerungHinzufuegen.useMutation();
+  const erinnerungDirektHinzufuegenMutation = trpc.planer.erinnerungDirektHinzufuegen.useMutation();
   const erinnerungBestaetigenMutation = trpc.planer.erinnerungBestaetigen.useMutation();
   const erinnerungAusgeloestMutation = trpc.planer.erinnerungAusgeloest.useMutation();
   const [planerNeuerText, setPlanerNeuerText] = useState("");
@@ -1933,6 +1934,24 @@ export default function Momentaufnahme() {
                 autoTtsErinnerungen ? "left-4.5" : "left-0.5"
               )} />
             </span>
+          </button>
+          {/* Snooze-Button */}
+          <button
+            onClick={async () => {
+              // Aktuelle Erinnerung als ausgelöst markieren
+              await erinnerungBestaetigenMutation.mutateAsync({ id: erinnerungsPopup.id });
+              // Neue Erinnerung in 10 Minuten setzen
+              await erinnerungDirektHinzufuegenMutation.mutateAsync({
+                text: erinnerungsPopup.text,
+                faelligkeitMs: Date.now() + 10 * 60 * 1000,
+              });
+              toast.success("Erinnerung in 10 Minuten wiederholt");
+              await refetchErinnerungen();
+              setErinnerungsPopup(null);
+            }}
+            className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/12 border border-white/10 text-white/60 hover:text-white/80 font-semibold text-sm transition-colors mb-2"
+          >
+            ⏰ In 10 Minuten nochmal erinnern
           </button>
           <button
             onClick={async () => {
