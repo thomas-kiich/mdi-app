@@ -2,10 +2,18 @@ import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Mic, BookOpen, Activity, Users, BarChart3, ArrowLeft } from "lucide-react";
+import { Loader2, Mic, BookOpen, Activity, Users, BarChart3, ArrowLeft, Euro } from "lucide-react";
 import { Link } from "wouter";
 
-const LIMIT = 1_000_000;
+// Voxtral TTS: $0.016 pro 1.000 Zeichen
+const VOXTRAL_PREIS_PRO_1000 = 0.016; // USD
+const USD_TO_EUR = 0.92; // Näherungswert
+
+function usdToEurStr(usd: number): string {
+  const eur = usd * USD_TO_EUR;
+  if (eur < 0.01) return "< 0,01 €";
+  return eur.toFixed(2).replace(".", ",") + " €";
+}
 
 function formatZeichen(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)} Mio.`;
@@ -28,9 +36,7 @@ function ProgressBar({ prozent, color = "bg-emerald-500" }: { prozent: number; c
 
 function TagesBalken({ verlauf }: { verlauf: { datum: string; zeichen: number; aufrufe: number }[] }) {
   if (!verlauf.length) return <p className="text-white/40 text-sm">Noch keine Daten</p>;
-
   const maxZeichen = Math.max(...verlauf.map(d => d.zeichen), 1);
-
   return (
     <div className="flex items-end gap-1 h-32 w-full">
       {verlauf.map((tag) => {
@@ -38,16 +44,16 @@ function TagesBalken({ verlauf }: { verlauf: { datum: string; zeichen: number; a
         const datum = new Date(tag.datum + "T12:00:00");
         const label = datum.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
         const isToday = tag.datum === new Date().toISOString().slice(0, 10);
+        const kostenEur = usdToEurStr((tag.zeichen / 1000) * VOXTRAL_PREIS_PRO_1000);
         return (
           <div key={tag.datum} className="flex flex-col items-center flex-1 group relative">
             <div
               className={`w-full rounded-t transition-all ${isToday ? "bg-emerald-400" : "bg-emerald-700 group-hover:bg-emerald-500"}`}
               style={{ height: `${hoehe}%` }}
             />
-            {/* Tooltip */}
             <div className="absolute bottom-full mb-1 hidden group-hover:flex flex-col items-center z-10 pointer-events-none">
               <div className="bg-black/90 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
-                {label}: {formatZeichen(tag.zeichen)} Zeichen ({tag.aufrufe} Aufrufe)
+                {label}: {formatZeichen(tag.zeichen)} Zeichen ({tag.aufrufe} Aufrufe) · {kostenEur}
               </div>
             </div>
           </div>
@@ -60,7 +66,7 @@ function TagesBalken({ verlauf }: { verlauf: { datum: string; zeichen: number; a
 export default function AdminTts() {
   const { user, isAuthenticated } = useAuth();
   const { data, isLoading, error } = trpc.adminTts.monatsStats.useQuery(undefined, {
-    refetchInterval: 60_000, // Jede Minute aktualisieren
+    refetchInterval: 60_000,
   });
 
   if (!isAuthenticated || user?.role !== "admin") {
@@ -74,7 +80,6 @@ export default function AdminTts() {
   return (
     <div className="min-h-screen bg-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-6">
-
         {/* Header */}
         <div className="flex items-center gap-4">
           <Link href="/admin">
@@ -85,7 +90,9 @@ export default function AdminTts() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight">MA-Stimme · Nutzungsmonitor</h1>
             <p className="text-white/50 text-sm mt-1">
-              Google Cloud TTS · Stimme: <span className="text-emerald-400 font-mono text-xs">de-DE-Chirp3-HD-Zephyr</span>
+              Mistral Voxtral TTS ·{" "}
+              <span className="text-emerald-400 font-mono text-xs">voxtral-mini-tts-latest</span>{" "}
+              · <span className="text-amber-400 font-mono text-xs">$0,016 / 1.000 Zeichen</span>
             </p>
           </div>
         </div>
@@ -96,13 +103,11 @@ export default function AdminTts() {
             <span>Lade Statistiken…</span>
           </div>
         )}
-
         {error && (
           <div className="bg-red-900/30 border border-red-700 rounded-lg p-4 text-red-300">
             Fehler beim Laden: {error.message}
           </div>
         )}
-
         {data && (
           <>
             {/* Monats-Hauptkarte */}
@@ -122,11 +127,13 @@ export default function AdminTts() {
                         : "border-emerald-500 text-emerald-400"
                     }`}
                   >
-                    {data.prozentVerbraucht}% verbraucht
+                    {data.prozentVerbraucht}% von 1 Mio. Zeichen
                   </Badge>
                 </div>
                 <CardDescription className="text-white/50">
-                  Gratis-Kontingent: 1.000.000 Zeichen/Monat (Google Chirp3 HD)
+                  Kosten diesen Monat:{" "}
+                  <span className="text-amber-300 font-semibold">{usdToEurStr(data.monatKostenUsd)}</span>
+                  {" "}(≈ ${data.monatKostenUsd.toFixed(4)})
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -134,15 +141,15 @@ export default function AdminTts() {
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <p className="text-2xl font-bold text-emerald-400">{formatZeichen(data.gesamtZeichen)}</p>
-                    <p className="text-white/50 text-xs mt-1">verbraucht</p>
+                    <p className="text-white/50 text-xs mt-1">Zeichen verbraucht</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-white">{formatZeichen(data.verbleibendZeichen)}</p>
-                    <p className="text-white/50 text-xs mt-1">verbleibend</p>
+                    <p className="text-2xl font-bold text-amber-300">{usdToEurStr(data.monatKostenUsd)}</p>
+                    <p className="text-white/50 text-xs mt-1">Kosten diesen Monat</p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-white">{formatZeichen(LIMIT)}</p>
-                    <p className="text-white/50 text-xs mt-1">Monatslimit</p>
+                    <p className="text-2xl font-bold text-white">{data.prozentVerbraucht}%</p>
+                    <p className="text-white/50 text-xs mt-1">von 1 Mio. Zeichen</p>
                   </div>
                 </div>
               </CardContent>
@@ -156,25 +163,28 @@ export default function AdminTts() {
                     <div className="p-2 rounded-lg bg-white/10">
                       {k.kontext === "einschlaf_bibliothek"
                         ? <BookOpen className="w-5 h-5 text-indigo-400" />
-                        : k.kontext === "momentaufnahme"
+                        : k.kontext === "momentaufnahme" || k.kontext === "momentaufnahme-vorlesen"
                         ? <Mic className="w-5 h-5 text-amber-400" />
                         : <Activity className="w-5 h-5 text-white/50" />
                       }
                     </div>
-                    <div>
+                    <div className="flex-1">
                       <p className="text-white font-medium text-sm">
                         {k.kontext === "einschlaf_bibliothek" ? "Einschlaf-Bibliothek"
-                          : k.kontext === "momentaufnahme" ? "Momentaufnahme"
+                          : k.kontext === "momentaufnahme" || k.kontext === "momentaufnahme-vorlesen" ? "Momentaufnahme / MA"
                           : k.kontext}
                       </p>
                       <p className="text-white/50 text-xs">
                         {formatZeichen(k.zeichen)} Zeichen · {k.aufrufe} Aufrufe
                       </p>
                     </div>
+                    <div className="text-right">
+                      <p className="text-amber-300 text-sm font-semibold">{usdToEurStr(k.kostenUsd)}</p>
+                      <p className="text-white/30 text-xs">Kosten</p>
+                    </div>
                   </CardContent>
                 </Card>
               ))}
-
               {data.nachKontext.length === 0 && (
                 <Card className="bg-white/5 border-white/10 col-span-2">
                   <CardContent className="pt-5 text-white/40 text-sm text-center">
@@ -195,7 +205,7 @@ export default function AdminTts() {
               <CardContent>
                 <TagesBalken verlauf={data.tagesVerlauf} />
                 <p className="text-white/30 text-xs mt-2 text-center">
-                  Hover über einen Balken für Details · Heute in Grün
+                  Hover über einen Balken für Details (inkl. Kosten) · Heute in Grün
                 </p>
               </CardContent>
             </Card>
@@ -206,6 +216,8 @@ export default function AdminTts() {
                 <CardContent className="pt-5 text-center">
                   <p className="text-2xl font-bold text-white">{formatZeichen(data.alleZeit.zeichen)}</p>
                   <p className="text-white/50 text-xs mt-1">Zeichen gesamt (alle Zeit)</p>
+                  <p className="text-amber-300 text-sm font-semibold mt-2">{usdToEurStr(data.alleZeit.kostenUsd)}</p>
+                  <p className="text-white/30 text-xs">Gesamtkosten seit Start</p>
                 </CardContent>
               </Card>
               <Card className="bg-white/5 border-white/10">
@@ -225,13 +237,20 @@ export default function AdminTts() {
               </Card>
             </div>
 
-            {/* Hinweis bei hohem Verbrauch */}
-            {data.prozentVerbraucht >= 80 && (
-              <div className="bg-amber-900/30 border border-amber-700 rounded-lg p-4 text-amber-300 text-sm">
-                <strong>Hinweis:</strong> Du hast {data.prozentVerbraucht}% des monatlichen Gratis-Kontingents verbraucht.
-                Ab 1 Million Zeichen kostet Google Chirp3 HD ca. 30 $/Mio. Zeichen.
-              </div>
-            )}
+            {/* Kosten-Hinweis */}
+            <div className="bg-white/5 border border-white/10 rounded-lg p-4 text-white/50 text-xs space-y-1">
+              <p>
+                <strong className="text-white/70">Kostenberechnung:</strong>{" "}
+                Mistral Voxtral TTS kostet $0,016 pro 1.000 Zeichen (≈ {(VOXTRAL_PREIS_PRO_1000 * USD_TO_EUR).toFixed(4).replace(".", ",")} € pro 1.000 Zeichen).
+              </p>
+              <p>
+                Wechselkurs USD/EUR: {USD_TO_EUR} (Näherungswert – aktuellen Kurs und Rechnungen auf{" "}
+                <a href="https://console.mistral.ai" target="_blank" rel="noopener" className="text-amber-400 hover:underline">
+                  console.mistral.ai
+                </a>{" "}
+                prüfen).
+              </p>
+            </div>
           </>
         )}
       </div>
