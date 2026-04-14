@@ -1151,6 +1151,26 @@ export default function Momentaufnahme() {
               <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Obsidian Export</span>
             </button>
           </Link>
+          {/* Push-Status-Icon */}
+          <div className="group relative p-2.5 rounded-full bg-white/5 cursor-default">
+            <div className="relative">
+              <Bell className="w-5 h-5 text-white/30" />
+              {/* Status-Punkt: grün = aktiv, grau = nicht aktiv/unbekannt */}
+              <span
+                className={cn(
+                  "absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-black/50",
+                  pushErlaubt === true
+                    ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"
+                    : pushErlaubt === false
+                    ? "bg-red-400"
+                    : "bg-white/20"
+                )}
+              />
+            </div>
+            <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">
+              {pushErlaubt === true ? "Push aktiv ✅" : pushErlaubt === false ? "Push blockiert" : "Push einrichten..."}
+            </span>
+          </div>
           {anzahlHeute > 0 && (
             <>
               {/* Neue Aufnahme – immer sichtbar wenn bereits Aufnahmen vorhanden */}
