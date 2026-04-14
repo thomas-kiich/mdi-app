@@ -1033,3 +1033,15 @@
 ## Datenschutz & Impressum – Optimierung (April 2026)
 - [x] Mistral als Auftragsverarbeiter in Datenschutzerklärung eintragen
 - [x] Impressum professionell optimieren (analog Mitbewerber-Recherche)
+
+## Rechtsdokumente – Erweiterung (April 2026)
+- [ ] Nutzungsbedingungen (AGB) als neue Seite /nutzungsbedingungen erstellen
+- [ ] Cookie-Hinweis-Komponente vorbereiten (deaktiviert, aktivierbar wenn Analytics kommt)
+- [ ] Versionshistorie in Datenschutzerklärung einbauen
+- [ ] Footer-Links um Nutzungsbedingungen erweitern
+
+## MA Rechts-Checkliste (monatlich wiederkehrend)
+- [x] Datenbankschema: rechts_aufgaben + rechts_pruefprotokoll Tabellen
+- [x] Backend: Procedures für Aufgaben laden, abhaken, MA-Analyse starten
+- [x] Frontend: /rechts-checkliste Seite mit MA-Integration
+- [x] Monatliche Push-Erinnerung einrichten (via Fälligkeitsdatum in DB)

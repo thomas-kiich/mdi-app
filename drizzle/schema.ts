@@ -485,3 +485,59 @@ export const einkaufsliste = mysqlTable("einkaufsliste", {
 
 export type Einkaufsliste = typeof einkaufsliste.$inferSelect;
 export type InsertEinkaufsliste = typeof einkaufsliste.$inferInsert;
+
+/**
+ * RECHTS_AUFGABEN – Wiederkehrende Rechtspflichten
+ * Monatliche Checkliste für Datenschutz, Impressum, KI-Rechtsänderungen.
+ * MA prüft und analysiert automatisch.
+ */
+export const rechtsAufgaben = mysqlTable("rechts_aufgaben", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Kategorie: datenschutz | impressum | ki_recht | nutzungsbedingungen | sonstiges */
+  kategorie: mysqlEnum("kategorie", ["datenschutz", "impressum", "ki_recht", "nutzungsbedingungen", "sonstiges"]).notNull(),
+  /** Titel der Aufgabe */
+  titel: varchar("titel", { length: 255 }).notNull(),
+  /** Detaillierte Beschreibung was zu prüfen ist */
+  beschreibung: text("beschreibung").notNull(),
+  /** Prüfintervall in Tagen (z.B. 30 = monatlich) */
+  intervallTage: int("intervallTage").default(30).notNull(),
+  /** Letzter Prüfzeitpunkt als UTC-Timestamp (ms) */
+  letztesPruefungMs: bigint("letztesPruefungMs", { mode: "number" }),
+  /** Nächste fällige Prüfung als UTC-Timestamp (ms) */
+  naechsteFaelligMs: bigint("naechsteFaelligMs", { mode: "number" }).notNull(),
+  /** Aktiv/inaktiv */
+  aktiv: boolean("aktiv").default(true).notNull(),
+  /** Priorität: hoch | mittel | niedrig */
+  prioritaet: mysqlEnum("prioritaet", ["hoch", "mittel", "niedrig"]).default("mittel").notNull(),
+  /** Externe Quellen/Links zum Prüfen (JSON-Array als Text) */
+  quellen: text("quellen"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type RechtsAufgabe = typeof rechtsAufgaben.$inferSelect;
+export type InsertRechtsAufgabe = typeof rechtsAufgaben.$inferInsert;
+
+/**
+ * RECHTS_PRUEFPROTOKOLL – Prüfhistorie
+ * Jede abgeschlossene Prüfung wird hier dokumentiert.
+ * MA-Analyse und Handlungsempfehlungen werden gespeichert.
+ */
+export const rechtsPruefprotokoll = mysqlTable("rechts_pruefprotokoll", {
+  id: int("id").autoincrement().primaryKey(),
+  aufgabeId: int("aufgabeId").notNull(),
+  /** Wer hat geprüft: user | ma_auto */
+  geprueftVon: mysqlEnum("geprueftVon", ["user", "ma_auto"]).default("user").notNull(),
+  /** Ergebnis: ok | anpassung_noetig | kritisch */
+  ergebnis: mysqlEnum("ergebnis", ["ok", "anpassung_noetig", "kritisch"]).notNull(),
+  /** Notizen des Nutzers oder MA-Analyse */
+  notizen: text("notizen"),
+  /** MA-generierte Zusammenfassung der gefundenen Änderungen */
+  maAnalyse: text("maAnalyse"),
+  /** Konkrete Handlungsempfehlungen von MA */
+  handlungsempfehlungen: text("handlungsempfehlungen"),
+  /** Prüfzeitpunkt als UTC-Timestamp (ms) */
+  geprueftAmMs: bigint("geprueftAmMs", { mode: "number" }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type RechtsPruefprotokoll = typeof rechtsPruefprotokoll.$inferSelect;
+export type InsertRechtsPruefprotokoll = typeof rechtsPruefprotokoll.$inferInsert;
