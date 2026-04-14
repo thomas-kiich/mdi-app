@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Send, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowLeft, Send, CheckCircle2, AlertCircle, ExternalLink } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 import { trpc } from "@/lib/trpc";
@@ -150,83 +150,222 @@ export function Impressum() {
 
         <div className="space-y-4">
           <h1 className="text-4xl font-light text-white tracking-tight">Impressum</h1>
-          <p className="text-zinc-500 text-sm uppercase tracking-widest">Angaben gemäß § 5 TMG (DE) · ECG (AT) · UWG (CH)</p>
+          <p className="text-zinc-500 text-sm uppercase tracking-widest">
+            Angaben gemäß § 5 DDG (DE) · § 5 ECG (AT) · Art. 3 UWG (CH) · Stand: April 2026
+          </p>
+          <p className="text-zinc-600 text-xs">
+            Hinweis: Das Telemediengesetz (TMG) wurde am 14. Mai 2024 durch das
+            Digitale-Dienste-Gesetz (DDG) ersetzt. Die Impressumspflicht ergibt sich
+            nunmehr aus § 5 DDG.
+          </p>
         </div>
 
-        <div className="space-y-8 text-lg font-light leading-relaxed">
+        <div className="space-y-10 text-base font-light leading-relaxed text-zinc-400">
 
-          <section>
-            <h2 className="text-white text-xl font-medium mb-4">Betreiber der Website</h2>
-            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-base space-y-1">
+          {/* 1. Anbieter */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">1. Anbieter (Diensteanbieter gem. § 5 DDG)</h2>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
+              <p className="text-white font-semibold text-base">Thomas Chochola</p>
+              <p className="text-zinc-400">MDI – Multidimensionales Identitätssystem</p>
+              <p className="text-zinc-400">KIICHwerke</p>
+              <p className="mt-2">Lindacher Weg 17</p>
+              <p>D-93128 Regenstauf</p>
+              <p>Deutschland</p>
+            </div>
+            <p className="text-sm text-zinc-500">
+              Dieses Impressum gilt auch für Nutzer aus <strong className="text-zinc-400">Österreich</strong> gemäß
+              § 5 Abs. 1 E-Commerce-Gesetz (ECG) und für Nutzer aus der <strong className="text-zinc-400">Schweiz</strong> gemäß
+              Art. 3 Abs. 1 lit. s UWG sowie dem Bundesgesetz gegen den unlauteren Wettbewerb.
+            </p>
+          </section>
+
+          {/* 2. Kontakt */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">2. Kontakt</h2>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-3">
+              <div className="flex items-center gap-3">
+                <span className="text-zinc-500 min-w-[80px]">Telefon</span>
+                <a href="tel:+4915123040661" className="text-zinc-300 hover:text-white transition-colors">
+                  +49 151 23040661
+                </a>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-zinc-500 min-w-[80px]">E-Mail</span>
+                <a href="mailto:LKRforschung@gmail.com" className="text-orange-400 hover:underline">
+                  LKRforschung@gmail.com
+                </a>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-zinc-500 min-w-[80px]">Website</span>
+                <a href="https://www.kiich.de" target="_blank" rel="noopener noreferrer" className="text-zinc-300 hover:text-white flex items-center gap-1 transition-colors">
+                  www.kiich.de <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </div>
+            <p className="text-sm text-zinc-500">
+              Gemäß § 5 Abs. 1 Nr. 2 DDG ist eine E-Mail-Adresse als schnelle elektronische
+              Kontaktmöglichkeit anzugeben. Anfragen werden in der Regel innerhalb von 5 Werktagen
+              beantwortet.
+            </p>
+          </section>
+
+          {/* 3. Tätigkeitsbeschreibung */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">3. Art des Dienstes</h2>
+            <p>
+              kiich.de / MA ist ein nicht-kommerzieller Forschungs- und Entwicklungsdienst im
+              Bereich KI-gestützter Selbstwahrnehmung und Frequenzanalyse. Der Dienst wird als
+              Einzelperson (Freiberufler / Privatperson) betrieben. Es liegt kein eingetragenes
+              Gewerbe vor. Eine Umsatzsteuer-Identifikationsnummer (USt-IdNr.) ist nicht vorhanden,
+              da der Dienst nicht umsatzsteuerpflichtig ist.
+            </p>
+            <p className="text-sm text-zinc-500">
+              Sollte sich der Betriebsstatus ändern (z. B. durch Gewerbeanmeldung), wird dieses
+              Impressum entsprechend aktualisiert.
+            </p>
+          </section>
+
+          {/* 4. Verantwortlich für den Inhalt */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">4. Verantwortlich für den Inhalt</h2>
+            <p className="text-sm text-zinc-500">gemäß § 18 Abs. 2 Medienstaatsvertrag (MStV):</p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
               <p className="text-white font-medium">Thomas Chochola</p>
               <p>Lindacher Weg 17</p>
               <p>D-93128 Regenstauf</p>
               <p>Deutschland</p>
-              <p className="text-zinc-500 text-xs mt-2">Dieses Impressum gilt auch für Nutzer aus Österreich (gemäß § 5 ECG) und der Schweiz (gemäß Art. 3 UWG).</p>
             </div>
           </section>
 
-          <section>
-            <h2 className="text-white text-xl font-medium mb-4">Kontakt</h2>
-            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-base space-y-2">
+          {/* 5. Plattform der EU-Kommission */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">5. Online-Streitbeilegung (OS-Plattform)</h2>
+            <p>
+              Die Europäische Kommission stellt eine Plattform zur Online-Streitbeilegung (OS) bereit.
+              Diese Plattform dient als Anlaufstelle zur außergerichtlichen Beilegung von Streitigkeiten
+              aus Online-Kaufverträgen und Online-Dienstleistungsverträgen.
+            </p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm">
+              <a
+                href="https://ec.europa.eu/consumers/odr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-orange-400 hover:underline flex items-center gap-2"
+              >
+                https://ec.europa.eu/consumers/odr
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+            <p className="text-sm text-zinc-500">
+              Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer
+              Verbraucherschlichtungsstelle teilzunehmen (§ 36 VSBG). Für Nutzer aus der EU besteht
+              jedoch die Möglichkeit, die obige Plattform zu nutzen.
+            </p>
+          </section>
+
+          {/* 6. Haftungsausschluss */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">6. Haftungsausschluss</h2>
+
+            <div className="space-y-4 text-sm text-zinc-400">
+              <div>
+                <p className="text-zinc-300 font-medium mb-1">Haftung für Inhalte</p>
+                <p>
+                  Als Diensteanbieter sind wir gemäß § 7 Abs. 1 DDG (DE) / § 16 ECG (AT) für eigene
+                  Inhalte auf diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis
+                  10 DDG (DE) / §§ 13 ff. ECG (AT) sind wir als Diensteanbieter jedoch nicht
+                  verpflichtet, übermittelte oder gespeicherte fremde Informationen zu überwachen oder
+                  nach Umständen zu forschen, die auf eine rechtswidrige Tätigkeit hinweisen.
+                  Verpflichtungen zur Entfernung oder Sperrung der Nutzung von Informationen nach den
+                  allgemeinen Gesetzen bleiben hiervon unberührt.
+                </p>
+              </div>
+
+              <div>
+                <p className="text-zinc-300 font-medium mb-1">Haftung für Links</p>
+                <p>
+                  Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir
+                  keinen Einfluss haben. Deshalb können wir für diese fremden Inhalte auch keine
+                  Gewähr übernehmen. Für die Inhalte der verlinkten Seiten ist stets der jeweilige
+                  Anbieter oder Betreiber der Seiten verantwortlich. Die verlinkten Seiten wurden zum
+                  Zeitpunkt der Verlinkung auf mögliche Rechtsverstöße überprüft. Rechtswidrige
+                  Inhalte waren zum Zeitpunkt der Verlinkung nicht erkennbar. Eine permanente
+                  inhaltliche Kontrolle der verlinkten Seiten ist jedoch ohne konkrete Anhaltspunkte
+                  einer Rechtsverletzung nicht zumutbar. Bei Bekanntwerden von Rechtsverletzungen
+                  werden wir derartige Links umgehend entfernen.
+                </p>
+              </div>
+
+              <div>
+                <p className="text-zinc-300 font-medium mb-1">Urheberrecht</p>
+                <p>
+                  Die durch den Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten
+                  unterliegen dem deutschen Urheberrecht (UrhG) sowie dem österreichischen
+                  Urheberrechtsgesetz (UrhG AT). Die Vervielfältigung, Bearbeitung, Verbreitung und
+                  jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes bedürfen der
+                  schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers. Downloads und Kopien
+                  dieser Seite sind nur für den privaten, nicht kommerziellen Gebrauch gestattet.
+                  Soweit die Inhalte auf dieser Seite nicht vom Betreiber erstellt wurden, werden die
+                  Urheberrechte Dritter beachtet. Insbesondere werden Inhalte Dritter als solche
+                  gekennzeichnet. Sollten Sie trotzdem auf eine Urheberrechtsverletzung aufmerksam
+                  werden, bitten wir um einen entsprechenden Hinweis. Bei Bekanntwerden von
+                  Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.
+                </p>
+              </div>
+
+              <div>
+                <p className="text-zinc-300 font-medium mb-1">KI-generierte Inhalte</p>
+                <p>
+                  Teile dieser Website wurden mit Unterstützung von KI-Werkzeugen erstellt oder
+                  optimiert. Die inhaltliche Verantwortung und redaktionelle Kontrolle obliegt
+                  ausschließlich dem Betreiber (Thomas Chochola). KI-generierte Inhalte werden vor
+                  der Veröffentlichung geprüft und freigegeben.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* 7. Hinweis zu medizinischen / gesundheitlichen Inhalten */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">7. Medizinischer Haftungsausschluss</h2>
+            <div className="bg-amber-950/30 border border-amber-800/30 rounded-xl p-5 text-sm text-amber-200/70">
+              <p className="text-amber-300 font-medium mb-2">Wichtiger Hinweis</p>
               <p>
-                <span className="text-zinc-500">Telefon:</span>{" "}
-                <a href="tel:+4915123040661" className="text-zinc-300 hover:text-white">
-                  +49 151 23040661
-                </a>
-              </p>
-              <p>
-                <span className="text-zinc-500">E-Mail:</span>{" "}
-                <a href="mailto:LKRforschung@gmail.com" className="text-orange-400 hover:underline">
-                  LKRforschung@gmail.com
-                </a>
+                Die Inhalte dieser Website, insbesondere die MDI-Frequenzanalyse und die
+                MA-Funktion, dienen ausschließlich der persönlichen Selbstwahrnehmung und
+                Forschung. Sie ersetzen in keinem Fall eine professionelle medizinische,
+                psychologische oder therapeutische Beratung, Diagnose oder Behandlung.
+                Bei gesundheitlichen Beschwerden wenden Sie sich bitte an einen approbierten
+                Arzt oder Therapeuten.
               </p>
             </div>
           </section>
 
-          <section>
-            <h2 className="text-white text-xl font-medium mb-4">Verantwortlich für den Inhalt</h2>
-            <p className="text-sm text-zinc-500 mb-3">nach § 18 Abs. 2 MStV:</p>
-            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-base space-y-1">
-              <p className="text-white font-medium">Thomas Chochola</p>
-              <p>Lindacher Weg 17</p>
-              <p>D-93128 Regenstauf</p>
-            </div>
+          {/* 8. Datenschutz-Kurzübersicht */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">8. Datenschutz</h2>
+            <p>
+              Ausführliche Informationen zur Verarbeitung Ihrer personenbezogenen Daten finden Sie
+              in unserer Datenschutzerklärung:
+            </p>
+            <Link href="/datenschutz">
+              <div className="bg-zinc-900/60 border border-zinc-800 hover:border-orange-500/40 rounded-xl p-5 text-sm flex items-center justify-between transition-colors cursor-pointer group">
+                <div>
+                  <p className="text-white font-medium group-hover:text-orange-400 transition-colors">Datenschutzerklärung lesen</p>
+                  <p className="text-zinc-500 text-xs mt-0.5">DSGVO · BDSG · DSG (AT) · nDSG (CH) · Stand: April 2026</p>
+                </div>
+                <ExternalLink className="w-4 h-4 text-zinc-600 group-hover:text-orange-400 transition-colors" />
+              </div>
+            </Link>
           </section>
 
-          <section>
-            <h2 className="text-white text-xl font-medium mb-4">Haftungsausschluss</h2>
-            <div className="space-y-4 text-base text-zinc-400">
-              <p>
-                <strong className="text-zinc-300">Haftung für Inhalte</strong><br />
-                Als Diensteanbieter sind wir gemäß § 7 Abs. 1 TMG (DE) / § 16 ECG (AT) für eigene Inhalte auf diesen
-                Seiten nach den allgemeinen Gesetzen verantwortlich. Nach §§ 8 bis 10 TMG (DE) / §§ 13 ff. ECG (AT) sind wir
-                als Diensteanbieter jedoch nicht verpflichtet, übermittelte oder gespeicherte fremde
-                Informationen zu überwachen oder nach Umständen zu forschen, die auf eine
-                rechtswidrige Tätigkeit hinweisen.
-              </p>
-              <p>
-                <strong className="text-zinc-300">Haftung für Links</strong><br />
-                Unser Angebot enthält Links zu externen Webseiten Dritter, auf deren Inhalte wir
-                keinen Einfluss haben. Für die Inhalte der verlinkten Seiten ist stets der jeweilige
-                Anbieter oder Betreiber der Seiten verantwortlich.
-              </p>
-              <p>
-                <strong className="text-zinc-300">Urheberrecht</strong><br />
-                Die durch die Seitenbetreiber erstellten Inhalte und Werke auf diesen Seiten
-                unterliegen dem deutschen Urheberrecht (UrhG) sowie dem österreichischen Urheberrechtsgesetz (UrhG AT). Die Vervielfältigung, Bearbeitung,
-                Verbreitung und jede Art der Verwertung außerhalb der Grenzen des Urheberrechtes
-                bedürfen der schriftlichen Zustimmung des jeweiligen Autors bzw. Erstellers.
-              </p>
-            </div>
-          </section>
-
-          {/* Datenschutzanfragen-Formular */}
-          <section>
-            <h2 className="text-white text-xl font-medium mb-2">Datenschutzanfragen (Art. 15–22 DSGVO)</h2>
-            <p className="text-base text-zinc-400 mb-5">
+          {/* 9. Datenschutzanfragen-Formular */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">9. Datenschutzanfragen (Art. 15–22 DSGVO)</h2>
+            <p>
               Du kannst deine Datenschutzrechte direkt hier ausüben. Wähle die Art deiner Anfrage
-              und wir melden uns innerhalb von 30 Tagen bei dir.
+              und wir melden uns innerhalb von 30 Tagen bei dir (Art. 12 Abs. 3 DSGVO).
             </p>
             <DatenschutzFormular />
           </section>
@@ -235,6 +374,7 @@ export function Impressum() {
 
         <div className="pt-12 border-t border-zinc-800 text-center text-sm text-zinc-600">
           <p>© {new Date().getFullYear()} Thomas Chochola / KIICHwerke. Alle Rechte vorbehalten.</p>
+          <p className="mt-1">Stand: April 2026 · § 5 DDG (DE) · § 5 ECG (AT) · Art. 3 UWG (CH)</p>
         </div>
       </div>
     </div>

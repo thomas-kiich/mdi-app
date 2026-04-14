@@ -254,6 +254,14 @@ export function Datenschutz() {
                       <a href="https://cloud.google.com/terms/data-processing-terms" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">cloud.google.com/privacy</a>
                     </td>
                   </tr>
+                  <tr>
+                    <td className="p-3 text-zinc-300 font-medium">Mistral AI</td>
+                    <td className="p-3">Text-to-Speech / Sprachsynthese (Voxtral TTS, MA-Stimme)</td>
+                    <td className="p-3">EU (Frankreich, Paris) – kein Drittlandtransfer</td>
+                    <td className="p-3">
+                      <a href="https://legal.mistral.ai/terms/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">legal.mistral.ai/privacy</a>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>

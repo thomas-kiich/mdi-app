@@ -1029,3 +1029,7 @@
 - [x] Mitbewerber-Datenschutzerklärungen recherchieren (Otter.ai, Notion AI, Reflect, Mem.ai, Superhuman)
 - [x] Relevante Klauseln filtern und DSGVO-konforme Datenschutzerklärung für kiich.de verfassen
 - [x] Datenschutzerklärung als eigene Seite in die App einbauen (/datenschutz)
+
+## Datenschutz & Impressum – Optimierung (April 2026)
+- [x] Mistral als Auftragsverarbeiter in Datenschutzerklärung eintragen
+- [x] Impressum professionell optimieren (analog Mitbewerber-Recherche)
