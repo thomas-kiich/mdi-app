@@ -357,6 +357,17 @@ export default function Momentaufnahme() {
     { enabled: isAuthenticated, refetchInterval: 30000 }
   );
   const [erinnerungsPopup, setErinnerungsPopup] = useState<{ id: number; text: string } | null>(null);
+  // Auto-TTS für Erinnerungen: Ein/Aus-Schalter (persistent im localStorage)
+  const [autoTtsErinnerungen, setAutoTtsErinnerungen] = useState<boolean>(() => {
+    return localStorage.getItem("kiich_auto_tts_erinnerungen") !== "false";
+  });
+  const toggleAutoTts = useCallback(() => {
+    setAutoTtsErinnerungen(prev => {
+      const next = !prev;
+      localStorage.setItem("kiich_auto_tts_erinnerungen", next ? "true" : "false");
+      return next;
+    });
+  }, []);
 
   // Vorname aus Profil laden und ggf. Dialog zeigen
   // Nur einmal fragen — wenn User "Später" geklickt hat, nicht mehr nerven
@@ -374,13 +385,39 @@ export default function Momentaufnahme() {
     }
   }, [profilData]);
 
-  // Fällige Erinnerungen auslösen
+  // Ref auf elevenLabsTTS für Auto-TTS (vermeidet Dependency-Loop)
+  const elevenLabsTTSRef = useRef<typeof elevenLabsTTSMutation | null>(null);
+  useEffect(() => {
+    elevenLabsTTSRef.current = elevenLabsTTSMutation;
+  });
+
+  // Fällige Erinnerungen auslösen + ggf. automatisch vorlesen
   useEffect(() => {
     if (!faelligeErinnerungen || faelligeErinnerungen.length === 0) return;
     const erste = faelligeErinnerungen[0];
     setErinnerungsPopup({ id: erste.id, text: erste.text });
     erinnerungAusgeloestMutation.mutate({ id: erste.id });
-  }, [faelligeErinnerungen]);
+    // Automatisches Vorlesen wenn Schalter aktiv
+    if (autoTtsErinnerungen && elevenLabsTTSRef.current) {
+      const stunde = new Date().getHours();
+      const gruss = stunde >= 5 && stunde < 11 ? "Guten Morgen" : stunde >= 11 && stunde < 18 ? "Hallo" : "Guten Abend";
+      const text = `${gruss}. Erinnerung: ${erste.text}`;
+      elevenLabsTTSRef.current.mutate(
+        { text },
+        {
+          onSuccess: (result: any) => {
+            if (result.audioBase64 && !result.fallback) {
+              const audio = new Audio(`data:${result.mimeType};base64,${result.audioBase64}`);
+              audio.playbackRate = 0.85;
+              audio.preservesPitch = true;
+              audio.volume = 1.0;
+              audio.play().catch(() => {});
+            }
+          },
+        }
+      );
+    }
+  }, [faelligeErinnerungen, autoTtsErinnerungen]);
 
   const handleVornameBestaetigen = useCallback(async () => {
     const name = vornameInput.trim();
@@ -1867,12 +1904,36 @@ export default function Momentaufnahme() {
             <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
               <Bell className="w-5 h-5 text-amber-400" />
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="text-xs text-amber-400/70 font-semibold tracking-wider uppercase">Erinnerung</p>
-              <p className="text-white font-semibold text-base">{erinnerungsPopup.text}</p>
+              <p className="text-white font-semibold text-base leading-snug">{erinnerungsPopup.text}</p>
             </div>
           </div>
-          <p className="text-white/40 text-xs mb-5">MA erinnert dich jetzt daran.</p>
+          <p className="text-white/40 text-xs mb-4">MA erinnert dich jetzt daran.</p>
+          {/* Auto-TTS Schalter */}
+          <button
+            onClick={toggleAutoTts}
+            className={cn(
+              "w-full flex items-center justify-between px-4 py-2.5 rounded-xl mb-4 text-xs font-semibold transition-all border",
+              autoTtsErinnerungen
+                ? "bg-amber-500/15 border-amber-500/30 text-amber-300"
+                : "bg-white/5 border-white/10 text-white/40"
+            )}
+          >
+            <span className="flex items-center gap-2">
+              <Volume2 className="w-3.5 h-3.5" />
+              MA spricht Erinnerungen automatisch vor
+            </span>
+            <span className={cn(
+              "w-8 h-4 rounded-full transition-all relative",
+              autoTtsErinnerungen ? "bg-amber-500" : "bg-white/20"
+            )}>
+              <span className={cn(
+                "absolute top-0.5 w-3 h-3 rounded-full bg-white transition-all",
+                autoTtsErinnerungen ? "left-4.5" : "left-0.5"
+              )} />
+            </span>
+          </button>
           <button
             onClick={async () => {
               await erinnerungBestaetigenMutation.mutateAsync({ id: erinnerungsPopup.id });
