@@ -1430,6 +1430,26 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                           <JohannesStatement />
                         </div>
                       </div>
+                      {/* Monika Feldmeier Statement */}
+                      <div className="bg-zinc-900/40 border border-orange-500/20 rounded-2xl p-8 md:p-12 relative overflow-hidden group mt-6">
+                        <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-400 to-red-600" />
+                        <MessageSquare className="absolute top-8 right-8 w-12 h-12 text-orange-500/10 group-hover:text-orange-500/20 transition-colors" />
+                        <div className="flex items-center gap-4 mb-6">
+                          <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center border border-orange-500/30">
+                            <span className="text-orange-400 font-bold text-lg">MF</span>
+                          </div>
+                          <div>
+                            <h4 className="text-white font-medium">Monika Feldmeier</h4>
+                            <p className="text-zinc-500 text-sm">April 2026</p>
+                          </div>
+                        </div>
+                        <blockquote className="text-zinc-300 leading-relaxed text-lg italic">
+                          <p className="mb-4">"Bin dir jetzt schon extrem dankbar für dein Hörbuch 🙏🏽</p>
+                          <p className="mb-4">Lektion 2 hab ich sofort umgesetzt – Phänomenal. Mach ich jetzt so oft wie möglich, damit es sich automatisiert. Freu mich schon auf Lektion 03.</p>
+                          <p className="mb-4">So verständlich hat es mir noch keiner erklären können – aber so logisch und nachvollziehbar. Danke dafür 🙏🏽💕</p>
+                          <p className="mb-2">Und noch eine Erfahrung: Ich hab nachdem ich diese 6 Atemzüge in 1 Minute gemacht habe sofort gespürt, dass ich ruhiger wurde – und es war wie eine <strong className="text-orange-400">Energietankstelle</strong>."</p>
+                        </blockquote>
+                      </div>
                     </div>
                     {/* Feedback-Einladung */}
                     <div className="mt-8 text-center">
