@@ -4,6 +4,7 @@ import { getDb } from "../db";
 import { erledigungen, visionen, erinnerungen } from "../../drizzle/schema";
 import { eq, and, desc, lte } from "drizzle-orm";
 import { invokeLLM } from "../_core/llm";
+import { transcribeAudio } from "../_core/voiceTranscription";
 
 export const planerRouter = router({
   // ─── ERLEDIGUNGEN ──────────────────────────────────────────────────────────
@@ -162,6 +163,83 @@ Antworte NUR mit JSON: {"text": "...", "faelligkeitISO": "..."}`,
       });
 
       return { id: (result as any).insertId, text, faelligkeitMs };
+    }),
+
+  // Erinnerung per Sprach-Upload (Audio-URL → Transkription → LLM-Parsing)
+  erinnerungPerSprache: protectedProcedure
+    .input(z.object({
+      audioUrl: z.string().url(),
+      jetzt: z.string(), // ISO-String der aktuellen Client-Zeit
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+
+      // Schritt 1: Transkription
+      const transkription = await transcribeAudio({
+        audioUrl: input.audioUrl,
+        language: "de",
+        prompt: "Erinnerung setzen",
+      });
+      if ("error" in transkription) {
+        throw new Error(`Transkription fehlgeschlagen: ${transkription.error}`);
+      }
+      const sprachbefehl = transkription.text.trim();
+      if (!sprachbefehl) throw new Error("Keine Sprache erkannt");
+
+      // Schritt 2: LLM extrahiert Zeit + Inhalt
+      const llmResponse = await invokeLLM({
+        messages: [
+          {
+            role: "system",
+            content: `Du bist ein Assistent der Erinnerungen aus natürlicher Sprache extrahiert.
+Aktuelle Zeit: ${input.jetzt}
+Extrahiere aus dem Sprachbefehl:
+1. Den Inhalt der Erinnerung (kurz, prägnant, max 100 Zeichen)
+2. Den Fälligkeitszeitpunkt als ISO-8601-String (z.B. "2026-04-14T10:00:00")
+Wenn keine Uhrzeit angegeben ist, setze die Erinnerung auf in 1 Stunde.
+Wenn kein Datum angegeben ist, nehme heute.
+Antworte NUR mit JSON: {"text": "...", "faelligkeitISO": "..."}`,
+          },
+          { role: "user", content: sprachbefehl },
+        ],
+        response_format: {
+          type: "json_schema",
+          json_schema: {
+            name: "erinnerung_extraktion",
+            strict: true,
+            schema: {
+              type: "object",
+              properties: {
+                text: { type: "string", description: "Inhalt der Erinnerung" },
+                faelligkeitISO: { type: "string", description: "Fälligkeitszeitpunkt als ISO-8601" },
+              },
+              required: ["text", "faelligkeitISO"],
+              additionalProperties: false,
+            },
+          },
+        },
+      });
+
+      let text = sprachbefehl;
+      let faelligkeitMs = Date.now() + 60 * 60 * 1000;
+      try {
+        const parsed = JSON.parse(llmResponse.choices[0].message.content as string);
+        if (parsed.text) text = parsed.text;
+        const d = new Date(parsed.faelligkeitISO);
+        if (!isNaN(d.getTime())) faelligkeitMs = d.getTime();
+      } catch { /* Fallback */ }
+
+      const [result] = await db.insert(erinnerungen).values({
+        userId: ctx.user.id,
+        text,
+        originalText: sprachbefehl,
+        faelligkeitMs,
+        ausgeloest: false,
+        bestaetigt: false,
+      });
+
+      return { id: (result as any).insertId, text, faelligkeitMs, originalText: sprachbefehl };
     }),
 
   // Erinnerung direkt (ohne LLM) hinzufügen

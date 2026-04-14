@@ -303,6 +303,53 @@ export default function Momentaufnahme() {
   const [planerNeuerText, setPlanerNeuerText] = useState("");
   const [planerNeueErinnerung, setPlanerNeueErinnerung] = useState("");
   const [planerLaedt, setPlanerLaedt] = useState(false);
+  // Sprach-Erinnerung
+  const erinnerungPerSpracheMutation = trpc.planer.erinnerungPerSprache.useMutation();
+  const [sprachErinnerungAktiv, setSprachErinnerungAktiv] = useState(false);
+  const sprachErinnerungRecorderRef = useRef<MediaRecorder | null>(null);
+  const sprachErinnerungChunksRef = useRef<Blob[]>([]);
+
+  const handleSprachErinnerungStart = useCallback(async () => {
+    if (sprachErinnerungAktiv) {
+      // Stoppen
+      sprachErinnerungRecorderRef.current?.stop();
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
+      sprachErinnerungChunksRef.current = [];
+      recorder.ondataavailable = e => { if (e.data.size > 0) sprachErinnerungChunksRef.current.push(e.data); };
+      recorder.onstop = async () => {
+        stream.getTracks().forEach(t => t.stop());
+        setSprachErinnerungAktiv(false);
+        const blob = new Blob(sprachErinnerungChunksRef.current, { type: "audio/webm" });
+        if (blob.size < 1000) { toast.error("Aufnahme zu kurz"); return; }
+        setPlanerLaedt(true);
+        try {
+          // Upload zu S3
+          const formData = new FormData();
+          formData.append("audio", blob, `erinnerung-${Date.now()}.webm`);
+          const uploadResp = await fetch("/api/audio/upload", { method: "POST", body: formData, credentials: "include" });
+          if (!uploadResp.ok) throw new Error("Upload fehlgeschlagen");
+          const { audioUrl } = await uploadResp.json();
+          // Transkription + LLM
+          const r = await erinnerungPerSpracheMutation.mutateAsync({ audioUrl, jetzt: new Date().toISOString() });
+          toast.success(`Erinnerung gesetzt: ${r.text}`);
+          await refetchErinnerungen();
+        } catch (err: any) {
+          toast.error(err?.message ?? "Sprach-Erinnerung fehlgeschlagen");
+        } finally {
+          setPlanerLaedt(false);
+        }
+      };
+      recorder.start();
+      sprachErinnerungRecorderRef.current = recorder;
+      setSprachErinnerungAktiv(true);
+    } catch {
+      toast.error("Mikrofon-Zugriff verweigert");
+    }
+  }, [sprachErinnerungAktiv, erinnerungPerSpracheMutation, refetchErinnerungen]);
   // Fällige Erinnerungen (Polling alle 30 Sek)
   const [jetztMs] = useState(() => Date.now());
   const { data: faelligeErinnerungen, refetch: refetchFaellige } = trpc.planer.faelligeErinnerungen.useQuery(
@@ -1249,13 +1296,39 @@ export default function Momentaufnahme() {
           {/* ERINNERUNGEN */}
           {summaryModus === "erinnerungen" && (
             <div className="space-y-2">
-              {/* Neue Erinnerung per Text */}
-              <div className="flex gap-2 mb-3">
+              {/* Neue Erinnerung – Text oder Sprache */}
+              {/* Sprach-Button */}
+              <button
+                onClick={handleSprachErinnerungStart}
+                disabled={planerLaedt}
+                className={cn(
+                  "w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold mb-3 transition-all",
+                  sprachErinnerungAktiv
+                    ? "bg-red-500/20 border border-red-500/40 text-red-300 animate-pulse"
+                    : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 hover:border-amber-500/40 text-amber-400 hover:text-amber-300",
+                  planerLaedt && "opacity-50 cursor-wait"
+                )}
+              >
+                {planerLaedt ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /><span>MA verarbeitet...</span></>
+                ) : sprachErinnerungAktiv ? (
+                  <><Square className="w-4 h-4 fill-current" /><span>Aufnahme beenden</span></>
+                ) : (
+                  <><Mic className="w-4 h-4" /><span>Erinnerung einsprechen</span></>
+                )}
+              </button>
+              {sprachErinnerungAktiv && (
+                <p className="text-[10px] text-amber-400/60 text-center -mt-2 mb-2 animate-pulse">
+                  ● Sprich jetzt: "MA, erinnere mich um 15 Uhr, den Arzttermin anzurufen"
+                </p>
+              )}
+              {/* Text-Fallback */}
+              <div className="flex gap-2 mb-1">
                 <input
                   type="text"
                   value={planerNeueErinnerung}
                   onChange={e => setPlanerNeueErinnerung(e.target.value)}
-                  placeholder="z.B. Erinnere mich um 10 Uhr, Max anzurufen"
+                  placeholder="Oder schreiben: Erinnere mich um 10 Uhr..."
                   className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-amber-500/40"
                   onKeyDown={async e => {
                     if (e.key === "Enter" && planerNeueErinnerung.trim()) {
@@ -1288,7 +1361,7 @@ export default function Momentaufnahme() {
                   {planerLaedt ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-[10px] text-white/30 -mt-2 mb-2">MA versteht natürliche Sprache: "Erinnere mich um 10 Uhr heute, Max anzurufen"</p>
+              <p className="text-[10px] text-white/30 mb-2">MA versteht natürliche Sprache – Sprache oder Text</p>
               {/* Liste */}
               {(erinnerungenData ?? []).length === 0 ? (
                 <p className="text-xs text-white/30 italic text-center py-4">Keine Erinnerungen gesetzt.</p>
