@@ -748,9 +748,6 @@ export default function Home() {
                     </a>
                   </div>
                   
-                  <div id="newsletter-section" className="border-t border-zinc-800 pt-8 mt-4">
-                    <NewsletterSignup source="podcast" />
-                  </div>
                 </div>
               </div>
               <div className="container max-w-6xl mx-auto px-4 flex justify-center mb-4">
@@ -776,6 +773,9 @@ export default function Home() {
                   isPremium={isPremium}
                   onTogglePremium={() => {}}
                 />
+              </div>
+              <div id="newsletter-section" className="container max-w-6xl mx-auto px-4 mt-10 mb-8">
+                <NewsletterSignup source="podcast" />
               </div>
               
             </div>
