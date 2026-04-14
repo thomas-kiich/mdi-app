@@ -464,3 +464,24 @@ export const pushSubscriptions = mysqlTable("push_subscriptions", {
 });
 export type PushSubscription = typeof pushSubscriptions.$inferSelect;
 export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;
+
+/**
+ * EINKAUFSLISTE – persönliche Einkaufsliste
+ * Artikel hinzufügen, abhaken, löschen.
+ * MA kann die Liste vorlesen.
+ */
+export const einkaufsliste = mysqlTable("einkaufsliste", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Name des Artikels (z.B. "Milch", "Äpfel") */
+  artikel: text("artikel").notNull(),
+  /** Optionale Menge/Einheit (z.B. "2 Liter", "1 kg") */
+  menge: varchar("menge", { length: 64 }),
+  /** true = bereits in den Einkaufswagen gelegt / gekauft */
+  gekauft: boolean("gekauft").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Einkaufsliste = typeof einkaufsliste.$inferSelect;
+export type InsertEinkaufsliste = typeof einkaufsliste.$inferInsert;

@@ -1008,3 +1008,16 @@
 
 ## Bugfixes
 - [x] Zurück-Button in MA-App springt auf kiich.de-Startseite – soll innerhalb der App navigieren
+
+## MA-App Tab-Umbau
+- [ ] REFLEXIONEN-Tab entfernen
+- [ ] VISIONEN-Tab entfernen
+- [ ] EINKAUFSLISTE-Tab hinzufügen (Artikel hinzufügen, abhaken, löschen, MA liest vor)
+
+## Einkaufsliste-Tab (Momentaufnahme)
+- [x] Reflexion-Tab und Visionen-Tab aus Planer-Tabs entfernen
+- [x] Neuen Einkaufsliste-Tab (🛒) hinzufügen (3 Tabs: Erledigungen / Erinnerungen / Einkauf)
+- [x] Einkaufsliste-UI: Artikel hinzufügen, abhaken (Toggle), löschen, Erledigte löschen
+- [x] MA-Vorlesen-Button für Einkaufsliste
+- [x] Backend-Procedures: einkaufslisteLaden, einkaufsartikelHinzufuegen, einkaufsartikelToggle, einkaufsartikelLoeschen, einkaufslisteGekauftLoeschen (bereits vorhanden)
+- [x] Datenbankschema: einkaufsliste-Tabelle bereits vorhanden, keine Migration nötig

@@ -210,7 +210,7 @@ export default function Momentaufnahme() {
   const [summaryDatum, setSummaryDatum] = useState("");
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
   // Strategisches Summary
-  const [summaryModus, setSummaryModus] = useState<"reflexion" | "strategie" | "erledigungen" | "erinnerungen" | "visionen">("reflexion");
+  const [summaryModus, setSummaryModus] = useState<"reflexion" | "strategie" | "erledigungen" | "erinnerungen" | "einkaufsliste">("erledigungen");
   const [strategischesText, setStrategischesText] = useState("");
   const [strategischesDatum, setStrategischesDatum] = useState("");
   const [isStrategischLaden, setIsStrategischLaden] = useState(false);
@@ -303,12 +303,14 @@ export default function Momentaufnahme() {
 
   // ─── PLANER: Erledigungen, Visionen, Erinnerungen ────────────────────────
   const { data: erledigungenData, refetch: refetchErledigungen } = trpc.planer.erledigungenLaden.useQuery(undefined, { enabled: isAuthenticated });
-  const { data: visionenData, refetch: refetchVisionen } = trpc.planer.visionenLaden.useQuery(undefined, { enabled: isAuthenticated });
   const { data: erinnerungenData, refetch: refetchErinnerungen } = trpc.planer.erinnerungenLaden.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: einkaufslisteData, refetch: refetchEinkaufsliste } = trpc.planer.einkaufslisteLaden.useQuery(undefined, { enabled: isAuthenticated });
   const erledigungHinzufuegenMutation = trpc.planer.erledigungHinzufuegen.useMutation();
   const erledigungLoeschenMutation = trpc.planer.erledigungLoeschen.useMutation();
-  const visionHinzufuegenMutation = trpc.planer.visionHinzufuegen.useMutation();
-  const visionLoeschenMutation = trpc.planer.visionLoeschen.useMutation();
+  const einkaufsartikelHinzufuegenMutation = trpc.planer.einkaufsartikelHinzufuegen.useMutation();
+  const einkaufsartikelToggleMutation = trpc.planer.einkaufsartikelToggle.useMutation();
+  const einkaufsartikelLoeschenMutation = trpc.planer.einkaufsartikelLoeschen.useMutation();
+  const einkaufslisteGekauftLoeschenMutation = trpc.planer.einkaufslisteGekauftLoeschen.useMutation();
   const erinnerungHinzufuegenMutation = trpc.planer.erinnerungHinzufuegen.useMutation();
   const erinnerungDirektHinzufuegenMutation = trpc.planer.erinnerungDirektHinzufuegen.useMutation();
   const erinnerungBestaetigenMutation = trpc.planer.erinnerungBestaetigen.useMutation();
@@ -316,6 +318,7 @@ export default function Momentaufnahme() {
   const [planerNeuerText, setPlanerNeuerText] = useState("");
   const [planerNeueErinnerung, setPlanerNeueErinnerung] = useState("");
   const [planerLaedt, setPlanerLaedt] = useState(false);
+  const [neuerArtikel, setNeuerArtikel] = useState("");
   // Sprach-Erinnerung
   const erinnerungPerSpracheMutation = trpc.planer.erinnerungPerSprache.useMutation();
   const [sprachErinnerungAktiv, setSprachErinnerungAktiv] = useState(false);
@@ -907,9 +910,10 @@ export default function Momentaufnahme() {
     } else if (summaryModus === "erledigungen") {
       basisText = (erledigungenData ?? []).map((e, i) => `${i + 1}. ${e.text}`).join("\n");
       einleitung = `${tagesgruss}${namenszusatz}. Hier sind deine Erledigungen:\n\n`;
-    } else if (summaryModus === "visionen") {
-      basisText = (visionenData ?? []).map((v, i) => `${i + 1}. ${v.text}`).join("\n");
-      einleitung = `${tagesgruss}${namenszusatz}. Hier sind deine Visionen:\n\n`;
+    } else if (summaryModus === "einkaufsliste") {
+      const offene = (einkaufslisteData ?? []).filter(a => !a.gekauft);
+      basisText = offene.map((a, i) => `${i + 1}. ${a.menge ? a.menge + " " : ""}${a.artikel}`).join("\n");
+      einleitung = `${tagesgruss}${namenszusatz}. Hier ist deine Einkaufsliste:\n\n`;
     } else if (summaryModus === "erinnerungen") {
       basisText = (erinnerungenData ?? []).map((e, i) => {
         const d = new Date(e.faelligkeitMs);
@@ -949,7 +953,7 @@ export default function Momentaufnahme() {
       setIsMASpeaking(false);
       speak(aktiverText);
     }
-  }, [isMASpeaking, summaryModus, summaryText, gefilterterStrategieText, erledigungenData, visionenData, erinnerungenData, vorname, elevenLabsTTSMutation, speak]);
+  }, [isMASpeaking, summaryModus, summaryText, gefilterterStrategieText, erledigungenData, einkaufslisteData, erinnerungenData, vorname, elevenLabsTTSMutation, speak]);
 
   // Briefing-Ref: wird nach handleMASpeakSummary gesetzt damit Timer darauf zugreifen kann
   const handleMASpeakBriefingRef = useRef<(() => void) | null>(null);
@@ -1217,20 +1221,8 @@ export default function Momentaufnahme() {
       {/* Tages-Zusammenfassung + Planer-Tabs */}
       {(showSummary && (summaryText || strategischesText)) || isAuthenticated ? (
         <div className="mx-5 mb-4 p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-blue-900/40 border border-violet-500/20">
-          {/* Vier Tabs: Reflexion / Erledigungen / Erinnerungen / Visionen */}
-          <div className="grid grid-cols-4 gap-0.5 mb-3 bg-white/5 rounded-xl p-1">
-            <button
-              onClick={() => setSummaryModus("reflexion")}
-              className={cn(
-                "flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg text-[10px] font-medium transition-all",
-                summaryModus === "reflexion"
-                  ? "bg-violet-600 text-white shadow-sm"
-                  : "text-white/40 hover:text-white/70"
-              )}
-            >
-              <Sparkles className="w-3 h-3" />
-              <span>Reflexion</span>
-            </button>
+          {/* Drei Tabs: Erledigungen / Erinnerungen / Einkaufsliste */}
+          <div className="grid grid-cols-3 gap-0.5 mb-3 bg-white/5 rounded-xl p-1">
             <button
               onClick={() => setSummaryModus("erledigungen")}
               className={cn(
@@ -1256,28 +1248,26 @@ export default function Momentaufnahme() {
               <span>Erinnerungen</span>
             </button>
             <button
-              onClick={() => setSummaryModus("visionen")}
+              onClick={() => setSummaryModus("einkaufsliste")}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg text-[10px] font-medium transition-all",
-                summaryModus === "visionen"
-                  ? "bg-indigo-600 text-white shadow-sm"
+                summaryModus === "einkaufsliste"
+                  ? "bg-teal-600 text-white shadow-sm"
                   : "text-white/40 hover:text-white/70"
               )}
             >
-              <Eye className="w-3 h-3" />
-              <span>Visionen</span>
+              <span className="text-[10px] leading-none">🛒</span>
+              <span>Einkauf</span>
             </button>
           </div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              {summaryModus === "reflexion" ? (
-                <><Sparkles className="w-4 h-4 text-violet-400" /><span className="text-xs font-medium text-violet-300">Das war mein Tag</span></>
-              ) : summaryModus === "erledigungen" ? (
+              {summaryModus === "erledigungen" ? (
                 <><Check className="w-4 h-4 text-emerald-400" /><span className="text-xs font-medium text-emerald-300">Meine Erledigungen</span></>
               ) : summaryModus === "erinnerungen" ? (
                 <><Bell className="w-4 h-4 text-amber-400" /><span className="text-xs font-medium text-amber-300">Meine Erinnerungen</span></>
-              ) : summaryModus === "visionen" ? (
-                <><Eye className="w-4 h-4 text-indigo-400" /><span className="text-xs font-medium text-indigo-300">Meine Visionen</span></>
+              ) : summaryModus === "einkaufsliste" ? (
+                <><span className="text-sm">🛒</span><span className="text-xs font-medium text-teal-300">Meine Einkaufsliste</span></>
               ) : (
                 <><span className="text-sm">🎯</span><span className="text-xs font-medium text-emerald-300">Meine offenen Aufgaben</span></>
               )}
@@ -1682,72 +1672,120 @@ export default function Momentaufnahme() {
             </div>
           )}
 
-          {/* VISIONEN */}
-          {summaryModus === "visionen" && (
+          {/* EINKAUFSLISTE */}
+          {summaryModus === "einkaufsliste" && (
             <div className="space-y-2">
-              {/* Neue Vision hinzufügen */}
+              {/* Neuen Artikel hinzufügen */}
               <div className="flex gap-2 mb-3">
                 <input
                   type="text"
-                  value={planerNeuerText}
-                  onChange={e => setPlanerNeuerText(e.target.value)}
+                  value={neuerArtikel}
+                  onChange={e => setNeuerArtikel(e.target.value)}
                   onKeyDown={async e => {
-                    if (e.key === "Enter" && planerNeuerText.trim()) {
+                    if (e.key === "Enter" && neuerArtikel.trim()) {
                       setPlanerLaedt(true);
-                      await visionHinzufuegenMutation.mutateAsync({ text: planerNeuerText.trim() });
-                      setPlanerNeuerText("");
-                      await refetchVisionen();
+                      await einkaufsartikelHinzufuegenMutation.mutateAsync({ artikel: neuerArtikel.trim() });
+                      setNeuerArtikel("");
+                      await refetchEinkaufsliste();
                       setPlanerLaedt(false);
                     }
                   }}
-                  placeholder="Meine Vision..."
-                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-indigo-500/40"
+                  placeholder="Artikel hinzufügen..."
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-teal-500/40"
                 />
                 <button
                   onClick={async () => {
-                    if (!planerNeuerText.trim()) return;
+                    if (!neuerArtikel.trim()) return;
                     setPlanerLaedt(true);
-                    await visionHinzufuegenMutation.mutateAsync({ text: planerNeuerText.trim() });
-                    setPlanerNeuerText("");
-                    await refetchVisionen();
+                    await einkaufsartikelHinzufuegenMutation.mutateAsync({ artikel: neuerArtikel.trim() });
+                    setNeuerArtikel("");
+                    await refetchEinkaufsliste();
                     setPlanerLaedt(false);
                   }}
-                  disabled={planerLaedt || !planerNeuerText.trim()}
-                  className="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-40 transition-colors"
+                  disabled={planerLaedt || !neuerArtikel.trim()}
+                  className="p-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white disabled:opacity-40 transition-colors"
                 >
                   {planerLaedt ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                 </button>
               </div>
               {/* Liste */}
-              {(visionenData ?? []).length === 0 ? (
-                <p className="text-xs text-white/30 italic text-center py-4">Noch keine Visionen eingetragen. Was träumst du dir?</p>
+              {(einkaufslisteData ?? []).length === 0 ? (
+                <p className="text-xs text-white/30 italic text-center py-4">Noch keine Artikel. Tippe oben einen Artikel ein.</p>
               ) : (
-                (visionenData ?? []).map(item => (
-                  <div key={item.id} className="flex items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
-                    <Eye className="w-4 h-4 text-indigo-400/60 flex-shrink-0" />
-                    <span className="flex-1 text-sm text-white/80">{item.text}</span>
-                    <button
-                      onClick={async () => {
-                        await visionLoeschenMutation.mutateAsync({ id: item.id });
-                        await refetchVisionen();
-                      }}
-                      className="p-1 rounded-full hover:bg-red-500/20 text-white/20 hover:text-red-400 transition-colors"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                ))
+                <div className="space-y-1.5">
+                  {(einkaufslisteData ?? []).map(item => (
+                    <div key={item.id} className={cn(
+                      "flex items-center gap-2 p-3 rounded-xl border transition-all",
+                      item.gekauft
+                        ? "bg-white/3 border-white/5 opacity-50"
+                        : "bg-white/5 border-white/10"
+                    )}>
+                      {/* Checkbox */}
+                      <button
+                        onClick={async () => {
+                          await einkaufsartikelToggleMutation.mutateAsync({ id: item.id, gekauft: !item.gekauft });
+                          await refetchEinkaufsliste();
+                        }}
+                        className={cn(
+                          "w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors",
+                          item.gekauft
+                            ? "border-teal-500 bg-teal-500/30"
+                            : "border-teal-500/50 hover:bg-teal-500/20"
+                        )}
+                      >
+                        {item.gekauft && <Check className="w-3 h-3 text-teal-300" />}
+                      </button>
+                      {/* Artikel-Text */}
+                      <div className="flex-1 min-w-0">
+                        <span className={cn(
+                          "text-sm",
+                          item.gekauft ? "line-through text-white/30" : "text-white/80"
+                        )}>
+                          {item.menge && <span className="text-white/40 text-xs mr-1">{item.menge}</span>}
+                          {item.artikel}
+                        </span>
+                      </div>
+                      {/* Löschen */}
+                      <button
+                        onClick={async () => {
+                          await einkaufsartikelLoeschenMutation.mutateAsync({ id: item.id });
+                          await refetchEinkaufsliste();
+                        }}
+                        className="p-1 rounded-full hover:bg-red-500/20 text-white/20 hover:text-red-400 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               )}
-              {/* MA vorlesen */}
-              {(visionenData ?? []).length > 0 && (
-                <button onClick={handleMASpeakSummary} disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
-                  className={cn("w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold mt-2 transition-all",
-                    isMASpeaking ? "bg-indigo-500/20 border border-indigo-500/40 text-indigo-300" : "bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-400",
-                    elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait")}>
-                  {isMASpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : <Volume2 className="w-3.5 h-3.5" />}
-                  <span>{isMASpeaking ? "MA stoppen" : "MA liest Visionen vor"}</span>
-                </button>
-              )}
+              {/* Aktionen */}
+              <div className="mt-3 space-y-2">
+                {/* MA vorlesen */}
+                {(einkaufslisteData ?? []).filter(a => !a.gekauft).length > 0 && (
+                  <button onClick={handleMASpeakSummary} disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
+                    className={cn("w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-sm font-semibold transition-all",
+                      isMASpeaking ? "bg-teal-500/20 border border-teal-500/40 text-teal-300" : "bg-teal-600/80 hover:bg-teal-500 text-white",
+                      elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait")}>
+                    {elevenLabsTTSMutation.isPending && !isMASpeaking ? <Loader2 className="w-4 h-4 animate-spin" /> : isMASpeaking ? <Square className="w-4 h-4 fill-current" /> : <Volume2 className="w-4 h-4" />}
+                    <span>{isMASpeaking ? "MA stoppen" : "MA liest Einkaufsliste vor"}</span>
+                  </button>
+                )}
+                {/* Erledigte löschen */}
+                {(einkaufslisteData ?? []).some(a => a.gekauft) && (
+                  <button
+                    onClick={async () => {
+                      await einkaufslisteGekauftLoeschenMutation.mutateAsync();
+                      await refetchEinkaufsliste();
+                      toast.success("Erledigte Artikel gelöscht");
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl text-xs font-medium bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-white/30 hover:text-red-400 transition-all"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Erledigte Artikel löschen</span>
+                  </button>
+                )}
+              </div>
             </div>
           )}
           {/* KI-Kennzeichnung (EU AI Act Art. 50) */}

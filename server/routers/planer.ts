@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { erledigungen, visionen, erinnerungen, pushSubscriptions } from "../../drizzle/schema";
+import { erledigungen, visionen, erinnerungen, pushSubscriptions, einkaufsliste } from "../../drizzle/schema";
 import { sendPushNotification } from "../pushNotifications";
 import { ENV } from "../_core/env";
 import { eq, and, desc, lte } from "drizzle-orm";
@@ -306,6 +306,69 @@ Antworte NUR mit JSON: {"text": "...", "faelligkeitISO": "..."}`,
             lte(erinnerungen.faelligkeitMs, input.jetztMs)
           )
         );
+    }),
+
+  // ─── EINKAUFSLISTE ────────────────────────────────────────────────────────
+
+  einkaufslisteLaden: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) return [];
+    return db
+      .select()
+      .from(einkaufsliste)
+      .where(eq(einkaufsliste.userId, ctx.user.id))
+      .orderBy(einkaufsliste.gekauft, desc(einkaufsliste.createdAt));
+  }),
+
+  einkaufsartikelHinzufuegen: protectedProcedure
+    .input(z.object({
+      artikel: z.string().min(1).max(200),
+      menge: z.string().max(64).optional(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+      const [result] = await db.insert(einkaufsliste).values({
+        userId: ctx.user.id,
+        artikel: input.artikel,
+        menge: input.menge,
+        gekauft: false,
+      });
+      return { id: (result as any).insertId };
+    }),
+
+  einkaufsartikelToggle: protectedProcedure
+    .input(z.object({ id: z.number(), gekauft: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+      await db
+        .update(einkaufsliste)
+        .set({ gekauft: input.gekauft })
+        .where(and(eq(einkaufsliste.id, input.id), eq(einkaufsliste.userId, ctx.user.id)));
+      return { ok: true };
+    }),
+
+  einkaufsartikelLoeschen: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+      await db
+        .delete(einkaufsliste)
+        .where(and(eq(einkaufsliste.id, input.id), eq(einkaufsliste.userId, ctx.user.id)));
+      return { ok: true };
+    }),
+
+  // Alle gekauften Artikel auf einmal löschen
+  einkaufslisteGekauftLoeschen: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+      await db
+        .delete(einkaufsliste)
+        .where(and(eq(einkaufsliste.userId, ctx.user.id), eq(einkaufsliste.gekauft, true)));
+      return { ok: true };
     }),
 
   // ─── WEB PUSH ──────────────────────────────────────────────────────────────
