@@ -654,7 +654,9 @@ export default function Momentaufnahme() {
     // Natürliche Einleitung je nach Modus
     const einleitung = summaryModus === "strategie"
       ? "Hier sind deine offenen Aufgaben für heute:\n\n"
-      : "";
+      : vorname
+        ? `Hallo ${vorname}, hier ist deine Tages-Reflexion:\n\n`
+        : "Hier ist deine Tages-Reflexion:\n\n";
     const aktiverText = einleitung + basisText;
     setIsMASpeaking(true);
     try {
@@ -681,7 +683,7 @@ export default function Momentaufnahme() {
       setIsMASpeaking(false);
       speak(aktiverText);
     }
-  }, [isMASpeaking, summaryModus, summaryText, gefilterterStrategieText, elevenLabsTTSMutation, speak]);
+  }, [isMASpeaking, summaryModus, summaryText, gefilterterStrategieText, vorname, elevenLabsTTSMutation, speak]);
 
   // Aufnahme löschen
   const handleLoeschen = useCallback(async (id: number) => {
