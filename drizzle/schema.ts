@@ -446,3 +446,21 @@ export const erinnerungen = mysqlTable("erinnerungen", {
 
 export type Erinnerung = typeof erinnerungen.$inferSelect;
 export type InsertErinnerung = typeof erinnerungen.$inferInsert;
+
+/**
+ * PUSH_SUBSCRIPTIONS – Web Push Notification Subscriptions
+ * Speichert die Browser-Push-Subscription pro Nutzer/Gerät.
+ */
+export const pushSubscriptions = mysqlTable("push_subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Push-Endpoint URL des Browsers */
+  endpoint: text("endpoint").notNull(),
+  /** P256DH Key */
+  p256dh: text("p256dh").notNull(),
+  /** Auth Key */
+  auth: text("auth").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type InsertPushSubscription = typeof pushSubscriptions.$inferInsert;

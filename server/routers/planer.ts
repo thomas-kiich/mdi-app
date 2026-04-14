@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { erledigungen, visionen, erinnerungen } from "../../drizzle/schema";
+import { erledigungen, visionen, erinnerungen, pushSubscriptions } from "../../drizzle/schema";
+import { sendPushNotification } from "../pushNotifications";
+import { ENV } from "../_core/env";
 import { eq, and, desc, lte } from "drizzle-orm";
 import { invokeLLM } from "../_core/llm";
 import { transcribeAudio } from "../_core/voiceTranscription";
@@ -304,5 +306,54 @@ Antworte NUR mit JSON: {"text": "...", "faelligkeitISO": "..."}`,
             lte(erinnerungen.faelligkeitMs, input.jetztMs)
           )
         );
+    }),
+
+  // ─── WEB PUSH ──────────────────────────────────────────────────────────────
+
+  // VAPID Public Key für Frontend (public, kein Auth nötig)
+  vapidPublicKey: protectedProcedure.query(() => {
+    return { publicKey: ENV.vapidPublicKey };
+  }),
+
+  // Push-Subscription speichern
+  pushSubscriptionSpeichern: protectedProcedure
+    .input(z.object({
+      endpoint: z.string().url(),
+      p256dh: z.string(),
+      auth: z.string(),
+    }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+      // Vorhandene Subscription für diesen Endpoint aktualisieren oder neu anlegen
+      const existing = await db
+        .select()
+        .from(pushSubscriptions)
+        .where(and(eq(pushSubscriptions.userId, ctx.user.id), eq(pushSubscriptions.endpoint, input.endpoint)))
+        .limit(1);
+      if (existing.length > 0) {
+        await db.update(pushSubscriptions)
+          .set({ p256dh: input.p256dh, auth: input.auth })
+          .where(eq(pushSubscriptions.id, existing[0].id));
+      } else {
+        await db.insert(pushSubscriptions).values({
+          userId: ctx.user.id,
+          endpoint: input.endpoint,
+          p256dh: input.p256dh,
+          auth: input.auth,
+        });
+      }
+      return { ok: true };
+    }),
+
+  // Push-Subscription löschen (Abmelden)
+  pushSubscriptionLoeschen: protectedProcedure
+    .input(z.object({ endpoint: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) return { ok: false };
+      await db.delete(pushSubscriptions)
+        .where(and(eq(pushSubscriptions.userId, ctx.user.id), eq(pushSubscriptions.endpoint, input.endpoint)));
+      return { ok: true };
     }),
 });

@@ -9,6 +9,7 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import audioUploadRouter from "../routes/audioUpload";
 import obsidianSyncRouter from "../routes/obsidianSync";
+import { startPushJob } from "../pushJob";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -65,6 +66,8 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    // Hintergrund-Job für Web Push Notifications starten
+    startPushJob();
   });
 }
 

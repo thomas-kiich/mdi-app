@@ -178,7 +178,19 @@ function useTTS() {
   return { speak, stop, isSpeaking, voices, selectedVoiceURI, setSelectedVoiceURI };
 }
 
-// ─── Hauptkomponente ──────────────────────────────────────────────────────────
+// VAPID Base64 → Uint8Array Konverter (für Push-Subscription)
+function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
+// ─── Hauptkomponente ──────────────────────────────────────────────────────────────
 
 export default function Momentaufnahme() {
   const { loading, isAuthenticated } = useAuth();
@@ -308,6 +320,78 @@ export default function Momentaufnahme() {
   const erinnerungPerSpracheMutation = trpc.planer.erinnerungPerSprache.useMutation();
   const [sprachErinnerungAktiv, setSprachErinnerungAktiv] = useState(false);
   const sprachErinnerungRecorderRef = useRef<MediaRecorder | null>(null);
+
+  // ─── WEB PUSH ──────────────────────────────────────────────────────────────
+  const { data: vapidData } = trpc.planer.vapidPublicKey.useQuery(undefined, { enabled: isAuthenticated });
+  const pushSubscriptionSpeichernMutation = trpc.planer.pushSubscriptionSpeichern.useMutation();
+  const [pushErlaubt, setPushErlaubt] = useState<boolean | null>(null);
+
+  // Service Worker registrieren + Push-Subscription anlegen
+  useEffect(() => {
+    if (!isAuthenticated || !vapidData?.publicKey) return;
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+
+    const setupPush = async () => {
+      try {
+        // Service Worker registrieren
+        const reg = await navigator.serviceWorker.register('/sw.js');
+        await navigator.serviceWorker.ready;
+
+        // Bestehende Subscription prüfen
+        let sub = await reg.pushManager.getSubscription();
+
+        if (!sub) {
+          // Erlaubnis anfragen (nur wenn noch nicht entschieden)
+          const permission = await Notification.requestPermission();
+          if (permission !== 'granted') {
+            setPushErlaubt(false);
+            return;
+          }
+          // Neue Subscription anlegen
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(vapidData.publicKey) as unknown as ArrayBuffer,
+          });
+        }
+
+        setPushErlaubt(true);
+
+        // Subscription auf dem Server speichern
+        const subJson = sub.toJSON();
+        if (subJson.endpoint && subJson.keys?.p256dh && subJson.keys?.auth) {
+          await pushSubscriptionSpeichernMutation.mutateAsync({
+            endpoint: subJson.endpoint,
+            p256dh: subJson.keys.p256dh,
+            auth: subJson.keys.auth,
+          });
+        }
+
+        // Service Worker Message-Listener: MA spricht beim Öffnen via Push
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data?.type === 'ERINNERUNG_OEFFNEN' && event.data?.text) {
+            setErinnerungsPopup({ id: 0, text: event.data.text });
+            setSummaryModus('erinnerungen');
+          }
+        });
+      } catch (err) {
+        console.warn('[Push] Setup fehlgeschlagen:', err);
+      }
+    };
+
+    setupPush();
+  }, [isAuthenticated, vapidData?.publicKey]);
+
+  // URL-Parameter: Erinnerung beim Öffnen via Push-Klick vorlesen
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const erinnerungText = params.get('erinnerung');
+    if (erinnerungText) {
+      setErinnerungsPopup({ id: 0, text: decodeURIComponent(erinnerungText) });
+      setSummaryModus('erinnerungen');
+      // URL bereinigen
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
   const sprachErinnerungChunksRef = useRef<Blob[]>([]);
 
   const handleSprachErinnerungStart = useCallback(async () => {
@@ -419,37 +503,20 @@ export default function Momentaufnahme() {
     }
   }, [profilData]);
 
-  // Ref auf elevenLabsTTS für Auto-TTS (vermeidet Dependency-Loop)
-  const elevenLabsTTSRef = useRef<typeof elevenLabsTTSMutation | null>(null);
-  useEffect(() => {
-    elevenLabsTTSRef.current = elevenLabsTTSMutation;
-  });
-
   // Fällige Erinnerungen auslösen + ggf. automatisch vorlesen
+  // WICHTIG: elevenLabsTTSMutation wird erst weiter unten definiert – wir nutzen einen Callback-Ref
+  const autoTtsCallbackRef = useRef<((text: string) => void) | null>(null);
+
   useEffect(() => {
     if (!faelligeErinnerungen || faelligeErinnerungen.length === 0) return;
     const erste = faelligeErinnerungen[0];
     setErinnerungsPopup({ id: erste.id, text: erste.text });
     erinnerungAusgeloestMutation.mutate({ id: erste.id });
     // Automatisches Vorlesen wenn Schalter aktiv
-    if (autoTtsErinnerungen && elevenLabsTTSRef.current) {
+    if (autoTtsErinnerungen && autoTtsCallbackRef.current) {
       const stunde = new Date().getHours();
       const gruss = stunde >= 5 && stunde < 11 ? "Guten Morgen" : stunde >= 11 && stunde < 18 ? "Hallo" : "Guten Abend";
-      const text = `${gruss}. Erinnerung: ${erste.text}`;
-      elevenLabsTTSRef.current.mutate(
-        { text },
-        {
-          onSuccess: (result: any) => {
-            if (result.audioBase64 && !result.fallback) {
-              const audio = new Audio(`data:${result.mimeType};base64,${result.audioBase64}`);
-              audio.playbackRate = 0.85;
-              audio.preservesPitch = true;
-              audio.volume = 1.0;
-              audio.play().catch(() => {});
-            }
-          },
-        }
-      );
+      autoTtsCallbackRef.current(`${gruss}. Erinnerung: ${erste.text}`);
     }
   }, [faelligeErinnerungen, autoTtsErinnerungen]);
 
@@ -515,6 +582,26 @@ export default function Momentaufnahme() {
   }, []);
 
   const elevenLabsTTSMutation = trpc.momentaufnahme.elevenLabsTTS.useMutation();
+
+  // Auto-TTS Callback-Ref hier befüllen, nachdem elevenLabsTTSMutation definiert ist
+  useEffect(() => {
+    autoTtsCallbackRef.current = (text: string) => {
+      elevenLabsTTSMutation.mutate(
+        { text },
+        {
+          onSuccess: (result: any) => {
+            if (result.audioBase64 && !result.fallback) {
+              const audio = new Audio(`data:${result.mimeType};base64,${result.audioBase64}`);
+              audio.playbackRate = 0.85;
+              audio.preservesPitch = true;
+              audio.volume = 1.0;
+              audio.play().catch(() => {});
+            }
+          },
+        }
+      );
+    };
+  });
 
   const startSchlafModus = useCallback(async () => {
     if (!summaryText) return;
