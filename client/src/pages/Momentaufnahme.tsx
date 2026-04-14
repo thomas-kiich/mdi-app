@@ -860,46 +860,7 @@ export default function Momentaufnahme() {
         <TrialBanner />
       </div>
 
-      {/* ===== KÜHLSCHRANKTÜR MARKETING-ELEMENT ===== */}
-      <div className="mt-8 mb-6 px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-0 rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-            {/* Linke Seite: Bild */}
-            <div className="relative overflow-hidden">
-              <img
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/WhatsAppImage2026-04-12at08.29.43_17f89398.jpeg"
-                alt="Kühlschranktür mit Zetteln und Post-its"
-                className="w-full h-full object-cover object-center min-h-[280px]"
-              />
-              {/* Dunkler Overlay mit Text */}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
-              <div className="absolute bottom-4 left-4">
-                <span className="bg-black/60 text-white/70 text-xs px-3 py-1 rounded-full border border-white/10">
-                  Margos Kühlschranktür · April 2026
-                </span>
-              </div>
-            </div>
 
-            {/* Rechte Seite: Text */}
-            <div className="bg-[#0d0d14] p-6 md:p-8 flex flex-col justify-center">
-              <div className="mb-3">
-                <span className="text-violet-400 text-xs font-black tracking-widest uppercase">Kennst du das?</span>
-              </div>
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-3 leading-tight">
-                Die Zettelwirtschaft<br />
-                <span className="text-violet-400">hat ein Ende.</span>
-              </h2>
-              <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                Kühlschranktür, Schreibtisch, Notizbuch — überall Zettel, Post-its und handgeschriebene Listen. Gedanken, die flüchtig sind. Erkenntnisse, die verloren gehen.
-              </p>
-              <p className="text-zinc-300 text-sm leading-relaxed">
-                <span className="text-white font-semibold">MOMENTAUFNAHME</span> gibt deiner inneren Stimme einen würdigen Ort. Einsprechen, hören, verstehen — in Sekunden.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* ===== END KÜHLSCHRANKTÜR ===== */}
 
       {/* Tages-Zusammenfassung */}
       {showSummary && (summaryText || strategischesText) && (

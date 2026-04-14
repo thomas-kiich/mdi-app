@@ -24,6 +24,7 @@ import AdminTts from "@/pages/AdminTts";
 import FAQ from "@/pages/FAQ";
 import Abo from "@/pages/Abo";
 import AdminFaq from "@/pages/AdminFaq";
+import Befindlichkeit from "@/pages/Befindlichkeit";
 
 function Router() {
   return (
@@ -47,6 +48,7 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/abo" component={Abo} />
       <Route path="/admin/faq" component={AdminFaq} />
+      <Route path="/befindlichkeit" component={Befindlichkeit} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
