@@ -589,3 +589,53 @@ export const ritualeEinstellungen = mysqlTable("rituale_einstellungen", {
 });
 export type RitualeEinstellungen = typeof ritualeEinstellungen.$inferSelect;
 export type InsertRitualeEinstellungen = typeof ritualeEinstellungen.$inferInsert;
+
+
+/**
+ * RITUAL_LOGS – Protokoll abgeschlossener Rituale (für Streak-Berechnung)
+ * Jeder Eintrag repräsentiert ein durchgeführtes Ritual an einem Tag.
+ */
+export const ritualLogs = mysqlTable("ritual_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Typ des Rituals: 'morgen' | 'pause' | 'atem' | 'dankbarkeit' | 'abend' */
+  typ: mysqlEnum("typ", ["morgen", "pause", "atem", "dankbarkeit", "abend"]).notNull(),
+  /** Datum als ISO-String 'YYYY-MM-DD' (Lokalzeit des Nutzers) */
+  datum: varchar("datum", { length: 10 }).notNull(),
+  /** Optionale Notiz zum Ritual */
+  notiz: text("notiz"),
+  /** Zeitstempel UTC ms */
+  createdAtMs: bigint("createdAtMs", { mode: "number" }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type RitualLog = typeof ritualLogs.$inferSelect;
+export type InsertRitualLog = typeof ritualLogs.$inferInsert;
+
+/**
+ * DANKBARKEIT – Tägliche Dankbarkeits-Einträge
+ * 3 Dankbarkeits-Felder + Stimmungswert + optionaler Abend-Reflexionstext.
+ */
+export const dankbarkeit = mysqlTable("dankbarkeit", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Datum als ISO-String 'YYYY-MM-DD' */
+  datum: varchar("datum", { length: 10 }).notNull(),
+  /** Dankbarkeits-Eintrag 1 */
+  eintrag1: text("eintrag1"),
+  /** Dankbarkeits-Eintrag 2 */
+  eintrag2: text("eintrag2"),
+  /** Dankbarkeits-Eintrag 3 */
+  eintrag3: text("eintrag3"),
+  /** Stimmungswert 1-5 (1=sehr schlecht, 5=ausgezeichnet) */
+  stimmung: int("stimmung"),
+  /** Abend-Reflexion: Was war heute bedeutsam? */
+  abendReflexion: text("abendReflexion"),
+  /** MA-generierter Abschlusstext für den Abend */
+  maAbschluss: text("maAbschluss"),
+  /** Zeitstempel UTC ms */
+  createdAtMs: bigint("createdAtMs", { mode: "number" }).notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type Dankbarkeit = typeof dankbarkeit.$inferSelect;
+export type InsertDankbarkeit = typeof dankbarkeit.$inferInsert;

@@ -986,7 +986,7 @@
 ## Monetarisierungsinfrastruktur (April 2026)
 - [ ] DB: Tabelle subscriptions (userId, plan, status, stripeCustomerId, stripeSubscriptionId, currentPeriodEnd)
 - [ ] DB: Tabelle betaInvites (code, email, usedBy, usedAt, createdAt)
-- [ ] DB: Migration pushen (pnpm db:push)
+- [x] DB: Migration pushen (pnpm db:push)
 - [x] Server: Feature-Gate-Logik (free/essential/complete/pro) als Middleware
 - [ ] Server: Abo-Prozeduren (getMyPlan, getPlans)
 - [ ] Server: Beta-Einladungs-Prozeduren (createInvite, redeemInvite, listInvites)
@@ -1059,3 +1059,14 @@
 - [x] Morgentext-Editor: eigenen Text für MA-Begrüßung hinterlegen
 - [x] Musik-Upload oder URL für Morgenritual-Hintergrundmusik
 - [x] RITUALE als neuer Tab in Momentaufnahme einbinden (4 Tabs: Erledigungen / Erinnerungen / Einkauf / Rituale)
+
+## Rituale-Erweiterungen (14. April 2026)
+- [x] DB: ritual_logs Tabelle (userId, typ, datum, notiz, streak)
+- [x] DB: dankbarkeit Tabelle (userId, datum, eintrag1, eintrag2, eintrag3, stimmung)
+- [x] DB: Migration pushen
+- [x] Backend: Dankbarkeits-Procedures (speichern, laden, Streak berechnen)
+- [x] Backend: Abend-Ritual-Procedures (Atemübung starten, Tagesreflexion)
+- [x] Backend: Streak-Statistik (Morgenritual, Pausen, Dankbarkeit)
+- [x] Service-Worker: Wecker-Auslösung (Musik + MA-Morgentext zur eingestellten Uhrzeit)
+- [x] RitualeTab: Abend-Ritual-Bereich (Dankbarkeit 3 Felder + Atemübung 4-7-8)
+- [x] RitualeTab: Streak-Anzeige (Flammen-Symbol, Tages-Übersicht)
