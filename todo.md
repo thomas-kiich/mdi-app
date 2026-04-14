@@ -1117,3 +1117,7 @@
 - [x] Abschnitt 12 Ihre Rechte: 30-Tage-Satz entfernt
 - [x] Abschnitt 13: "nationalen" Datenschutz-Aufsichtsbehörde – AT/CH-Blöcke entfernt
 - [x] Abschnitt 14 (Änderungen) komplett gestrichen
+
+## Weitere Korrekturen (14. April 2026)
+- [x] Datenschutz: Cookie-Abschnitt (Session-Cookies) ergänzt
+- [x] Executive Summary aus Startseite entfernt

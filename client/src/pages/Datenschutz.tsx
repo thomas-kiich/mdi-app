@@ -524,7 +524,53 @@ export function Datenschutz() {
             </div>
           </section>
 
-
+          {/* 14. Cookies */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">14. Cookies und lokale Speicherung</h2>
+            <p>
+              Diese Website verwendet ausschließlich technisch notwendige Cookies und
+              Browser-Speichermechanismen. Es werden keine Tracking-, Werbe- oder
+              Analyse-Cookies eingesetzt.
+            </p>
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="bg-zinc-900 text-zinc-400 border-b border-zinc-800">
+                    <th className="text-left p-3">Name / Typ</th>
+                    <th className="text-left p-3">Zweck</th>
+                    <th className="text-left p-3">Speicherdauer</th>
+                    <th className="text-left p-3">Rechtsgrundlage</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800/50">
+                  <tr>
+                    <td className="p-3 text-zinc-300">Session-Cookie (HTTP)</td>
+                    <td className="p-3">Authentifizierung und Sitzungsverwaltung nach Login</td>
+                    <td className="p-3">Sitzungsdauer (wird beim Schließen des Browsers gelöscht)</td>
+                    <td className="p-3">Art. 6 Abs. 1 lit. b DSGVO</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 text-zinc-300">localStorage (Browser)</td>
+                    <td className="p-3">Einwilligungsstatus Sprachverarbeitung, App-Einstellungen (z. B. Weckzeit, Rituale)</td>
+                    <td className="p-3">Bis zur manuellen Löschung im Browser</td>
+                    <td className="p-3">Art. 6 Abs. 1 lit. b / lit. a DSGVO</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 text-zinc-300">Push-Subscription (Browser)</td>
+                    <td className="p-3">Web-Push-Benachrichtigungen für Erinnerungen</td>
+                    <td className="p-3">Bis zur Abmeldung vom Push-Dienst</td>
+                    <td className="p-3">Art. 6 Abs. 1 lit. a DSGVO</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p className="text-sm text-zinc-500">
+              Da ausschließlich technisch notwendige Cookies verwendet werden, ist keine
+              Cookie-Einwilligung (Consent-Banner) erforderlich (§ 25 Abs. 2 Nr. 2 TTDSG).
+              Sie können Cookies und lokale Speicherdaten jederzeit über die
+              Einstellungen Ihres Browsers löschen.
+            </p>
+          </section>
 
         </div>
 
