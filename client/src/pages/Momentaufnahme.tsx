@@ -37,6 +37,7 @@ import { TrialBanner } from "@/components/TrialBanner";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link } from "wouter";
+import { RitualeTab } from "@/components/RitualeTab";
 
 // ─── Gravitationszentren ─────────────────────────────────────────────────────
 
@@ -211,7 +212,7 @@ export default function Momentaufnahme() {
   const [summaryDatum, setSummaryDatum] = useState("");
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
   // Strategisches Summary
-  const [summaryModus, setSummaryModus] = useState<"reflexion" | "strategie" | "erledigungen" | "erinnerungen" | "einkaufsliste">("erledigungen");
+  const [summaryModus, setSummaryModus] = useState<"reflexion" | "strategie" | "erledigungen" | "erinnerungen" | "einkaufsliste" | "rituale">("erledigungen");
   const [strategischesText, setStrategischesText] = useState("");
   const [strategischesDatum, setStrategischesDatum] = useState("");
   const [isStrategischLaden, setIsStrategischLaden] = useState(false);
@@ -1222,8 +1223,8 @@ export default function Momentaufnahme() {
       {/* Tages-Zusammenfassung + Planer-Tabs */}
       {(showSummary && (summaryText || strategischesText)) || isAuthenticated ? (
         <div className="mx-5 mb-4 p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-blue-900/40 border border-violet-500/20">
-          {/* Drei Tabs: Erledigungen / Erinnerungen / Einkaufsliste */}
-          <div className="grid grid-cols-3 gap-0.5 mb-3 bg-white/5 rounded-xl p-1">
+          {/* Vier Tabs: Erledigungen / Erinnerungen / Einkauf / Rituale */}
+          <div className="grid grid-cols-4 gap-0.5 mb-3 bg-white/5 rounded-xl p-1">
             <button
               onClick={() => setSummaryModus("erledigungen")}
               className={cn(
@@ -1260,6 +1261,18 @@ export default function Momentaufnahme() {
               <span className="text-[10px] leading-none">🛒</span>
               <span>Einkauf</span>
             </button>
+            <button
+              onClick={() => setSummaryModus("rituale")}
+              className={cn(
+                "flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg text-[10px] font-medium transition-all",
+                summaryModus === "rituale"
+                  ? "bg-purple-600 text-white shadow-sm"
+                  : "text-white/40 hover:text-white/70"
+              )}
+            >
+              <span className="text-[10px] leading-none">✨</span>
+              <span>Rituale</span>
+            </button>
           </div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -1269,6 +1282,8 @@ export default function Momentaufnahme() {
                 <><Bell className="w-4 h-4 text-amber-400" /><span className="text-xs font-medium text-amber-300">Meine Erinnerungen</span></>
               ) : summaryModus === "einkaufsliste" ? (
                 <><span className="text-sm">🛒</span><span className="text-xs font-medium text-teal-300">Meine Einkaufsliste</span></>
+              ) : summaryModus === "rituale" ? (
+                <><span className="text-sm">✨</span><span className="text-xs font-medium text-purple-300">Meine Rituale</span></>
               ) : (
                 <><span className="text-sm">🎯</span><span className="text-xs font-medium text-emerald-300">Meine offenen Aufgaben</span></>
               )}
@@ -1816,6 +1831,13 @@ export default function Momentaufnahme() {
               </div>
             </div>
           )}
+          {/* RITUALE */}
+          {summaryModus === "rituale" && (
+            <div className="py-1">
+              <RitualeTab vorname={vorname ?? undefined} />
+            </div>
+          )}
+
           {/* KI-Kennzeichnung (EU AI Act Art. 50) */}
           <div className="mt-3 pt-3 border-t border-violet-500/10 flex items-center gap-1.5">
             <span className="text-[10px] text-violet-400/60 font-medium tracking-wide">✦ KI-GENERIERT</span>

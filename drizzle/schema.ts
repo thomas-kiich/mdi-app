@@ -541,3 +541,51 @@ export const rechtsPruefprotokoll = mysqlTable("rechts_pruefprotokoll", {
 });
 export type RechtsPruefprotokoll = typeof rechtsPruefprotokoll.$inferSelect;
 export type InsertRechtsPruefprotokoll = typeof rechtsPruefprotokoll.$inferInsert;
+
+/**
+ * RITUALE_EINSTELLUNGEN – Persönliche Ritual-Konfiguration
+ * Bewegungspausen-Timer + Morgenerwachen-Wecker mit MA-Sprachbegrüßung.
+ */
+export const ritualeEinstellungen = mysqlTable("rituale_einstellungen", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+
+  // --- Bewegungspausen-Timer ---
+  /** Timer aktiv? */
+  pausenTimerAktiv: boolean("pausenTimerAktiv").default(false).notNull(),
+  /** Arbeitsintervall in Minuten (Standard: 45) */
+  arbeitsMinuten: int("arbeitsMinuten").default(45).notNull(),
+  /** Pausenlänge in Minuten (Standard: 5) */
+  pausenMinuten: int("pausenMinuten").default(5).notNull(),
+  /** Push-Benachrichtigung bei Pause? */
+  pausenPushAktiv: boolean("pausenPushAktiv").default(true).notNull(),
+  /** Zeitraum aktiv: von (Uhrzeit HH:MM, z.B. '08:00') */
+  pausenVon: varchar("pausenVon", { length: 5 }).default("08:00"),
+  /** Zeitraum aktiv: bis (Uhrzeit HH:MM, z.B. '18:00') */
+  pausenBis: varchar("pausenBis", { length: 5 }).default("18:00"),
+
+  // --- Morgenerwachen-Wecker ---
+  /** Wecker aktiv? */
+  weckerAktiv: boolean("weckerAktiv").default(false).notNull(),
+  /** Weckzeit (HH:MM, z.B. '06:30') */
+  weckzeit: varchar("weckzeit", { length: 5 }).default("06:30"),
+  /** Wochentage als Bitmask: Bit 0=Mo, 1=Di, 2=Mi, 3=Do, 4=Fr, 5=Sa, 6=So */
+  weckTage: int("weckTage").default(31).notNull(),
+  /** Morgentext für MA-Sprachbegrüßung (von Nutzer verfasst) */
+  morgentext: text("morgentext"),
+  /** URL der Hintergrundmusik (CDN-Link oder externer Link) */
+  morgenMusikUrl: text("morgenMusikUrl"),
+  /** Musikname/Titel zur Anzeige */
+  morgenMusikTitel: varchar("morgenMusikTitel", { length: 255 }),
+  /** Lautstärke der Musik 0-100 */
+  musikLautstaerke: int("musikLautstaerke").default(40).notNull(),
+  /** MA-Stimme aktiv? */
+  maStimmeAktiv: boolean("maStimmeAktiv").default(true).notNull(),
+  /** Letzter Weckzeitpunkt (UTC ms) – zur Duplikat-Vermeidung */
+  letzterWeckMs: bigint("letzterWeckMs", { mode: "number" }),
+
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type RitualeEinstellungen = typeof ritualeEinstellungen.$inferSelect;
+export type InsertRitualeEinstellungen = typeof ritualeEinstellungen.$inferInsert;

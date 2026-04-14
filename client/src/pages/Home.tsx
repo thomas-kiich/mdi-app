@@ -1766,6 +1766,8 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
                       <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
                       <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
+                      <Link href="/nutzungsbedingungen" className="hover:text-white transition-colors">Nutzungsbedingungen</Link>
+                      <Link href="/rechts-checkliste" className="hover:text-orange-400 transition-colors">⚖ Rechts-Checkliste</Link>
                   </div>
                 </div>
             </footer>

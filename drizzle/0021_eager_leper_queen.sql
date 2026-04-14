@@ -1,0 +1,23 @@
+CREATE TABLE `rituale_einstellungen` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`userId` int NOT NULL,
+	`pausenTimerAktiv` boolean NOT NULL DEFAULT false,
+	`arbeitsMinuten` int NOT NULL DEFAULT 45,
+	`pausenMinuten` int NOT NULL DEFAULT 5,
+	`pausenPushAktiv` boolean NOT NULL DEFAULT true,
+	`pausenVon` varchar(5) DEFAULT '08:00',
+	`pausenBis` varchar(5) DEFAULT '18:00',
+	`weckerAktiv` boolean NOT NULL DEFAULT false,
+	`weckzeit` varchar(5) DEFAULT '06:30',
+	`weckTage` int NOT NULL DEFAULT 31,
+	`morgentext` text,
+	`morgenMusikUrl` text,
+	`morgenMusikTitel` varchar(255),
+	`musikLautstaerke` int NOT NULL DEFAULT 40,
+	`maStimmeAktiv` boolean NOT NULL DEFAULT true,
+	`letzterWeckMs` bigint,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `rituale_einstellungen_id` PRIMARY KEY(`id`),
+	CONSTRAINT `rituale_einstellungen_userId_unique` UNIQUE(`userId`)
+);

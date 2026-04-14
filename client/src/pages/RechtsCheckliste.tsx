@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import {
   ArrowLeft, AlertTriangle, CheckCircle2, Clock,
   Sparkles, ChevronDown, ChevronUp, FileText,
-  Shield, Scale, BookOpen, Loader2, ExternalLink
+  Shield, Scale, BookOpen, Loader2, ExternalLink,
+  History, Bell
 } from "lucide-react";
 import { Link } from "wouter";
 import { Streamdown } from "streamdown";
@@ -77,6 +78,12 @@ function AufgabeKarte({ aufgabe, onAbgeschlossen }: { aufgabe: any; onAbgeschlos
   const [laedt, setLaedt] = useState(false);
   const [notizen, setNotizen] = useState("");
   const [manuellErgebnis, setManuellErgebnis] = useState<Ergebnis>("ok");
+  const [protokollOffen, setProtokollOffen] = useState(false);
+
+  const { data: protokoll } = trpc.rechtsCheckliste.protokollLaden.useQuery(
+    { aufgabeId: aufgabe.id },
+    { enabled: protokollOffen }
+  );
 
   const maAnalyseMutation = trpc.rechtsCheckliste.maAnalyseStarten.useMutation({
     onSuccess: (data) => {
@@ -186,6 +193,49 @@ function AufgabeKarte({ aufgabe, onAbgeschlossen }: { aufgabe: any; onAbgeschlos
                   </a>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Prüfprotokoll */}
+          <button
+            onClick={() => setProtokollOffen(!protokollOffen)}
+            className="flex items-center gap-2 text-xs text-zinc-500 hover:text-zinc-300 transition-colors"
+          >
+            <History className="w-3.5 h-3.5" />
+            Prüfhistorie anzeigen
+            {protokollOffen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
+
+          {protokollOffen && (
+            <div className="space-y-2">
+              {!protokoll || protokoll.length === 0 ? (
+                <p className="text-xs text-zinc-600 italic">Noch keine Prüfungen dokumentiert.</p>
+              ) : (
+                protokoll.map((p: any) => {
+                  const erg = ERGEBNIS_CONFIG[p.ergebnis as Ergebnis];
+                  return (
+                    <div key={p.id} className="bg-zinc-900/60 border border-zinc-800/50 rounded-lg p-3 space-y-1.5">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={cn("flex items-center gap-1 text-xs px-2 py-0.5 rounded-full border", erg?.farbe)}>
+                          {erg?.icon}{erg?.label}
+                        </span>
+                        <span className="text-xs text-zinc-600">
+                          {p.geprueftVon === "ma_auto" ? "🤖 MA" : "👤 Manuell"} · {formatDatum(p.geprueftAmMs)}
+                        </span>
+                      </div>
+                      {p.notizen && <p className="text-xs text-zinc-400">{p.notizen}</p>}
+                      {p.maAnalyse && (
+                        <details className="text-xs text-zinc-500">
+                          <summary className="cursor-pointer hover:text-zinc-300 transition-colors">MA-Analyse anzeigen</summary>
+                          <div className="mt-2 text-zinc-400 leading-relaxed">
+                            <Streamdown>{p.maAnalyse}</Streamdown>
+                          </div>
+                        </details>
+                      )}
+                    </div>
+                  );
+                })
+              )}
             </div>
           )}
 

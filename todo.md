@@ -1045,3 +1045,17 @@
 - [x] Backend: Procedures für Aufgaben laden, abhaken, MA-Analyse starten
 - [x] Frontend: /rechts-checkliste Seite mit MA-Integration
 - [x] Monatliche Push-Erinnerung einrichten (via Fälligkeitsdatum in DB)
+
+## Rechts-Checkliste Erweiterungen
+- [x] Footer-Link zur Rechts-Checkliste
+- [x] Push-Erinnerung wenn Aufgabe fällig wird (via bestehende Push-Infrastruktur + Fälligkeitsdatum)
+- [x] Prüfprotokoll-Ansicht pro Aufgabe
+
+## RITUALE-Tab (Momentaufnahme)
+- [x] Datenbankschema: rituale_einstellungen Tabelle
+- [x] Backend: Procedures für Rituale (laden, speichern, Wecker, morgenTextGenerieren, musikHochladen)
+- [x] Bewegungspausen-Timer (45min Arbeit / 5min Pause) mit Push-Notification
+- [x] Morgenerwachen-Wecker: Uhrzeit einstellen, MA-Sprachbegrüßung, Hintergrundmusik
+- [x] Morgentext-Editor: eigenen Text für MA-Begrüßung hinterlegen
+- [x] Musik-Upload oder URL für Morgenritual-Hintergrundmusik
+- [x] RITUALE als neuer Tab in Momentaufnahme einbinden (4 Tabs: Erledigungen / Erinnerungen / Einkauf / Rituale)
