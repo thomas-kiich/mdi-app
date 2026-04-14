@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { getLoginUrl } from "@/const";
 import { cn } from "@/lib/utils";
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import {
   Mic,
   MicOff,
@@ -211,6 +211,24 @@ export default function Momentaufnahme() {
       return next;
     });
   };
+  // Gefilterter Strategie-Text (nur aktive GZ) – wird auch für TTS genutzt
+  const gefilterterStrategieText = useMemo(() => {
+    if (!strategischesText) return "";
+    const zeilen = strategischesText.split("\n");
+    const gefiltert: string[] = [];
+    let abschnittAktiv = true;
+    for (const zeile of zeilen) {
+      const gzMatch = ALLE_GZ.find(gz =>
+        new RegExp(`\\b${gz}\\b`, "i").test(zeile) &&
+        (zeile.startsWith("#") || zeile.includes("**") || zeile.endsWith(":") || /^[A-Z]{3,7}/.test(zeile.trim()))
+      );
+      if (gzMatch) {
+        abschnittAktiv = aktiveGZ.has(gzMatch);
+      }
+      if (abschnittAktiv) gefiltert.push(zeile);
+    }
+    return gefiltert.join("\n").trim();
+  }, [strategischesText, aktiveGZ]);
   const [expandedId, setExpandedId] = useState<number | null>(null);
   // DSGVO-Einwilligung: einmalig pro Session
   const [consentGiven, setConsentGiven] = useState(() => {
@@ -631,7 +649,7 @@ export default function Momentaufnahme() {
       setIsMASpeaking(false);
       return;
     }
-    const aktiverText = summaryModus === "strategie" ? strategischesText : summaryText;
+    const aktiverText = summaryModus === "strategie" ? gefilterterStrategieText : summaryText;
     if (!aktiverText) return;
     setIsMASpeaking(true);
     try {
@@ -658,7 +676,7 @@ export default function Momentaufnahme() {
       setIsMASpeaking(false);
       speak(aktiverText);
     }
-  }, [isMASpeaking, summaryModus, summaryText, strategischesText, elevenLabsTTSMutation, speak]);
+  }, [isMASpeaking, summaryModus, summaryText, gefilterterStrategieText, elevenLabsTTSMutation, speak]);
 
   // Aufnahme löschen
   const handleLoeschen = useCallback(async (id: number) => {
@@ -1024,37 +1042,41 @@ export default function Momentaufnahme() {
                 {/* Gefilterter Strategie-Text */}
                 <div className="text-sm text-white/80 leading-relaxed">
                   {strategischesText ? (
-                    (() => {
-                      // Abschnitte nach Gravitationszentrum filtern
-                      const zeilen = strategischesText.split("\n");
-                      const gefiltert: string[] = [];
-                      let aktuellesGZ: string | null = null;
-                      let abschnittAktiv = true;
-                      for (const zeile of zeilen) {
-                        // Erkennt GZ-Überschriften wie "## PROJEKT", "**PROJEKT**", "PROJEKT:"
-                        const gzMatch = ALLE_GZ.find(gz =>
-                          new RegExp(`\\b${gz}\\b`, "i").test(zeile) &&
-                          (zeile.startsWith("#") || zeile.includes("**") || zeile.endsWith(":") || /^[A-Z]{3,7}/.test(zeile.trim()))
-                        );
-                        if (gzMatch) {
-                          aktuellesGZ = gzMatch;
-                          abschnittAktiv = aktiveGZ.has(gzMatch);
-                        }
-                        if (abschnittAktiv) gefiltert.push(zeile);
-                      }
-                      const gefilterterText = gefiltert.join("\n").trim();
-                      return (
-                        <p className="whitespace-pre-wrap">
-                          {gefilterterText || (
-                            <span className="text-white/30 italic">Keine Aufgaben für die gewählten Gravitationszentren.</span>
-                          )}
-                        </p>
-                      );
-                    })()
+                    <p className="whitespace-pre-wrap">
+                      {gefilterterStrategieText || (
+                        <span className="text-white/30 italic">Keine Aufgaben für die gewählten Gravitationszentren.</span>
+                      )}
+                    </p>
                   ) : (
                     <span className="text-white/30 italic">Noch kein strategisches Summary vorhanden.</span>
                   )}
                 </div>
+
+                {/* MA Vorlesen – Strategie */}
+                {gefilterterStrategieText && (
+                  <div className="mt-3">
+                    <button
+                      onClick={handleMASpeakSummary}
+                      disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
+                      className={cn(
+                        "w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold transition-all",
+                        isMASpeaking
+                          ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300"
+                          : "bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 hover:text-emerald-300",
+                        elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait"
+                      )}
+                    >
+                      {elevenLabsTTSMutation.isPending && !isMASpeaking ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : isMASpeaking ? (
+                        <Square className="w-3.5 h-3.5 fill-current" />
+                      ) : (
+                        <Play className="w-3.5 h-3.5 fill-current" />
+                      )}
+                      <span>{isMASpeaking ? "MA stoppen" : "MA liest Aufgaben vor"}</span>
+                    </button>
+                  </div>
+                )}
               </div>
             )
           )}
