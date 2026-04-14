@@ -1779,6 +1779,28 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
 
                 </div>
 
+                {/* Über den Gründer */}
+                <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl px-6 py-5">
+                  <p className="text-zinc-400 text-xs font-semibold uppercase tracking-widest mb-3">Über den Gründer</p>
+                  <p className="text-zinc-300 text-sm leading-relaxed mb-4">
+                    <span className="font-semibold text-white">Thomas Chochola</span> entwickelt seit Jahrzehnten Produkte und Konzepte an der Schnittstelle von Frequenz, Bewusstsein und Transformation. Drei Referenzprojekte belegen die internationale Marktreife dieser Arbeit:
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                    <div className="bg-zinc-800/60 rounded-lg p-4 border border-zinc-700/50">
+                      <p className="text-orange-400 font-semibold mb-1">ALADIN</p>
+                      <p className="text-zinc-400 leading-relaxed">Energetische Wasserkaraffe · TCenergydesign · Vertrieb in USA, Japan, Europa · heute: <a href="https://www.livingdesigns.de" target="_blank" rel="noopener noreferrer" className="text-orange-500/70 hover:text-orange-400 transition-colors">livingdesigns.de</a></p>
+                    </div>
+                    <div className="bg-zinc-800/60 rounded-lg p-4 border border-zinc-700/50">
+                      <p className="text-orange-400 font-semibold mb-1">ECHOBELL</p>
+                      <p className="text-zinc-400 leading-relaxed">Tragbares Klang- und Vibrationsinstrument · von Ärzten empfohlen · <a href="https://www.echobell.at" target="_blank" rel="noopener noreferrer" className="text-orange-500/70 hover:text-orange-400 transition-colors">echobell.at</a></p>
+                    </div>
+                    <div className="bg-zinc-800/60 rounded-lg p-4 border border-zinc-700/50">
+                      <p className="text-orange-400 font-semibold mb-1">AUMEGA</p>
+                      <p className="text-zinc-400 leading-relaxed">CD zur Gehirnaktivierung · mit Biophysiker Dieter Broers · <a href="https://dieterbroers.com/shop/downloads/aumega-die-vision-download/" target="_blank" rel="noopener noreferrer" className="text-orange-500/70 hover:text-orange-400 transition-colors">dieterbroers.com</a></p>
+                    </div>
+                  </div>
+                  <p className="mt-4 pt-4 border-t border-zinc-700/50 text-zinc-500 text-xs italic">&ldquo;Frequenz ist nicht abstrakt – sie ist erfahrbar, messbar und transformativ.&rdquo;</p>
+                </div>
 
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                   <div>&copy; {new Date().getFullYear()} KIICH. Alle Rechte vorbehalten.</div>
