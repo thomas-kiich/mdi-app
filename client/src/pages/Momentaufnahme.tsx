@@ -651,12 +651,19 @@ export default function Momentaufnahme() {
     }
     const basisText = summaryModus === "strategie" ? gefilterterStrategieText : summaryText;
     if (!basisText) return;
+    // Tageszeit-abhängige Begrüßung
+    const stunde = new Date().getHours();
+    const tagesgruss = stunde >= 5 && stunde < 11
+      ? "Guten Morgen"
+      : stunde >= 11 && stunde < 18
+        ? "Hallo"
+        : "Guten Abend";
     // Natürliche Einleitung je nach Modus
     const einleitung = summaryModus === "strategie"
       ? "Hier sind deine offenen Aufgaben für heute:\n\n"
       : vorname
-        ? `Hallo ${vorname}, hier ist deine Tages-Reflexion:\n\n`
-        : "Hier ist deine Tages-Reflexion:\n\n";
+        ? `${tagesgruss}, ${vorname}. Hier ist deine Tages-Reflexion:\n\n`
+        : `${tagesgruss}. Hier ist deine Tages-Reflexion:\n\n`;
     const aktiverText = einleitung + basisText;
     setIsMASpeaking(true);
     try {
