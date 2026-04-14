@@ -1415,7 +1415,25 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                         <p className="text-zinc-400 max-w-2xl mx-auto text-sm">Die Reise ins Jahr 2026 hat bereits begonnen. Hier teilen Pioniere ihre ersten Erkenntnisse und Erfahrungen auf dem Weg zu mehr Selbstbestimmung.</p>
                       </div>
                       <div className="max-w-4xl mx-auto">
-                        {/* Monika Feldmeier Statement – neuestes zuerst */}
+                        {/* Barbara Mohr-Modes Statement – neuestes zuerst */}
+                        <div className="bg-zinc-900/40 border border-orange-500/20 rounded-2xl p-8 md:p-12 relative overflow-hidden group mb-6">
+                          <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-400 to-red-600" />
+                          <MessageSquare className="absolute top-8 right-8 w-12 h-12 text-orange-500/10 group-hover:text-orange-500/20 transition-colors" />
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center border border-orange-500/30">
+                              <span className="text-orange-400 font-bold text-lg">BM</span>
+                            </div>
+                            <div>
+                              <h4 className="text-white font-medium">Barbara Mohr-Modes</h4>
+                              <p className="text-zinc-500 text-sm">USA / Deutschland • April 2026</p>
+                            </div>
+                          </div>
+                          <blockquote className="text-zinc-300 leading-relaxed text-lg italic">
+                            <p className="mb-4">"Hi Thomas, wollte dir nur kurz sagen, dein 2. Podcast hat mir <strong className="text-orange-400">SEHR gut gefallen</strong>, mein Gehirn liebt deine visuellen Bilder, wie Du weißt!</p>
+                            <p>Ich höre die Podcasts immer mehrmals an und diese Bilder werden weiter ausgemalt… <strong className="text-orange-400">ganz bunt!</strong>"</p>
+                          </blockquote>
+                        </div>
+                        {/* Monika Feldmeier Statement */}
                         <div className="bg-zinc-900/40 border border-orange-500/20 rounded-2xl p-8 md:p-12 relative overflow-hidden group">
                           <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-400 to-red-600" />
                           <MessageSquare className="absolute top-8 right-8 w-12 h-12 text-orange-500/10 group-hover:text-orange-500/20 transition-colors" />

@@ -1075,3 +1075,6 @@
 - [x] PushJob: Retry-Mechanismus bei ECONNRESET (exponentielles Backoff, max. 3 Versuche)
 - [x] PushJob: DB-Reconnect bei Verbindungsabbruch
 - [x] Workbox-Offline-Service-Worker (Cache-First für Assets, Network-First für API, kein Auto-Reload)
+
+## Testimonials
+- [x] Barbara Mohr-Modes (USA/Deutschland) – Podcast-Feedback in "Stimmen aus dem Feld" eingefügt
