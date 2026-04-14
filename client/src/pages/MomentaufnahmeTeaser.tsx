@@ -165,13 +165,17 @@ export default function MomentaufnahmeTeaser() {
           </div>
 
           {!isAuthenticated && (
-            <Button
-              onClick={() => (window.location.href = getLoginUrl())}
-              className="bg-violet-600 hover:bg-violet-500 text-white gap-2 px-6"
-            >
-              <LogIn className="w-4 h-4" />
-              Jetzt anmelden &amp; informiert bleiben
-            </Button>
+            <div className="flex flex-col gap-3 items-center">
+              {/* Bereits registriert / Betatester */}
+              <a
+                href={getLoginUrl()}
+                className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-colors"
+              >
+                <LogIn className="w-4 h-4" />
+                Bereits registriert? Hier einloggen
+              </a>
+              <p className="text-white/30 text-xs">Betatester gelangen direkt zu ihren Aufnahmen</p>
+            </div>
           )}
         </div>
       </main>
