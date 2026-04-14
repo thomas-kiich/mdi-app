@@ -1431,6 +1431,19 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                         </div>
                       </div>
                     </div>
+                    {/* Feedback-Einladung */}
+                    <div className="mt-8 text-center">
+                      <p className="text-zinc-400 mb-4 max-w-lg mx-auto">
+                        Wie hat dir die aktuelle EPISODE gefallen? Teile gerne deine Gedanken mit uns.
+                      </p>
+                      <a
+                        href="mailto:LKRforschung@gmail.com?subject=Meine Eindrücke zur aktuellen Episode"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white font-medium rounded-lg transition-colors shadow-lg"
+                      >
+                        <MessageSquare className="w-5 h-5 mr-2" />
+                        Meine Eindrücke.
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
