@@ -1105,3 +1105,15 @@
 - [x] PDF direkt im Browser ansehbar machen (Modal mit eingebettetem PDF-Viewer + Download-Button)
 
 - [x] ALADIN-Link (www.livingdesigns.de) im Gründer-Block ergänzt
+
+## Taminos Korrekturen – Impressum & Datenschutz
+### Impressum
+- [x] Scroll-Richtung fix: Seite soll von oben nach unten scrollen (beginnt momentan von unten)
+- [x] Nur deutsches Recht – Österreich und Schweiz-Hinweise entfernen
+- [x] Abschnitt 9 Datenschutzanfragen: 30-Tage-Frist-Satz entfernen
+### Datenschutz
+- [x] Nur deutsches Recht – Österreich und Schweiz-Hinweise entfernen
+- [x] Abschnitt 1 Verantwortlicher: Satz "Da der Verantwortliche..." komplett gestrichen
+- [x] Abschnitt 12 Ihre Rechte: 30-Tage-Satz entfernt
+- [x] Abschnitt 13: "nationalen" Datenschutz-Aufsichtsbehörde – AT/CH-Blöcke entfernt
+- [x] Abschnitt 14 (Änderungen) komplett gestrichen

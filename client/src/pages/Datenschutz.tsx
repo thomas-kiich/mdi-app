@@ -4,8 +4,8 @@ import { Link } from "wouter";
 
 export function Datenschutz() {
   return (
-    <div className="min-h-screen bg-black text-zinc-300 p-8 md:p-12 font-sans">
-      <div className="max-w-3xl mx-auto space-y-12">
+    <div className="min-h-screen bg-black text-zinc-300 font-sans">
+      <div className="max-w-3xl mx-auto px-8 py-12 space-y-12">
         <Link href="/">
           <Button variant="ghost" className="text-zinc-500 hover:text-white pl-0 gap-2">
             <ArrowLeft className="w-4 h-4" /> ZUR HAUPTSEITE
@@ -15,7 +15,7 @@ export function Datenschutz() {
         <div className="space-y-4">
           <h1 className="text-4xl font-light text-white tracking-tight">Datenschutzerklärung</h1>
           <p className="text-zinc-500 text-sm uppercase tracking-widest">
-            Gemäß DSGVO (EU) 2016/679, BDSG (DE), DSG (AT) und nDSG (CH) · Stand: April 2026
+            Gemäß DSGVO (EU) 2016/679 und BDSG (DE) · Stand: April 2026
           </p>
         </div>
 
@@ -46,15 +46,7 @@ export function Datenschutz() {
                 </a>
               </p>
             </div>
-            <p className="text-sm text-zinc-500">
-              Da der Verantwortliche seinen gewöhnlichen Aufenthalt in Deutschland hat, gilt
-              deutsches Datenschutzrecht (DSGVO in Verbindung mit dem BDSG) als vorrangiges
-              anwendbares Recht. Für Nutzer aus Österreich gilt zusätzlich das österreichische
-              Datenschutzgesetz (DSG, BGBl. I Nr. 165/1999 i.d.g.F.), soweit es über die DSGVO
-              hinausgehende nationale Regelungen enthält. Für Nutzer aus der Schweiz gilt das
-              neue Bundesgesetz über den Datenschutz (nDSG, in Kraft seit 1. September 2023)
-              in Verbindung mit der Datenschutzverordnung (DSV).
-            </p>
+
           </section>
 
           {/* 2. Übersicht der verarbeiteten Daten */}
@@ -504,8 +496,7 @@ export function Datenschutz() {
               <a href="mailto:LKRforschung@gmail.com" className="text-orange-400 hover:underline">
                 LKRforschung@gmail.com
               </a>{" "}
-              oder schriftlich an die oben genannte Adresse. Wir werden Ihre Anfrage innerhalb von
-              30 Tagen beantworten (Art. 12 Abs. 3 DSGVO).
+              oder schriftlich an die oben genannte Adresse.
             </p>
           </section>
 
@@ -513,12 +504,13 @@ export function Datenschutz() {
           <section className="space-y-3">
             <h2 className="text-white text-xl font-medium">13. Beschwerderecht bei der Aufsichtsbehörde</h2>
             <p>
-              Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde über die Verarbeitung
-              Ihrer personenbezogenen Daten durch uns zu beschweren (Art. 77 DSGVO i. V. m. § 19 BDSG).
+              Sie haben das Recht, sich bei einer nationalen Datenschutz-Aufsichtsbehörde über die
+              Verarbeitung Ihrer personenbezogenen Daten durch uns zu beschweren (Art. 77 DSGVO
+              i. V. m. § 19 BDSG).
             </p>
             <p>
-              Zuständig ist in Deutschland die Aufsichtsbehörde des Bundeslandes, in dem Sie Ihren
-              Wohnsitz haben, oder – für bundesweite Angelegenheiten – der:
+              Zuständig ist die Aufsichtsbehörde des Bundeslandes, in dem Sie Ihren Wohnsitz haben,
+              oder – für bundesweite Angelegenheiten – der:
             </p>
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
               <p className="text-white font-medium">Bundesbeauftragte für den Datenschutz und die Informationsfreiheit (BfDI)</p>
@@ -530,46 +522,9 @@ export function Datenschutz() {
                 </a>
               </p>
             </div>
-            <p className="mt-3">
-              Für Nutzer aus <strong className="text-zinc-300">Österreich</strong> ist die zuständige Aufsichtsbehörde:
-            </p>
-            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
-              <p className="text-white font-medium">Österreichische Datenschutzbehörde (DSB)</p>
-              <p>Barichgasse 40–42, 1030 Wien</p>
-              <p>
-                Web:{" "}
-                <a href="https://www.dsb.gv.at" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">
-                  www.dsb.gv.at
-                </a>
-              </p>
-            </div>
-            <p className="mt-3">
-              Für Nutzer aus der <strong className="text-zinc-300">Schweiz</strong> ist die zuständige Aufsichtsbehörde:
-            </p>
-            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 text-sm space-y-1">
-              <p className="text-white font-medium">Eidgenössischer Datenschutz- und Öffentlichkeitsbeauftragter (EDÖB)</p>
-              <p>Feldeggweg 1, 3003 Bern</p>
-              <p>
-                Web:{" "}
-                <a href="https://www.edoeb.admin.ch" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">
-                  www.edoeb.admin.ch
-                </a>
-              </p>
-            </div>
           </section>
 
-          {/* 14. Änderungen */}
-          <section className="space-y-3">
-            <h2 className="text-white text-xl font-medium">14. Änderungen dieser Datenschutzerklärung</h2>
-            <p>
-              Wir behalten uns vor, diese Datenschutzerklärung anzupassen, wenn sich rechtliche
-              Anforderungen ändern oder neue Funktionen eingeführt werden. Bei wesentlichen Änderungen,
-              die Ihre Rechte berühren, werden wir Sie per E-Mail oder durch einen deutlichen Hinweis
-              auf der Website informieren. Das Datum der letzten Aktualisierung ist stets oben
-              angegeben. Die fortgesetzte Nutzung des Dienstes nach einer Änderung gilt als
-              Kenntnisnahme der aktualisierten Erklärung.
-            </p>
-          </section>
+
 
         </div>
 
