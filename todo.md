@@ -1097,3 +1097,6 @@
 - [x] Executive Summary als PDF-Download im Footer (Für Partner & Investoren)
 - [x] "Über den Gründer"-Block auf Startseite (ALADIN, Echobell, AUMEGA)
 - [x] Dieter Broers Testimonial-Platzhalter in "Stimmen aus dem Feld" (amber-Farbe, "Anfrage ausstehend"-Badge)
+
+## Korrektur Stimmen aus dem Feld
+- [x] Dieter Broers Platzhalter entfernt – Stimmen aus dem Feld ist für User-Testimonials reserviert

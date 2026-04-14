@@ -1453,26 +1453,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                             <p className="mb-2">Und noch eine Erfahrung: Ich hab nachdem ich diese 6 Atemzüge in 1 Minute gemacht habe sofort gespürt, dass ich ruhiger wurde – und es war wie eine <strong className="text-orange-400">Energietankstelle</strong>."</p>
                           </blockquote>
                         </div>
-                        {/* Dieter Broers – Platzhalter (Anfrage ausstehend) */}
-                        <div className="bg-zinc-900/40 border border-amber-500/30 rounded-2xl p-8 md:p-12 relative overflow-hidden group mt-6">
-                          <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-amber-400 to-yellow-600" />
-                          <div className="absolute top-4 right-4 bg-amber-500/10 border border-amber-500/30 rounded-full px-3 py-1 text-amber-400 text-xs font-medium">Anfrage ausstehend</div>
-                          <MessageSquare className="absolute top-8 right-8 w-12 h-12 text-amber-500/10 group-hover:text-amber-500/20 transition-colors" />
-                          <div className="flex items-center gap-4 mb-6">
-                            <div className="w-12 h-12 rounded-full bg-amber-500/20 flex items-center justify-center border border-amber-500/30">
-                              <span className="text-amber-400 font-bold text-lg">DB</span>
-                            </div>
-                            <div>
-                              <h4 className="text-white font-medium">Dieter Broers</h4>
-                              <p className="text-zinc-500 text-sm">Biophysiker · Bewusstseinsforscher · Co-Autor AUMEGA</p>
-                            </div>
-                          </div>
-                          <blockquote className="text-zinc-500 leading-relaxed text-lg italic">
-                            <p>"Zitat folgt nach Rückmeldung von Dieter Broers zur gemeinsamen Zusammenarbeit an AUMEGA – der CD zur Gehirnaktivierung durch Frequenz und Klang."</p>
-                          </blockquote>
-                          <p className="mt-4 text-zinc-600 text-xs">Weitere Informationen: <a href="https://dieterbroers.com" target="_blank" rel="noopener noreferrer" className="text-amber-500/60 hover:text-amber-400 transition-colors">dieterbroers.com</a></p>
-                        </div>
-
                         {/* Johannes E. Statement */}
                         <div className="bg-zinc-900/40 border border-orange-500/20 rounded-2xl p-8 md:p-12 relative overflow-hidden group mt-6">
                           <div className="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-orange-400 to-red-600" />
