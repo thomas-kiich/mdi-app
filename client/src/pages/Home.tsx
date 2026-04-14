@@ -216,6 +216,7 @@ export default function Home() {
 
   // Show onboarding tour on first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showPdfViewer, setShowPdfViewer] = useState(false);
 
   // useEffect removed to disable the onboarding tour popup
 
@@ -1787,7 +1788,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                     <div className="bg-zinc-800/60 rounded-lg p-4 border border-zinc-700/50">
                       <p className="text-orange-400 font-semibold mb-1">ALADIN</p>
-                      <p className="text-zinc-400 leading-relaxed">Energetische Wasserkaraffe · TCenergydesign · Vertrieb in USA, Japan, Europa · heute: Steffen Löwe, Löwe Versandhandel GmbH</p>
+                      <p className="text-zinc-400 leading-relaxed">Energetische Wasserkaraffe · TCenergydesign · Vertrieb in USA, Japan, Europa · heute: <a href="https://www.livingdesigns.de" target="_blank" rel="noopener noreferrer" className="text-orange-500/70 hover:text-orange-400 transition-colors">livingdesigns.de</a></p>
                     </div>
                     <div className="bg-zinc-800/60 rounded-lg p-4 border border-zinc-700/50">
                       <p className="text-orange-400 font-semibold mb-1">ECHOBELL</p>
@@ -1800,15 +1801,24 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                   </div>
                   <div className="mt-4 pt-4 border-t border-zinc-700/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <p className="text-zinc-500 text-xs italic">"Frequenz ist nicht abstrakt – sie ist erfahrbar, messbar und transformativ."</p>
-                    <a
-                      href="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/KIICH_Executive_Summary_mit_Referenzen_a7e8d277.pdf"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-300 hover:text-white rounded-lg text-xs font-medium transition-colors shrink-0"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Executive Summary (PDF)
-                    </a>
+                    <div className="flex gap-2 shrink-0">
+                      <button
+                        onClick={() => setShowPdfViewer(true)}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 border border-orange-500 text-white rounded-lg text-xs font-medium transition-colors"
+                      >
+                        <ChevronRight className="w-3.5 h-3.5" />
+                        Ansehen
+                      </button>
+                      <a
+                        href="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/KIICH_Executive_Summary_mit_Referenzen_a7e8d277.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-300 hover:text-white rounded-lg text-xs font-medium transition-colors"
+                      >
+                        <Download className="w-3.5 h-3.5" />
+                        Download
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -1834,6 +1844,63 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
           loop
           style={{ display: 'none' }}
         />
+
+        {/* PDF-Viewer Modal */}
+        {showPdfViewer && (
+          <div
+            className="fixed inset-0 z-[200] bg-black/90 flex flex-col"
+            onClick={(e) => { if (e.target === e.currentTarget) setShowPdfViewer(false); }}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between px-4 py-3 bg-zinc-900 border-b border-zinc-800 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-orange-500" />
+                <span className="text-white font-medium text-sm">KIICH Executive Summary</span>
+                <span className="text-zinc-500 text-xs">Für Partner &amp; Investoren</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/KIICH_Executive_Summary_mit_Referenzen_a7e8d277.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-600 text-zinc-300 hover:text-white rounded-lg text-xs font-medium transition-colors"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  Download
+                </a>
+                <button
+                  onClick={() => setShowPdfViewer(false)}
+                  className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors"
+                  aria-label="Schließen"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            {/* PDF Embed */}
+            <div className="flex-1 overflow-hidden">
+              <iframe
+                src={`https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/KIICH_Executive_Summary_mit_Referenzen_a7e8d277.pdf#toolbar=0&navpanes=0&scrollbar=1`}
+                className="w-full h-full border-0"
+                title="KIICH Executive Summary"
+              />
+            </div>
+            {/* Mobile Fallback */}
+            <div className="sm:hidden shrink-0 px-4 py-3 bg-zinc-900 border-t border-zinc-800 text-center">
+              <p className="text-zinc-500 text-xs mb-2">PDF-Vorschau auf Mobilgeräten nicht verfügbar</p>
+              <a
+                href="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/KIICH_Executive_Summary_mit_Referenzen_a7e8d277.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-sm font-medium transition-colors"
+              >
+                <Download className="w-4 h-4" />
+                PDF öffnen
+              </a>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

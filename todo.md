@@ -1100,3 +1100,8 @@
 
 ## Korrektur Stimmen aus dem Feld
 - [x] Dieter Broers Platzhalter entfernt – Stimmen aus dem Feld ist für User-Testimonials reserviert
+
+## Executive Summary PDF-Viewer
+- [x] PDF direkt im Browser ansehbar machen (Modal mit eingebettetem PDF-Viewer + Download-Button)
+
+- [x] ALADIN-Link (www.livingdesigns.de) im Gründer-Block ergänzt
