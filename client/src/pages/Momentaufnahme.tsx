@@ -22,6 +22,12 @@ import {
   Plug,
   Smartphone,
   CreditCard,
+  Plus,
+  Check,
+  Bell,
+  Eye,
+  Volume2,
+  X,
 } from "lucide-react";
 import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { EinladungsLink } from "@/components/EinladungsLink";
@@ -192,7 +198,7 @@ export default function Momentaufnahme() {
   const [summaryDatum, setSummaryDatum] = useState("");
   const [isSummaryLoading, setIsSummaryLoading] = useState(false);
   // Strategisches Summary
-  const [summaryModus, setSummaryModus] = useState<"reflexion" | "strategie">("reflexion");
+  const [summaryModus, setSummaryModus] = useState<"reflexion" | "strategie" | "erledigungen" | "erinnerungen" | "visionen">("reflexion");
   const [strategischesText, setStrategischesText] = useState("");
   const [strategischesDatum, setStrategischesDatum] = useState("");
   const [isStrategischLaden, setIsStrategischLaden] = useState(false);
@@ -283,6 +289,28 @@ export default function Momentaufnahme() {
   const [archivExpandedId, setArchivExpandedId] = useState<number | null>(null);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
 
+  // ─── PLANER: Erledigungen, Visionen, Erinnerungen ────────────────────────
+  const { data: erledigungenData, refetch: refetchErledigungen } = trpc.planer.erledigungenLaden.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: visionenData, refetch: refetchVisionen } = trpc.planer.visionenLaden.useQuery(undefined, { enabled: isAuthenticated });
+  const { data: erinnerungenData, refetch: refetchErinnerungen } = trpc.planer.erinnerungenLaden.useQuery(undefined, { enabled: isAuthenticated });
+  const erledigungHinzufuegenMutation = trpc.planer.erledigungHinzufuegen.useMutation();
+  const erledigungLoeschenMutation = trpc.planer.erledigungLoeschen.useMutation();
+  const visionHinzufuegenMutation = trpc.planer.visionHinzufuegen.useMutation();
+  const visionLoeschenMutation = trpc.planer.visionLoeschen.useMutation();
+  const erinnerungHinzufuegenMutation = trpc.planer.erinnerungHinzufuegen.useMutation();
+  const erinnerungBestaetigenMutation = trpc.planer.erinnerungBestaetigen.useMutation();
+  const erinnerungAusgeloestMutation = trpc.planer.erinnerungAusgeloest.useMutation();
+  const [planerNeuerText, setPlanerNeuerText] = useState("");
+  const [planerNeueErinnerung, setPlanerNeueErinnerung] = useState("");
+  const [planerLaedt, setPlanerLaedt] = useState(false);
+  // Fällige Erinnerungen (Polling alle 30 Sek)
+  const [jetztMs] = useState(() => Date.now());
+  const { data: faelligeErinnerungen, refetch: refetchFaellige } = trpc.planer.faelligeErinnerungen.useQuery(
+    { jetztMs: Date.now() },
+    { enabled: isAuthenticated, refetchInterval: 30000 }
+  );
+  const [erinnerungsPopup, setErinnerungsPopup] = useState<{ id: number; text: string } | null>(null);
+
   // Vorname aus Profil laden und ggf. Dialog zeigen
   // Nur einmal fragen — wenn User "Später" geklickt hat, nicht mehr nerven
   useEffect(() => {
@@ -298,6 +326,14 @@ export default function Momentaufnahme() {
       }
     }
   }, [profilData]);
+
+  // Fällige Erinnerungen auslösen
+  useEffect(() => {
+    if (!faelligeErinnerungen || faelligeErinnerungen.length === 0) return;
+    const erste = faelligeErinnerungen[0];
+    setErinnerungsPopup({ id: erste.id, text: erste.text });
+    erinnerungAusgeloestMutation.mutate({ id: erste.id });
+  }, [faelligeErinnerungen]);
 
   const handleVornameBestaetigen = useCallback(async () => {
     const name = vornameInput.trim();
@@ -649,8 +685,6 @@ export default function Momentaufnahme() {
       setIsMASpeaking(false);
       return;
     }
-    const basisText = summaryModus === "strategie" ? gefilterterStrategieText : summaryText;
-    if (!basisText) return;
     // Tageszeit-abhängige Begrüßung
     const stunde = new Date().getHours();
     const tagesgruss = stunde >= 5 && stunde < 11
@@ -658,12 +692,32 @@ export default function Momentaufnahme() {
       : stunde >= 11 && stunde < 18
         ? "Hallo"
         : "Guten Abend";
-    // Natürliche Einleitung je nach Modus
-    const einleitung = summaryModus === "strategie"
-      ? "Hier sind deine offenen Aufgaben für heute:\n\n"
-      : vorname
+    const namenszusatz = vorname ? `, ${vorname}` : "";
+
+    let basisText = "";
+    let einleitung = "";
+    if (summaryModus === "strategie") {
+      basisText = gefilterterStrategieText;
+      einleitung = `${tagesgruss}${namenszusatz}. Hier sind deine offenen Aufgaben für heute:\n\n`;
+    } else if (summaryModus === "erledigungen") {
+      basisText = (erledigungenData ?? []).map((e, i) => `${i + 1}. ${e.text}`).join("\n");
+      einleitung = `${tagesgruss}${namenszusatz}. Hier sind deine Erledigungen:\n\n`;
+    } else if (summaryModus === "visionen") {
+      basisText = (visionenData ?? []).map((v, i) => `${i + 1}. ${v.text}`).join("\n");
+      einleitung = `${tagesgruss}${namenszusatz}. Hier sind deine Visionen:\n\n`;
+    } else if (summaryModus === "erinnerungen") {
+      basisText = (erinnerungenData ?? []).map((e, i) => {
+        const d = new Date(e.faelligkeitMs);
+        return `${i + 1}. ${e.text} – ${d.toLocaleString("de-DE", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })}`;
+      }).join("\n");
+      einleitung = `${tagesgruss}${namenszusatz}. Hier sind deine Erinnerungen:\n\n`;
+    } else {
+      basisText = summaryText;
+      einleitung = vorname
         ? `${tagesgruss}, ${vorname}. Hier ist deine Tages-Reflexion:\n\n`
         : `${tagesgruss}. Hier ist deine Tages-Reflexion:\n\n`;
+    }
+    if (!basisText) return;
     const aktiverText = einleitung + basisText;
     setIsMASpeaking(true);
     try {
@@ -690,7 +744,7 @@ export default function Momentaufnahme() {
       setIsMASpeaking(false);
       speak(aktiverText);
     }
-  }, [isMASpeaking, summaryModus, summaryText, gefilterterStrategieText, vorname, elevenLabsTTSMutation, speak]);
+  }, [isMASpeaking, summaryModus, summaryText, gefilterterStrategieText, erledigungenData, visionenData, erinnerungenData, vorname, elevenLabsTTSMutation, speak]);
 
   // Aufnahme löschen
   const handleLoeschen = useCallback(async (id: number) => {
@@ -894,48 +948,72 @@ export default function Momentaufnahme() {
 
 
 
-      {/* Tages-Zusammenfassung */}
-      {showSummary && (summaryText || strategischesText) && (
+      {/* Tages-Zusammenfassung + Planer-Tabs */}
+      {(showSummary && (summaryText || strategischesText)) || isAuthenticated ? (
         <div className="mx-5 mb-4 p-4 rounded-2xl bg-gradient-to-br from-violet-900/40 to-blue-900/40 border border-violet-500/20">
-          {/* Toggle Reflexion / Strategie */}
-          <div className="flex items-center gap-1 mb-3 bg-white/5 rounded-xl p-1">
+          {/* Vier Tabs: Reflexion / Erledigungen / Erinnerungen / Visionen */}
+          <div className="grid grid-cols-4 gap-0.5 mb-3 bg-white/5 rounded-xl p-1">
             <button
               onClick={() => setSummaryModus("reflexion")}
               className={cn(
-                "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium transition-all",
+                "flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg text-[10px] font-medium transition-all",
                 summaryModus === "reflexion"
                   ? "bg-violet-600 text-white shadow-sm"
                   : "text-white/40 hover:text-white/70"
               )}
             >
               <Sparkles className="w-3 h-3" />
-              Reflexion
+              <span>Reflexion</span>
             </button>
             <button
-              onClick={() => {
-                setSummaryModus("strategie");
-                // Strategisches Summary laden wenn noch nicht vorhanden
-                if (!strategischesText) handleStrategischesSummary();
-              }}
+              onClick={() => setSummaryModus("erledigungen")}
               className={cn(
-                "flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium transition-all",
-                summaryModus === "strategie"
+                "flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg text-[10px] font-medium transition-all",
+                summaryModus === "erledigungen"
                   ? "bg-emerald-600 text-white shadow-sm"
                   : "text-white/40 hover:text-white/70"
               )}
             >
-              <span className="text-xs">🎯</span>
-              Strategie
+              <Check className="w-3 h-3" />
+              <span>Erledigungen</span>
+            </button>
+            <button
+              onClick={() => setSummaryModus("erinnerungen")}
+              className={cn(
+                "flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg text-[10px] font-medium transition-all",
+                summaryModus === "erinnerungen"
+                  ? "bg-amber-600 text-white shadow-sm"
+                  : "text-white/40 hover:text-white/70"
+              )}
+            >
+              <Bell className="w-3 h-3" />
+              <span>Erinnerungen</span>
+            </button>
+            <button
+              onClick={() => setSummaryModus("visionen")}
+              className={cn(
+                "flex flex-col items-center justify-center gap-0.5 py-1.5 rounded-lg text-[10px] font-medium transition-all",
+                summaryModus === "visionen"
+                  ? "bg-indigo-600 text-white shadow-sm"
+                  : "text-white/40 hover:text-white/70"
+              )}
+            >
+              <Eye className="w-3 h-3" />
+              <span>Visionen</span>
             </button>
           </div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               {summaryModus === "reflexion" ? (
-                <><Sparkles className="w-4 h-4 text-violet-400" />
-                <span className="text-xs font-medium text-violet-300">Das war mein Tag</span></>
+                <><Sparkles className="w-4 h-4 text-violet-400" /><span className="text-xs font-medium text-violet-300">Das war mein Tag</span></>
+              ) : summaryModus === "erledigungen" ? (
+                <><Check className="w-4 h-4 text-emerald-400" /><span className="text-xs font-medium text-emerald-300">Meine Erledigungen</span></>
+              ) : summaryModus === "erinnerungen" ? (
+                <><Bell className="w-4 h-4 text-amber-400" /><span className="text-xs font-medium text-amber-300">Meine Erinnerungen</span></>
+              ) : summaryModus === "visionen" ? (
+                <><Eye className="w-4 h-4 text-indigo-400" /><span className="text-xs font-medium text-indigo-300">Meine Visionen</span></>
               ) : (
-                <><span className="text-sm">🎯</span>
-                <span className="text-xs font-medium text-emerald-300">Meine offenen Aufgaben</span></>
+                <><span className="text-sm">🎯</span><span className="text-xs font-medium text-emerald-300">Meine offenen Aufgaben</span></>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -988,7 +1066,7 @@ export default function Momentaufnahme() {
           </div>
           <div className="flex items-center justify-between mb-2">
             <p className="text-xs text-white/60">
-              {summaryModus === "strategie" ? strategischesDatum : summaryDatum}
+              {summaryModus === "strategie" ? strategischesDatum : summaryModus === "reflexion" ? summaryDatum : ""}
             </p>
             {summaryModus === "reflexion" && (
               vorname ? (
@@ -1016,110 +1094,308 @@ export default function Momentaufnahme() {
               <span className="text-xs text-emerald-300">MA analysiert deine Aufgaben...</span>
             </div>
           )}
-          {/* Summary-Text je nach Modus */}
-          {summaryModus === "reflexion" ? (
+          {/* Tab-Inhalte */}
+
+          {/* REFLEXION */}
+          {summaryModus === "reflexion" && (
             <div>
-              <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">{summaryText}</p>
-              {/* MA Vorlesen – Reflexion */}
+              {summaryText ? (
+                <p className="text-sm text-white/80 leading-relaxed whitespace-pre-wrap">{summaryText}</p>
+              ) : (
+                <p className="text-sm text-white/30 italic">Noch kein Tages-Summary vorhanden. Erstelle zuerst eine Aufnahme.</p>
+              )}
               {summaryText && (
                 <div className="mt-3">
-                  <button
-                    onClick={handleMASpeakSummary}
-                    disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
-                    className={cn(
-                      "w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold transition-all",
-                      isMASpeaking
-                        ? "bg-violet-500/20 border border-violet-500/40 text-violet-300"
-                        : "bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/40 text-violet-400 hover:text-violet-300",
-                      elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait"
-                    )}
-                  >
-                    {elevenLabsTTSMutation.isPending && !isMASpeaking ? (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    ) : isMASpeaking ? (
-                      <Square className="w-3.5 h-3.5 fill-current" />
-                    ) : (
-                      <Play className="w-3.5 h-3.5 fill-current" />
-                    )}
+                  <button onClick={handleMASpeakSummary} disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
+                    className={cn("w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold transition-all",
+                      isMASpeaking ? "bg-violet-500/20 border border-violet-500/40 text-violet-300" : "bg-violet-500/10 hover:bg-violet-500/20 border border-violet-500/20 hover:border-violet-500/40 text-violet-400 hover:text-violet-300",
+                      elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait")}>
+                    {elevenLabsTTSMutation.isPending && !isMASpeaking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : isMASpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
                     <span>{isMASpeaking ? "MA stoppen" : "MA liest Reflexion vor"}</span>
                   </button>
                 </div>
               )}
             </div>
-          ) : (
-            !isStrategischLaden && (
-              <div>
-                {/* Gravitationszentrum-Filter-Chips */}
-                {strategischesText && (
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {ALLE_GZ.map(gz => {
-                      const cfg = KATEGORIE_CONFIG[gz as keyof typeof KATEGORIE_CONFIG];
-                      const aktiv = aktiveGZ.has(gz);
-                      return (
-                        <button
-                          key={gz}
-                          onClick={() => toggleGZ(gz)}
-                          className={cn(
-                            "flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-all",
-                            aktiv ? cfg.farbe : "bg-white/3 text-white/20 border-white/10 hover:text-white/40"
-                          )}
-                          title={aktiv ? `${gz} ausblenden` : `${gz} einblenden`}
-                        >
-                          <span>{cfg.emoji}</span>
-                          <span>{gz}</span>
-                        </button>
-                      );
-                    })}
-                    {aktiveGZ.size < ALLE_GZ.length && (
-                      <button
-                        onClick={() => setAktiveGZ(new Set(ALLE_GZ))}
-                        className="px-2 py-0.5 rounded-full text-[10px] text-white/30 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all"
-                      >
-                        Alle
+          )}
+
+          {/* STRATEGIE */}
+          {summaryModus === "strategie" && !isStrategischLaden && (
+            <div>
+              {strategischesText && (
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {ALLE_GZ.map(gz => {
+                    const cfg = KATEGORIE_CONFIG[gz as keyof typeof KATEGORIE_CONFIG];
+                    const aktiv = aktiveGZ.has(gz);
+                    return (
+                      <button key={gz} onClick={() => toggleGZ(gz)}
+                        className={cn("flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium border transition-all",
+                          aktiv ? cfg.farbe : "bg-white/3 text-white/20 border-white/10 hover:text-white/40")}
+                        title={aktiv ? `${gz} ausblenden` : `${gz} einblenden`}>
+                        <span>{cfg.emoji}</span><span>{gz}</span>
                       </button>
-                    )}
-                  </div>
-                )}
-                {/* Gefilterter Strategie-Text */}
-                <div className="text-sm text-white/80 leading-relaxed">
-                  {strategischesText ? (
-                    <p className="whitespace-pre-wrap">
-                      {gefilterterStrategieText || (
-                        <span className="text-white/30 italic">Keine Aufgaben für die gewählten Gravitationszentren.</span>
-                      )}
-                    </p>
-                  ) : (
-                    <span className="text-white/30 italic">Noch kein strategisches Summary vorhanden.</span>
+                    );
+                  })}
+                  {aktiveGZ.size < ALLE_GZ.length && (
+                    <button onClick={() => setAktiveGZ(new Set(ALLE_GZ))}
+                      className="px-2 py-0.5 rounded-full text-[10px] text-white/30 hover:text-emerald-300 border border-white/10 hover:border-emerald-500/30 transition-all">Alle</button>
                   )}
                 </div>
-
-                {/* MA Vorlesen – Strategie */}
-                {gefilterterStrategieText && (
-                  <div className="mt-3">
-                    <button
-                      onClick={handleMASpeakSummary}
-                      disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
-                      className={cn(
-                        "w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold transition-all",
-                        isMASpeaking
-                          ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300"
-                          : "bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 hover:text-emerald-300",
-                        elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait"
-                      )}
-                    >
-                      {elevenLabsTTSMutation.isPending && !isMASpeaking ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : isMASpeaking ? (
-                        <Square className="w-3.5 h-3.5 fill-current" />
-                      ) : (
-                        <Play className="w-3.5 h-3.5 fill-current" />
-                      )}
-                      <span>{isMASpeaking ? "MA stoppen" : "MA liest Aufgaben vor"}</span>
-                    </button>
-                  </div>
+              )}
+              <div className="text-sm text-white/80 leading-relaxed">
+                {strategischesText ? (
+                  <p className="whitespace-pre-wrap">{gefilterterStrategieText || <span className="text-white/30 italic">Keine Aufgaben für die gewählten Gravitationszentren.</span>}</p>
+                ) : (
+                  <span className="text-white/30 italic">Noch kein strategisches Summary vorhanden.</span>
                 )}
               </div>
-            )
+              {gefilterterStrategieText && (
+                <div className="mt-3">
+                  <button onClick={handleMASpeakSummary} disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
+                    className={cn("w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold transition-all",
+                      isMASpeaking ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300" : "bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-400 hover:text-emerald-300",
+                      elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait")}>
+                    {elevenLabsTTSMutation.isPending && !isMASpeaking ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : isMASpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
+                    <span>{isMASpeaking ? "MA stoppen" : "MA liest Aufgaben vor"}</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ERLEDIGUNGEN */}
+          {summaryModus === "erledigungen" && (
+            <div className="space-y-2">
+              {/* Neue Erledigung hinzufügen */}
+              <div className="flex gap-2 mb-3">
+                <input
+                  type="text"
+                  value={planerNeuerText}
+                  onChange={e => setPlanerNeuerText(e.target.value)}
+                  onKeyDown={async e => {
+                    if (e.key === "Enter" && planerNeuerText.trim()) {
+                      setPlanerLaedt(true);
+                      await erledigungHinzufuegenMutation.mutateAsync({ text: planerNeuerText.trim() });
+                      setPlanerNeuerText("");
+                      await refetchErledigungen();
+                      setPlanerLaedt(false);
+                    }
+                  }}
+                  placeholder="Neue Erledigung..."
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-emerald-500/40"
+                />
+                <button
+                  onClick={async () => {
+                    if (!planerNeuerText.trim()) return;
+                    setPlanerLaedt(true);
+                    await erledigungHinzufuegenMutation.mutateAsync({ text: planerNeuerText.trim() });
+                    setPlanerNeuerText("");
+                    await refetchErledigungen();
+                    setPlanerLaedt(false);
+                  }}
+                  disabled={planerLaedt || !planerNeuerText.trim()}
+                  className="p-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-40 transition-colors"
+                >
+                  {planerLaedt ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                </button>
+              </div>
+              {/* Liste */}
+              {(erledigungenData ?? []).length === 0 ? (
+                <p className="text-xs text-white/30 italic text-center py-4">Keine offenen Erledigungen. Super!</p>
+              ) : (
+                (erledigungenData ?? []).map(item => (
+                  <div key={item.id} className="flex items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
+                    <button
+                      onClick={async () => {
+                        await erledigungLoeschenMutation.mutateAsync({ id: item.id });
+                        await refetchErledigungen();
+                        toast.success("Erledigt! ✓");
+                      }}
+                      className="w-5 h-5 rounded-full border-2 border-emerald-500/50 hover:bg-emerald-500/20 flex items-center justify-center flex-shrink-0 transition-colors"
+                      title="Als erledigt markieren"
+                    >
+                      <Check className="w-3 h-3 text-emerald-400 opacity-0 hover:opacity-100" />
+                    </button>
+                    <span className="flex-1 text-sm text-white/80">{item.text}</span>
+                    {item.kategorie && (
+                      <span className={cn("text-[10px] px-1.5 py-0.5 rounded-full border", KATEGORIE_CONFIG[item.kategorie as keyof typeof KATEGORIE_CONFIG]?.farbe ?? "")}>
+                        {item.kategorie}
+                      </span>
+                    )}
+                    <button
+                      onClick={async () => {
+                        await erledigungLoeschenMutation.mutateAsync({ id: item.id });
+                        await refetchErledigungen();
+                      }}
+                      className="p-1 rounded-full hover:bg-red-500/20 text-white/20 hover:text-red-400 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))
+              )}
+              {/* MA vorlesen */}
+              {(erledigungenData ?? []).length > 0 && (
+                <button onClick={handleMASpeakSummary} disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
+                  className={cn("w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold mt-2 transition-all",
+                    isMASpeaking ? "bg-emerald-500/20 border border-emerald-500/40 text-emerald-300" : "bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/20 text-emerald-400",
+                    elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait")}>
+                  {isMASpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  <span>{isMASpeaking ? "MA stoppen" : "MA liest Erledigungen vor"}</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* ERINNERUNGEN */}
+          {summaryModus === "erinnerungen" && (
+            <div className="space-y-2">
+              {/* Neue Erinnerung per Text */}
+              <div className="flex gap-2 mb-3">
+                <input
+                  type="text"
+                  value={planerNeueErinnerung}
+                  onChange={e => setPlanerNeueErinnerung(e.target.value)}
+                  placeholder="z.B. Erinnere mich um 10 Uhr, Max anzurufen"
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-amber-500/40"
+                  onKeyDown={async e => {
+                    if (e.key === "Enter" && planerNeueErinnerung.trim()) {
+                      setPlanerLaedt(true);
+                      try {
+                        const r = await erinnerungHinzufuegenMutation.mutateAsync({ sprachbefehl: planerNeueErinnerung.trim(), jetzt: new Date().toISOString() });
+                        toast.success(`Erinnerung gesetzt: ${r.text}`);
+                        setPlanerNeueErinnerung("");
+                        await refetchErinnerungen();
+                      } catch { toast.error("Erinnerung konnte nicht gesetzt werden"); }
+                      finally { setPlanerLaedt(false); }
+                    }
+                  }}
+                />
+                <button
+                  onClick={async () => {
+                    if (!planerNeueErinnerung.trim()) return;
+                    setPlanerLaedt(true);
+                    try {
+                      const r = await erinnerungHinzufuegenMutation.mutateAsync({ sprachbefehl: planerNeueErinnerung.trim(), jetzt: new Date().toISOString() });
+                      toast.success(`Erinnerung gesetzt: ${r.text}`);
+                      setPlanerNeueErinnerung("");
+                      await refetchErinnerungen();
+                    } catch { toast.error("Erinnerung konnte nicht gesetzt werden"); }
+                    finally { setPlanerLaedt(false); }
+                  }}
+                  disabled={planerLaedt || !planerNeueErinnerung.trim()}
+                  className="p-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white disabled:opacity-40 transition-colors"
+                >
+                  {planerLaedt ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4" />}
+                </button>
+              </div>
+              <p className="text-[10px] text-white/30 -mt-2 mb-2">MA versteht natürliche Sprache: "Erinnere mich um 10 Uhr heute, Max anzurufen"</p>
+              {/* Liste */}
+              {(erinnerungenData ?? []).length === 0 ? (
+                <p className="text-xs text-white/30 italic text-center py-4">Keine Erinnerungen gesetzt.</p>
+              ) : (
+                (erinnerungenData ?? []).map(item => {
+                  const faellig = new Date(item.faelligkeitMs);
+                  const istFaellig = item.faelligkeitMs <= Date.now();
+                  return (
+                    <div key={item.id} className={cn("flex items-center gap-2 p-3 rounded-xl border", istFaellig ? "bg-amber-900/20 border-amber-500/30" : "bg-white/5 border-white/10")}>
+                      <Bell className={cn("w-4 h-4 flex-shrink-0", istFaellig ? "text-amber-400" : "text-white/30")} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-white/80 truncate">{item.text}</p>
+                        <p className="text-[10px] text-white/30">{faellig.toLocaleString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" })}</p>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          await erinnerungBestaetigenMutation.mutateAsync({ id: item.id });
+                          await refetchErinnerungen();
+                        }}
+                        className="p-1 rounded-full hover:bg-red-500/20 text-white/20 hover:text-red-400 transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+              {/* MA vorlesen */}
+              {(erinnerungenData ?? []).length > 0 && (
+                <button onClick={handleMASpeakSummary} disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
+                  className={cn("w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold mt-2 transition-all",
+                    isMASpeaking ? "bg-amber-500/20 border border-amber-500/40 text-amber-300" : "bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-400",
+                    elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait")}>
+                  {isMASpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  <span>{isMASpeaking ? "MA stoppen" : "MA liest Erinnerungen vor"}</span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* VISIONEN */}
+          {summaryModus === "visionen" && (
+            <div className="space-y-2">
+              {/* Neue Vision hinzufügen */}
+              <div className="flex gap-2 mb-3">
+                <input
+                  type="text"
+                  value={planerNeuerText}
+                  onChange={e => setPlanerNeuerText(e.target.value)}
+                  onKeyDown={async e => {
+                    if (e.key === "Enter" && planerNeuerText.trim()) {
+                      setPlanerLaedt(true);
+                      await visionHinzufuegenMutation.mutateAsync({ text: planerNeuerText.trim() });
+                      setPlanerNeuerText("");
+                      await refetchVisionen();
+                      setPlanerLaedt(false);
+                    }
+                  }}
+                  placeholder="Meine Vision..."
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-indigo-500/40"
+                />
+                <button
+                  onClick={async () => {
+                    if (!planerNeuerText.trim()) return;
+                    setPlanerLaedt(true);
+                    await visionHinzufuegenMutation.mutateAsync({ text: planerNeuerText.trim() });
+                    setPlanerNeuerText("");
+                    await refetchVisionen();
+                    setPlanerLaedt(false);
+                  }}
+                  disabled={planerLaedt || !planerNeuerText.trim()}
+                  className="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white disabled:opacity-40 transition-colors"
+                >
+                  {planerLaedt ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                </button>
+              </div>
+              {/* Liste */}
+              {(visionenData ?? []).length === 0 ? (
+                <p className="text-xs text-white/30 italic text-center py-4">Noch keine Visionen eingetragen. Was träumst du dir?</p>
+              ) : (
+                (visionenData ?? []).map(item => (
+                  <div key={item.id} className="flex items-center gap-2 p-3 rounded-xl bg-white/5 border border-white/10">
+                    <Eye className="w-4 h-4 text-indigo-400/60 flex-shrink-0" />
+                    <span className="flex-1 text-sm text-white/80">{item.text}</span>
+                    <button
+                      onClick={async () => {
+                        await visionLoeschenMutation.mutateAsync({ id: item.id });
+                        await refetchVisionen();
+                      }}
+                      className="p-1 rounded-full hover:bg-red-500/20 text-white/20 hover:text-red-400 transition-colors"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ))
+              )}
+              {/* MA vorlesen */}
+              {(visionenData ?? []).length > 0 && (
+                <button onClick={handleMASpeakSummary} disabled={elevenLabsTTSMutation.isPending && !isMASpeaking}
+                  className={cn("w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-semibold mt-2 transition-all",
+                    isMASpeaking ? "bg-indigo-500/20 border border-indigo-500/40 text-indigo-300" : "bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-indigo-400",
+                    elevenLabsTTSMutation.isPending && !isMASpeaking && "opacity-50 cursor-wait")}>
+                  {isMASpeaking ? <Square className="w-3.5 h-3.5 fill-current" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  <span>{isMASpeaking ? "MA stoppen" : "MA liest Visionen vor"}</span>
+                </button>
+              )}
+            </div>
           )}
           {/* KI-Kennzeichnung (EU AI Act Art. 50) */}
           <div className="mt-3 pt-3 border-t border-violet-500/10 flex items-center gap-1.5">
@@ -1218,7 +1494,7 @@ export default function Momentaufnahme() {
           </div>
           )}
         </div>
-      )}
+      ) : null}
 
       {/* Summary-Archiv */}
       {archivData && archivData.length > 1 && (
@@ -1510,6 +1786,33 @@ export default function Momentaufnahme() {
         )}
       </div>
     </div>
+    {/* Erinnerungs-Popup */}
+    {erinnerungsPopup && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-5">
+        <div className="w-full max-w-sm bg-[#1a1a0f] border border-amber-500/40 rounded-3xl p-6 shadow-2xl">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <Bell className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <p className="text-xs text-amber-400/70 font-semibold tracking-wider uppercase">Erinnerung</p>
+              <p className="text-white font-semibold text-base">{erinnerungsPopup.text}</p>
+            </div>
+          </div>
+          <p className="text-white/40 text-xs mb-5">MA erinnert dich jetzt daran.</p>
+          <button
+            onClick={async () => {
+              await erinnerungBestaetigenMutation.mutateAsync({ id: erinnerungsPopup.id });
+              await refetchErinnerungen();
+              setErinnerungsPopup(null);
+            }}
+            className="w-full py-3 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-sm transition-colors"
+          >
+            Verstanden ✓
+          </button>
+        </div>
+      </div>
+    )}
     {/* DSGVO-Einwilligungsdialog */}
     {showConsentDialog && (
       <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm">

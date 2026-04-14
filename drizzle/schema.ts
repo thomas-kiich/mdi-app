@@ -382,3 +382,67 @@ export const betaInvites = mysqlTable("beta_invites", {
 
 export type BetaInvite = typeof betaInvites.$inferSelect;
 export type InsertBetaInvite = typeof betaInvites.$inferInsert;
+
+/**
+ * ERLEDIGUNGEN – kurzfristige Aufgaben/To-Dos
+ * Manuell eingetragen oder aus KI-Strategie übernommen.
+ * Können als erledigt markiert und gelöscht werden.
+ */
+export const erledigungen = mysqlTable("erledigungen", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Text der Aufgabe */
+  text: text("text").notNull(),
+  /** Gravitationszentrum (optional, aus Strategie-Analyse übernommen) */
+  kategorie: mysqlEnum("kategorie", ["ICH", "QUELL", "KONZEPT", "PROJEKT", "DIALOG", "WELT"]).default("PROJEKT"),
+  /** true = erledigt */
+  erledigt: boolean("erledigt").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Erledigung = typeof erledigungen.$inferSelect;
+export type InsertErledigung = typeof erledigungen.$inferInsert;
+
+/**
+ * VISIONEN – langfristige Ziele
+ * Manuell eingetragen, dauerhaft gespeichert.
+ */
+export const visionen = mysqlTable("visionen", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Text der Vision */
+  text: text("text").notNull(),
+  /** Optionale Kategorie */
+  kategorie: mysqlEnum("kategorie", ["ICH", "QUELL", "KONZEPT", "PROJEKT", "DIALOG", "WELT"]).default("QUELL"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Vision = typeof visionen.$inferSelect;
+export type InsertVision = typeof visionen.$inferInsert;
+
+/**
+ * ERINNERUNGEN – zeitbasierte Benachrichtigungen
+ * Nutzer spricht oder tippt eine Erinnerung mit Zeitangabe.
+ * MA extrahiert Zeit + Inhalt per LLM und speichert sie.
+ * Zum Fälligkeitszeitpunkt erscheint ein Popup + MA liest vor.
+ */
+export const erinnerungen = mysqlTable("erinnerungen", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Inhalt der Erinnerung (z.B. "Max anrufen") */
+  text: text("text").notNull(),
+  /** Originaler Sprachbefehl des Nutzers */
+  originalText: text("originalText"),
+  /** Fälligkeitszeitpunkt als UTC-Timestamp (ms) */
+  faelligkeitMs: int("faelligkeitMs").notNull().$type<number>(),
+  /** true = bereits ausgelöst/angezeigt */
+  ausgeloest: boolean("ausgeloest").default(false).notNull(),
+  /** true = vom Nutzer bestätigt/gelöscht */
+  bestaetigt: boolean("bestaetigt").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Erinnerung = typeof erinnerungen.$inferSelect;
+export type InsertErinnerung = typeof erinnerungen.$inferInsert;
