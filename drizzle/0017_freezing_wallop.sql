@@ -1,0 +1,1 @@
+ALTER TABLE `erinnerungen` MODIFY COLUMN `faelligkeitMs` bigint NOT NULL;

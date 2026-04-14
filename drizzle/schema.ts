@@ -1,4 +1,4 @@
-import { boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { bigint, boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -435,8 +435,8 @@ export const erinnerungen = mysqlTable("erinnerungen", {
   text: text("text").notNull(),
   /** Originaler Sprachbefehl des Nutzers */
   originalText: text("originalText"),
-  /** Fälligkeitszeitpunkt als UTC-Timestamp (ms) */
-  faelligkeitMs: int("faelligkeitMs").notNull().$type<number>(),
+  /** Fälligkeitszeitpunkt als UTC-Timestamp (ms) – bigint wegen ms-Größe */
+  faelligkeitMs: bigint("faelligkeitMs", { mode: "number" }).notNull(),
   /** true = bereits ausgelöst/angezeigt */
   ausgeloest: boolean("ausgeloest").default(false).notNull(),
   /** true = vom Nutzer bestätigt/gelöscht */

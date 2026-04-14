@@ -120,6 +120,13 @@
       "when": 1776145750994,
       "tag": "0016_new_naoko",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "5",
+      "when": 1776148472346,
+      "tag": "0017_freezing_wallop",
+      "breakpoints": true
     }
   ]
 }
