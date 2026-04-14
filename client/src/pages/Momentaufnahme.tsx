@@ -1935,24 +1935,30 @@ export default function Momentaufnahme() {
               )} />
             </span>
           </button>
-          {/* Snooze-Button */}
-          <button
-            onClick={async () => {
-              // Aktuelle Erinnerung als ausgelöst markieren
-              await erinnerungBestaetigenMutation.mutateAsync({ id: erinnerungsPopup.id });
-              // Neue Erinnerung in 10 Minuten setzen
-              await erinnerungDirektHinzufuegenMutation.mutateAsync({
-                text: erinnerungsPopup.text,
-                faelligkeitMs: Date.now() + 10 * 60 * 1000,
-              });
-              toast.success("Erinnerung in 10 Minuten wiederholt");
-              await refetchErinnerungen();
-              setErinnerungsPopup(null);
-            }}
-            className="w-full py-2.5 rounded-2xl bg-white/8 hover:bg-white/12 border border-white/10 text-white/60 hover:text-white/80 font-semibold text-sm transition-colors mb-2"
-          >
-            ⏰ In 10 Minuten nochmal erinnern
-          </button>
+          {/* Snooze-Optionen */}
+          <div className="mb-3">
+            <p className="text-white/30 text-xs mb-2 text-center">Nochmal erinnern in …</p>
+            <div className="grid grid-cols-3 gap-2">
+              {[10, 30, 60].map((min) => (
+                <button
+                  key={min}
+                  onClick={async () => {
+                    await erinnerungBestaetigenMutation.mutateAsync({ id: erinnerungsPopup.id });
+                    await erinnerungDirektHinzufuegenMutation.mutateAsync({
+                      text: erinnerungsPopup.text,
+                      faelligkeitMs: Date.now() + min * 60 * 1000,
+                    });
+                    toast.success(`Erinnerung in ${min} Minuten wiederholt`);
+                    await refetchErinnerungen();
+                    setErinnerungsPopup(null);
+                  }}
+                  className="py-2 rounded-xl bg-white/8 hover:bg-amber-500/20 border border-white/10 hover:border-amber-500/30 text-white/50 hover:text-amber-300 font-semibold text-xs transition-all"
+                >
+                  ⏰ {min} Min
+                </button>
+              ))}
+            </div>
+          </div>
           <button
             onClick={async () => {
               await erinnerungBestaetigenMutation.mutateAsync({ id: erinnerungsPopup.id });
