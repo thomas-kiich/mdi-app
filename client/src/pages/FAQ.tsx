@@ -70,6 +70,30 @@ function InstallButton() {
 }
 
 // Vordefinierte FAQs
+// Unterfragen zu MOMENTAUFNAHME
+const MOMENTAUFNAHME_UNTERFRAGEN = [
+  {
+    frage: "Wie funktioniert die Sprachaufnahme?",
+    antwort: "Tippe auf den Mikrofon-Button und sprich frei — über deinen Tag, deine Gefühle, eine Situation oder einfach was dir gerade durch den Kopf geht. Die Aufnahme wird automatisch in Text umgewandelt (Whisper-Technologie). Du kannst auch direkt tippen, wenn du das bevorzugst.",
+  },
+  {
+    frage: "Was macht MA mit meinen Aufnahmen?",
+    antwort: "MA — unsere KI-Begleiterin — liest deinen Text, erkennt Themen, Gefühlslagen und wiederkehrende Muster. Sie fasst zusammen, was wirklich wichtig war, und spiegelt dir das in ruhigen, klaren Worten zurück. Keine Bewertung, keine Ratschläge — nur Reflexion.",
+  },
+  {
+    frage: "Wie funktioniert die Einschlaf-Bibliothek?",
+    antwort: "In der Einschlaf-Bibliothek kannst du persönliche Geschichten, Metaphern oder Befindlichkeitsreisen erstellen lassen — zugeschnitten auf dein aktuelles Thema. MA liest sie dir mit ihrer Stimme vor, begleitet von sanfter Hintergrundmusik. Viele Nutzer berichten von tieferen Träumen und einer veränderten Traumarbeit bereits nach der ersten Nacht.",
+  },
+  {
+    frage: "Sind meine Aufnahmen privat und sicher?",
+    antwort: "Ja. Deine Aufnahmen sind ausschließlich für dich sichtbar — kein anderer Nutzer, kein Mitarbeiter hat Zugang zu deinen persönlichen Einträgen. Die Daten werden verschlüsselt gespeichert und nicht für Werbung oder Dritte verwendet. Du kannst deine Daten jederzeit löschen.",
+  },
+  {
+    frage: "Wie kann ich die App auf meinem Handy installieren?",
+    antwort: "MOMENTAUFNAHME ist eine Progressive Web App (PWA) — du kannst sie direkt aus dem Browser auf deinem Homescreen installieren, ohne App Store. Auf der FAQ-Seite findest du oben einen Installations-Button mit Schritt-für-Schritt-Anleitung für iOS und Android.",
+  },
+];
+
 const STATISCHE_FAQS = [
   {
     id: -1,
@@ -78,38 +102,7 @@ const STATISCHE_FAQS = [
       "MOMENTAUFNAHME ist ein digitales Tagebuch für deine innere Stimme. Du sprichst oder schreibst deine Gedanken, Gefühle und Beobachtungen ein — MA, unsere KI-Begleiterin, hört zu, fasst zusammen und spiegelt dir zurück, was wirklich wichtig war. Gedacht für alle, die sich selbst besser verstehen möchten: von Jugendlichen bis zu Senioren, von Einsteigern bis zu erfahrenen Selbstreflexions-Praktizierenden.",
     name: null,
     createdAt: new Date(),
-  },
-  {
-    id: -2,
-    frage: "Wie funktioniert die Einschlaf-Bibliothek?",
-    antwort:
-      "In der Einschlaf-Bibliothek kannst du persönliche Geschichten, Metaphern oder Befindlichkeitsreisen erstellen lassen — zugeschnitten auf dein aktuelles Thema. MA liest sie dir mit ihrer Stimme vor, begleitet von sanfter Hintergrundmusik. Viele Nutzer berichten von tieferen Träumen und einer veränderten Traumarbeit bereits nach der ersten Nacht.",
-    name: null,
-    createdAt: new Date(),
-  },
-  {
-    id: -3,
-    frage: "Sind meine Aufnahmen privat und sicher?",
-    antwort:
-      "Ja. Deine Aufnahmen sind ausschließlich für dich sichtbar — kein anderer Nutzer, kein Mitarbeiter hat Zugang zu deinen persönlichen Einträgen. Die Daten werden verschlüsselt gespeichert und nicht für Werbung oder Dritte verwendet. Du kannst deine Daten jederzeit löschen.",
-    name: null,
-    createdAt: new Date(),
-  },
-  {
-    id: -4,
-    frage: "Was kostet MOMENTAUFNAHME?",
-    antwort:
-      "Der Einstieg ist kostenlos: 7 Tage voller Zugang zu allen Ebenen. Danach gibt es drei Möglichkeiten: Ebene I (kostenlos, rein schriftlich, 3 Aufnahmen), Ebene II (9 €/Monat, Sprachausgabe, 9 Aufnahmen, Schlaf-Modus), Ebene III (17 €/Monat, unbegrenzt, alle Features inkl. individuelle Geschichten). Das Abonnement-System wird in Kürze freigeschaltet.",
-    name: null,
-    createdAt: new Date(),
-  },
-  {
-    id: -5,
-    frage: "Wie kann ich die App auf meinem Handy installieren?",
-    antwort:
-      "MOMENTAUFNAHME ist eine Progressive Web App (PWA) — du kannst sie direkt aus dem Browser auf deinem Homescreen installieren, ohne App Store. Auf der Momentaufnahme-Seite findest du oben rechts das 📱-Symbol mit einer Schritt-für-Schritt-Anleitung für iOS und Android.",
-    name: null,
-    createdAt: new Date(),
+    unterfragen: MOMENTAUFNAHME_UNTERFRAGEN,
   },
 ];
 
@@ -264,6 +257,23 @@ export default function FAQ() {
                   <p className="text-white/60 text-sm leading-relaxed pt-4">
                     {faq.antwort}
                   </p>
+                  {/* Unterfragen (z.B. für MOMENTAUFNAHME) */}
+                  {(faq as any).unterfragen && (
+                    <div className="mt-4 space-y-2">
+                      <p className="text-amber-400/70 text-xs font-semibold uppercase tracking-wider mb-3">Details</p>
+                      {(faq as any).unterfragen.map((uf: any, idx: number) => (
+                        <details key={idx} className="group border border-white/10 rounded-lg overflow-hidden">
+                          <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none hover:bg-white/[0.04] transition-colors">
+                            <span className="text-white/70 text-sm">{uf.frage}</span>
+                            <ChevronDown className="w-3.5 h-3.5 text-amber-400/60 group-open:rotate-180 transition-transform flex-shrink-0" />
+                          </summary>
+                          <div className="px-4 pb-4 pt-2 border-t border-white/10">
+                            <p className="text-white/50 text-sm leading-relaxed">{uf.antwort}</p>
+                          </div>
+                        </details>
+                      ))}
+                    </div>
+                  )}
                   {faq.name && (
                     <p className="text-white/30 text-xs mt-3">
                       Gefragt von: {faq.name}
