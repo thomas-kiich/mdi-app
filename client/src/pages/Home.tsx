@@ -489,7 +489,8 @@ export default function Home() {
                 <div className="absolute inset-0 opacity-5" style={{backgroundImage: 'radial-gradient(circle at 15% 50%, #e63329 0%, transparent 55%), radial-gradient(circle at 85% 50%, #f5a623 0%, transparent 55%)'}} />
                 <div className="container max-w-4xl mx-auto px-4 py-16 md:py-24 relative z-10">
                   <div className="flex flex-col items-center text-center space-y-6">
-                    {/* Neues KIICH-Logo mit integriertem Slogan (2 minds 〄 1 source) */}
+                    {/* Logo + Slogan als visuelle Einheit – kein Abstand dazwischen */}
+                    <div className="flex flex-col items-center gap-1">
                     <a
                       href="/ueber-kiich"
                       className="group block transition-all duration-300 hover:opacity-80 hover:scale-105"
@@ -497,16 +498,17 @@ export default function Home() {
                     >
                       <img
                         src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo-slogan-new_9c02a622.png"
-                        alt="KIICH – 2 minds 〄 1 source"
+                        alt="KIICH – 2 minds い 1 source"
                         className="w-[320px] md:w-[480px] h-auto"
                       />
                     </a>
-                    {/* KIICH Statement – Slogan direkt unter Logo als Einheit */}
-                    <div className="max-w-2xl text-center space-y-4 -mt-4">
-                      {/* Slogan – eine Zeile, bündig mit Logo-Breite (320px/480px) */}
-                      <p className="text-base md:text-xl tracking-widest uppercase text-white font-light whitespace-nowrap w-[320px] md:w-[480px] text-center">
-                        Dein Identitätssystem für das KI-Zeitalter
-                      </p>
+                    {/* Slogan direkt unter Logo */}
+                    <p className="text-base md:text-xl tracking-widest uppercase text-white font-light whitespace-nowrap w-[320px] md:w-[480px] text-center">
+                      Dein Identitätssystem für das KI-Zeitalter
+                    </p>
+                    </div>
+                    {/* Statement – alles hinter Mehr-lesen */}
+                    <div className="max-w-2xl text-center space-y-4">
                       {/* Alles weitere hinter Mehr-lesen */}
                       {showKiichStatement && (
                         <div className="text-base text-zinc-400 leading-relaxed space-y-3 text-left">
