@@ -501,8 +501,8 @@ export default function Home() {
                         className="w-[320px] md:w-[480px] h-auto"
                       />
                     </a>
-                    {/* KIICH Statement */}
-                    <div className="max-w-2xl text-center space-y-4">
+                    {/* KIICH Statement – Slogan direkt unter Logo als Einheit */}
+                    <div className="max-w-2xl text-center space-y-4 -mt-4">
                       {/* Slogan – eine Zeile, bündig mit Logo-Breite (320px/480px) */}
                       <p className="text-base md:text-xl tracking-widest uppercase text-white font-light whitespace-nowrap w-[320px] md:w-[480px] text-center">
                         Dein Identitätssystem für das KI-Zeitalter
