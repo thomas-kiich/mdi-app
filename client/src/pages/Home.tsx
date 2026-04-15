@@ -503,7 +503,12 @@ export default function Home() {
                     </a>
                     {/* KIICH Statement */}
                     <div className="max-w-2xl text-center space-y-4">
-                      <p className="text-lg md:text-xl font-semibold text-white leading-snug">
+                      {/* Slogan */}
+                      <p className="text-sm md:text-base tracking-widest uppercase text-zinc-400 font-light">
+                        Dein Identitätssystem für das KI-Zeitalter
+                      </p>
+                      {/* Erster Satz – normal (kein Fett) */}
+                      <p className="text-lg md:text-xl text-white leading-snug font-normal">
                         Wenn jeder Mensch bald der Manager unendlicher KI-Agenten ist – wer hilft ihm dann zu wissen, wer er selbst ist, bevor er diese Agenten führt?
                       </p>
                       {showKiichStatement && (
