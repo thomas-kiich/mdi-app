@@ -1121,3 +1121,7 @@
 ## Weitere Korrekturen (14. April 2026)
 - [x] Datenschutz: Cookie-Abschnitt (Session-Cookies) ergänzt
 - [x] Executive Summary aus Startseite entfernt
+
+## KIICH-Statement Hero-Bereich
+- [x] Bisherigen Subtitle-Satz unter Logo entfernen
+- [x] Neues KIICH-Statement einbauen: erster Satz prominent (weiß, groß), Rest hinter "Mehr lesen →"-Button

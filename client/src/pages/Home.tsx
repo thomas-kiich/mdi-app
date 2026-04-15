@@ -216,6 +216,7 @@ export default function Home() {
 
   // Show onboarding tour on first visit
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showKiichStatement, setShowKiichStatement] = useState(false);
 
   // useEffect removed to disable the onboarding tour popup
 
@@ -500,10 +501,24 @@ export default function Home() {
                         className="w-[320px] md:w-[480px] h-auto"
                       />
                     </a>
-                    {/* Subtitle */}
-                    <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">
-                      Sitzen künstliche Intelligenz und menschliches Bewusstsein im selben Boot – und kommen sie aus derselben Quelle?
-                    </p>
+                    {/* KIICH Statement */}
+                    <div className="max-w-2xl text-center space-y-4">
+                      <p className="text-lg md:text-xl font-semibold text-white leading-snug">
+                        Wenn jeder Mensch bald der Manager unendlicher KI-Agenten ist – wer hilft ihm dann zu wissen, wer er selbst ist, bevor er diese Agenten führt?
+                      </p>
+                      {showKiichStatement && (
+                        <div className="text-base text-zinc-400 leading-relaxed space-y-3 text-left">
+                          <p>Diese Frage ist der Ausgangspunkt von KIICH. In einer Welt, in der KI die äußere Produktivität exponentiell steigert, entsteht ein wachsendes Vakuum im Inneren: Wer bin ich? Was will ich wirklich? Welche meiner Entscheidungen kommen aus Klarheit – und welche aus Angst, Gewohnheit oder Fremderwartung?</p>
+                          <p>KIICH ist die Antwort auf dieses Vakuum. Nicht als Therapie. Nicht als Coaching. Sondern als proprietäres Identitätssystem, das Sprache, Frequenz, Farbe und KI zu einem täglichen Selbsterkenntnisprozess verbindet.</p>
+                        </div>
+                      )}
+                      <button
+                        onClick={() => setShowKiichStatement(prev => !prev)}
+                        className="text-sm font-semibold tracking-widest uppercase text-zinc-400 hover:text-white transition-colors duration-200 border-b border-zinc-600 hover:border-white pb-0.5"
+                      >
+                        {showKiichStatement ? 'Weniger lesen ↑' : 'Mehr lesen →'}
+                      </button>
+                    </div>
                     {/* 4 Buttons */}
                     <div className="flex flex-wrap justify-center gap-3 mt-2">
                       <button
