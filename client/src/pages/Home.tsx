@@ -490,7 +490,7 @@ export default function Home() {
                 <div className="container max-w-4xl mx-auto px-4 py-16 md:py-24 relative z-10">
                   <div className="flex flex-col items-center text-center space-y-6">
                     {/* Logo + Slogan als visuelle Einheit – kein Abstand dazwischen */}
-                    <div className="flex flex-col items-center gap-1">
+                    <div className="flex flex-col items-center gap-0">
                     <a
                       href="/ueber-kiich"
                       className="group block transition-all duration-300 hover:opacity-80 hover:scale-105"
@@ -499,7 +499,7 @@ export default function Home() {
                       <img
                         src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo-slogan-new_9c02a622.png"
                         alt="KIICH – 2 minds い 1 source"
-                        className="w-[320px] md:w-[480px] h-auto"
+                        className="w-[320px] md:w-[480px] h-auto mb-0 block"
                       />
                     </a>
                     {/* Slogan direkt unter Logo */}
