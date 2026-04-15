@@ -119,6 +119,7 @@ export default function FAQ() {
   const [formEmail, setFormEmail] = useState("");
   const [formFrage, setFormFrage] = useState("");
   const [gesendet, setGesendet] = useState(false);
+  const [einwilligung, setEinwilligung] = useState(false);
 
   const { data: dbFaqs = [] } = trpc.faq.getOeffentlicheFaqs.useQuery();
 
@@ -140,6 +141,10 @@ export default function FAQ() {
     e.preventDefault();
     if (formFrage.trim().length < 10) {
       toast.error("Bitte mindestens 10 Zeichen eingeben.");
+      return;
+    }
+    if (!einwilligung) {
+      toast.error("Bitte stimme der Einwilligung zu.");
       return;
     }
     frageEinreichenMutation.mutate({
@@ -277,7 +282,7 @@ export default function FAQ() {
             Deine Frage stellen
           </h2>
           <p className="text-white/40 text-sm mb-6">
-            Wir antworten persönlich und veröffentlichen die besten Fragen hier.
+            Wichtige grundlegende Fragen werden hier veröffentlicht. Eine vollständige Anonymisierung vor Veröffentlichung wird durchgeführt.
           </p>
 
           {gesendet ? (
@@ -338,9 +343,32 @@ export default function FAQ() {
                   {formFrage.length}/1000
                 </p>
               </div>
+              {/* Einwilligungs-Checkbox */}
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <div
+                  onClick={() => setEinwilligung(!einwilligung)}
+                  className={`mt-0.5 w-4 h-4 shrink-0 rounded border flex items-center justify-center transition-colors ${
+                    einwilligung
+                      ? 'bg-amber-400 border-amber-400'
+                      : 'bg-white/5 border-white/20 group-hover:border-amber-400/50'
+                  }`}
+                >
+                  {einwilligung && (
+                    <svg className="w-2.5 h-2.5 text-black" fill="none" viewBox="0 0 10 8">
+                      <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  )}
+                </div>
+                <span
+                  onClick={() => setEinwilligung(!einwilligung)}
+                  className="text-white/50 text-xs leading-relaxed select-none"
+                >
+                  Ich bin damit einverstanden, dass meine Frage anonymisiert und auf dieser Seite veröffentlicht werden kann.
+                </span>
+              </label>
               <Button
                 type="submit"
-                disabled={frageEinreichenMutation.isPending || formFrage.trim().length < 10}
+                disabled={frageEinreichenMutation.isPending || formFrage.trim().length < 10 || !einwilligung}
                 className="w-full bg-amber-400 hover:bg-amber-300 text-black font-semibold"
               >
                 {frageEinreichenMutation.isPending ? (

@@ -1131,3 +1131,8 @@
 - [x] "App installieren"-Button mit PWA beforeinstallprompt-Event
 - [x] FAQ-Button auf Startseite einbauen (neben oder unter den Hero-Buttons)
 - [x] Route /faq in App.tsx registrieren
+
+## FAQ DSGVO-Konformität
+- [x] Hinweistext angepasst: "Wichtige grundlegende Fragen werden hier veröffentlicht. Eine vollständige Anonymisierung vor Veröffentlichung wird durchgeführt."
+- [x] Pflicht-Checkbox eingebaut: "Ich bin damit einverstanden, dass meine Frage anonymisiert und auf dieser Seite veröffentlicht werden kann."
+- [x] Submit-Button deaktiviert solange Checkbox nicht angehakt
