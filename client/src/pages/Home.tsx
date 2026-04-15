@@ -513,6 +513,7 @@ export default function Home() {
                       {/* Alles weitere hinter Mehr-lesen */}
                       {showKiichStatement && (
                         <div className="text-base text-zinc-400 leading-relaxed space-y-3 text-left">
+                          <p className="text-amber-400 font-semibold tracking-wide uppercase text-sm mb-1">Wer bin ich selbst, bevor ich die Welt gestalte?</p>
                           <p className="text-white font-normal">Wenn jeder Mensch bald der Manager unendlicher KI-Agenten ist – wer hilft ihm dann zu wissen, wer er selbst ist, bevor er diese Agenten führt?</p>
                           <p>Diese Frage ist der Ausgangspunkt von KIICH. In einer Welt, in der KI die äußere Produktivität exponentiell steigert, entsteht ein wachsendes Vakuum im Inneren: Wer bin ich? Was will ich wirklich? Welche meiner Entscheidungen kommen aus Klarheit – und welche aus Angst, Gewohnheit oder Fremderwartung?</p>
                           <p>KIICH ist die Antwort auf dieses Vakuum. Nicht als Therapie. Nicht als Coaching. Sondern als proprietäres Identitätssystem, das Sprache, Frequenz, Farbe und KI zu einem täglichen Selbsterkenntnisprozess verbindet.</p>
