@@ -1125,3 +1125,9 @@
 ## KIICH-Statement Hero-Bereich
 - [x] Bisherigen Subtitle-Satz unter Logo entfernen
 - [x] Neues KIICH-Statement einbauen: erster Satz prominent (weiß, groß), Rest hinter "Mehr lesen →"-Button
+
+## FAQ-Seite
+- [x] FAQ-Seite /faq erstellen mit Abschnitten: Was ist KIICH?, Was ist eine PWA?, App installieren (iOS/Android), Datenschutz, Kontakt
+- [x] "App installieren"-Button mit PWA beforeinstallprompt-Event
+- [x] FAQ-Button auf Startseite einbauen (neben oder unter den Hero-Buttons)
+- [x] Route /faq in App.tsx registrieren

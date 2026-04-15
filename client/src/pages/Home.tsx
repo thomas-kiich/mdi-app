@@ -565,6 +565,12 @@ export default function Home() {
                         <Smartphone className="w-4 h-4 text-orange-500 group-hover:scale-110 transition-transform" />
                         APP LADEN
                       </button>
+                      <button
+                        onClick={() => setLocation('/faq')}
+                        className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-600 hover:border-amber-400/60 text-zinc-400 hover:text-amber-300 transition-all duration-200"
+                      >
+                        FAQ
+                      </button>
                     </div>
                   </div>
                 </div>

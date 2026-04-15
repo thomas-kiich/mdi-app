@@ -1,13 +1,75 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
-import { ChevronDown, ChevronUp, MessageCircleQuestion, Send, Loader2, CheckCircle2 } from "lucide-react";
+import { ChevronDown, ChevronUp, MessageCircleQuestion, Send, Loader2, CheckCircle2, Smartphone, Globe, Zap, Shield, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Link } from "wouter";
 
-// Einige vordefinierte FAQs die immer angezeigt werden (bevor echte Antworten aus der DB kommen)
+// PWA Install Button
+function InstallButton() {
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [installed, setInstalled] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showIOSGuide, setShowIOSGuide] = useState(false);
+
+  useEffect(() => {
+    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    setIsIOS(ios);
+    const handler = (e: Event) => { e.preventDefault(); setDeferredPrompt(e); };
+    window.addEventListener("beforeinstallprompt", handler);
+    if (window.matchMedia("(display-mode: standalone)").matches) setInstalled(true);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstall = async () => {
+    if (isIOS) { setShowIOSGuide(prev => !prev); return; }
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") setInstalled(true);
+      setDeferredPrompt(null);
+    }
+  };
+
+  if (installed) return (
+    <div className="flex items-center gap-2 text-green-400 text-sm font-medium">
+      <Zap className="w-4 h-4" /> KIICH ist bereits installiert
+    </div>
+  );
+
+  return (
+    <div className="space-y-3">
+      <button onClick={handleInstall}
+        className="flex items-center gap-2 px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-black font-semibold text-sm tracking-wide uppercase transition-all duration-200 rounded-sm">
+        <Download className="w-4 h-4" />
+        {isIOS ? "Anleitung für iPhone" : "App jetzt installieren"}
+      </button>
+      {isIOS && showIOSGuide && (
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2 text-sm text-white/60">
+          <p className="font-semibold text-white mb-2">Installation auf iPhone / iPad:</p>
+          {[
+            "Öffne kiich.manus.space im Safari-Browser (nicht Chrome).",
+            "Tippe auf das Teilen-Symbol (Quadrat mit Pfeil nach oben) unten.",
+            '"Zum Home-Bildschirm" wählen und mit "Hinzufügen" bestätigen.',
+            "Das KIICH-Icon erscheint auf deinem Homescreen.",
+          ].map((step, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <span className="bg-amber-400 text-black text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">{i+1}</span>
+              <span>{step}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      {!isIOS && !deferredPrompt && (
+        <p className="text-white/30 text-xs">Öffne diese Seite in Chrome oder Edge für die automatische Installation.</p>
+      )}
+    </div>
+  );
+}
+
+// Vordefinierte FAQs
 const STATISCHE_FAQS = [
   {
     id: -1,
@@ -110,10 +172,64 @@ export default function FAQ() {
             Fragen & Antworten
           </h1>
           <p className="text-white/50 text-sm leading-relaxed">
-            Alles was du über MOMENTAUFNAHME wissen möchtest.
+            Alles was du über KIICH wissen möchtest.
             <br />
             Deine Frage ist nicht dabei? Stell sie uns unten.
           </p>
+        </div>
+
+        {/* App installieren – prominenter CTA */}
+        <div className="border border-amber-400/20 rounded-2xl bg-amber-400/5 p-5 mb-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+          <div className="flex items-start gap-4">
+            <div className="bg-amber-400/10 border border-amber-400/20 rounded-lg p-2.5 shrink-0">
+              <Globe className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <p className="text-white font-semibold mb-1">KIICH als App auf deinem Homescreen</p>
+              <p className="text-white/40 text-sm">Kein App Store. Automatische Updates. Funktioniert wie eine native App.</p>
+            </div>
+          </div>
+          <InstallButton />
+        </div>
+
+        {/* Was ist eine PWA? */}
+        <div className="border border-white/10 rounded-2xl bg-white/[0.03] p-5 mb-10">
+          <div className="flex items-center gap-2 mb-4">
+            <Smartphone className="w-4 h-4 text-amber-400" />
+            <h2 className="text-white font-semibold text-sm tracking-widest uppercase">Was ist eine PWA?</h2>
+          </div>
+          <p className="text-white/60 text-sm leading-relaxed mb-4">
+            KIICH ist eine <strong className="text-white">Progressive Web App (PWA)</strong> – eine moderne Zwischenform zwischen Website und nativer App. Du installierst sie direkt aus dem Browser, ohne App Store.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs text-left">
+              <thead>
+                <tr className="border-b border-white/10">
+                  <th className="py-2 pr-4 text-white/40 font-normal">Merkmal</th>
+                  <th className="py-2 pr-4 text-white/40 font-normal text-center">Native App</th>
+                  <th className="py-2 pr-4 text-white/40 font-normal text-center">Website</th>
+                  <th className="py-2 text-amber-400 font-semibold text-center">KIICH (PWA)</th>
+                </tr>
+              </thead>
+              <tbody className="text-white/60">
+                {[
+                  ["Homescreen-Icon", "✅", "❌", "✅"],
+                  ["Offline nutzbar", "✅", "❌", "✅"],
+                  ["Push-Nachrichten", "✅", "❌", "✅"],
+                  ["App Store nötig", "✅", "❌", "❌"],
+                  ["Auto-Updates", "❌", "✅", "✅"],
+                  ["Kosten", "Hoch", "Mittel", "Mittel"],
+                ].map(([label, native, web, kiich]) => (
+                  <tr key={label} className="border-b border-white/5">
+                    <td className="py-2 pr-4">{label}</td>
+                    <td className="py-2 pr-4 text-center">{native}</td>
+                    <td className="py-2 pr-4 text-center">{web}</td>
+                    <td className="py-2 text-center text-amber-400 font-semibold">{kiich}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* FAQ Accordion */}
