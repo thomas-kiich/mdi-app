@@ -26,6 +26,7 @@ interface SendEmailOptions {
   htmlContent: string;
   textContent?: string;
   replyTo?: EmailRecipient;
+  skipBcc?: boolean; // Wenn true, wird kein BCC gesetzt (für Massen-Aussendungen: nur beim ersten Empfänger BCC)
 }
 
 /**
@@ -43,7 +44,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
       body: JSON.stringify({
         sender: { email: SENDER_EMAIL, name: SENDER_NAME },
         to: options.to,
-        bcc: [{ email: "lkrforschung@gmail.com", name: "Thomas Chochola" }],
+        ...(options.skipBcc ? {} : { bcc: [{ email: "lkrforschung@gmail.com", name: "Thomas Chochola" }] }),
         subject: options.subject,
         htmlContent: options.htmlContent,
         textContent: options.textContent,
@@ -190,6 +191,8 @@ export async function sendNewsletter(
   let failed = 0;
 
   // Jeden Empfänger einzeln versenden damit der Abmelde-Link individuell ist
+  // BCC (lkrforschung@gmail.com) nur beim ersten Empfänger – eine Kopie pro Aussendung reicht
+  let isFirst = true;
   for (const recipient of recipients) {
     const unsubscribeUrl = recipient.deleteToken
       ? `${baseUrl}/newsletter/abmelden?token=${recipient.deleteToken}`
@@ -200,12 +203,21 @@ export async function sendNewsletter(
     const personalText = textContent
       .replace(/\{\{unsubscribeUrl\}\}/g, unsubscribeUrl);
 
-    const success = await sendEmail({
+    const emailOptions: Parameters<typeof sendEmail>[0] = {
       to: [{ email: recipient.email, name: recipient.name }],
       subject,
       htmlContent: personalHtml,
       textContent: personalText,
-    });
+    };
+
+    // BCC nur beim ersten Versand
+    if (isFirst) {
+      isFirst = false;
+    } else {
+      emailOptions.skipBcc = true;
+    }
+
+    const success = await sendEmail(emailOptions);
     if (success) {
       sent++;
     } else {
