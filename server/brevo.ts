@@ -218,6 +218,72 @@ export async function sendNewsletter(
 }
 
 /**
+ * Fügt einen Kontakt zu Brevo hinzu oder aktualisiert ihn (upsert).
+ * Wird automatisch nach jeder bestätigten Newsletter-Anmeldung aufgerufen.
+ */
+export async function syncContactToBrevo(
+  email: string,
+  name?: string | null
+): Promise<boolean> {
+  try {
+    const apiKey = getApiKey();
+
+    // 1. Kontakt anlegen/aktualisieren
+    const body: Record<string, unknown> = {
+      email,
+      updateEnabled: true,
+    };
+    if (name) {
+      const parts = name.trim().split(' ');
+      body.attributes = {
+        FIRSTNAME: parts[0] ?? '',
+        LASTNAME: parts.slice(1).join(' ') ?? '',
+      };
+    }
+
+    const createRes = await fetch(`${BREVO_API_URL}/contacts`, {
+      method: 'POST',
+      headers: {
+        'api-key': apiKey,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    // 201 = created, 204 = updated, 400 = already exists – alles ok
+    if (!createRes.ok && createRes.status !== 400) {
+      const err = await createRes.text();
+      console.error('[Brevo] Kontakt anlegen fehlgeschlagen:', err);
+      return false;
+    }
+
+    // 2. Zur Newsletter-Liste (ID 2) hinzufügen
+    const listRes = await fetch(`${BREVO_API_URL}/contacts/lists/2/contacts/add`, {
+      method: 'POST',
+      headers: {
+        'api-key': apiKey,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ emails: [email] }),
+    });
+
+    if (!listRes.ok && listRes.status !== 400) {
+      const err = await listRes.text();
+      console.error('[Brevo] Zur Liste hinzufügen fehlgeschlagen:', err);
+      return false;
+    }
+
+    console.log(`[Brevo] Kontakt synchronisiert: ${email}`);
+    return true;
+  } catch (err) {
+    console.error('[Brevo] syncContactToBrevo Fehler:', err);
+    return false;
+  }
+}
+
+/**
  * Testet die Brevo-Verbindung (für Vitest)
  */
 export async function testBrevoConnection(): Promise<boolean> {
