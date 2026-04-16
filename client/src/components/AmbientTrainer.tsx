@@ -81,26 +81,33 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
     }
   };
 
-  // Sync volume with play state, exactly like Method36Trainer does for water sound
+  // Sync audio with play state – guard against play/pause race condition
   useEffect(() => {
-    if (audioRef.current) {
-      if (isPlaying) {
-        audioRef.current.volume = volume;
-        const playPromise = audioRef.current.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.error("Audio playback failed:", error);
-            toast({
-              title: "Wiedergabe blockiert",
-              description: "Bitte interagieren Sie zuerst mit der Seite (z.B. durch einen Klick), bevor das Audio gestartet werden kann.",
-            });
-            setIsPlaying(false);
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    let cancelled = false;
+
+    if (isPlaying) {
+      audio.volume = volume;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(error => {
+          if (cancelled) return; // ignore if already unmounted/paused
+          if (error.name === 'AbortError') return; // interrupted by pause – safe to ignore
+          console.error("Audio playback failed:", error);
+          toast({
+            title: "Wiedergabe blockiert",
+            description: "Bitte tippe zuerst auf Play, um das Audio zu starten.",
           });
-        }
-      } else {
-        audioRef.current.pause();
+          setIsPlaying(false);
+        });
       }
+    } else {
+      audio.pause();
     }
+
+    return () => { cancelled = true; };
   }, [isPlaying]);
 
   // Update volume when slider changes
@@ -193,17 +200,20 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
       </div>
 
       {/* Audio Element */}
-      <audio
-        ref={audioRef}
-        loop
-        preload="auto"
-        style={{ display: 'none' }}
-        onCanPlay={() => setIsReady(true)}
-        onPlay={() => console.log('Audio started playing successfully')}
-        onError={(e) => console.error('Audio element error:', e)}
-      >
-        <source src={audioUrls[activeDuration] || ""} />
-      </audio>
+      {/* Audio element – only render when a valid URL is available */}
+      {audioUrls[activeDuration] && (
+        <audio
+          key={audioUrls[activeDuration]}
+          ref={audioRef}
+          loop
+          preload="auto"
+          src={audioUrls[activeDuration]}
+          style={{ display: 'none' }}
+          onCanPlay={() => setIsReady(true)}
+          onPlay={() => console.log('Audio started playing successfully')}
+          onError={(e) => console.error('Audio element error:', e)}
+        />
+      )}
 
       <Card className="w-full max-w-md bg-zinc-900/80 border-zinc-800 shadow-2xl relative z-10 backdrop-blur-md">
         <CardHeader className="relative pb-2 z-10">
