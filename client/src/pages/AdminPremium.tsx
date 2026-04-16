@@ -132,8 +132,21 @@ export default function AdminPremium() {
           </div>
         )}
 
+        {/* Link zu Training-Freigaben */}
+        <div className="mt-6">
+          <Link
+            href="/admin/training"
+            className="flex items-center justify-between p-4 rounded-lg bg-zinc-900/50 border border-zinc-700 hover:border-amber-500/50 transition-colors group"
+          >
+            <div>
+              <p className="text-white font-medium">TRAINING FREIGABEN</p>
+              <p className="text-zinc-400 text-sm">Einzelne Trainingseinheiten granular freischalten</p>
+            </div>
+            <span className="text-amber-400 group-hover:text-amber-300">→</span>
+          </Link>
+        </div>
         {/* Hinweis */}
-        <div className="mt-8 p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
+        <div className="mt-6 p-4 rounded-lg bg-amber-500/5 border border-amber-500/20">
           <p className="text-amber-400/70 text-xs leading-relaxed">
             <strong className="text-amber-400">Häppchenprinzip:</strong> Schalte Bereiche schrittweise mit den Episoden frei.
             Gesperrte Bereiche zeigen weiterhin den Einführungstext — sie wirken als Neugier-Anker für zukünftige Abonnenten.

@@ -162,6 +162,13 @@
       "when": 1776163288233,
       "tag": "0022_third_speedball",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "5",
+      "when": 1776331435124,
+      "tag": "0023_elite_cammi",
+      "breakpoints": true
     }
   ]
 }

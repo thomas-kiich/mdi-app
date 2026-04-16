@@ -1136,3 +1136,8 @@
 - [x] Hinweistext angepasst: "Wichtige grundlegende Fragen werden hier veröffentlicht. Eine vollständige Anonymisierung vor Veröffentlichung wird durchgeführt."
 - [x] Pflicht-Checkbox eingebaut: "Ich bin damit einverstanden, dass meine Frage anonymisiert und auf dieser Seite veröffentlicht werden kann."
 - [x] Submit-Button deaktiviert solange Checkbox nicht angehakt
+
+## Admin & Freischaltung
+- [x] Admin-Bypass im Trainingscenter: Admin sieht nie Schlösser
+- [x] Granulares Freischalt-System für einzelne Trainingskategorien (DB-gesteuert)
+- [ ] Episode 03: Gewählte Umfeldaktivierungs-Einheit freischalten

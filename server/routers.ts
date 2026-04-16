@@ -16,6 +16,7 @@ import { kontaktRouter } from "./routers/kontakt";
 import { planerRouter } from "./routers/planer";
 import { rechtsChecklisteRouter } from "./routers/rechtsCheckliste";
 import { ritualeRouter } from "./routers/rituale";
+import { trainingRouter } from "./routers/training";
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -45,6 +46,7 @@ export const appRouter = router({
   planer: planerRouter,
   rechtsCheckliste: rechtsChecklisteRouter,
   rituale: ritualeRouter,
+  training: trainingRouter,
 });
 
 export type AppRouter = typeof appRouter;

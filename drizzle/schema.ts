@@ -639,3 +639,22 @@ export const dankbarkeit = mysqlTable("dankbarkeit", {
 });
 export type Dankbarkeit = typeof dankbarkeit.$inferSelect;
 export type InsertDankbarkeit = typeof dankbarkeit.$inferInsert;
+
+/**
+ * TRAINING FREIGABEN – Granulare Steuerung welche Trainingskategorien/-einheiten sichtbar sind
+ * categoryId: z.B. 'ambient', 'breathing', 'voice', 'movement', 'befindlichkeit'
+ * itemId: optional – wenn gesetzt, nur diese Einheit freischalten (z.B. 'metabolic')
+ *         wenn null, die gesamte Kategorie freischalten
+ */
+export const trainingFreigaben = mysqlTable('training_freigaben', {
+  id: int('id').autoincrement().primaryKey(),
+  categoryId: varchar('categoryId', { length: 50 }).notNull(),
+  itemId: varchar('itemId', { length: 50 }),
+  enabled: boolean('enabled').notNull().default(false),
+  label: varchar('label', { length: 100 }),
+  updatedAt: timestamp('updatedAt').defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+});
+export type TrainingFreigabe = typeof trainingFreigaben.$inferSelect;
+export type InsertTrainingFreigabe = typeof trainingFreigaben.$inferInsert;
+

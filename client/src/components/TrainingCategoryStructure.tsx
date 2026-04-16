@@ -5,6 +5,7 @@ import { ChevronRight, AlertCircle, BookOpen, ArrowLeft, Lock } from "lucide-rea
 import { cn } from "@/lib/utils";
 import { BasicColorSelector } from "@/components/BasicColorSelector";
 import { useToast } from "@/hooks/use-toast";
+import { trpc } from "@/lib/trpc";
 
 interface TrainingItem {
   id: string;
@@ -29,6 +30,21 @@ interface TrainingCategoryStructureProps {
   onOpenKnowledge?: () => void;
   onClose?: () => void;
   isPremium?: boolean;
+}
+
+/** Prüft ob eine Kategorie oder ein Item freigeschaltet ist */
+function istFreigeschaltet(
+  freigaben: Record<string, boolean | Record<string, boolean>>,
+  isAdmin: boolean,
+  categoryId: string,
+  itemId?: string
+): boolean {
+  if (isAdmin) return true;
+  const cat = freigaben[categoryId];
+  if (!cat) return false;
+  if (cat === true) return true;
+  if (itemId && typeof cat === "object") return !!cat[itemId];
+  return false;
 }
 
 const TRAINING_CATEGORIES: TrainingCategory[] = [
@@ -115,6 +131,9 @@ export function TrainingCategoryStructure({
 }: TrainingCategoryStructureProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { toast } = useToast();
+  const { data: freigabenData } = trpc.training.getFreigaben.useQuery();
+  const freigaben = freigabenData?.freigaben ?? {};
+  const isAdmin = freigabenData?.isAdmin ?? false;
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [selectedDuration, setSelectedDuration] = useState<number | null>(null);
 
@@ -352,40 +371,64 @@ export function TrainingCategoryStructure({
 
         {/* Category Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {TRAINING_CATEGORIES.map((cat) => (
-            <Card
-              key={cat.id}
-              className="bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 border-zinc-800 cursor-not-allowed transition-all group relative overflow-hidden select-none opacity-80"
-              onClick={() => {
-                toast({
-                  title: "PREMIUM – Bald verfügbar",
-                  description: "Wir öffnen die Trainings schrittweise für unsere Community.",
-                });
-              }}
-            >
-              <CardContent className="p-8">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="text-5xl">{cat.icon}</div>
-                  <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold border border-amber-500/20">
-                    <Lock className="w-3 h-3" />
-                    <span>PREMIUM</span>
+          {TRAINING_CATEGORIES.map((cat) => {
+            const freigeschaltet = istFreigeschaltet(freigaben, isAdmin, cat.id);
+            return (
+              <Card
+                key={cat.id}
+                className={cn(
+                  "bg-gradient-to-br from-zinc-900/50 to-zinc-800/30 border-zinc-800 transition-all group relative overflow-hidden",
+                  freigeschaltet
+                    ? "cursor-pointer hover:bg-zinc-900 hover:border-orange-500/50"
+                    : "cursor-not-allowed select-none opacity-60"
+                )}
+                onClick={() => {
+                  if (freigeschaltet) {
+                    setSelectedCategory(cat.id);
+                  } else {
+                    toast({
+                      title: "Bald verfügbar",
+                      description: "Diese Einheit wird schrittweise für unsere Community geöffnet.",
+                    });
+                  }
+                }}
+              >
+                <CardContent className="p-8">
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="text-5xl">{cat.icon}</div>
+                    {freigeschaltet ? (
+                      isAdmin && (
+                        <div className="flex items-center gap-1.5 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-semibold border border-green-500/20">
+                          <span>ADMIN</span>
+                        </div>
+                      )
+                    ) : (
+                      <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold border border-amber-500/20">
+                        <Lock className="w-3 h-3" />
+                        <span>BALD</span>
+                      </div>
+                    )}
                   </div>
-                </div>
-                <h2 className="text-2xl font-bold mb-3">
-                  {cat.name}
-                </h2>
-                <p className="text-sm text-zinc-400 line-clamp-3 mb-4">
-                  {cat.description}
-                </p>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-zinc-500">
-                    Bald verfügbar
-                  </span>
-                  <Lock className="w-4 h-4 text-amber-500/60" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <h2 className="text-2xl font-bold mb-3">
+                    {cat.name}
+                  </h2>
+                  <p className="text-sm text-zinc-400 line-clamp-3 mb-4">
+                    {cat.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    {freigeschaltet ? (
+                      <span className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center gap-1">
+                        Öffnen <ChevronRight className="w-4 h-4" />
+                      </span>
+                    ) : (
+                      <span className="text-xs text-zinc-500">Bald verfügbar</span>
+                    )}
+                    {!freigeschaltet && <Lock className="w-4 h-4 text-amber-500/60" />}
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
         {/* Knowledge Pool Link */}
