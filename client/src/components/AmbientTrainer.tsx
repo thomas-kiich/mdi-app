@@ -19,8 +19,11 @@ interface AmbientTrainerProps {
 
 export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrls, baseTone, onClose }: AmbientTrainerProps) {
   const { toast } = useToast();
-  const availableDurations = trainingId === 'metabolic' ? [7, 21] : [45];
-  const [activeDuration, setActiveDuration] = useState<number>(initialDuration || 0);
+  const availableDurations = trainingId === 'metabolic' ? [0] : [45];
+  // metabolic hat keine Dauer-Auswahl – sofort starten mit 0 (unbegrenzt)
+  const [activeDuration, setActiveDuration] = useState<number>(
+    trainingId === 'metabolic' ? 0 : (initialDuration || 0)
+  );
   
   const [isPlaying, setIsPlaying] = useState(false);
   const [isReady, setIsReady] = useState(false);
@@ -233,46 +236,39 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
 
         <CardContent className="space-y-6 relative z-10">
 
-          {activeDuration === 0 ? (
-            <div className="space-y-6 py-4">
-              <div className="text-center mb-6">
-                <h3 className="text-xl font-medium text-white mb-2">Dauer auswählen</h3>
-                <p className="text-zinc-400 text-sm">Bitte wähle die gewünschte Trainingsdauer</p>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                {availableDurations.map((dur) => (
-                  <Button
-                    key={dur}
-                    variant="outline"
-                    className="h-16 text-lg border-zinc-700 hover:border-orange-500 hover:text-orange-500 transition-all"
-                    onClick={() => setActiveDuration(dur)}
-                  >
-                    {dur} Min
-                  </Button>
-                ))}
-              </div>
-              {availableDurations.length === 1 && (
-                <div className="text-center mt-4">
-                  <Button 
-                    className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold"
-                    onClick={() => setActiveDuration(availableDurations[0])}
-                  >
-                    Weiter mit {availableDurations[0]} Min
-                  </Button>
+          <div className="space-y-6">
+              {/* Timer Display – nur anzeigen wenn Dauer bekannt (nicht metabolic) */}
+              {trainingId !== 'metabolic' && (
+                <div className="text-center space-y-4">
+                  {activeDuration === 0 ? (
+                    // Dauer-Auswahl für Mayerwelle
+                    <div className="space-y-4 py-2">
+                      <h3 className="text-lg font-medium text-white">Dauer auswählen</h3>
+                      <div className="flex justify-center gap-4">
+                        {availableDurations.map((dur) => (
+                          <Button
+                            key={dur}
+                            variant="outline"
+                            className="h-14 w-24 text-lg border-zinc-700 hover:border-orange-500 hover:text-orange-500 transition-all"
+                            onClick={() => setActiveDuration(dur)}
+                          >
+                            {dur} Min
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="text-5xl font-bold text-white font-mono">
+                        {formatTime(timeElapsed)}
+                      </div>
+                      <p className="text-zinc-400 text-sm">
+                        von {activeDuration} Minuten
+                      </p>
+                    </>
+                  )}
                 </div>
               )}
-            </div>
-          ) : (
-            <>
-              {/* Timer Display */}
-              <div className="text-center space-y-4">
-                <div className="text-5xl font-bold text-white font-mono">
-                  {formatTime(timeElapsed)}
-                </div>
-                <p className="text-zinc-400 text-sm">
-                  von {activeDuration} Minuten
-                </p>
-              </div>
 
           {/* Progress Bar */}
           <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
@@ -354,8 +350,7 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
               <strong className="text-orange-400">WICHTIG:</strong> {trainingDetails[trainingId].wichtig}
             </p>
           </div>
-            </>
-          )}
+          </div>
         </CardContent>
       </Card>
     </div>
