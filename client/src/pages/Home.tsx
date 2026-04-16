@@ -1785,7 +1785,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col gap-6 text-xs text-zinc-600">
                 {/* Disclaimer */}
                 <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg px-5 py-4 text-zinc-400 text-xs leading-relaxed">
-                  <p className="font-semibold text-zinc-300 mb-1">Haftungsausschluss</p>
+                  <p className="font-semibold text-zinc-300 mb-1 uppercase tracking-widest">Haftungsausschluss</p>
                   <p>
                     KIICH ist kein medizinisches Angebot. Die Inhalte und KI-generierten Auswertungen dienen ausschließlich der persönlichen Selbstreflexion und stellen keine medizinische Diagnose, psychologische Beratung oder Therapie dar. Bei psychischen Krisen wenden Sie sich bitte an eine qualifizierte Fachkraft.
                   </p>
@@ -1806,6 +1806,13 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
 
                 </div>
 
+                {/* Globaler Hinweis */}
+                <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg px-5 py-4 text-zinc-400 text-xs leading-relaxed">
+                  <p className="font-semibold text-zinc-300 mb-1 uppercase tracking-widest">Globaler Hinweis</p>
+                  <p>
+                    Sämtliche Inhalte von KIICH sind ausschließlich innerhalb der KIICH-Applikation zugänglich. Anteilige Freischaltungen für Exporte und Downloads sind der Premiumklasse vorbehalten.
+                  </p>
+                </div>
                 {/* Über den Gründer */}
                 <div className="bg-zinc-900/40 border border-zinc-800 rounded-xl px-6 py-5">
                   <p className="text-zinc-400 text-xs font-semibold uppercase tracking-widest mb-3">Über den Gründer</p>
