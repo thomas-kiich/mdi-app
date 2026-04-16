@@ -1610,8 +1610,8 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                trainingId="metabolic"
                duration={selectedTrainingDuration || 0}
                audioUrls={{
-                 7: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/platonischesJAHR_7min.wav",
-                 21: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/platonischesJAHR_21min.wav"
+                 7: "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/RESONSANZausdemRAUM_434eee24.mp3",
+                 21: "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/RESONSANZausdemRAUM_434eee24.mp3"
                }}
                baseTone={finalResult?.tone}
                onClose={() => {

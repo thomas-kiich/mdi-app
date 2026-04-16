@@ -121,16 +121,16 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
   }, []);
 
   const trainingNames = {
-    metabolic: 'STOFFWECHSELATMUNG',
+    metabolic: 'RESONANZ AUS DEM RAUM',
     mayerwelle: 'MAYERWELLE 5,5 / MW'
   };
 
   const trainingDetails = {
     metabolic: {
-      optimaleNutzung: 'Verwende die SWA als Hintergrundsound um ein harmonisches Umfeld zu unterstützen und deinen Atemzyklus auf die optimale Rhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).',
-      wirkung: 'Dein Unterbewusstsein beginnt, den optimalen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du wirst zunehmend ruhiger und beginnst tief zu regenerieren. Ideal für echte Erholungsphasen zwischendurch oder zur Stimulierung einer meditativen Raumatmosphäre.',
-      anwendung: 'Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = AUSatmen (höre genau hin, das Gongsignal ist sanft in die Musik eingebettet).',
-      wichtig: 'Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !'
+      optimaleNutzung: 'Lass die Komposition als Klangraum wirken – im Hintergrund beim Arbeiten, in der Pause oder zur bewussten Einstimmung. Sie ist so komponiert, dass sie deinen inneren Resonanzraum aktiviert.',
+      wirkung: 'Die Klangschichten dieser Komposition sprechen direkt das Nervensystem an und unterstützen einen Zustand tiefer Wachheit bei gleichzeitiger Entspannung. Ideal für kreative Arbeit, Reflexion oder als Übergang in eine Meditationsphase.',
+      anwendung: 'Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound angenehm wahrnehmbar ist / Schließe die Augen für einige Atemzüge und lass den Klang in dich einwirken.',
+      wichtig: 'Keine Kopfhörer erforderlich – der Raumklang entfaltet seine Wirkung auch über Lautsprecher.'
     },
     mayerwelle: {
       optimaleNutzung: 'Verwende die MW als Hintergrundsound um ein regenerierendes Umfeld zu unterstützen und deinen Atemzyklus auf eine optimale Atemrhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).',
