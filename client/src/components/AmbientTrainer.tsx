@@ -145,10 +145,10 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
 
   const trainingDetails = {
     metabolic: {
-      optimaleNutzung: 'Lass die Komposition als Klangraum wirken – im Hintergrund beim Arbeiten, in der Pause oder zur bewussten Einstimmung. Sie ist so komponiert, dass sie deinen inneren Resonanzraum aktiviert.',
-      wirkung: 'Die Klangschichten dieser Komposition sprechen direkt das Nervensystem an und unterstützen einen Zustand tiefer Wachheit bei gleichzeitiger Entspannung. Ideal für kreative Arbeit, Reflexion oder als Übergang in eine Meditationsphase.',
-      anwendung: 'Reguliere die Lautstärke so, dass der Sound angenehm wahrnehmbar ist / Schließe die Augen für einige Atemzüge und lass den Klang in dich einwirken.',
-      wichtig: 'Keine Kopfhörer erforderlich – der Raumklang entfaltet seine Wirkung auch über Lautsprecher.'
+      optimaleNutzung: 'Spiele die Klangpulsation sanft als Hintergrundsound ab. Die Raumqualität wandelt sich in ein feinstofflich rhythmisierendes Wechselfeld von Spannungsaufnahme (EINatmen – der höhere Klang) und Reflexionsphase (AUSatmen – der tiefere Klang).',
+      wirkung: 'Es motiviert jedes biologisch atmende System sich diesem natürlichen Atemzyklus anzunähern. Dadurch können sich erhöhte Konzentrationsfähigkeit und Frischeempfinden einstellen. Emotionale Gereiztheit nimmt ab und die Aufnahmefähigkeit von Informationen aus der äusseren Welt kann sich erhöhen.',
+      anwendung: 'Die Pulsation basiert auf METHODE 36 mit insgesamt 6 Atemzyklen je Minute. EIN- zu AUSatmung sind im Verhältnis von 1:2 gesetzt. Dies bewirkt eine ausgedehnte Entspannungsphase.',
+      wichtig: 'Versuche sowohl EIN- als auch AUSatmen über die Nase zu vollziehen. Du kannst zwischendurch bewusst im Rhythmus der Kompositionsvorgabe atmen. EIGNUNG: Foyers | Arbeitsräume | Büros | Entspannungsräume | Lernbereiche.'
     },
     mayerwelle: {
       optimaleNutzung: 'Verwende die MW als Hintergrundsound um ein regenerierendes Umfeld zu unterstützen und deinen Atemzyklus auf eine optimale Atemrhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).',
