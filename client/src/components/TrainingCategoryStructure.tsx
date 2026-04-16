@@ -99,12 +99,11 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
     items: [
       {
         id: "metabolic",
-        name: "STOFFWECHSELATMUNG",
-        description: "OPTIMALE NUTZUNG: Verwende die SWA als Hintergrundsound um ein harmonisches Umfeld zu unterstützen und deinen Atemzyklus auf die optimale Rhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).\n\nWIRKUNG: Dein Unterbewusstsein beginnt, den optimalen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du wirst zunehmend ruhiger und beginnst tief zu regenerieren. Ideal für echte Erholungsphasen zwischendurch oder zur Stimulierung einer meditativen Raumatmosphäre.\n\nANWENDUNG: Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = AUSatmen (höre genau hin, das Gongsignal ist sanft in die Musik eingebettet).\n\nWICHTIG: Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !",
-        durations: [7, 21],
+        name: "RESONANZ AUS DEM RAUM",
+        description: "Lass die Komposition als Klangraum wirken – im Hintergrund beim Arbeiten, in der Pause oder zur bewussten Einstimmung. Sie ist so komponiert, dass sie deinen inneren Resonanzraum aktiviert.\n\nWIRKUNG: Die Klangschichten sprechen direkt das Nervensystem an und unterstützen einen Zustand tiefer Wachheit bei gleichzeitiger Entspannung. Ideal für kreative Arbeit, Reflexion oder als Übergang in eine Meditationsphase.\n\nANWENDUNG: Reguliere die Lautstärke so, dass der Sound angenehm wahrnehmbar ist / Schließe die Augen für einige Atemzüge und lass den Klang in dich einwirken.\n\nWICHTIG: Keine Kopfhörer erforderlich – der Raumklang entfaltet seine Wirkung auch über Lautsprecher.",
+        durations: [0],
         audioUrls: {
-          7: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/platonischesJAHR_7min.wav",
-          21: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/platonischesJAHR_21min.wav",
+          0: "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/RESONSANZausdemRAUM_434eee24.mp3",
         },
         type: "ambient",
       },
@@ -173,7 +172,8 @@ export function TrainingCategoryStructure({
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Duration Selection */}
-              {item.durations && item.durations.length > 0 && (
+              {/* Dauer-Auswahl nur anzeigen wenn echte Dauern vorhanden (nicht [0]) */}
+              {item.durations && item.durations.length > 0 && !item.durations.every(d => d === 0) && (
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-300 mb-3">
                     Dauer wählen:
@@ -201,19 +201,20 @@ export function TrainingCategoryStructure({
                 </div>
               )}
 
-              {/* Start Training Button */}
+              {/* Start Training Button – bei durations=[0] sofort aktiv */}
               <Button 
                 className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-black font-bold disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={!selectedDuration}
+                disabled={!selectedDuration && !item.durations?.every(d => d === 0)}
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  if (selectedDuration && onStartTraining) {
-                    onStartTraining(item, selectedDuration);
+                  const dur = item.durations?.every(d => d === 0) ? 0 : selectedDuration;
+                  if (dur !== null && dur !== undefined && onStartTraining) {
+                    onStartTraining(item, dur);
                   }
                 }}
               >
-                {selectedDuration ? `Training starten (${selectedDuration} Min)` : "Dauer wählen"}
+                Training starten
               </Button>
 
 
