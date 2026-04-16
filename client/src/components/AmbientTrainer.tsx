@@ -149,7 +149,8 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
       wirkung: 'Es motiviert jedes biologisch atmende System sich diesem natürlichen Atemzyklus anzunähern. Dadurch können sich erhöhte Konzentrationsfähigkeit und Frischeempfinden einstellen. Emotionale Gereiztheit nimmt ab und die Aufnahmefähigkeit von Informationen aus der äusseren Welt kann sich erhöhen.',
       anwendung: 'Die Pulsation basiert auf METHODE 36 mit insgesamt 6 Atemzyklen je Minute. EIN- zu AUSatmung sind im Verhältnis von 1:2 gesetzt. Dies bewirkt eine ausgedehnte Entspannungsphase.',
       wichtig: 'Versuche sowohl EIN- als auch AUSatmen über die Nase zu vollziehen. Du kannst zwischendurch bewusst im Rhythmus der Kompositionsvorgabe atmen.',
-      eignung: 'Foyers | Arbeitsräume | Büros | Entspannungsräume | Lernbereiche.'
+      eignung: 'Foyers | Arbeitsräume | Büros | Entspannungsräume | Lernbereiche.',
+      funktion: 'Die feinen physikalisch messbaren Druckwellen, die durch das rhythmische Pulsieren der Klänge im Raum verteilt werden, haben eine wichtige Informationsqualität für jeden Organismus auf den sie treffen. Mechanische Rezeptoren im Menschen sind wie Empfangsstationen, welche diese Schwingungen an das Nervensystem weiterleiten und so ihre beruhigende Wirkung entfalten.'
     },
     mayerwelle: {
       optimaleNutzung: 'Verwende die MW als Hintergrundsound um ein regenerierendes Umfeld zu unterstützen und deinen Atemzyklus auf eine optimale Atemrhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).',
@@ -324,6 +325,11 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
                 {'eignung' in trainingDetails[trainingId] && (
                   <p className="text-xs text-zinc-300 leading-relaxed">
                     <strong className="text-orange-400">EIGNUNG:</strong> {(trainingDetails[trainingId] as any).eignung}
+                  </p>
+                )}
+                {'funktion' in trainingDetails[trainingId] && (
+                  <p className="text-xs text-zinc-300 leading-relaxed">
+                    <strong className="text-orange-400">FUNKTION:</strong> {(trainingDetails[trainingId] as any).funktion}
                   </p>
                 )}
               </div>
