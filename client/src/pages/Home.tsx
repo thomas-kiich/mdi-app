@@ -1374,9 +1374,9 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       </div>
 
                       {/* Episode 3 Preview */}
-                      <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 relative overflow-hidden group">
-                        <div className="absolute top-4 right-4 bg-orange-500/20 text-orange-400 text-xs font-bold px-3 py-1 rounded-full">
-                          16.04.2026
+                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all">
+                        <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
+                          JETZT VERF&Uuml;GBAR
                         </div>
                         <h3 className="text-zinc-400 text-base font-bold tracking-wider mb-2 mt-8">2026 EPISODE 03</h3>
                         <h4 className="text-lg font-medium text-orange-400">ALLES KLAR!</h4>
