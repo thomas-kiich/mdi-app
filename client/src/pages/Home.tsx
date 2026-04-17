@@ -1422,14 +1422,20 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                   </div>
 
                   <PodcastFeature 
-                    title={<>2026 EPISODE 02<br/><span className="text-orange-400 block mt-1">EXTREME ZEITEN!</span></>}
-                    subtitle="Wie bleibe ich der Dirigent meines Lebens? _ Warum es enorme Vorteile für dich bietet, wenn du deinen Körper verstehst und ihm gibst was er wirklich braucht..."
+                    title={<>2026 EPISODE 03<br/><span className="text-orange-400 block mt-1">ALLES KLAR!</span></>}
+                    subtitle="Ich muss was tun und weiß jetzt wie? _ Warum ich sofort den Schalter umlegen muss und die Überforderung in den Mülleimer schmeiße..."
                     coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
-                    audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EPISODE_02_8bca4d18.mp3"
+                    audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EPISODE03_51e5f676.wav"
                     topLabel="NEUESTE EPISODE"
                   />
                   <div className="border-t border-zinc-800 pt-8">
                     <p className="text-zinc-500 text-xs uppercase tracking-widest mb-6 text-center">Frühere Episoden</p>
+                    <PodcastFeature 
+                      title={<>2026 EPISODE 02<br/><span className="text-orange-400 block mt-1">EXTREME ZEITEN!</span></>}
+                      subtitle="Wie bleibe ich der Dirigent meines Lebens? _ Warum es enorme Vorteile für dich bietet, wenn du deinen Körper verstehst und ihm gibst was er wirklich braucht..."
+                      coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
+                      audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EPISODE_02_8bca4d18.mp3"
+                    />
                     <PodcastFeature 
                       title={<>2026 EPISODE 01<br/><span className="text-orange-400 block mt-1">BEFEHL ERTEILT!</span></>}
                       subtitle="Wer lenkt mein Leben im Agentenzeitalter? _ Warum der Takt der MASCHINEN dich von deinem einzigartigen Lebenspuls entfremdet und wie du das verhindern kannst..."
