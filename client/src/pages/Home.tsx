@@ -1155,10 +1155,10 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       variant="outline" 
                       className="border-zinc-800 hover:bg-zinc-800 hover:border-zinc-600 cursor-pointer transition-all text-xs"
                       onClick={() => {
-                        if (user?.role !== "admin") {
+                        if (user?.role !== "admin" && !isPremium) {
                           toast({
-                            title: "Bald verfügbar",
-                            description: "Das YOHN-Training wird schrittweise für unsere Community geöffnet.",
+                            title: "Premium-Feature",
+                            description: "Das YOHN-Training ist Teil des Premium-Angebots. Upgrade erforderlich.",
                           });
                           return;
                         }
