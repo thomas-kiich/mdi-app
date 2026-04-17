@@ -288,8 +288,8 @@ export function TrainingCategoryStructure({
           {/* Training Items Grid */}
           <div className="grid gap-4">
             {category.items.map((item) => (
+              <div key={item.id} id={item.id === 'metabolic' ? 'resonanz-komposition' : undefined} style={item.id === 'metabolic' ? {scrollMarginTop: '80px'} : undefined}>
               <Card
-                key={item.id}
                 className="bg-zinc-900/50 border-zinc-800 hover:border-orange-500/50 cursor-pointer transition-all"
                 onClick={() => {
                   if (item.id === "metabolic" || item.id === "mayerwelle") {
@@ -309,6 +309,7 @@ export function TrainingCategoryStructure({
                   <ChevronRight className="w-5 h-5 text-zinc-500 flex-shrink-0" />
                 </CardContent>
               </Card>
+              </div>
             ))}
           </div>
 
