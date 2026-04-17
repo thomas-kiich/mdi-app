@@ -1426,7 +1426,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     title={<>2026 EPISODE 03<br/><span className="text-orange-400 block mt-1">ALLES KLAR!</span></>}
                     subtitle="Ich muss was tun und weiß jetzt wie? _ Warum ich sofort den Schalter umlegen muss und die Überforderung in den Mülleimer schmeiße..."
                     coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
-                    audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EPISODE03_51e5f676.wav"
+                    audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EPISODE03_ceec7ab7.mp3"
                     topLabel="NEUESTE EPISODE"
                   />
                   <div className="border-t border-zinc-800 pt-8">
