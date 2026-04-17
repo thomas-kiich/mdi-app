@@ -1421,6 +1421,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     <p className="text-zinc-500 text-xs uppercase tracking-widest mb-6 text-center">Aktuell freigeschaltete Episoden</p>
                   </div>
 
+                  <div id="episode-03" style={{scrollMarginTop: '80px'}} />
                   <PodcastFeature 
                     title={<>2026 EPISODE 03<br/><span className="text-orange-400 block mt-1">ALLES KLAR!</span></>}
                     subtitle="Ich muss was tun und weiß jetzt wie? _ Warum ich sofort den Schalter umlegen muss und die Überforderung in den Mülleimer schmeiße..."
