@@ -38,7 +38,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
           className="w-[260px] md:w-[340px] h-auto"
         />
         <p className="text-zinc-400 text-sm tracking-widest uppercase text-center">
-          Dein Identitätssystem für das KI-Zeitalter
+          Die Plattform für deine Persönlichkeitsentfaltung
         </p>
       </div>
 
@@ -52,7 +52,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
         </h1>
         <p className="text-zinc-400 text-base leading-relaxed">
           Für die Nutzung aller KIICH-Tools benötigst du einen <span className="text-amber-400 font-semibold">kostenlosen Manus-Account</span> — 
-          in 30 Sekunden erstellt, kein Kreditkarte nötig.
+          in 30 Sekunden erstellt, keine Kreditkarte erforderlich.
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
           <Users className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-white text-sm font-semibold mb-0.5">KI-Plattform inklusive</p>
-            <p className="text-zinc-500 text-xs leading-relaxed">Mit deinem Manus-Account erhältst du gleichzeitig Zugang zu einer der leistungsfähigsten KI-Plattformen.</p>
+            <p className="text-zinc-500 text-xs leading-relaxed">Mit deinem Manus-Account erhältst du gleichzeitig KOSTENLOSEN Zugang zu einer der leistungsfähigsten KI-Plattformen.</p>
           </div>
         </div>
       </div>
