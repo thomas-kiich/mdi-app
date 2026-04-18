@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { WillkommensScreen } from "@/components/WillkommensScreen";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -1284,6 +1285,11 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
         );
     }
   };
+
+  // Nicht eingeloggt: Willkommens-Screen mit Manus-Login + DSGVO anzeigen
+  if (!loading && !isAuthenticated) {
+    return <WillkommensScreen />;
+  }
 
   return (
     <div className="min-h-screen bg-black text-foreground font-sans selection:bg-orange-500/30">
