@@ -136,7 +136,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
                 className="flex items-center gap-1.5 text-xs text-amber-400/70 hover:text-amber-400 transition-colors"
               >
                 <ExternalLink className="w-3 h-3" />
-                Mehr über Manus erfahren: manus.im
+                manus.im
               </a>
             </div>
           </div>
@@ -194,7 +194,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
               : 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700'
           }`}
         >
-          {consentGiven ? 'Jetzt kostenlos starten →' : 'Bitte Datenschutz bestätigen'}
+          {consentGiven ? 'Jetzt kostenlos bei KIICH starten →' : 'Bitte Datenschutz bestätigen'}
         </button>
         <p className="text-center text-xs text-zinc-600 mt-3">
           Bereits registriert? Der Button führt dich direkt zum Login.
