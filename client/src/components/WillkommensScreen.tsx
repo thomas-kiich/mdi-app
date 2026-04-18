@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
-import { Shield, Lock, Zap, Users, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { Shield, Lock, Zap, Users, ChevronDown, ChevronUp } from "lucide-react";
 
 interface WillkommensScreenProps {
   onConsentGiven?: () => void;
@@ -51,7 +51,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
           Willkommen bei KIICH
         </h1>
         <p className="text-zinc-400 text-base leading-relaxed">
-          Für die Nutzung aller KIICH-Tools benötigst du einen <span className="text-amber-400 font-semibold">kostenlosen Manus-Account</span> — 
+          Für die Nutzung aller KIICH-Tools benötigst du einen <span className="text-amber-400 font-semibold">kostenlosen Account</span> — 
           in 30 Sekunden erstellt, keine Kreditkarte erforderlich.
         </p>
       </div>
@@ -62,7 +62,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
           <Shield className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-white text-sm font-semibold mb-0.5">Maximaler Datenschutz</p>
-            <p className="text-zinc-500 text-xs leading-relaxed">Keine KIICH-eigene Passwort-Speicherung. Deine Zugangsdaten bleiben ausschließlich bei Manus.</p>
+            <p className="text-zinc-500 text-xs leading-relaxed">Keine eigene Passwort-Speicherung. Deine Zugangsdaten sind sicher verwahrt.</p>
           </div>
         </div>
         <div className="bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 flex items-start gap-3">
@@ -83,7 +83,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
           <Users className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
           <div>
             <p className="text-white text-sm font-semibold mb-0.5">KI-Plattform inklusive</p>
-            <p className="text-zinc-500 text-xs leading-relaxed">Mit deinem Manus-Account erhältst du gleichzeitig KOSTENLOSEN Zugang zu einer der leistungsfähigsten KI-Plattformen.</p>
+            <p className="text-zinc-500 text-xs leading-relaxed">Mit deinem Account erhältst du gleichzeitig KOSTENLOSEN Zugang zu einer der leistungsfähigsten KI-Plattformen.</p>
           </div>
         </div>
       </div>
@@ -94,7 +94,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
           onClick={() => setShowManusGuide(!showManusGuide)}
           className="w-full flex items-center justify-between px-5 py-3 bg-zinc-900/80 border border-zinc-700 rounded-xl text-sm text-zinc-300 hover:text-white hover:border-amber-500/50 transition-all"
         >
-          <span className="font-semibold tracking-wide">📖 Wie erstelle ich einen kostenlosen Manus-Account?</span>
+          <span className="font-semibold tracking-wide">📖 Wie erstelle ich meinen kostenlosen KIICH-Account?</span>
           {showManusGuide ? <ChevronUp className="w-4 h-4 text-amber-400" /> : <ChevronDown className="w-4 h-4 text-zinc-500" />}
         </button>
 
@@ -104,7 +104,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
               <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 text-xs font-bold">1</div>
               <div>
                 <p className="text-white text-sm font-medium">Klicke auf „JETZT KOSTENLOS STARTEN"</p>
-                <p className="text-zinc-500 text-xs mt-0.5">Du wirst zur Manus-Registrierungsseite weitergeleitet.</p>
+                <p className="text-zinc-500 text-xs mt-0.5">Du wirst zur Registrierungsseite weitergeleitet.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
@@ -128,17 +128,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
                 <p className="text-zinc-500 text-xs mt-0.5">Nach der Registrierung wirst du automatisch zu KIICH zurückgeleitet und kannst sofort loslegen.</p>
               </div>
             </div>
-            <div className="pt-2 border-t border-zinc-800">
-              <a
-                href="https://manus.im"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 text-xs text-amber-400/70 hover:text-amber-400 transition-colors"
-              >
-                <ExternalLink className="w-3 h-3" />
-                manus.im
-              </a>
-            </div>
+
           </div>
         )}
       </div>
