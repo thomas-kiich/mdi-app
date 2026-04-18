@@ -1,12 +1,12 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { PodcastFeature } from "@/components/PodcastFeature";
 import { useEffect } from "react";
-import { useLocation } from "wouter";
+import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function Episoden() {
-  const [location] = useLocation();
+  const { isAuthenticated, loading } = useAuth();
 
   // Scroll to anchor after page loads
   useEffect(() => {
@@ -36,6 +36,26 @@ export default function Episoden() {
           </span>
         </div>
       </div>
+
+      {/* Dezenter Registrierungs-Banner – nur für nicht-eingeloggte User */}
+      {!loading && !isAuthenticated && (
+        <div className="border-b border-amber-900/40 bg-amber-950/20 px-4 py-3">
+          <div className="container max-w-4xl mx-auto flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex items-center gap-2 text-sm text-amber-200/80">
+              <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+              <span>Für das volle KIICH-Erlebnis – Stimmklang-Analyse, Trainings &amp; mehr</span>
+            </div>
+            <Link href="/">
+              <Button
+                size="sm"
+                className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs px-4 shrink-0"
+              >
+                Kostenlos registrieren →
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {/* Content */}
       <div className="container max-w-4xl mx-auto px-4 py-12 space-y-12">

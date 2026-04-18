@@ -100,6 +100,74 @@ function JohannesStatement() {
   );
 }
 
+function AdminStatsDashboard() {
+  const { data: stats, isLoading } = trpc.admin.getUserStats.useQuery();
+
+  return (
+    <div className="container max-w-6xl mx-auto px-4 mt-6 mb-10">
+      <div className="border border-orange-500/30 rounded-xl bg-zinc-900/60 p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <Activity className="w-5 h-5 text-orange-400" />
+          <h2 className="text-orange-400 font-bold uppercase tracking-widest text-sm font-mono">Admin · Plattform-Statistiken</h2>
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 text-orange-400 animate-spin" />
+          </div>
+        ) : stats ? (
+          <>
+            {/* Kennzahlen-Kacheln */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="bg-zinc-800/60 rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-white mb-1">{stats.totalUsers}</div>
+                <div className="text-xs text-zinc-400 uppercase tracking-wider">User gesamt</div>
+              </div>
+              <div className="bg-zinc-800/60 rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-orange-400 mb-1">{stats.newThisWeek}</div>
+                <div className="text-xs text-zinc-400 uppercase tracking-wider">Neu diese Woche</div>
+              </div>
+              <div className="bg-zinc-800/60 rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-amber-400 mb-1">{stats.newThisMonth}</div>
+                <div className="text-xs text-zinc-400 uppercase tracking-wider">Neu diesen Monat</div>
+              </div>
+              <div className="bg-zinc-800/60 rounded-lg p-4 text-center">
+                <div className="text-3xl font-bold text-green-400 mb-1">{stats.totalNewsletterSubscribers}</div>
+                <div className="text-xs text-zinc-400 uppercase tracking-wider">Newsletter-Abos</div>
+              </div>
+            </div>
+
+            {/* Letzte Registrierungen */}
+            <div>
+              <h3 className="text-xs text-zinc-500 uppercase tracking-widest font-mono mb-3">Letzte Registrierungen</h3>
+              <div className="space-y-2">
+                {stats.recentUsers.map((u) => (
+                  <div key={u.id} className="flex items-center justify-between bg-zinc-800/40 rounded-lg px-4 py-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-7 h-7 rounded-full bg-orange-500/20 flex items-center justify-center shrink-0">
+                        <User className="w-3.5 h-3.5 text-orange-400" />
+                      </div>
+                      <div>
+                        <div className="text-sm text-white font-medium">{u.name || "–"}</div>
+                        <div className="text-xs text-zinc-500">{u.role}</div>
+                      </div>
+                    </div>
+                    <div className="text-xs text-zinc-500 text-right">
+                      {u.createdAt ? new Date(u.createdAt).toLocaleDateString("de-AT", { day: "2-digit", month: "2-digit", year: "numeric" }) : "–"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <p className="text-zinc-500 text-sm">Keine Daten verfügbar.</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Home() {
   // The userAuth hooks provides authentication state
   // To implement login/logout functionality, simply call logout() or redirect to getLoginUrl()
@@ -764,6 +832,9 @@ export default function Home() {
               <div id="newsletter-section" className="container max-w-6xl mx-auto px-4 mt-10 mb-8">
                 <NewsletterSignup source="podcast" />
               </div>
+
+              {/* Admin-Statistik-Dashboard – nur für Admins sichtbar */}
+              {user?.role === "admin" && <AdminStatsDashboard />}
               
             </div>
         );
