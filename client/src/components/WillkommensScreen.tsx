@@ -103,22 +103,29 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 text-xs font-bold">1</div>
               <div>
+                <p className="text-white text-sm font-medium">Datenschutz lesen und akzeptieren</p>
+                <p className="text-zinc-500 text-xs mt-0.5">Klappe den Datenschutz-Bereich unten auf, lies ihn durch und setze das Häkchen bei der Einwilligung.</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 text-xs font-bold">2</div>
+              <div>
                 <p className="text-white text-sm font-medium">Klicke auf „JETZT KOSTENLOS STARTEN"</p>
                 <p className="text-zinc-500 text-xs mt-0.5">Du wirst zur Registrierungsseite weitergeleitet.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 text-xs font-bold">2</div>
+              <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 text-xs font-bold">3</div>
               <div>
                 <p className="text-white text-sm font-medium">E-Mail-Adresse eingeben</p>
                 <p className="text-zinc-500 text-xs mt-0.5">Keine Kreditkarte, kein Abo — nur deine E-Mail-Adresse.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 text-xs font-bold">3</div>
+              <div className="w-6 h-6 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 text-xs font-bold">4</div>
               <div>
                 <p className="text-white text-sm font-medium">Bestätigungs-E-Mail öffnen & klicken</p>
-                <p className="text-zinc-500 text-xs mt-0.5">Manus sendet dir einen Bestätigungslink — einmal klicken, fertig.</p>
+                <p className="text-zinc-500 text-xs mt-0.5">Du erhältst einen Bestätigungslink — einmal klicken, fertig.</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
