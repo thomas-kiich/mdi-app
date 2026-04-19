@@ -11,12 +11,19 @@ import { Link } from "wouter";
 function InstallButton() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [installed, setInstalled] = useState(false);
-  const [isIOS, setIsIOS] = useState(false);
-  const [showIOSGuide, setShowIOSGuide] = useState(false);
+  const [deviceType, setDeviceType] = useState<'ios' | 'android' | 'desktop' | 'other'>('other');
+  const [showGuide, setShowGuide] = useState(false);
 
   useEffect(() => {
-    const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    setIsIOS(ios);
+    const ua = navigator.userAgent;
+    const ios = /iphone|ipad|ipod/i.test(ua);
+    const android = /android/i.test(ua);
+    const mobile = ios || android;
+    if (ios) setDeviceType('ios');
+    else if (android) setDeviceType('android');
+    else if (!mobile) setDeviceType('desktop');
+    else setDeviceType('other');
+
     const handler = (e: Event) => { e.preventDefault(); setDeferredPrompt(e); };
     window.addEventListener("beforeinstallprompt", handler);
     if (window.matchMedia("(display-mode: standalone)").matches) setInstalled(true);
@@ -24,14 +31,61 @@ function InstallButton() {
   }, []);
 
   const handleInstall = async () => {
-    if (isIOS) { setShowIOSGuide(prev => !prev); return; }
     if (deferredPrompt) {
+      // Nativer Browser-Prompt verfügbar (Chrome/Edge Android + Desktop)
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === "accepted") setInstalled(true);
       setDeferredPrompt(null);
+    } else {
+      // Manuelle Anleitung anzeigen
+      setShowGuide(prev => !prev);
     }
   };
+
+  // Anleitungen je Gerät
+  const guides: Record<string, { title: string; steps: string[] }> = {
+    ios: {
+      title: 'Installation auf iPhone / iPad (Safari):',
+      steps: [
+        'Öffne www.kiich.de im Safari-Browser (nicht Chrome oder Firefox).',
+        'Tippe unten auf das Teilen-Symbol (Quadrat mit Pfeil nach oben).',
+        '"Zum Home-Bildschirm" wählen und mit "Hinzufügen" bestätigen.',
+        'Das KIICH-Icon erscheint auf deinem Homescreen – fertig!',
+      ],
+    },
+    android: {
+      title: 'Installation auf Android (Chrome):',
+      steps: [
+        'Öffne www.kiich.de in Chrome.',
+        'Tippe oben rechts auf die drei Punkte (⋮).',
+        '"App installieren" oder "Zum Startbildschirm hinzufügen" wählen.',
+        'Mit "Installieren" bestätigen – das KIICH-Icon erscheint auf deinem Homescreen.',
+      ],
+    },
+    desktop: {
+      title: 'Installation am Computer (Chrome / Edge):',
+      steps: [
+        'Öffne www.kiich.de in Chrome oder Microsoft Edge.',
+        'Klicke in der Adressleiste rechts auf das Install-Symbol (⊕ oder Computer-Icon).',
+        'Alternativ: Klicke oben rechts auf die drei Punkte → "KIICH installieren".',
+        'Mit "Installieren" bestätigen – KIICH öffnet sich als eigenes Fenster ohne Browser-Leiste.',
+      ],
+    },
+    other: {
+      title: 'App installieren:',
+      steps: [
+        'Öffne www.kiich.de in Chrome oder Microsoft Edge (empfohlen).',
+        'Klicke auf das Install-Icon in der Adressleiste oder im Browser-Menü.',
+        'Mit "Installieren" bestätigen.',
+      ],
+    },
+  };
+
+  const guide = guides[deviceType];
+  const buttonLabel = deviceType === 'ios' ? 'Anleitung für iPhone / iPad'
+    : deviceType === 'desktop' ? 'App am Computer installieren'
+    : 'App jetzt installieren';
 
   if (installed) return (
     <div className="flex items-center gap-2 text-green-400 text-sm font-medium">
@@ -44,26 +98,23 @@ function InstallButton() {
       <button onClick={handleInstall}
         className="flex items-center gap-2 px-5 py-2.5 bg-amber-400 hover:bg-amber-300 text-black font-semibold text-sm tracking-wide uppercase transition-all duration-200 rounded-sm">
         <Download className="w-4 h-4" />
-        {isIOS ? "Anleitung für iPhone" : "App jetzt installieren"}
+        {deferredPrompt ? 'App jetzt installieren' : buttonLabel}
       </button>
-      {isIOS && showIOSGuide && (
+      {showGuide && (
         <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2 text-sm text-white/60">
-          <p className="font-semibold text-white mb-2">Installation auf iPhone / iPad:</p>
-          {[
-            "Öffne kiich.manus.space im Safari-Browser (nicht Chrome).",
-            "Tippe auf das Teilen-Symbol (Quadrat mit Pfeil nach oben) unten.",
-            '"Zum Home-Bildschirm" wählen und mit "Hinzufügen" bestätigen.',
-            "Das KIICH-Icon erscheint auf deinem Homescreen.",
-          ].map((step, i) => (
+          <p className="font-semibold text-white mb-3">{guide.title}</p>
+          {guide.steps.map((step, i) => (
             <div key={i} className="flex items-start gap-3">
               <span className="bg-amber-400 text-black text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5">{i+1}</span>
               <span>{step}</span>
             </div>
           ))}
+          {deviceType === 'desktop' && (
+            <p className="text-amber-400/60 text-xs mt-3 pt-3 border-t border-white/10">
+              Tipp: Funktioniert auch in Firefox – dort unter Lesezeichen → "Diese Seite als App öffnen".
+            </p>
+          )}
         </div>
-      )}
-      {!isIOS && !deferredPrompt && (
-        <p className="text-white/30 text-xs">Öffne diese Seite in Chrome oder Edge für die automatische Installation.</p>
       )}
     </div>
   );
