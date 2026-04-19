@@ -653,7 +653,9 @@ export default function Home() {
                     </a>
                     {/* Slogan direkt unter Logo – zweizeilig */}
                     <div className="text-center leading-tight">
-                      <p className="text-base md:text-xl tracking-widest uppercase text-white font-light">Die Plattform für deine Persönlichkeitsentfaltung im KI-Zeitalter</p>
+                      <p className="text-base md:text-xl tracking-widest uppercase text-white font-light">Die Plattform</p>
+                      <p className="text-base md:text-xl tracking-widest uppercase text-white font-light">für deine Persönlichkeitsentfaltung</p>
+                      <p className="text-base md:text-xl tracking-widest uppercase text-white font-light">im KI-Zeitalter</p>
                     </div>
                     </div>
                     {/* Statement – alles hinter Mehr-lesen */}
