@@ -11,6 +11,9 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
   const [showManusGuide, setShowManusGuide] = useState(false);
   const [showDsgvo, setShowDsgvo] = useState(false);
 
+  // ?ref= Parameter aus der URL auslesen (Einladungslink)
+  const refCode = new URLSearchParams(window.location.search).get("ref") ?? undefined;
+
   const handleLogin = () => {
     if (!consentGiven) {
       const el = document.getElementById("dsgvo-checkbox");
@@ -22,7 +25,8 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
     }
     localStorage.setItem("kiich_dsgvo_consent", new Date().toISOString());
     if (onConsentGiven) onConsentGiven();
-    window.location.href = getLoginUrl();
+    // refCode mitgeben falls vorhanden (Einladungslink-Tracking)
+    window.location.href = getLoginUrl(refCode);
   };
 
   return (

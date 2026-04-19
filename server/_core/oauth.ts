@@ -49,6 +49,10 @@ export function registerOAuthRoutes(app: Express) {
         return;
       }
 
+      // Prüfen ob User bereits existiert (vor dem Upsert)
+      const existingUser = await db.getUserByOpenId(userInfo.openId);
+      const istNeuRegistrierung = !existingUser;
+
       await db.upsertUser({
         openId: userInfo.openId,
         name: userInfo.name || null,
@@ -56,6 +60,17 @@ export function registerOAuthRoutes(app: Express) {
         loginMethod: userInfo.loginMethod ?? userInfo.platform ?? null,
         lastSignedIn: new Date(),
       });
+
+      // Benachrichtigung bei Neuregistrierung
+      if (istNeuRegistrierung) {
+        const neuerName = userInfo.name ?? "Unbekannt";
+        const loginMethodText = userInfo.loginMethod ?? userInfo.platform ?? "unbekannt";
+        await notifyOwner({
+          title: `🎉 Neuer KIICH-User registriert!`,
+          content: `${neuerName} hat sich soeben bei KIICH registriert (via ${loginMethodText}).`,
+        }).catch(err => console.warn("[Notify] Fehler bei Neuregistrierungs-Benachrichtigung:", err));
+        console.log(`[OAuth] Neue Registrierung: ${neuerName} (${userInfo.openId})`);
+      }
 
       // Einladungscode verarbeiten (falls vorhanden)
       const { refCode } = parseState(state);
