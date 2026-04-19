@@ -34,6 +34,12 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
             <li>Wenn du den für dich passenden Lichtklang zur momentanen Befindlichkeit entdeckt hast klicke auf Training starten.</li>
           </ol>
         </div>
+        <div className="flex items-start gap-2 max-w-2xl mx-auto mt-3 bg-blue-950/40 border border-blue-500/30 rounded-lg px-4 py-3">
+          <span className="text-blue-400 text-base mt-0.5">&#9888;</span>
+          <p className="text-xs text-blue-300 leading-relaxed">
+            <strong className="text-blue-200">Handy-Hinweis:</strong> Falls du mit deinem Handy trainierst, achte darauf, dass du den <strong className="text-blue-200">Energiesparmodus abschaltest</strong> während der Übung. Ansonsten kann es zu unerwünschten Unterbrechungen im Spielablauf kommen!
+          </p>
+        </div>
       </CardHeader>
       <CardContent className="space-y-8">
         {/* Color Grid */}
