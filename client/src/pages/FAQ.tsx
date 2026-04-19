@@ -408,7 +408,7 @@ export default function FAQ() {
               <label className="flex items-start gap-3 cursor-pointer group">
                 <div
                   onClick={() => setEinwilligung(!einwilligung)}
-                  className={`mt-0.5 w-4 h-4 shrink-0 rounded border flex items-center justify-center transition-colors ${
+                  className={`mt-0.5 w-4 h-4 shrink-0 rounded border flex items-center justify-center transition-colors cursor-pointer ${
                     einwilligung
                       ? 'bg-amber-400 border-amber-400'
                       : 'bg-white/5 border-white/20 group-hover:border-amber-400/50'
@@ -422,7 +422,7 @@ export default function FAQ() {
                 </div>
                 <span
                   onClick={() => setEinwilligung(!einwilligung)}
-                  className="text-white/50 text-xs leading-relaxed select-none"
+                  className="text-white/50 text-xs leading-relaxed select-none cursor-pointer hover:text-white/70 transition-colors"
                 >
                   Ich bin damit einverstanden, dass meine Frage anonymisiert und auf dieser Seite veröffentlicht werden kann.
                 </span>
@@ -430,7 +430,7 @@ export default function FAQ() {
               <Button
                 type="submit"
                 disabled={frageEinreichenMutation.isPending || formFrage.trim().length < 10 || !einwilligung}
-                className="w-full bg-amber-400 hover:bg-amber-300 text-black font-semibold"
+                className="w-full bg-amber-400 hover:bg-amber-300 text-black font-semibold cursor-pointer disabled:cursor-not-allowed disabled:opacity-40 disabled:bg-amber-400 transition-all duration-200"
               >
                 {frageEinreichenMutation.isPending ? (
                   <>
