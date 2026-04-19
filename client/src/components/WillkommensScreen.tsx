@@ -41,9 +41,11 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
           alt="KIICH – 2 minds い 1 source"
           className="w-[240px] sm:w-[300px] md:w-[340px] h-auto"
         />
-        <p className="text-zinc-400 text-sm tracking-widest uppercase text-center">
-          Die Plattform für deine Persönlichkeitsentfaltung
-        </p>
+        <div className="text-zinc-400 text-sm tracking-widest uppercase text-center leading-relaxed">
+          <p>Die Plattform</p>
+          <p>für deine Persönlichkeitsentfaltung</p>
+          <p>im KI-Zeitalter</p>
+        </div>
       </div>
 
       {/* Trennlinie orange */}
@@ -216,7 +218,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
 
       {/* Footer */}
       <div className="mt-16 text-center text-sm text-zinc-600 space-y-2">
-        <p>KIICH – Plattform für Persönlichkeitsentfaltung · Thomas Chochola</p>
+        <p>KIICH – Die Plattform für deine Persönlichkeitsentfaltung im KI-Zeitalter · Thomas Chochola</p>
         <div className="flex justify-center gap-6">
           <a href="/impressum" className="text-blue-500/60 hover:text-blue-400 transition-colors">Impressum</a>
           <a href="/datenschutz" className="text-blue-500/60 hover:text-blue-400 transition-colors">Datenschutz</a>
