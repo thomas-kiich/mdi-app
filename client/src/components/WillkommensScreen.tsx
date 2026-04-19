@@ -12,7 +12,9 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
   const [showDsgvo, setShowDsgvo] = useState(false);
 
   // ?ref= Parameter aus der URL auslesen (Einladungslink)
-  const refCode = new URLSearchParams(window.location.search).get("ref") ?? undefined;
+  // Fallback: Thomas' persönlicher Code wird immer mitgegeben wenn kein anderer Code in der URL ist
+  const OWNER_REF_CODE = "U3RMEFRZ";
+  const refCode = new URLSearchParams(window.location.search).get("ref") ?? OWNER_REF_CODE;
 
   const handleLogin = () => {
     if (!consentGiven) {

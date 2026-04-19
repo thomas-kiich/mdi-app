@@ -114,8 +114,7 @@ export function registerOAuthRoutes(app: Express) {
       res.cookie(COOKIE_NAME, sessionToken, { ...cookieOptions, maxAge: ONE_YEAR_MS });
 
       // Nach Login zur Momentaufnahme weiterleiten (mit Willkommens-Flag wenn neu)
-      const isNewUser = !!(refCode); // Neuer User wenn über Einladungslink
-      const redirectTarget = isNewUser ? "/momentaufnahme?willkommen=1" : "/";
+      const redirectTarget = istNeuRegistrierung ? "/momentaufnahme?willkommen=1" : "/";
       res.redirect(302, redirectTarget);
     } catch (error) {
       console.error("[OAuth] Callback failed", error);
