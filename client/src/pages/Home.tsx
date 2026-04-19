@@ -823,9 +823,9 @@ export default function Home() {
                   onOpenTable={() => setShowFrequencyTable(true)}
                   onOpenVital={() => setShowVitalDashboard(true)}
                   onOpenSleep={() => setShowSleepTheta(true)}
-                  onOpenHistory={() => {}}
+                  onOpenHistory={() => setShowHistory(true)}
                   onOpenVisionsraum={() => setShowVisionsraum(true)}
-                  isPremium={isPremium}
+                  isPremium={isPremium || user?.role === "admin"}
                   onTogglePremium={() => {}}
                 />
               </div>
