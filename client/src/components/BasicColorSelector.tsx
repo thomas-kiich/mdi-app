@@ -95,7 +95,10 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
                 
                 {selectedItem.nutzung && selectedItem.nutzung.length > 0 && (
                   <div>
-                    <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3 border-b border-zinc-800 pb-2">Anwendung</h4>
+                    <div className="border border-amber-500/50 bg-amber-500/10 rounded-lg px-3 py-3 mb-3">
+                      <p className="text-xs font-bold text-amber-400 uppercase tracking-widest">WAS DAS TRAINING MIT DEINEM GEWÄHLTEN LICHTKLANG BEWIRKEN KANN</p>
+                    </div>
+                    <h4 className="text-xs font-semibold text-amber-400/80 uppercase tracking-widest mb-3 border-b border-amber-500/20 pb-2">ANWENDUNG</h4>
                     <ul className="space-y-2 text-sm text-zinc-300">
                       {selectedItem.nutzung.map((nutzung: string, idx: number) => (
                         <li key={idx} className="flex items-start">
