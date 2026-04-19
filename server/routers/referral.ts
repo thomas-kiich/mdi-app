@@ -6,6 +6,10 @@ import {
   getReferralsVonUser,
 } from "../db";
 import { notifyOwner } from "../_core/notification";
+import { TRPCError } from "@trpc/server";
+import { getDb } from "../db";
+import { referrals, einladungsCodes, users } from "../../drizzle/schema";
+import { eq, desc, count } from "drizzle-orm";
 
 export const referralRouter = router({
   /**
@@ -23,6 +27,47 @@ export const referralRouter = router({
   meineEinladungen: protectedProcedure.query(async ({ ctx }) => {
     const einladungen = await getReferralsVonUser(ctx.user.id);
     return { einladungen };
+  }),
+
+  /**
+   * Admin-only: Gibt vollständige Referral-Statistik zurück.
+   */
+  adminStats: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "admin") {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+    const db = await getDb();
+    if (!db) return { einladungsCode: null, gesamtEinladungen: 0, einladungen: [] };
+
+    // Einladungscode des Admins
+    const codeRow = await db
+      .select()
+      .from(einladungsCodes)
+      .where(eq(einladungsCodes.userId, ctx.user.id))
+      .limit(1);
+    const einladungsCode = codeRow[0]?.code ?? null;
+    const anzahl = codeRow[0]?.anzahlEinladungen ?? 0;
+
+    // Liste aller geworbenen User
+    const einladungenRows = await db
+      .select({
+        id: referrals.id,
+        referredUserId: referrals.referredUserId,
+        createdAt: referrals.createdAt,
+        name: users.name,
+        email: users.email,
+      })
+      .from(referrals)
+      .leftJoin(users, eq(referrals.referredUserId, users.id))
+      .where(eq(referrals.referrerId, ctx.user.id))
+      .orderBy(desc(referrals.createdAt))
+      .limit(50);
+
+    return {
+      einladungsCode,
+      gesamtEinladungen: anzahl,
+      einladungen: einladungenRows,
+    };
   }),
 
   /**
