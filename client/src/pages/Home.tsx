@@ -1426,7 +1426,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     <h2 className="text-2xl font-bold text-center text-white mb-8">SZENARIO – Die Vorschau April 2026</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                       {/* Episode 1 Preview */}
-                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all">
+                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all" onClick={() => setLocation('/episoden#episode-01')}>
                         <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
                           JETZT VERFÜGBAR
                         </div>
@@ -1442,7 +1442,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       </div>
 
                       {/* Episode 2 Preview */}
-                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all">
+                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all" onClick={() => setLocation('/episoden#episode-02')}>
                         <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
                           JETZT VERFÜGBAR
                         </div>
@@ -1458,7 +1458,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       </div>
 
                       {/* Episode 3 Preview */}
-                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all">
+                      <div className="bg-zinc-900/50 border border-green-500/30 rounded-2xl p-6 relative overflow-hidden group cursor-pointer hover:border-green-400/60 transition-all" onClick={() => setLocation('/episoden#episode-03')}>
                         <div className="absolute top-4 right-4 bg-green-500/20 text-green-400 text-xs font-bold px-3 py-1 rounded-full animate-pulse">
                           JETZT VERF&Uuml;GBAR
                         </div>
