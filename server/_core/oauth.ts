@@ -4,6 +4,7 @@ import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 import { notifyOwner } from "./notification";
+import { sendeWillkommensEmail } from "./email";
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
@@ -70,6 +71,13 @@ export function registerOAuthRoutes(app: Express) {
           content: `${neuerName} hat sich soeben bei KIICH registriert (via ${loginMethodText}).`,
         }).catch(err => console.warn("[Notify] Fehler bei Neuregistrierungs-Benachrichtigung:", err));
         console.log(`[OAuth] Neue Registrierung: ${neuerName} (${userInfo.openId})`);
+        // Willkommens-E-Mail senden (nur wenn E-Mail-Adresse vorhanden)
+        if (userInfo.email) {
+          sendeWillkommensEmail({
+            name: userInfo.name ?? null,
+            email: userInfo.email,
+          }).catch(err => console.warn("[Email] Fehler bei Willkommens-Mail:", err));
+        }
       }
 
       // Einladungscode verarbeiten (falls vorhanden)

@@ -1141,3 +1141,8 @@
 - [x] Admin-Bypass im Trainingscenter: Admin sieht nie Schlösser
 - [x] Granulares Freischalt-System für einzelne Trainingskategorien (DB-gesteuert)
 - [ ] Episode 03: Gewählte Umfeldaktivierungs-Einheit freischalten
+
+## Admin & E-Mail Features
+- [x] Admin-FAQ-Verwaltung Frontend (Fragen ansehen, beantworten, veröffentlichen)
+- [x] Willkommens-E-Mail via Brevo nach Registrierung
+- [x] Test-Mail an Thomas senden zur Textüberprüfung
