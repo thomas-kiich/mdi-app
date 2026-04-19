@@ -316,9 +316,12 @@ export function AmbientTrainer({ trainingId, duration: initialDuration, audioUrl
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   <strong className="text-orange-400">WIRKUNG:</strong> {trainingDetails[trainingId].wirkung}
                 </p>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  <strong className="text-orange-400">ANWENDUNG:</strong> {trainingDetails[trainingId].anwendung}
-                </p>
+                <div className="border border-amber-500/50 bg-amber-500/10 rounded-lg px-3 py-3 mt-1">
+                  <p className="text-xs font-bold text-amber-400 uppercase tracking-widest mb-2">WAS DAS TRAINING MIT DEINEM GEWÄHLTEN LICHTKLANG BEWIRKEN KANN</p>
+                  <p className="text-xs text-zinc-200 leading-relaxed">
+                    <strong className="text-amber-300">ANWENDUNG:</strong> {trainingDetails[trainingId].anwendung}
+                  </p>
+                </div>
                 <p className="text-xs text-zinc-300 leading-relaxed">
                   <strong className="text-orange-400">WICHTIG:</strong> {trainingDetails[trainingId].wichtig}
                 </p>
