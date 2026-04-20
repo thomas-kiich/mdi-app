@@ -109,13 +109,13 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
         </button>
 
         {showVideo && (
-          <div className="mt-2 bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden">
+          <div className="mt-2 bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden flex justify-center p-3">
             <video
-              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/KIICHregistrierung200426_4a0cb905.mp4"
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/KIICHregistration-9x16_eeab9f4b.mp4"
               controls
               playsInline
-              className="w-full rounded-xl"
-              style={{ maxHeight: '400px' }}
+              className="rounded-xl"
+              style={{ width: '100%', maxWidth: '320px', aspectRatio: '9/16' }}
             />
           </div>
         )}
