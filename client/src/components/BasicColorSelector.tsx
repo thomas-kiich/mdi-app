@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play } from 'lucide-react';
+import { Play, Volume2, ChevronDown, ChevronUp } from 'lucide-react';
 import frequencyData from '@/lib/frequencyData.json';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSoundGenerator } from '@/hooks/useSoundGenerator';
@@ -12,6 +12,7 @@ interface BasicColorSelectorProps {
 
 export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps) {
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [showAudioGuide, setShowAudioGuide] = useState(false);
   const { playTone, stopAllSounds } = useSoundGenerator();
 
   // Filter only odd-numbered types (1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23)
@@ -42,6 +43,28 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
         </div>
       </CardHeader>
       <CardContent className="space-y-8">
+        {/* Audio-Anleitung */}
+        <div className="max-w-2xl mx-auto">
+          <button
+            onClick={() => setShowAudioGuide(!showAudioGuide)}
+            className="w-full flex items-center justify-between px-5 py-3 bg-zinc-800/60 border border-zinc-700 rounded-xl text-sm text-zinc-300 hover:text-white hover:border-amber-500/50 transition-all"
+          >
+            <span className="font-semibold flex items-center gap-2">
+              <Volume2 className="w-4 h-4 text-amber-400" />
+              Anleitung als Audio anhören (MA-Stimme)
+            </span>
+            {showAudioGuide ? <ChevronUp className="w-4 h-4 text-amber-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-zinc-500 shrink-0" />}
+          </button>
+          {showAudioGuide && (
+            <div className="mt-2 bg-zinc-900/60 border border-zinc-800 rounded-xl p-4">
+              <audio
+                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/befindlichkeit-anleitung-ma-stimme_a92ec0ec.mp3"
+                controls
+                className="w-full"
+              />
+            </div>
+          )}
+        </div>
         {/* Color Grid */}
         <div className="grid grid-cols-3 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
           {basicTypes.map((item) => (

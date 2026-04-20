@@ -8,7 +8,6 @@ interface WillkommensScreenProps {
 
 export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
   const [consentGiven, setConsentGiven] = useState(false);
-  const [showManusGuide, setShowManusGuide] = useState(false);
   const [showDsgvo, setShowDsgvo] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
 
@@ -96,68 +95,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
         </div>
       </div>
 
-      {/* Anleitung (ausklappbar) */}
-      <div className="max-w-xl w-full mb-5">
-        <button
-          onClick={() => setShowManusGuide(!showManusGuide)}
-          className="w-full flex items-center justify-between px-5 py-4 bg-zinc-900/80 border border-zinc-700 rounded-xl text-base text-zinc-300 hover:text-white hover:border-amber-500/50 transition-all"
-        >
-          <span className="font-semibold">📖 Wie erstelle ich meinen kostenlosen KIICH-Account?</span>
-          {showManusGuide ? <ChevronUp className="w-5 h-5 text-amber-400 shrink-0 ml-2" /> : <ChevronDown className="w-5 h-5 text-zinc-500 shrink-0 ml-2" />}
-        </button>
-
-        {showManusGuide && (
-          <div className="mt-2 bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-4">
-            {[
-              {
-                num: "1",
-                color: "amber",
-                title: "Datenschutz lesen und akzeptieren",
-                desc: "Klappe den Datenschutz-Bereich unten auf, lies ihn durch und setze das Häkchen bei der Einwilligung.",
-              },
-              {
-                num: "2",
-                color: "amber",
-                title: 'Klicke auf „JETZT KOSTENLOS STARTEN“',
-                desc: "Du wirst zur Registrierungsseite weitergeleitet.",
-              },
-              {
-                num: "3",
-                color: "amber",
-                title: "E-Mail-Adresse eingeben",
-                desc: "Keine Kreditkarte, kein Abo — nur deine E-Mail-Adresse.",
-              },
-              {
-                num: "4",
-                color: "amber",
-                title: "Bestätigungs-E-Mail öffnen & klicken",
-                desc: "Du erhältst einen Bestätigungslink — einmal klicken, fertig.",
-              },
-            ].map((step) => (
-              <div key={step.num} className="flex items-start gap-4">
-                <div className="w-8 h-8 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0 text-amber-400 text-sm font-bold">
-                  {step.num}
-                </div>
-                <div>
-                  <p className="text-white text-base font-medium leading-snug">{step.title}</p>
-                  <p className="text-zinc-400 text-sm mt-1 leading-relaxed">{step.desc}</p>
-                </div>
-              </div>
-            ))}
-            <div className="flex items-start gap-4">
-              <div className="w-8 h-8 rounded-full bg-green-500/20 border border-green-500/40 flex items-center justify-center shrink-0 text-green-400 text-sm font-bold">
-                ✓
-              </div>
-              <div>
-                <p className="text-white text-base font-medium leading-snug">Automatisch zurück zu KIICH</p>
-                <p className="text-zinc-400 text-sm mt-1 leading-relaxed">Nach der Registrierung wirst du automatisch zu KIICH zurückgeleitet und kannst sofort loslegen.</p>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Video-Tutorial */}
+      {/* Video-Tutorial – einziger Anleitung-Button */}
       <div className="max-w-xl w-full mb-5">
         <button
           onClick={() => setShowVideo(!showVideo)}
