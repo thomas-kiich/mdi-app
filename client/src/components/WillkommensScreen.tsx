@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { getLoginUrl } from "@/const";
-import { Shield, Lock, Zap, Users, ChevronDown, ChevronUp } from "lucide-react";
+import { Shield, Lock, Zap, Users, ChevronDown, ChevronUp, Play } from "lucide-react";
 
 interface WillkommensScreenProps {
   onConsentGiven?: () => void;
@@ -10,6 +10,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
   const [consentGiven, setConsentGiven] = useState(false);
   const [showManusGuide, setShowManusGuide] = useState(false);
   const [showDsgvo, setShowDsgvo] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
 
   // ?ref= Parameter aus der URL auslesen (Einladungslink)
   // Fallback: Thomas' persönlicher Code wird immer mitgegeben wenn kein anderer Code in der URL ist
@@ -152,6 +153,32 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
                 <p className="text-zinc-400 text-sm mt-1 leading-relaxed">Nach der Registrierung wirst du automatisch zu KIICH zurückgeleitet und kannst sofort loslegen.</p>
               </div>
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Video-Tutorial */}
+      <div className="max-w-xl w-full mb-5">
+        <button
+          onClick={() => setShowVideo(!showVideo)}
+          className="w-full flex items-center justify-between px-5 py-4 bg-zinc-900/80 border border-zinc-700 rounded-xl text-base text-zinc-300 hover:text-white hover:border-orange-500/50 transition-all"
+        >
+          <span className="font-semibold flex items-center gap-2">
+            <Play className="w-4 h-4 text-orange-400" />
+            So funktioniert die Registrierung – Video-Anleitung
+          </span>
+          {showVideo ? <ChevronUp className="w-5 h-5 text-orange-400 shrink-0 ml-2" /> : <ChevronDown className="w-5 h-5 text-zinc-500 shrink-0 ml-2" />}
+        </button>
+
+        {showVideo && (
+          <div className="mt-2 bg-zinc-900/60 border border-zinc-800 rounded-xl overflow-hidden">
+            <video
+              src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/KIICHregistrierung200426_4a0cb905.mp4"
+              controls
+              playsInline
+              className="w-full rounded-xl"
+              style={{ maxHeight: '400px' }}
+            />
           </div>
         )}
       </div>

@@ -17,22 +17,34 @@ const VOXTRAL_MODEL = "voxtral-mini-tts-latest";
 const MA_VOICE_ID = "89bc29eb-c96b-44bd-8a0b-712d89ede7e0";
 
 // Sprechertext für das Registrierungs-Video
-// Etwas schneller als Momentaufnahme – daher keine künstlichen Pausen
-const SPRECHERTEXT = `Willkommen bei KIICH. Die Plattform für deine Persönlichkeitsentfaltung im KI-Zeitalter.
+// Langsam und meditativ – "kich" für korrekte Aussprache
+const SPRECHERTEXT = `Willkommen bei kich.
 
-So erstellst du deinen kostenlosen Account in weniger als einer Minute.
+Wähle in deinem Browser, www.kich.de
 
-Schritt eins. Lies die Datenschutzerklärung und setze das Häkchen bei der Einwilligung.
+Bitte lies dir in Ruhe den vorliegenden Text durch.
 
-Schritt zwei. Klicke auf den Button "Jetzt kostenlos bei KIICH starten".
+Dann geht es weiter mit dem Datenschutz.
 
-Schritt drei. Gib deine E-Mail-Adresse ein. Keine Kreditkarte, kein Abo.
+Schritt eins.
 
-Schritt vier. Öffne die Bestätigungs-E-Mail in deinem Postfach und klicke auf den Link.
+Lies die Datenschutzerklärung, und setze das Häkchen bei der Einwilligung.
 
-Du wirst automatisch zurück zu KIICH geleitet und kannst sofort loslegen.
+Schritt zwei.
 
-Willkommen in deiner Reise.`;
+Klicke auf den Button, Jetzt kostenlos bei kich starten.
+
+Schritt drei.
+
+Gib deine E-Mail-Adresse ein. Keine Kreditkarte, kein Abo.
+
+Schritt vier.
+
+Bestätige deine Identität, und wähle dein MDI-Konto aus.
+
+Danach wirst du automatisch zu kich weitergeleitet, und kannst sofort loslegen.
+
+Willkommen auf deiner Reise, wir freuen uns, dass du da bist.`;
 
 async function generateAudio() {
   const apiKey = process.env.MISTRAL_API_KEY;
