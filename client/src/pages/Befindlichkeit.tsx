@@ -5,9 +5,11 @@ import { Method36Trainer } from "@/components/Method36Trainer";
 import { ArrowLeft } from "lucide-react";
 import { Link } from "wouter";
 import { getLoginUrl } from "@/const";
+import { useVorname } from "@/contexts/VornameContext";
 
 export default function Befindlichkeit() {
   const { isAuthenticated, loading } = useAuth();
+  const { vorname } = useVorname();
   const [trainingMode, setTrainingMode] = useState<{
     freq: number;
     tone: string;
@@ -81,7 +83,9 @@ export default function Befindlichkeit() {
 
       {/* Intro */}
       <div className="max-w-3xl mx-auto px-4 pt-8 pb-4 text-center">
-        <h1 className="text-3xl font-bold mb-3">Wähle deine Frequenz</h1>
+        <h1 className="text-3xl font-bold mb-3">
+          {vorname ? `${vorname}, wähle deine Frequenz` : "Wähle deine Frequenz"}
+        </h1>
         <p className="text-zinc-400 text-sm leading-relaxed max-w-xl mx-auto">
           Wähle intuitiv deine momentane Stimmung und aktiviere dein Potential.
           Berühre einen Lichtkreis und spüre den Klang der Lichtfarbe.

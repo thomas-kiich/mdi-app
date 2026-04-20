@@ -38,6 +38,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Link } from "wouter";
 import { RitualeTab } from "@/components/RitualeTab";
+import { useVorname } from "@/contexts/VornameContext";
 
 // ─── Gravitationszentren ─────────────────────────────────────────────────────
 
@@ -202,6 +203,12 @@ export default function Momentaufnahme() {
   const MIN_DAUER_SEK = 2;
   const MAX_DAUER_SEK = 180; // 3 Minuten
 
+  // Vorname-Ändern-Dialog
+  const [showVornameAendern, setShowVornameAendern] = useState(false);
+  const [vornameAendernInput, setVornameAendernInput] = useState("");
+  const setVornameMutation = trpc.profil.setVorname.useMutation();
+  const { setVornameLocal } = useVorname();
+
   // Aufnahme-State
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
@@ -270,10 +277,8 @@ export default function Momentaufnahme() {
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  // Vorname-Dialog: MA fragt beim ersten Besuch nach dem Namen
-  const [showVornameDialog, setShowVornameDialog] = useState(false);
-  const [vornameInput, setVornameInput] = useState("");
-  const [vorname, setVorname] = useState<string | null>(null);
+  // Vorname kommt jetzt global aus VornameContext
+  const { vorname } = useVorname();
 
   // tRPC
   const aufnehmenMutation = trpc.momentaufnahme.aufnehmen.useMutation();
@@ -281,8 +286,7 @@ export default function Momentaufnahme() {
   const strategischesSummaryMutation = trpc.momentaufnahme.strategischesSummary.useMutation();
   const loeschenMutation = trpc.momentaufnahme.loeschen.useMutation();
   const schlafMetapherMutation = trpc.momentaufnahme.schlafMetapher.useMutation();
-  const { data: profilData } = trpc.profil.getVorname.useQuery(undefined, { enabled: isAuthenticated });
-  const setVornameMutation = trpc.profil.setVorname.useMutation();
+  // profilData und setVornameMutation werden nicht mehr lokal benötigt (VornameContext übernimmt)
   const { data: aufnahmen, refetch: refetchAufnahmen } = trpc.momentaufnahme.heuteAbrufen.useQuery(
     undefined,
     { enabled: isAuthenticated }
@@ -541,21 +545,7 @@ export default function Momentaufnahme() {
     return () => clearInterval(interval);
   }, [briefingZeit]);
 
-  // Vorname aus Profil laden und ggf. Dialog zeigen
-  // Nur einmal fragen — wenn User "Später" geklickt hat, nicht mehr nerven
-  useEffect(() => {
-    if (profilData !== undefined) {
-      if (profilData.vorname) {
-        setVorname(profilData.vorname);
-      } else {
-        // Nur fragen wenn noch nie "Später" gedrückt wurde
-        const spaeter = localStorage.getItem("kiich_ma_name_spaeter");
-        if (!spaeter) {
-          setShowVornameDialog(true);
-        }
-      }
-    }
-  }, [profilData]);
+  // Vorname wird jetzt durch VornameContext global bereitgestellt – kein lokaler Dialog mehr nötig
 
   // Fällige Erinnerungen auslösen + ggf. automatisch vorlesen
   // WICHTIG: elevenLabsTTSMutation wird erst weiter unten definiert – wir nutzen einen Callback-Ref
@@ -574,17 +564,7 @@ export default function Momentaufnahme() {
     }
   }, [faelligeErinnerungen, autoTtsErinnerungen]);
 
-  const handleVornameBestaetigen = useCallback(async () => {
-    const name = vornameInput.trim();
-    if (!name) return;
-    try {
-      await setVornameMutation.mutateAsync({ vorname: name });
-      setVorname(name);
-      setShowVornameDialog(false);
-    } catch {
-      // Fehler ignorieren — Dialog bleibt offen
-    }
-  }, [vornameInput, setVornameMutation]);
+  // handleVornameBestaetigen entfernt – wird durch globales OnboardingNameModal ersetzt
 
   // Timer + Auto-Stop bei 3 Minuten
   useEffect(() => {
@@ -1095,54 +1075,7 @@ export default function Momentaufnahme() {
 
   return (
     <>
-    {/* MA-Begrüßungsdialog: "Mit welchem Namen darf ich dich ansprechen?" */}
-    {showVornameDialog && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-6">
-        <div className="w-full max-w-sm bg-[#12101a] border border-violet-500/20 rounded-2xl p-6 shadow-2xl">
-          {/* MA-Avatar */}
-          <div className="flex flex-col items-center mb-5">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-2xl mb-3 shadow-lg shadow-violet-900/50">
-              🌙
-            </div>
-            <p className="text-[10px] font-semibold tracking-[0.2em] text-violet-400 uppercase mb-1">MA · Momentaufnahme</p>
-          </div>
-          {/* MA-Frage */}
-          <p className="text-white/90 text-center text-base leading-relaxed mb-6">
-            Mit welchem Namen darf ich dich ansprechen?
-          </p>
-          {/* Eingabefeld */}
-          <input
-            type="text"
-            value={vornameInput}
-            onChange={e => setVornameInput(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleVornameBestaetigen()}
-            placeholder="Dein Vorname ..."
-            autoFocus
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-violet-500/50 mb-4"
-          />
-          {/* Buttons */}
-          <div className="flex gap-2">
-            <button
-              onClick={handleVornameBestaetigen}
-              disabled={!vornameInput.trim() || setVornameMutation.isPending}
-              className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm font-medium transition-colors"
-            >
-              {setVornameMutation.isPending ? "..." : "Bestätigen"}
-            </button>
-            <button
-              onClick={() => {
-                localStorage.setItem("kiich_ma_name_spaeter", "true");
-                setShowVornameDialog(false);
-              }}
-              className="px-4 py-2.5 rounded-xl border border-white/10 text-white/40 hover:text-white/70 text-sm transition-colors"
-            >
-              Später
-            </button>
-          </div>
-          <p className="text-center text-white/25 text-xs mt-3">Du kannst deinen Namen jederzeit ändern</p>
-        </div>
-      </div>
-    )}
+    {/* Vorname-Dialog wurde durch globales OnboardingNameModal in App.tsx ersetzt */}
     <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
       {/* Header */}
       <header className="px-3 pt-5 pb-3 flex items-center justify-between gap-2">
@@ -1227,6 +1160,17 @@ export default function Momentaufnahme() {
               {pushErlaubt === true ? "Push aktiv ✅" : pushErlaubt === false ? "Push blockiert" : "Push einrichten..."}
             </span>
           </div>
+          {/* Vorname ändern */}
+          {vorname && (
+            <button
+              onClick={() => setShowVornameAendern(true)}
+              className="group relative p-2.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
+              title="Vorname ändern"
+            >
+              <span className="text-[11px] font-semibold text-violet-400/70 hover:text-violet-300 transition-colors">{vorname[0].toUpperCase()}</span>
+              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Vorname: {vorname}</span>
+            </button>
+          )}
           {anzahlHeute > 0 && (
             <>
               {/* Neue Aufnahme – immer sichtbar wenn bereits Aufnahmen vorhanden */}
@@ -1389,23 +1333,10 @@ export default function Momentaufnahme() {
             <p className="text-xs text-white/60">
               {summaryModus === "strategie" ? strategischesDatum : summaryModus === "reflexion" ? summaryDatum : ""}
             </p>
-            {summaryModus === "reflexion" && (
-              vorname ? (
-                <button
-                  onClick={() => setShowVornameDialog(true)}
-                  className="text-[10px] text-violet-400/50 hover:text-violet-300 transition-colors"
-                  title="Namen ändern"
-                >
-                  • {vorname} · ändern
-                </button>
-              ) : (
-                <button
-                  onClick={() => setShowVornameDialog(true)}
-                  className="text-[10px] text-violet-400/60 hover:text-violet-300 transition-colors"
-                >
-                  + Vorname eingeben
-                </button>
-              )
+            {summaryModus === "reflexion" && vorname && (
+              <span className="text-[10px] text-violet-400/50">
+                • {vorname}
+              </span>
             )}
           </div>
           {/* Ladeindikator für strategisches Summary */}
@@ -2434,6 +2365,59 @@ export default function Momentaufnahme() {
       <AppInstallGuide onClose={() => setShowAppInstallGuide(false)} />
     )}
     <WillkommensDialog />
+    {/* Vorname ändern Dialog */}
+    {showVornameAendern && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm px-6">
+        <div className="w-full max-w-sm bg-[#12101a] border border-violet-500/20 rounded-2xl p-6 shadow-2xl">
+          <div className="flex flex-col items-center mb-5">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-600 to-indigo-700 flex items-center justify-center text-xl mb-3">
+              ✏️
+            </div>
+            <p className="text-white/90 text-center text-base font-semibold">Vorname ändern</p>
+          </div>
+          <input
+            type="text"
+            value={vornameAendernInput}
+            onChange={e => setVornameAendernInput(e.target.value)}
+            onKeyDown={async e => {
+              if (e.key === "Enter") {
+                const name = vornameAendernInput.trim();
+                if (!name) return;
+                await setVornameMutation.mutateAsync({ vorname: name });
+                setVornameLocal(name);
+                setShowVornameAendern(false);
+                setVornameAendernInput("");
+              }
+            }}
+            placeholder={vorname ?? "Dein Vorname ..."}
+            autoFocus
+            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm focus:outline-none focus:border-violet-500/50 mb-4"
+          />
+          <div className="flex gap-2">
+            <button
+              onClick={async () => {
+                const name = vornameAendernInput.trim();
+                if (!name) return;
+                await setVornameMutation.mutateAsync({ vorname: name });
+                setVornameLocal(name);
+                setShowVornameAendern(false);
+                setVornameAendernInput("");
+              }}
+              disabled={!vornameAendernInput.trim() || setVornameMutation.isPending}
+              className="flex-1 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 disabled:opacity-40 text-white text-sm font-medium transition-colors"
+            >
+              {setVornameMutation.isPending ? "..." : "Speichern"}
+            </button>
+            <button
+              onClick={() => { setShowVornameAendern(false); setVornameAendernInput(""); }}
+              className="px-4 py-2.5 rounded-xl border border-white/10 text-white/40 hover:text-white/70 text-sm transition-colors"
+            >
+              Abbrechen
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </>
   );
 }
