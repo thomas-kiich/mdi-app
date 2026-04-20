@@ -28,6 +28,8 @@ import AdminFaq from "@/pages/AdminFaq";
 import Befindlichkeit from "@/pages/Befindlichkeit";
 import { Nutzungsbedingungen } from "@/pages/Nutzungsbedingungen";
 import { RechtsCheckliste } from "@/pages/RechtsCheckliste";
+import { VornameProvider, useVorname } from "@/contexts/VornameContext";
+import { OnboardingNameModal } from "@/components/OnboardingNameModal";
 
 function Router() {
   return (
@@ -61,6 +63,19 @@ function Router() {
   );
 }
 
+function AppInner() {
+  const { needsOnboarding, setVornameLocal } = useVorname();
+  return (
+    <>
+      <Router />
+      <OnboardingNameModal
+        open={needsOnboarding}
+        onComplete={setVornameLocal}
+      />
+    </>
+  );
+}
+
 function App() {
   return (
     <ErrorBoundary>
@@ -68,7 +83,9 @@ function App() {
         <MDIProvider>
           <TooltipProvider>
             <Toaster />
-            <Router />
+            <VornameProvider>
+              <AppInner />
+            </VornameProvider>
           </TooltipProvider>
         </MDIProvider>
       </ThemeProvider>

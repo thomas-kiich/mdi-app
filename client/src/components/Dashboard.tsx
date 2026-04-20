@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
 import { ThemeToggle } from "./ThemeToggle";
 import { useToast } from "@/hooks/use-toast";
+import { useVorname } from "@/contexts/VornameContext";
 
 interface DashboardProps {
     onStartAnalysis: () => void;
@@ -58,6 +59,7 @@ export function Dashboard({
     const [streak, setStreak] = useState(0);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
     const { toast } = useToast();
+    const { vorname } = useVorname();
 
     useEffect(() => {
         setStreak(calculateStreak());
@@ -104,6 +106,11 @@ export function Dashboard({
                     <p className="text-lg md:text-xl text-zinc-400 mb-6">
                         von Thomas Chochola
                     </p>
+                    {vorname && (
+                      <p className="text-base text-amber-400/80 font-medium -mt-4 mb-4">
+                        Willkommen zurück, {vorname}.
+                      </p>
+                    )}
                     
 
                     <div className="text-sm md:text-base text-zinc-400 max-w-4xl mx-auto text-left leading-relaxed">
