@@ -1796,7 +1796,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                trainingId="mayerwelle"
                duration={selectedTrainingDuration || 0}
                audioUrls={{
-                 45: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/llGeZhyAsOhattjj.wav"
+                 45: "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/ambient-extra_262fb71f.mp3"
                }}
                baseTone={finalResult?.tone}
                onClose={() => {

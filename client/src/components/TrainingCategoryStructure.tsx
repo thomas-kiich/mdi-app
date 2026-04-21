@@ -113,7 +113,7 @@ const TRAINING_CATEGORIES: TrainingCategory[] = [
         description: "OPTIMALE NUTZUNG: Verwende die MW als Hintergrundsound um ein regenerierendes Umfeld zu unterstützen und deinen Atemzyklus auf eine optimale Atemrhythmik einzuschwingen (Detailinfo dazu unter METHODE 36).\n\nWIRKUNG: Dein Unterbewusstsein beginnt, einen förderlichen Atemrhythmus aufzunehmen und dadurch deinen Stresspegel zu regulieren. Du bleibst entspannter und gleichzeitig erfrischt (Wasserrauschen) während deiner aktiven Tätigkeiten.\n\nANWENDUNG: Wähle eine Zeitdauer / Reguliere die Lautstärke so, dass der Sound im Hintergrund wahrnehmbar ist / Stimme dich zu Beginn für einige Atemzyklen auf die Gongsignale hinter dem Wasser rauschen ein / erster Gong = EINatmen / zweiter Gong = HALTEN / dritter Gong = AUSatmen.\n\nWICHTIG: Versuche stets durch die Nase zu atmen / SOWOHL EIN- WIE AUS !",
         durations: [45],
         audioUrls: {
-          45: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/llGeZhyAsOhattjj.wav",
+          45: "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/ambient-extra_262fb71f.mp3",
         },
         type: "ambient",
       },

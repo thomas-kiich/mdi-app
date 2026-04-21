@@ -900,8 +900,8 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                 style={{ display: 'none' }}
             >
                 <source
-                    src={selectedDuration === 7 ? 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/BjSApDsrGEcfxBra.wav' : selectedDuration === 12 ? 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/RAAdVvMIZOzqXesH.wav' : 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/iRBqzrwZzszWLqcR.wav'}
-                    type="audio/wav"
+                    src={selectedDuration === 7 ? 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/water-7min_67152c65.mp3' : selectedDuration === 12 ? 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/water-12min_42741f02.mp3' : 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/water-21min_bb083173.mp3'}
+                    type="audio/mpeg"
                 />
             </audio>
         </div>
