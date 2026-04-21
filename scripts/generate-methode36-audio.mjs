@@ -15,12 +15,11 @@ const VOXTRAL_API_URL = "https://api.mistral.ai/v1/audio/speech";
 const VOXTRAL_MODEL = "voxtral-mini-tts-latest";
 const MA_VOICE_ID = "89bc29eb-c96b-44bd-8a0b-712d89ede7e0";
 
-// Sprechertext für das Methode-36-Training (Version 3 – Yohn/Yohntraining)
-const SPRECHERTEXT = `Hallo.
-Willkommen im Trainingscenter.
-Ich gebe dir hier eine kurze Einführung, wie du optimal mit Methode sechsunddreissig agieren kannst.
+// Sprechertext für das Methode-36-Training (Version 4 – finaler Text)
+const SPRECHERTEXT = `Hallo und willkommen im Trainingscenter.
+Ich gebe dir hier eine kurze Einführung, wie du optimal mit Methode sechsundreissig agieren kannst.
 
-Eins. Du siehst auf dem Display das Pulsmodul. Es ist wie ein Uhrzeigerblatt aufgebaut und markiert sechs Abschnitte mit jeweils einer Länge von zehn Sekunden. Ein vollständiger Durchlauf benötigt somit eine Minute.
+Eins. Du siehst auf dem Display das Pulsmodul. Es ist wie ein Uhrzeigerblatt aufgebaut und markiert sechs Abschnitte innerhalb eines vollen Atemzyklus. Sechs Durchläufe benötigen exakt eine Minute.
 
 Zwei. Das Uhrzeigerblatt ist in der Lichtfarbe gestaltet, die du davor bewusst ausgewählt hast. Die Charakterbeschreibung hast du daher schon nachgelesen. Erinnere dich bitte nochmal an die Befindlichkeit und das Potential, das du nun durch das Training aktiv schalten möchtest.
 
@@ -28,7 +27,7 @@ Drei. Den Klang den du bei diesem Training hörst, solltest du in der Phase des 
 
 Vier. Unter dem Stimmbalken findest du den Bereich zum Einstellen der gewünschten Trainingsdauer. Du kannst wählen zwischen sieben, zwölf und einundzwanzig Minuten. Zum Einstieg und für Aktivierungen zwischendurch während deines Alltags empfehle ich dir den Sieben-Minuten-Button zu wählen. Dieser ist auch voreingestellt.
 
-Fünf. Bevor du startest kannst du noch wählen, ob du ein natürliches Wasserplätschern im Hintergrund hören möchtest. Du findest den Einstellknopf oben links. Er ist mit einem Wellensymbol in blauer Farbe dargestellt. Wenn du ihn anklickst, kannst du die Lautstärke justieren und ihn generell aktivieren oder eben nicht.
+Fünf. Bevor du startest kannst du noch wählen, ob du ein natürliches Wasserplätschern im Hintergrund hören möchtest. Du findest den Einstellknopf oben rechts. Er ist mit einem Wellensymbol in blauer Farbe dargestellt. Wenn du ihn anklickst, kannst du die Lautstärke justieren und ihn generell aktivieren oder eben nicht.
 
 Sechs. Du hast die Wahl, das Training im Liegen oder in sitzender Haltung auszuführen. Wenn du als Fortgeschrittener das Yohntraining aufnimmst, erhältst du zu den jeweiligen Intensitätsstufen konkrete Anweisungen der Körperposition.
 
