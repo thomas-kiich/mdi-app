@@ -140,25 +140,24 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
         filterRef.current = filter;
 
             // Initialize Music Composition - use duration for YOHN training with water sounds
-            let soundUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/BjSApDsrGEcfxBra.wav'; // Default 7min water sound
+            let soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/water-7min_67152c65.mp3'; // Default 7min water sound
             let shouldLoop = false;
             
             // Select specific file based on duration
             if (duration === 7) {
-                soundUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/BjSApDsrGEcfxBra.wav'; // 7min water sound
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/water-7min_67152c65.mp3'; // 7min water sound
                 shouldLoop = false;
             } else if (duration === 12) {
-                soundUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/RAAdVvMIZOzqXesH.wav'; // 12min water sound
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/water-12min_42741f02.mp3'; // 12min water sound
                 shouldLoop = false;
             } else if (duration === 21) {
-                soundUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/iRBqzrwZzszWLqcR.wav'; // 21min water sound
+                soundUrl = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/water-21min_bb083173.mp3'; // 21min water sound
                 shouldLoop = false;
             }
 
             const audio = new Audio();
             audio.src = soundUrl;
             audio.loop = shouldLoop;
-            audio.crossOrigin = "anonymous";
             audio.preload = "auto";
             
             const waterSoundWrapper = {
