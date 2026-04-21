@@ -15,10 +15,10 @@ const VOXTRAL_API_URL = "https://api.mistral.ai/v1/audio/speech";
 const VOXTRAL_MODEL = "voxtral-mini-tts-latest";
 const MA_VOICE_ID = "89bc29eb-c96b-44bd-8a0b-712d89ede7e0";
 
-// Sprechertext für das Methode-36-Training (Version 2 – John statt YOHN, bereinigt)
+// Sprechertext für das Methode-36-Training (Version 3 – Yohn/Yohntraining)
 const SPRECHERTEXT = `Hallo.
 Willkommen im Trainingscenter.
-Ich gebe dir hier eine kurze Einführung, wie du optimal mit M sechsunddreissig agieren kannst.
+Ich gebe dir hier eine kurze Einführung, wie du optimal mit Methode sechsunddreissig agieren kannst.
 
 Eins. Du siehst auf dem Display das Pulsmodul. Es ist wie ein Uhrzeigerblatt aufgebaut und markiert sechs Abschnitte mit jeweils einer Länge von zehn Sekunden. Ein vollständiger Durchlauf benötigt somit eine Minute.
 
@@ -30,7 +30,7 @@ Vier. Unter dem Stimmbalken findest du den Bereich zum Einstellen der gewünscht
 
 Fünf. Bevor du startest kannst du noch wählen, ob du ein natürliches Wasserplätschern im Hintergrund hören möchtest. Du findest den Einstellknopf oben links. Er ist mit einem Wellensymbol in blauer Farbe dargestellt. Wenn du ihn anklickst, kannst du die Lautstärke justieren und ihn generell aktivieren oder eben nicht.
 
-Sechs. Du hast die Wahl, das Training im Liegen oder in sitzender Haltung auszuführen. Wenn du als Fortgeschrittener das John-Training aufnimmst, erhältst du zu den jeweiligen Intensitätsstufen konkrete Anweisungen der Körperposition.
+Sechs. Du hast die Wahl, das Training im Liegen oder in sitzender Haltung auszuführen. Wenn du als Fortgeschrittener das Yohntraining aufnimmst, erhältst du zu den jeweiligen Intensitätsstufen konkrete Anweisungen der Körperposition.
 
 Sieben. Wenn du nun bereit bist, kannst du den Startbutton aktivieren und mit dem Training beginnen. Du hast in jedem Moment einen Überblick des Zeitablaufs. Einerseits siehst du oben rechts einen Timer rückwärts ablaufen, anderseits siehst du unter dem Start-Pausebutton den Zykluszähler.
 
@@ -38,7 +38,7 @@ Acht. Mit dem Starten beginnt der Ablauf des optimalen Atemzyklus von sechs Atem
 
 Neun. Wenn du Sicherheit im rhythmischen Tun erlangt hast, kannst du deine Augen schliessen. Erinnere dich an die Intention des Lichtklangs, also warum du dieses Training absolvierst. Nimm vor dem Schliessen der Augen bewusst und intensiv die Lichtfarbe in dein Bewusstsein auf und versuche sie vor deinem geistigen Auge zu visualisieren. Du kannst während des Trainings kurz die Augen öffnen um die Lichtfarbe wieder wahrzunehmen, wenn sie vor deinem geistigen Auge verblassen sollte.
 
-Zehn. Wenn du noch kein John-Training absolvierst, reicht es zunächst, den Klang möglichst genau in der vorgegebenen Tonhöhe mitzusummen. Das Mantra John verwende erst, wenn du mit dem John-Training starten solltest. Du erhältst dann genaue Instruktionen wie du damit hochwertig arbeiten kannst.
+Zehn. Wenn du noch kein Yohntraining absolvierst, reicht es zunächst, den Klang möglichst genau in der vorgegebenen Tonhöhe mitzusummen. Das Mantra Yohn verwende erst, wenn du mit dem Yohntraining starten solltest. Du erhältst dann genaue Instruktionen wie du damit hochwertig arbeiten kannst.
 
 Elf. Nun viel Erfrischung, Spass und Gewinn für dein Training. Leg los.`;
 

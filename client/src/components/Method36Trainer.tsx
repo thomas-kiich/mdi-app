@@ -50,7 +50,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     const [showWaterSlider, setShowWaterSlider] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
     const [showIntroAudio, setShowIntroAudio] = useState(false);
-    const INTRO_AUDIO_URL = '/api/audio-proxy?url=' + encodeURIComponent('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/methode36-intro_e0ab8474.mp3');
+    const INTRO_AUDIO_URL = '/api/audio-proxy?url=' + encodeURIComponent('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/methode36-intro_1cbddd81.mp3');
     
     const handleShare = async () => {
         const shareText = `Ich habe mich erfolgreich auf ${frequency} Hz (${toneName}) eingeschwungen. MDI Methode 36.`;
