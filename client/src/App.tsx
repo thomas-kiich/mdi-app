@@ -47,6 +47,7 @@ function Router() {
       <Route path="/momentaufnahme/app" component={Momentaufnahme} />
       <Route path="/momentaufnahme/archiv" component={MomentaufnahmeArchiv} />
       <Route path="/momentaufnahme/obsidian" component={ObsidianVerbinden} />
+      <Route path="/obsidian" component={ObsidianVerbinden} />
       <Route path="/episoden" component={Episoden} />
       <Route path="/admin/premium" component={AdminPremium} />
       <Route path="/admin/training" component={AdminTraining} />
