@@ -23,9 +23,6 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
   return (
     <Card className="bg-zinc-900/50 border-zinc-800 overflow-hidden">
       <CardHeader className="text-center">
-        <CardTitle className="text-xl md:text-2xl text-white font-bold tracking-widest uppercase mb-2">
-          EMPFINDE DEN LICHTKLANG FÜR DEINE MOMENTANE BEFINDLICHKEIT
-        </CardTitle>
         <div className="flex items-start gap-2 max-w-2xl mx-auto mt-3 bg-blue-950/40 border border-blue-500/30 rounded-lg px-4 py-3">
           <span className="text-blue-400 text-base mt-0.5">&#9888;</span>
           <p className="text-xs text-blue-300 leading-relaxed">
