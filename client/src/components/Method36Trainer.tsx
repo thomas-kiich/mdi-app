@@ -50,7 +50,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     const [showWaterSlider, setShowWaterSlider] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
     const [showIntroAudio, setShowIntroAudio] = useState(false);
-    const INTRO_AUDIO_URL = '/api/audio-proxy?url=' + encodeURIComponent('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/methode36-intro_f646448e.mp3');
+    const INTRO_AUDIO_URL = '/api/audio-proxy?url=' + encodeURIComponent('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/methode36-intro_20d66732.mp3');
     
     const handleShare = async () => {
         const shareText = `Ich habe mich erfolgreich auf ${frequency} Hz (${toneName}) eingeschwungen. MDI Methode 36.`;
@@ -595,15 +595,15 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                     {/* Einführungs-Audio Button */}
                     <button
                         onClick={() => setShowIntroAudio(prev => !prev)}
-                        className={`flex items-center gap-2 text-sm px-4 py-2 rounded-full border transition-colors ${
+                        className={`flex items-center gap-2 text-base px-5 py-2.5 rounded-full border transition-colors ${
                             showIntroAudio
                                 ? 'border-orange-500/60 text-orange-400 bg-orange-500/10'
-                                : 'border-white/30 text-zinc-300 hover:text-white hover:border-white/60 hover:bg-white/5'
+                                : 'border-white/30 text-zinc-200 hover:text-white hover:border-white/60 hover:bg-white/5'
                         }`}
                         title="Einführung als Audio anhören"
                     >
-                        <Volume2 className="h-4 w-4" />
-                        <span>Einführung anhören</span>
+                        <Volume2 className="h-5 w-5" />
+                        <span className="font-bold tracking-widest uppercase">GEBRAUCHSANLEITUNG ANHÖREN</span>
                     </button>
                     {showIntroAudio && (
                         <div className="flex items-center gap-2 bg-zinc-900/90 border border-orange-500/40 rounded-2xl px-4 py-2 shadow-lg">

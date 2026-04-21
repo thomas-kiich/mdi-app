@@ -73,8 +73,17 @@ async function generateAudio() {
     process.exit(1);
   }
 
-  const arrayBuffer = await response.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
+  const contentType = response.headers.get('content-type') || '';
+  let buffer;
+  if (contentType.includes('application/json')) {
+    // Voxtral gibt JSON mit Base64-kodiertem Audio zurück
+    const json = await response.json();
+    const base64 = json.audio_data || json.data || json.audio;
+    buffer = Buffer.from(base64, 'base64');
+  } else {
+    const arrayBuffer = await response.arrayBuffer();
+    buffer = Buffer.from(arrayBuffer);
+  }
 
   const outputPath = "/home/ubuntu/webdev-static-assets/methode36-intro.mp3";
   fs.writeFileSync(outputPath, buffer);
