@@ -40,6 +40,25 @@ async function startServer() {
   registerOAuthRoutes(app);
   // Audio upload route (multipart/form-data)
   app.use(audioUploadRouter);
+
+  // Audio-Proxy: liefert CDN-Audiodateien mit korrektem Content-Type und CORS
+  app.get('/api/audio-proxy', async (req, res) => {
+    const url = req.query.url as string;
+    if (!url || !url.startsWith('https://d2xsxph8kpxj0f.cloudfront.net/')) {
+      return res.status(400).send('Invalid URL');
+    }
+    try {
+      const upstream = await fetch(url);
+      if (!upstream.ok) return res.status(502).send('Upstream error');
+      res.setHeader('Content-Type', 'audio/mpeg');
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Cache-Control', 'public, max-age=86400');
+      const buffer = await upstream.arrayBuffer();
+      res.send(Buffer.from(buffer));
+    } catch (e) {
+      res.status(500).send('Proxy error');
+    }
+  });
   // Obsidian Sync API (Bearer-Token-Auth)
   app.use(obsidianSyncRouter);
   // tRPC API
