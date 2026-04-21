@@ -30,6 +30,7 @@ import { Nutzungsbedingungen } from "@/pages/Nutzungsbedingungen";
 import { RechtsCheckliste } from "@/pages/RechtsCheckliste";
 import { VornameProvider, useVorname } from "@/contexts/VornameContext";
 import { OnboardingNameModal } from "@/components/OnboardingNameModal";
+import { UpdateBanner } from "@/components/UpdateBanner";
 
 function Router() {
   return (
@@ -72,6 +73,7 @@ function AppInner() {
         open={needsOnboarding}
         onComplete={setVornameLocal}
       />
+      <UpdateBanner />
     </>
   );
 }
