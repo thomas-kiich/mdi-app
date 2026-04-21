@@ -59,6 +59,13 @@ async function startServer() {
       res.status(500).send('Proxy error');
     }
   });
+  // App-Version-Endpoint: gibt Build-Timestamp zurück für iOS-kompatibles Update-Polling
+  const APP_VERSION = process.env.APP_BUILD_TIME || Date.now().toString();
+  app.get('/api/app-version', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-store');
+    res.json({ version: APP_VERSION });
+  });
+
   // Obsidian Sync API (Bearer-Token-Auth)
   app.use(obsidianSyncRouter);
   // tRPC API

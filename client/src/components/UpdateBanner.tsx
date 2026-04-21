@@ -1,69 +1,76 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Sparkles, RefreshCw } from "lucide-react";
 
 /**
- * UpdateBanner – erscheint wenn ein neuer Service Worker wartet.
- * Zeigt eine charmante Aufforderung zum Neuladen statt schwarzem Bildschirm.
+ * UpdateBanner – iOS + Android kompatibel.
+ * Pollt alle 5 Minuten /api/app-version und zeigt einen Banner wenn
+ * eine neue Version verfügbar ist. Funktioniert auf iPhone Safari,
+ * Android Chrome und allen anderen Browsern.
  */
 export function UpdateBanner() {
   const [showBanner, setShowBanner] = useState(false);
-  const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
   const [isReloading, setIsReloading] = useState(false);
+  const initialVersion = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!("serviceWorker" in navigator)) return;
-
-    const checkForWaiting = (registration: ServiceWorkerRegistration) => {
-      if (registration.waiting) {
-        setWaitingWorker(registration.waiting);
-        setShowBanner(true);
+    const fetchVersion = async (): Promise<string | null> => {
+      try {
+        const res = await fetch('/api/app-version', { cache: 'no-store' });
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.version ?? null;
+      } catch {
+        return null;
       }
     };
 
-    // Bestehende Registrierungen prüfen
-    navigator.serviceWorker.getRegistrations().then((registrations) => {
-      registrations.forEach(checkForWaiting);
+    // Erste Version beim Laden speichern
+    fetchVersion().then(v => {
+      if (v) initialVersion.current = v;
     });
 
-    // Auf neue Updates lauschen
-    const handleControllerChange = () => {
-      if (!isReloading) {
-        // Neuer SW hat übernommen – sanft neuladen
-        window.location.reload();
+    // Alle 5 Minuten prüfen ob sich die Version geändert hat
+    const interval = setInterval(async () => {
+      const current = await fetchVersion();
+      if (
+        current &&
+        initialVersion.current &&
+        current !== initialVersion.current
+      ) {
+        setShowBanner(true);
+        clearInterval(interval);
       }
-    };
+    }, 5 * 60 * 1000);
 
-    navigator.serviceWorker.addEventListener("controllerchange", handleControllerChange);
-
-    // Update-Events von SW-Registrierungen abfangen
-    const handleRegistration = (registration: ServiceWorkerRegistration) => {
-      registration.addEventListener("updatefound", () => {
-        const newWorker = registration.installing;
-        if (!newWorker) return;
-        newWorker.addEventListener("statechange", () => {
-          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-            setWaitingWorker(newWorker);
-            setShowBanner(true);
-          }
+    // Zusätzlich Service Worker Update-Events abfangen (Android Chrome)
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.ready.then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          if (!newWorker) return;
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              setShowBanner(true);
+            }
+          });
         });
       });
-      checkForWaiting(registration);
-    };
+    }
 
-    navigator.serviceWorker.ready.then(handleRegistration);
-
-    return () => {
-      navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
-    };
-  }, [isReloading]);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleUpdate = () => {
     setIsReloading(true);
-    if (waitingWorker) {
-      // SW anweisen sofort zu übernehmen
-      waitingWorker.postMessage({ type: "SKIP_WAITING" });
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => {
+        regs.forEach(reg => {
+          if (reg.waiting) {
+            reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
     }
-    // Kurz warten dann neuladen
     setTimeout(() => {
       window.location.reload();
     }, 300);
@@ -83,12 +90,9 @@ export function UpdateBanner() {
         }
       `}</style>
       <div className="bg-gradient-to-r from-violet-900/95 to-indigo-900/95 backdrop-blur-md border border-violet-500/30 rounded-2xl shadow-2xl shadow-violet-900/50 px-5 py-4 flex items-center gap-4">
-        {/* Icon */}
         <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-lg">
           <Sparkles className="w-5 h-5 text-black" />
         </div>
-
-        {/* Text */}
         <div className="flex-1 min-w-0">
           <p className="text-white text-sm font-semibold leading-tight">
             Neue Version verfügbar ✨
@@ -97,8 +101,6 @@ export function UpdateBanner() {
             KIICH wurde aktualisiert – kurz neu laden?
           </p>
         </div>
-
-        {/* Button */}
         <button
           onClick={handleUpdate}
           disabled={isReloading}
