@@ -597,8 +597,8 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                         onClick={() => setShowIntroAudio(prev => !prev)}
                         className={`flex items-center gap-2 text-base px-5 py-2.5 rounded-full border transition-colors ${
                             showIntroAudio
-                                ? 'border-orange-500/60 text-orange-400 bg-orange-500/10'
-                                : 'border-white/30 text-zinc-200 hover:text-white hover:border-white/60 hover:bg-white/5'
+                                ? 'border-orange-500 text-orange-400 bg-orange-500/20'
+                                : 'border-orange-500/70 text-orange-400 hover:text-orange-300 hover:border-orange-400 hover:bg-orange-500/10'
                         }`}
                         title="Einführung als Audio anhören"
                     >
@@ -611,6 +611,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                                 src={INTRO_AUDIO_URL}
                                 controls
                                 autoPlay
+                                controlsList="nodownload"
                                 className="h-8"
                                 style={{ minWidth: '220px', maxWidth: '300px' }}
                             />
