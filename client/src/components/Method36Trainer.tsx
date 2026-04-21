@@ -49,6 +49,8 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
     });
     const [showWaterSlider, setShowWaterSlider] = useState(false);
     const [showCongrats, setShowCongrats] = useState(false); // New state for congratulation screen
+    const [showIntroAudio, setShowIntroAudio] = useState(false);
+    const INTRO_AUDIO_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/methode36-intro_f646448e.mp3';
     
     const handleShare = async () => {
         const shareText = `Ich habe mich erfolgreich auf ${frequency} Hz (${toneName}) eingeschwungen. MDI Methode 36.`;
@@ -590,6 +592,30 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                 <div className="flex items-center gap-3">
                     <Heart className="text-red-500 animate-pulse" />
                     <h2 className="text-xl font-bold tracking-widest hidden md:block">METHODE 36 TRAINER</h2>
+                    {/* Einführungs-Audio Button */}
+                    <button
+                        onClick={() => setShowIntroAudio(prev => !prev)}
+                        className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                            showIntroAudio
+                                ? 'border-orange-500/60 text-orange-400 bg-orange-500/10'
+                                : 'border-white/20 text-zinc-400 hover:text-white hover:border-white/40'
+                        }`}
+                        title="Einführung als Audio anhören"
+                    >
+                        <Volume2 className="h-3.5 w-3.5" />
+                        <span className="hidden sm:inline">Einführung</span>
+                    </button>
+                    {showIntroAudio && (
+                        <div className="flex items-center gap-2 bg-zinc-900/80 border border-orange-500/30 rounded-full px-3 py-1">
+                            <audio
+                                src={INTRO_AUDIO_URL}
+                                controls
+                                autoPlay
+                                className="h-7"
+                                style={{ minWidth: '180px', maxWidth: '240px' }}
+                            />
+                        </div>
+                    )}
                 </div>
                 <div className="flex gap-4 items-center">
                     {/* Logbook Toggle */}
