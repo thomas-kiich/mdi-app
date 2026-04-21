@@ -76,8 +76,8 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js', { scope: '/' })
       .then(reg => {
         console.log('[SW] Workbox-SW registriert:', reg.scope);
-        // Stündlich auf Updates prüfen – aber KEIN automatisches Reload
-        setInterval(() => reg.update(), 60 * 60 * 1000);
+        // Alle 5 Minuten auf Updates prüfen – aber KEIN automatisches Reload
+        setInterval(() => reg.update(), 5 * 60 * 1000);
       })
       .catch(err => console.warn('[SW] Workbox-SW Registrierung fehlgeschlagen:', err));
   });
