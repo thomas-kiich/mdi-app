@@ -47,18 +47,18 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
         <div className="max-w-2xl mx-auto">
           <button
             onClick={() => setShowAudioGuide(!showAudioGuide)}
-            className="w-full flex items-center justify-between px-5 py-3 bg-zinc-800/60 border border-zinc-700 rounded-xl text-sm text-zinc-300 hover:text-white hover:border-amber-500/50 transition-all"
+            className="w-full flex items-center justify-between px-5 py-4 bg-zinc-800/60 border border-zinc-700 rounded-xl text-sm text-zinc-200 hover:text-white hover:border-amber-500/50 transition-all"
           >
-            <span className="font-semibold flex items-center gap-2">
-              <Volume2 className="w-4 h-4 text-amber-400" />
-              Anleitung als Audio anhören (MA-Stimme)
+            <span className="font-bold tracking-widest uppercase flex items-center gap-2 text-amber-400">
+              <Volume2 className="w-5 h-5 text-amber-400" />
+              GEBRAUCHSANLEITUNG HIER ANHÖREN
             </span>
             {showAudioGuide ? <ChevronUp className="w-4 h-4 text-amber-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-zinc-500 shrink-0" />}
           </button>
           {showAudioGuide && (
             <div className="mt-2 bg-zinc-900/60 border border-zinc-800 rounded-xl p-4">
               <audio
-                src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/befindlichkeit-anleitung-ma-stimme_a92ec0ec.mp3"
+                src={'/api/audio-proxy?url=' + encodeURIComponent('https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/befindlichkeit-anleitung-ma-stimme_a92ec0ec.mp3')}
                 controls
                 className="w-full"
               />
