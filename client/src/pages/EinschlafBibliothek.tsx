@@ -24,6 +24,11 @@ import {
   X,
   Mic,
   MicOff,
+  Menu,
+  Home,
+  Camera,
+  Archive,
+  Crown,
 } from "lucide-react";
 
 // ─── Typen ────────────────────────────────────────────────────────────────────
@@ -106,6 +111,7 @@ export default function EinschlafBibliothek() {
   const [personalisierung, setPersonalisierung] = useState("");
   const [aktiveGeschichte, setAktiveGeschichte] = useState<Geschichte | null>(null);
   const [filterKategorie, setFilterKategorie] = useState<Kategorie | null>(null);
+  const [showNavMenu, setShowNavMenu] = useState(false);
 
   // Audio-State
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -805,7 +811,7 @@ export default function EinschlafBibliothek() {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
       {/* Header */}
-      <header className="px-5 pt-6 pb-4 flex items-center justify-between">
+      <header className="px-5 pt-6 pb-4 flex items-center justify-between relative">
         <div className="flex items-center gap-3">
           <button
             onClick={() => window.history.back()}
@@ -822,13 +828,74 @@ export default function EinschlafBibliothek() {
             </p>
           </div>
         </div>
-        <button
-          onClick={() => { setGewaehlteKategorie(filterKategorie); setGewaehlteThema(""); setPersonalisierung(""); setAnsicht("neu"); }}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 transition-colors text-sm font-semibold text-white"
-        >
-          <Sparkles className="w-3.5 h-3.5" />
-          Neue Geschichte
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { setGewaehlteKategorie(filterKategorie); setGewaehlteThema(""); setPersonalisierung(""); setAnsicht("neu"); }}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 transition-colors text-sm font-semibold text-white"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Neue Geschichte</span>
+            <span className="sm:hidden">Neu</span>
+          </button>
+          {/* Hamburger-Menü */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNavMenu(v => !v)}
+              className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/50 hover:text-white/80"
+              aria-label="Navigation"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            {showNavMenu && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setShowNavMenu(false)} />
+                <div className="absolute right-0 top-full mt-2 w-56 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden">
+                  <div className="px-3 py-2 border-b border-white/5">
+                    <p className="text-xs text-white/30 font-medium tracking-widest uppercase">Navigation</p>
+                  </div>
+                  <div className="py-1">
+                    <Link href="/">
+                      <button
+                        onClick={() => setShowNavMenu(false)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors text-left"
+                      >
+                        <Home className="w-4 h-4 text-white/40" />
+                        <span className="text-sm text-white/80">KIICH Startseite</span>
+                      </button>
+                    </Link>
+                    <Link href="/momentaufnahme">
+                      <button
+                        onClick={() => setShowNavMenu(false)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors text-left"
+                      >
+                        <Camera className="w-4 h-4 text-white/40" />
+                        <span className="text-sm text-white/80">Momentaufnahme</span>
+                      </button>
+                    </Link>
+                    <Link href="/momentaufnahme/archiv">
+                      <button
+                        onClick={() => setShowNavMenu(false)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors text-left"
+                      >
+                        <Archive className="w-4 h-4 text-white/40" />
+                        <span className="text-sm text-white/80">Alle Aufnahmen</span>
+                      </button>
+                    </Link>
+                    <Link href="/abo">
+                      <button
+                        onClick={() => setShowNavMenu(false)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors text-left"
+                      >
+                        <Crown className="w-4 h-4 text-amber-400" />
+                        <span className="text-sm text-amber-400 font-medium">Premium</span>
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </header>
 
       {/* Kategorie-Filter */}
