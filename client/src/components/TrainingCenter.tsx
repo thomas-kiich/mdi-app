@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info, Music2, History as HistoryIcon } from "lucide-react";
+import { ArrowLeft, Mic, Wind, Brain, Activity, Play, Info, Music2, History as HistoryIcon, AlertTriangle } from "lucide-react";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { MetabolicBreathingTrainer } from "@/components/MetabolicBreathingTrainer";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
@@ -95,6 +95,14 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
                         <HistoryIcon className="w-5 h-5 mr-2" />
                         MEINE ANALYSEN
                     </Button>
+                </div>
+
+                {/* Handy-Hinweis */}
+                <div className="flex items-start gap-2 max-w-xl mx-auto mb-8 bg-blue-950/30 border border-blue-500/20 rounded-lg px-4 py-2.5">
+                  <AlertTriangle className="w-3.5 h-3.5 text-blue-400 mt-0.5 shrink-0" />
+                  <p className="text-xs text-blue-300/80 leading-relaxed">
+                    <strong className="text-blue-200">Handy-Hinweis:</strong> Energiesparmodus während der Übung deaktivieren, um Unterbrechungen zu vermeiden.
+                  </p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
