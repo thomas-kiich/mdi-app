@@ -271,7 +271,7 @@ export function TrainingCategoryStructure({
                     <audio
                       controls
                       className="w-full h-8 accent-orange-500"
-                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-teil1-wie-wann_ff7f4aeb.mp3"
+                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-teil1-wie-wann-v2_f7b2070c.mp3"
                     />
                   </div>
                   {/* MA-Stimme Audio – Teil 2: WARUM */}
@@ -283,7 +283,7 @@ export function TrainingCategoryStructure({
                     <audio
                       controls
                       className="w-full h-8 accent-orange-500"
-                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-teil2-warum_8e41d226.mp3"
+                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-teil2-warum-v2_78c955c5.mp3"
                     />
                   </div>
                   <div>
