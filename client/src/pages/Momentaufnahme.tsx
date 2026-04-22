@@ -29,6 +29,7 @@ import {
   Volume2,
   X,
   Share2,
+  Menu,
 } from "lucide-react";
 import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { EinladungsLink } from "@/components/EinladungsLink";
@@ -306,6 +307,7 @@ export default function Momentaufnahme() {
   const [showArchiv, setShowArchiv] = useState(false);
   const [archivExpandedId, setArchivExpandedId] = useState<number | null>(null);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
+  const [showNavMenu, setShowNavMenu] = useState(false);
 
   // ─── PLANER: Erledigungen, Visionen, Erinnerungen ────────────────────────
   const { data: erledigungenData, refetch: refetchErledigungen } = trpc.planer.erledigungenLaden.useQuery(undefined, { enabled: isAuthenticated });
@@ -1097,83 +1099,104 @@ export default function Momentaufnahme() {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-1.5 flex-shrink-0">
-          {/* App installieren */}
-          <button
-            onClick={() => setShowAppInstallGuide(true)}
-            className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-          >
-            <Smartphone className="w-5 h-5" />
-            <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">App installieren</span>
-          </button>
-          {/* Abo-Link */}
-          <Link href="/abo">
-            <button
-              className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <CreditCard className="w-5 h-5" />
-              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Abo & Ebenen</span>
-            </button>
-          </Link>
-          {/* Einschlaf-Bibliothek-Link */}
-          <Link href="/einschlafen">
-            <button
-              className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <span className="text-base leading-none">🌙</span>
-              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Einschlaf-Bibliothek</span>
-            </button>
-          </Link>
-          {/* Archiv-Link */}
-          <Link href="/momentaufnahme/archiv">
-            <button
-              className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <Archive className="w-5 h-5" />
-              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Alle Aufnahmen</span>
-            </button>
-          </Link>
-          {/* Obsidian-Verbinden-Link */}
-          <Link href="/momentaufnahme/obsidian">
-            <button
-              className="group relative p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
-            >
-              <Plug className="w-5 h-5" />
-              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Obsidian Export</span>
-            </button>
-          </Link>
-          {/* Push-Status-Icon */}
-          <div className="group relative p-2.5 rounded-full bg-white/5 cursor-default">
-            <div className="relative">
-              <Bell className="w-5 h-5 text-white/30" />
-              {/* Status-Punkt: grün = aktiv, grau = nicht aktiv/unbekannt */}
-              <span
-                className={cn(
-                  "absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border border-black/50",
-                  pushErlaubt === true
-                    ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"
-                    : pushErlaubt === false
-                    ? "bg-red-400"
-                    : "bg-white/20"
-                )}
-              />
-            </div>
-            <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">
-              {pushErlaubt === true ? "Push aktiv ✅" : pushErlaubt === false ? "Push blockiert" : "Push einrichten..."}
-            </span>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {/* Push-Status-Punkt (immer sichtbar, klein) */}
+          <div className="relative">
+            <span
+              className={cn(
+                "w-2 h-2 rounded-full block",
+                pushErlaubt === true
+                  ? "bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.8)]"
+                  : pushErlaubt === false
+                  ? "bg-red-400"
+                  : "bg-white/20"
+              )}
+            />
           </div>
-          {/* Vorname ändern */}
-          {vorname && (
+          {/* Hamburger-Menü */}
+          <div className="relative">
             <button
-              onClick={() => setShowVornameAendern(true)}
-              className="group relative p-2.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors"
-              title="Vorname ändern"
+              onClick={() => setShowNavMenu(v => !v)}
+              className="p-2.5 rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+              aria-label="Menü öffnen"
             >
-              <span className="text-[11px] font-semibold text-violet-400/70 hover:text-violet-300 transition-colors">{vorname[0].toUpperCase()}</span>
-              <span className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/80 px-2 py-1 text-[10px] text-white/80 opacity-0 group-hover:opacity-100 transition-opacity z-50">Vorname: {vorname}</span>
+              {showNavMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
-          )}
-          {anzahlHeute > 0 && (
+            {/* Dropdown-Menü */}
+            {showNavMenu && (
+              <>
+                {/* Hintergrund-Overlay zum Schließen */}
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowNavMenu(false)}
+                />
+                <div className="absolute right-0 top-12 z-50 min-w-[200px] rounded-2xl bg-zinc-900/95 backdrop-blur-md border border-white/10 shadow-2xl overflow-hidden">
+                  {/* Vorname */}
+                  {vorname && (
+                    <button
+                      onClick={() => { setShowVornameAendern(true); setShowNavMenu(false); }}
+                      className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 transition-colors text-left border-b border-white/5"
+                    >
+                      <span className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center text-sm font-bold text-violet-300">{vorname[0].toUpperCase()}</span>
+                      <div>
+                        <p className="text-sm font-medium text-white">{vorname}</p>
+                        <p className="text-[11px] text-white/40">Vorname ändern</p>
+                      </div>
+                    </button>
+                  )}
+                  {/* Archiv */}
+                  <Link href="/momentaufnahme/archiv" onClick={() => setShowNavMenu(false)}>
+                    <div className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 transition-colors">
+                      <Archive className="w-5 h-5 text-white/50" />
+                      <span className="text-sm text-white/80">Alle Aufnahmen</span>
+                    </div>
+                  </Link>
+                  {/* Einschlaf-Bibliothek */}
+                  <Link href="/einschlafen" onClick={() => setShowNavMenu(false)}>
+                    <div className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 transition-colors">
+                      <span className="w-5 h-5 flex items-center justify-center text-base">🌙</span>
+                      <span className="text-sm text-white/80">Einschlaf-Bibliothek</span>
+                    </div>
+                  </Link>
+                  {/* Obsidian */}
+                  <Link href="/momentaufnahme/obsidian" onClick={() => setShowNavMenu(false)}>
+                    <div className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 transition-colors">
+                      <Plug className="w-5 h-5 text-white/50" />
+                      <span className="text-sm text-white/80">Obsidian Export</span>
+                    </div>
+                  </Link>
+                  {/* App installieren */}
+                  <button
+                    onClick={() => { setShowAppInstallGuide(true); setShowNavMenu(false); }}
+                    className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 transition-colors text-left"
+                  >
+                    <Smartphone className="w-5 h-5 text-white/50" />
+                    <span className="text-sm text-white/80">App installieren</span>
+                  </button>
+                  {/* Abo */}
+                  <Link href="/abo" onClick={() => setShowNavMenu(false)}>
+                    <div className="flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 transition-colors border-t border-white/5">
+                      <CreditCard className="w-5 h-5 text-white/50" />
+                      <span className="text-sm text-white/80">Abo & Ebenen</span>
+                    </div>
+                  </Link>
+                  {/* Push-Status */}
+                  <div className="flex items-center gap-3 px-4 py-3 border-t border-white/5 bg-white/3">
+                    <Bell className="w-4 h-4 text-white/30" />
+                    <span className="text-[11px] text-white/30">
+                      {pushErlaubt === true ? "Push-Benachrichtigungen aktiv" : pushErlaubt === false ? "Push blockiert" : "Push einrichten..."}
+                    </span>
+                    <span className={cn(
+                      "ml-auto w-2 h-2 rounded-full",
+                      pushErlaubt === true ? "bg-emerald-400" : pushErlaubt === false ? "bg-red-400" : "bg-white/20"
+                    )} />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+        {anzahlHeute > 0 && (
             <>
               {/* Neue Aufnahme – immer sichtbar wenn bereits Aufnahmen vorhanden */}
               <button
@@ -1205,7 +1228,6 @@ export default function Momentaufnahme() {
               </button>
             </>
           )}
-        </div>
       </header>
 
       {/* Trial-Banner */}
