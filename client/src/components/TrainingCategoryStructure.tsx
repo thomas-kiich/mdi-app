@@ -255,7 +255,7 @@ export function TrainingCategoryStructure({
                 className="mt-6 inline-flex items-center gap-2 px-5 py-3 bg-orange-500 hover:bg-orange-600 text-black font-semibold rounded-xl transition-all text-sm"
               >
                 <Info className="w-4 h-4" />
-                Hier erfährst du in Kürze das WIE, WANN und WARUM du mit dem BT trainieren solltest
+                Hier erfährst du WIE, WANN und WARUM du mit dem BT trainieren solltest....
                 {showBtInfo ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
               </button>
 
