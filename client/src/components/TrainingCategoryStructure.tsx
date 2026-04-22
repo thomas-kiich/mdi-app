@@ -268,7 +268,7 @@ export function TrainingCategoryStructure({
                     <audio
                       controls
                       className="w-full h-8 accent-orange-500"
-                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-wie-wann-warum-ma-stimme_8aee79d5.wav"
+                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-wie-wann-warum-ma-stimme_1a7572ba.mp3"
                     />
                   </div>
                   <div>
