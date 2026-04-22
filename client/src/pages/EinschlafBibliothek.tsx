@@ -807,11 +807,12 @@ export default function EinschlafBibliothek() {
       {/* Header */}
       <header className="px-5 pt-6 pb-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/">
-            <button className="p-1.5 rounded-full hover:bg-white/10 transition-colors text-white/40 hover:text-white/70">
-              <ArrowLeft className="w-4 h-4" />
-            </button>
-          </Link>
+          <button
+            onClick={() => window.history.back()}
+            className="p-1.5 rounded-full hover:bg-white/10 transition-colors text-white/40 hover:text-white/70"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </button>
           <div>
             <h1 className="text-lg font-bold tracking-wide">EINSCHLAF-BIBLIOTHEK</h1>
             <p className="text-xs text-white/40">

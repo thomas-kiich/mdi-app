@@ -75,11 +75,12 @@ export default function Abo() {
 
       {/* Header */}
       <div className="border-b border-white/10 px-4 py-4 flex items-center justify-between">
-        <Link href="/">
-          <span className="text-amber-400 font-bold text-lg cursor-pointer hover:text-amber-300 transition-colors flex items-center gap-2">
-            <ArrowLeft className="w-4 h-4" /> Zurück
-          </span>
-        </Link>
+        <button
+          onClick={() => window.history.back()}
+          className="text-amber-400 font-bold text-lg cursor-pointer hover:text-amber-300 transition-colors flex items-center gap-2"
+        >
+          <ArrowLeft className="w-4 h-4" /> Zurück
+        </button>
         <span className="text-white/40 text-sm">Abonnement & Pläne</span>
       </div>
 
