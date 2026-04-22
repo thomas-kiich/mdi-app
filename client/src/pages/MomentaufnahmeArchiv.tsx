@@ -11,6 +11,11 @@ import {
   Calendar,
   LogIn,
   Trash2,
+  Menu,
+  X,
+  Home,
+  BookOpen,
+  Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -266,6 +271,7 @@ export default function MomentaufnahmeArchiv() {
 
   const heute = useMemo(() => new Date().toISOString().split("T")[0], []);
   const [selectedDatum, setSelectedDatum] = useState<string | null>(null);
+  const [showNavMenu, setShowNavMenu] = useState<boolean>(false);
 
   // Automatisch heutigen Tag vorauswählen wenn vorhanden
   const aktiverTag = selectedDatum ?? (tage?.includes(heute) ? heute : tage?.[0] ?? null);
@@ -304,19 +310,56 @@ export default function MomentaufnahmeArchiv() {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col">
       {/* Header */}
-      <header className="px-5 pt-6 pb-4 flex items-center gap-3 border-b border-white/5">
+      <header className="px-5 pt-6 pb-4 flex items-center gap-3 border-b border-white/5 relative">
         <Link href="/momentaufnahme">
           <button className="p-1.5 rounded-full hover:bg-white/10 transition-colors text-white/40 hover:text-white/70">
             <ArrowLeft className="w-4 h-4" />
           </button>
         </Link>
-        <div>
+        <div className="flex-1">
           <h1 className="text-lg font-bold tracking-wide">ARCHIV</h1>
           <p className="text-xs text-white/40">
             {tage?.length
               ? `${tage.length} Tag${tage.length !== 1 ? "e" : ""} mit Aufnahmen`
               : "Noch keine Aufnahmen"}
           </p>
+        </div>
+        {/* Hamburger-Menü */}
+        <div className="relative">
+          <button
+            onClick={() => setShowNavMenu(!showNavMenu)}
+            className="p-2 rounded-full hover:bg-white/10 transition-colors text-white/40 hover:text-white/70"
+          >
+            {showNavMenu ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+          {showNavMenu && (
+            <div className="absolute right-0 top-10 z-50 bg-zinc-900 border border-white/10 rounded-2xl shadow-2xl p-2 min-w-[200px]">
+              <Link href="/" onClick={() => setShowNavMenu(false)}>
+                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-left">
+                  <Home className="w-4 h-4 text-white/50" />
+                  <span className="text-sm text-white/80">Startseite</span>
+                </button>
+              </Link>
+              <Link href="/momentaufnahme" onClick={() => setShowNavMenu(false)}>
+                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-left">
+                  <ArrowLeft className="w-4 h-4 text-white/50" />
+                  <span className="text-sm text-white/80">Momentaufnahme</span>
+                </button>
+              </Link>
+              <Link href="/obsidian-verbinden" onClick={() => setShowNavMenu(false)}>
+                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-left">
+                  <BookOpen className="w-4 h-4 text-white/50" />
+                  <span className="text-sm text-white/80">Obsidian verbinden</span>
+                </button>
+              </Link>
+              <Link href="/abo" onClick={() => setShowNavMenu(false)}>
+                <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-colors text-left">
+                  <Star className="w-4 h-4 text-amber-400" />
+                  <span className="text-sm text-white/80">Premium</span>
+                </button>
+              </Link>
+            </div>
+          )}
         </div>
       </header>
 
