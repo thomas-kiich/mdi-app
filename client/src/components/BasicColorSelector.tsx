@@ -104,7 +104,7 @@ export function BasicColorSelector({ onStartTraining }: BasicColorSelectorProps)
 
               <div className="space-y-6 text-left">
                 <div>
-                  <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3 border-b border-zinc-800 pb-2">Identität</h4>
+                  <h4 className="text-sm font-bold text-zinc-200 uppercase tracking-[0.2em] mb-3 border-b border-zinc-600 pb-2">GRUNDPRINZIPIEN</h4>
                   <p className="text-sm text-zinc-300 leading-relaxed">
                     {selectedItem.talent.split(' | ').slice(0, 6).join(' • ')}
                   </p>
