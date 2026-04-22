@@ -262,28 +262,16 @@ export function TrainingCategoryStructure({
               {/* Aufklappbarer Info-Bereich */}
               {showBtInfo && (
                 <div className="mt-4 text-left bg-zinc-900/70 border border-orange-500/30 rounded-2xl p-6 space-y-6 text-sm text-zinc-300 leading-relaxed">
-                  {/* MA-Stimme Audio – Teil 1: WIE + WANN */}
+                  {/* MA-Stimme Audio – Thomas' Studioaufnahme */}
                   <div className="space-y-2 p-3 bg-zinc-800/60 rounded-xl border border-orange-500/20">
                     <div className="flex items-center gap-2">
                       <span className="text-orange-400 text-xs font-semibold uppercase tracking-widest">🎙 MA-Stimme</span>
-                      <span className="text-zinc-500 text-xs">Teil 1 – Das WIE &amp; WANN</span>
+                      <span className="text-zinc-500 text-xs">WIE, WANN &amp; WARUM</span>
                     </div>
                     <audio
                       controls
                       className="w-full h-8 accent-orange-500"
-                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-teil1-wie-wann-v3_f0d4729f.mp3"
-                    />
-                  </div>
-                  {/* MA-Stimme Audio – Teil 2: WARUM */}
-                  <div className="space-y-2 p-3 bg-zinc-800/60 rounded-xl border border-orange-500/20">
-                    <div className="flex items-center gap-2">
-                      <span className="text-orange-400 text-xs font-semibold uppercase tracking-widest">🎙 MA-Stimme</span>
-                      <span className="text-zinc-500 text-xs">Teil 2 – Das WARUM</span>
-                    </div>
-                    <audio
-                      controls
-                      className="w-full h-8 accent-orange-500"
-                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-teil2-warum-v3_0ea3b5e5.mp3"
+                      src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/bt-studio-thomas_99fd4952.mp3"
                     />
                   </div>
                   <div>
