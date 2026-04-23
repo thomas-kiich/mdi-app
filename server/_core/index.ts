@@ -71,9 +71,39 @@ async function startServer() {
       const browserRange = req.headers.range as string | undefined;
 
       if (!browserRange) {
-        // No Range header: redirect directly to CDN to avoid streaming 55MB through proxy
-        // Browser will follow redirect and load directly from CDN
-        return res.redirect(302, url);
+        // No Range header from browser: first do a HEAD-like request (bytes=0-0) to get total size,
+        // then immediately flush 200 headers, then stream bytes=0- so the server never blocks.
+        const metaReq = await fetch(url, { headers: { 'Range': 'bytes=0-0' } });
+        if (metaReq.status !== 206 && metaReq.status !== 200) {
+          return res.status(metaReq.status).send('Upstream error');
+        }
+        const metaCR = metaReq.headers.get('content-range') || '';
+        const totalMatch = metaCR.match(/\/(\d+)$/);
+        const totalSize = totalMatch ? totalMatch[1] : null;
+        // Consume the tiny 1-byte body
+        await metaReq.body?.cancel();
+
+        // Now start the real stream
+        const streamReq = await fetch(url, { headers: { 'Range': 'bytes=0-' } });
+        if (streamReq.status !== 206 && streamReq.status !== 200) {
+          return res.status(streamReq.status).send('Upstream error');
+        }
+
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        res.setHeader('Accept-Ranges', 'bytes');
+        if (totalSize) res.setHeader('Content-Length', totalSize);
+        res.status(200);
+        // Flush headers immediately so browser can read duration
+        res.flushHeaders();
+
+        if (!streamReq.body) return res.end();
+        const { Readable } = await import('stream');
+        const nodeStream = Readable.fromWeb(streamReq.body as any);
+        nodeStream.pipe(res);
+        nodeStream.on('error', () => res.end());
+        return;
       }
 
       // Range request: proxy it to add CORS headers
@@ -95,10 +125,10 @@ async function startServer() {
       res.status(206);
 
       if (!upstream.body) return res.end();
-      const { Readable } = await import('stream');
-      const nodeStream = Readable.fromWeb(upstream.body as any);
-      nodeStream.pipe(res);
-      nodeStream.on('error', () => res.end());
+      const { Readable: Readable2 } = await import('stream');
+      const nodeStream2 = Readable2.fromWeb(upstream.body as any);
+      nodeStream2.pipe(res);
+      nodeStream2.on('error', () => res.end());
     } catch (e) {
       res.status(500).send('Proxy error');
     }
