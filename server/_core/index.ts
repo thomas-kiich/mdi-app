@@ -48,13 +48,29 @@ async function startServer() {
       return res.status(400).send('Invalid URL');
     }
     try {
-      const upstream = await fetch(url);
-      if (!upstream.ok) return res.status(502).send('Upstream error');
+      // Forward Range header so browser seek works
+      const headers: Record<string, string> = {};
+      if (req.headers.range) headers['Range'] = req.headers.range;
+      const upstream = await fetch(url, { headers });
+      if (!upstream.ok && upstream.status !== 206) {
+        return res.status(upstream.status).send('Upstream error');
+      }
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Cache-Control', 'public, max-age=86400');
-      const buffer = await upstream.arrayBuffer();
-      res.send(Buffer.from(buffer));
+      res.setHeader('Accept-Ranges', 'bytes');
+      // Forward content-length and content-range if present
+      const cl = upstream.headers.get('content-length');
+      if (cl) res.setHeader('Content-Length', cl);
+      const cr = upstream.headers.get('content-range');
+      if (cr) res.setHeader('Content-Range', cr);
+      res.status(upstream.status);
+      // Stream bytes directly – no buffering
+      if (!upstream.body) return res.end();
+      const { Readable } = await import('stream');
+      const nodeStream = Readable.fromWeb(upstream.body as any);
+      nodeStream.pipe(res);
+      nodeStream.on('error', () => res.end());
     } catch (e) {
       res.status(500).send('Proxy error');
     }

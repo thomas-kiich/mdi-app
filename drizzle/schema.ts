@@ -658,3 +658,38 @@ export const trainingFreigaben = mysqlTable('training_freigaben', {
 export type TrainingFreigabe = typeof trainingFreigaben.$inferSelect;
 export type InsertTrainingFreigabe = typeof trainingFreigaben.$inferInsert;
 
+
+/**
+ * PODCAST EPISODEN – Zentrale Datenverwaltung für alle Hörbuch-Episoden
+ * Neue Episoden können über das Admin-Panel hinzugefügt werden.
+ * audioUrl: CDN-URL der MP3-Datei (wird über /api/audio-proxy gestreamt)
+ * isLatest: Markiert die aktuellste Episode (wird auf der Startseite hervorgehoben)
+ * sortOrder: Aufsteigende Reihenfolge (1 = älteste, höchste = neueste)
+ */
+export const podcastEpisodes = mysqlTable('podcast_episodes', {
+  id: int('id').autoincrement().primaryKey(),
+  /** Episodennummer, z.B. "01", "02" */
+  episodeNumber: varchar('episodeNumber', { length: 10 }).notNull(),
+  /** Untertitel-Schlagwort in Großbuchstaben, z.B. "BEFEHL ERTEILT!" */
+  catchphrase: varchar('catchphrase', { length: 100 }).notNull(),
+  /** Langer Untertitel / Teaser-Text */
+  subtitle: text('subtitle').notNull(),
+  /** CDN-URL der MP3-Datei */
+  audioUrl: text('audioUrl').notNull(),
+  /** CDN-URL des Cover-Bildes */
+  coverImageUrl: text('coverImageUrl').notNull(),
+  /** Zusammenfassungstext (Inhalt dieser Episode) */
+  description: text('description'),
+  /** Ob dies die aktuellste/hervorgehobene Episode ist */
+  isLatest: boolean('isLatest').notNull().default(false),
+  /** Sortierreihenfolge (niedrig = älter, hoch = neuer) */
+  sortOrder: int('sortOrder').notNull().default(0),
+  /** Optionale YouTube-URL */
+  youtubeUrl: text('youtubeUrl'),
+  /** Optionale Spotify-URL */
+  spotifyUrl: text('spotifyUrl'),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().onUpdateNow().notNull(),
+});
+export type PodcastEpisode = typeof podcastEpisodes.$inferSelect;
+export type InsertPodcastEpisode = typeof podcastEpisodes.$inferInsert;

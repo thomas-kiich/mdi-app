@@ -1146,3 +1146,11 @@
 - [x] Admin-FAQ-Verwaltung Frontend (Fragen ansehen, beantworten, veröffentlichen)
 - [x] Willkommens-E-Mail via Brevo nach Registrierung
 - [x] Test-Mail an Thomas senden zur Textüberprüfung
+
+## Episoden-Datenbank-Standardisierung
+- [x] Episode 04 Audio-Problem dauerhaft lösen (Streaming-Proxy mit audio/mpeg)
+- [x] Datenbankschema für Episoden anlegen (podcast_episodes Tabelle)
+- [x] tRPC-Router für Episoden (CRUD, öffentlich lesbar, Admin-geschützt)
+- [ ] Admin-UI zum Hinzufügen/Bearbeiten von Episoden (inkl. Audio-Upload)
+- [x] Frontend auf DB-Daten umstellen (Episoden.tsx + Home.tsx)
+- [x] Bestehende 4 Episoden in DB migrieren
