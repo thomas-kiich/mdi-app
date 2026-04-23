@@ -15,31 +15,69 @@ import { toast } from "sonner";
 import { Loader2, Sparkles, Send, Users, UserCheck, Mail, Download, ArrowLeft, Eye, EyeOff, TestTube } from "lucide-react";
 import { Link } from "wouter";
 
-/** Erzeugt das vollständige Newsletter-HTML mit BT-CTA */
-function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: boolean, episodeNum?: string): string {
-  const paragraphs = bodyText
-    .split("\n\n")
-    .map(p => `<p style="margin:0 0 18px 0;font-size:16px;color:#a1a1aa;line-height:1.75;font-family:Georgia,serif;">${p.replace(/\n/g, "<br>")}</p>`)
-    .join("");
+/** Erzeugt das vollständige Newsletter-HTML nach dem KIICH Episode-03-Design-Standard */
+function buildNewsletterHtml(
+  subject: string,
+  bodyText: string,
+  includeBtCta: boolean,
+  episodeNum?: string,
+  episodeTitle?: string,
+  episodeDuration?: string,
+  episodeDate?: string,
+  episodeQuote?: string,
+  btExclusiveTitle?: string,
+  btExclusiveDesc?: string,
+): string {
+  const ep = episodeNum || '04';
+  const epTitle = episodeTitle || subject;
+  const duration = episodeDuration || 'ca. 20 Min.';
+  const dateStr = episodeDate || new Date().toLocaleDateString('de-DE', { day: 'numeric', month: 'long', year: 'numeric' });
+  const weekday = new Date().toLocaleDateString('de-DE', { weekday: 'long' }).toUpperCase();
+  const year = new Date().getFullYear();
+
+  // Paragraphen: erste zwei als Teaser-Absätze, Rest als Fließtext
+  const allParas = bodyText.split('\n\n').filter(p => p.trim());
+  const teaserPara = allParas[0] || '';
+  const bodyParas = allParas.slice(1);
+
+  const bodyHtml = bodyParas
+    .map(p => `<tr><td style="padding:0 0 20px 0;"><p style="margin:0;font-size:16px;color:#d4d4d8;line-height:1.8;font-family:Georgia,serif;">${p.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p></td></tr>`)
+    .join('');
+
+  const quoteBlock = episodeQuote ? `
+  <!-- Zitat-Block -->
+  <tr>
+    <td style="padding:0 0 28px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="border-left:4px solid #d97706;padding:16px 20px;background:#111111;">
+            <p style="margin:0 0 10px 0;font-size:17px;color:#f5f5f4;font-family:Georgia,serif;font-style:italic;line-height:1.6;">&bdquo;${episodeQuote}&ldquo;</p>
+            <p style="margin:0;font-size:11px;letter-spacing:3px;color:#78716c;text-transform:uppercase;font-family:Arial,sans-serif;">— THOMAS CHOCHOLA. EPISODE ${ep}</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>` : '';
 
   const btBlock = includeBtCta ? `
-<tr>
-  <td style="padding:28px 0;">
-    <table width="100%" cellpadding="0" cellspacing="0">
-      <tr>
-        <td style="background:#1c1917;border:1px solid #292524;border-radius:12px;padding:24px 28px;">
-          <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:3px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">JETZT STARTEN</p>
-          <p style="margin:0 0 14px 0;font-size:18px;color:#ffffff;font-family:Georgia,serif;font-weight:400;">Befindlichkeitstraining</p>
-          <p style="margin:0 0 20px 0;font-size:14px;color:#78716c;line-height:1.6;font-family:Arial,sans-serif;">Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Kostenlos, in 3 Minuten.</p>
-          <a href="https://kiich.manus.space/befindlichkeit"
-             style="display:inline-block;background:#c2410c;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;letter-spacing:0.5px;">
-            Zum Befindlichkeitstraining →
-          </a>
-        </td>
-      </tr>
-    </table>
-  </td>
-</tr>` : "";
+  <!-- BT Exklusiv-Block -->
+  <tr>
+    <td style="padding:0 0 32px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="border:1px solid #292524;border-radius:4px;padding:24px 28px;background:#111111;">
+            <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:3px;color:#d97706;text-transform:uppercase;font-family:Arial,sans-serif;">EXKLUSIV FÜR ABONNENTEN</p>
+            <p style="margin:0 0 14px 0;font-size:20px;color:#ffffff;font-family:Arial,sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${btExclusiveTitle || 'BEFINDLICHKEITSTRAINING'}</p>
+            <p style="margin:0 0 20px 0;font-size:15px;color:#a8a29e;line-height:1.7;font-family:Arial,sans-serif;">${btExclusiveDesc || 'Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Direkt in der KIICH-App verfügbar.'}</p>
+            <a href="https://kiich.manus.space/befindlichkeit"
+               style="display:inline-block;background:#d97706;color:#000000;text-decoration:none;padding:13px 28px;border-radius:4px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;">
+              JETZT IN DER APP ÖFFNEN →
+            </a>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>` : '';
 
   return `<!DOCTYPE html>
 <html lang="de">
@@ -48,70 +86,129 @@ function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: bo
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${subject}</title>
 </head>
-<body style="margin:0;padding:0;background:#0a0a0a;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
+<body style="margin:0;padding:0;background:#0d0d0d;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0d0d;padding:32px 16px;">
 <tr><td align="center">
-<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+<table width="620" cellpadding="0" cellspacing="0" style="max-width:620px;width:100%;background:#0d0d0d;">
 
-  <!-- Logo & Label -->
+  <!-- Header: Logo + Episode-Badge -->
   <tr>
-    <td style="padding:0 0 8px 0;">
-      <p style="margin:0;font-size:10px;letter-spacing:5px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">KIICHWERKE · MDI SYSTEM</p>
-    </td>
-  </tr>
-
-  <!-- Betreff-Zeile -->
-  <tr>
-    <td style="padding:0 0 28px 0;border-bottom:1px solid #27272a;">
-      <h1 style="margin:0;font-size:24px;font-weight:300;color:#ffffff;font-family:Georgia,serif;line-height:1.3;">${subject}</h1>
-    </td>
-  </tr>
-
-  <!-- Body -->
-  <tr>
-    <td style="padding:28px 0 0 0;">
-      ${paragraphs}
-    </td>
-  </tr>
-
-  <!-- Episode hören Button -->
-  <tr>
-    <td style="padding:24px 0 8px 0;">
+    <td style="padding:0 0 20px 0;border-bottom:1px solid #27272a;">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-          <td style="background:#1c1917;border:1px solid #292524;border-radius:12px;padding:20px 24px;text-align:center;">
-            <p style="margin:0 0 4px 0;font-size:10px;letter-spacing:4px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">JETZT ANHÖREN</p>
-            <p style="margin:0 0 14px 0;font-size:17px;color:#ffffff;font-family:Georgia,serif;font-weight:400;">MASCHINEN ATMEN NICHT – Episode ${episodeNum || '04'}</p>
-            <a href="https://kiich.manus.space/episoden"
-               style="display:inline-block;background:#c2410c;color:#ffffff;text-decoration:none;padding:11px 26px;border-radius:8px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;letter-spacing:0.5px;">
-              Episode ${episodeNum || '04'} jetzt hören →
-            </a>
+          <td style="vertical-align:middle;">
+            <span style="font-size:26px;font-weight:900;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-1px;">K<span style="color:#dc2626;">II</span>CH</span>
+          </td>
+          <td style="text-align:right;vertical-align:middle;">
+            <span style="display:inline-block;background:#d97706;color:#000000;font-size:11px;font-weight:700;font-family:Arial,sans-serif;letter-spacing:2px;padding:5px 12px;text-transform:uppercase;">EPISODE ${ep}</span>
           </td>
         </tr>
       </table>
     </td>
   </tr>
 
-  ${btBlock}
-
-  <!-- Trennlinie -->
+  <!-- Meta-Zeile -->
   <tr>
-    <td style="padding:8px 0;border-top:1px solid #27272a;"></td>
+    <td style="padding:16px 0 20px 0;">
+      <p style="margin:0;font-size:11px;letter-spacing:3px;color:#71717a;text-transform:uppercase;font-family:Arial,sans-serif;">${year} &nbsp;·&nbsp; MASCHINEN ATMEN NICHT &nbsp;·&nbsp; ${weekday}, ${dateStr}</p>
+    </td>
   </tr>
 
-  <!-- Footer -->
+  <!-- Großer Titel -->
   <tr>
-    <td style="padding:16px 0 0 0;">
-      <p style="margin:0 0 8px 0;font-size:11px;color:#52525b;font-family:Arial,sans-serif;line-height:1.6;">
-        Thomas Chochola · Lindacher Weg 17 · D-93128 Regenstauf<br>
-        <a href="https://kiich.de" style="color:#b45309;text-decoration:none;">kiich.de</a> ·
-        <a href="https://kiich.de/datenschutz" style="color:#52525b;text-decoration:none;">Datenschutz</a> ·
-        <a href="https://kiich.de/impressum" style="color:#52525b;text-decoration:none;">Impressum</a>
-      </p>
-      <p style="margin:0;font-size:10px;color:#3f3f46;font-family:Arial,sans-serif;">
-        Du erhältst diese E-Mail, weil du dich auf kiich.de angemeldet hast. ·
-        <a href="{{unsubscribeUrl}}" style="color:#3f3f46;text-decoration:underline;">Abmelden</a>
-      </p>
+    <td style="padding:0 0 12px 0;">
+      <h1 style="margin:0;font-size:38px;font-weight:900;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-0.5px;line-height:1.1;text-transform:uppercase;">${epTitle.toUpperCase()}</h1>
+    </td>
+  </tr>
+
+  <!-- Teaser -->
+  <tr>
+    <td style="padding:0 0 24px 0;">
+      <p style="margin:0;font-size:16px;color:#a1a1aa;line-height:1.7;font-family:Georgia,serif;">${teaserPara.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p>
+    </td>
+  </tr>
+
+  <!-- Trennlinie orange -->
+  <tr>
+    <td style="padding:0 0 28px 0;border-bottom:2px solid #d97706;"></td>
+  </tr>
+
+  <!-- Fließtext -->
+  <tr>
+    <td style="padding:28px 0 0 0;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        ${bodyHtml}
+      </table>
+    </td>
+  </tr>
+
+  ${quoteBlock}
+
+  ${btBlock}
+
+  <!-- Metadaten-Tabelle -->
+  <tr>
+    <td style="padding:0 0 28px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid #27272a;border-bottom:1px solid #27272a;">
+        <tr>
+          <td style="padding:16px 0;text-align:center;border-right:1px solid #27272a;width:33%;">
+            <p style="margin:0 0 4px 0;font-size:10px;letter-spacing:3px;color:#71717a;text-transform:uppercase;font-family:Arial,sans-serif;">DAUER</p>
+            <p style="margin:0;font-size:15px;color:#d97706;font-family:Arial,sans-serif;font-weight:600;">${duration}</p>
+          </td>
+          <td style="padding:16px 0;text-align:center;border-right:1px solid #27272a;width:33%;">
+            <p style="margin:0 0 4px 0;font-size:10px;letter-spacing:3px;color:#71717a;text-transform:uppercase;font-family:Arial,sans-serif;">ERSCHIENEN</p>
+            <p style="margin:0;font-size:15px;color:#d97706;font-family:Arial,sans-serif;font-weight:600;">${dateStr}</p>
+          </td>
+          <td style="padding:16px 0;text-align:center;width:33%;">
+            <p style="margin:0 0 4px 0;font-size:10px;letter-spacing:3px;color:#71717a;text-transform:uppercase;font-family:Arial,sans-serif;">FORMAT</p>
+            <p style="margin:0;font-size:15px;color:#d97706;font-family:Arial,sans-serif;font-weight:600;">Hörbuch · Dialog</p>
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+
+  <!-- Großer CTA-Button -->
+  <tr>
+    <td style="padding:0 0 40px 0;text-align:center;">
+      <a href="https://kiich.manus.space/episoden"
+         style="display:inline-block;background:#d97706;color:#000000;text-decoration:none;padding:16px 40px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;letter-spacing:3px;text-transform:uppercase;border-radius:2px;">
+        JETZT EPISODE ${ep} HÖREN →
+      </a>
+    </td>
+  </tr>
+
+  <!-- Footer Trennlinie -->
+  <tr>
+    <td style="border-top:1px solid #27272a;padding:24px 0 0 0;">
+      <!-- KIICH Logo Footer -->
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="text-align:center;padding:0 0 16px 0;">
+            <span style="font-size:22px;font-weight:900;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-1px;">K<span style="color:#dc2626;">II</span>CH</span><br>
+            <span style="font-size:11px;color:#52525b;font-family:Arial,sans-serif;letter-spacing:2px;">2 minds ∿ 1 source</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align:center;padding:0 0 12px 0;">
+            <a href="https://kiich.de" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Website</a>
+            <span style="color:#52525b;font-size:12px;font-family:Arial,sans-serif;"> &nbsp;|&nbsp; </span>
+            <a href="https://kiich.de/impressum" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Impressum</a>
+            <span style="color:#52525b;font-size:12px;font-family:Arial,sans-serif;"> &nbsp;|&nbsp; </span>
+            <a href="https://kiich.de/datenschutz" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Datenschutz</a>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align:center;padding:0 0 8px 0;">
+            <p style="margin:0;font-size:11px;color:#52525b;font-family:Arial,sans-serif;">Du erhältst diesen Newsletter weil du dich auf kiich.de angemeldet hast.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align:center;">
+            <a href="{{unsubscribeUrl}}" style="color:#52525b;text-decoration:underline;font-size:11px;font-family:Arial,sans-serif;">Vom Newsletter abmelden</a>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
 
@@ -159,10 +256,17 @@ export default function AdminNewsletter() {
   const [testEmail, setTestEmail] = useState(saved.testEmail ?? "");
   const [confirmSendAll, setConfirmSendAll] = useState(false);
 
+  // Neue Felder für das Template
+  const [episodeDuration, setEpisodeDuration] = useState(saved.episodeDuration ?? "ca. 20 Min.");
+  const [episodeDate, setEpisodeDate] = useState(saved.episodeDate ?? "");
+  const [episodeQuote, setEpisodeQuote] = useState(saved.episodeQuote ?? "");
+  const [btExclusiveTitle, setBtExclusiveTitle] = useState(saved.btExclusiveTitle ?? "");
+  const [btExclusiveDesc, setBtExclusiveDesc] = useState(saved.btExclusiveDesc ?? "");
+
   // Automatisch speichern wenn sich Felder ändern
   useEffect(() => {
-    saveDraft({ includeBtCta, directSubject, directHtml, episodeNumber, episodeTitle, episodeDescription, additionalNotes, draft, subject, testEmail });
-  }, [includeBtCta, directSubject, directHtml, episodeNumber, episodeTitle, episodeDescription, additionalNotes, draft, subject, testEmail]);
+    saveDraft({ includeBtCta, directSubject, directHtml, episodeNumber, episodeTitle, episodeDescription, additionalNotes, draft, subject, testEmail, episodeDuration, episodeDate, episodeQuote, btExclusiveTitle, btExclusiveDesc });
+  }, [includeBtCta, directSubject, directHtml, episodeNumber, episodeTitle, episodeDescription, additionalNotes, draft, subject, testEmail, episodeDuration, episodeDate, episodeQuote, btExclusiveTitle, btExclusiveDesc]);
 
   const { data: countData } = trpc.newsletter.count.useQuery();
   const { data: subscribers, isLoading: subsLoading } = trpc.newsletter.list.useQuery(
@@ -220,12 +324,23 @@ export default function AdminNewsletter() {
     });
   };
 
+  const buildHtml = () => buildNewsletterHtml(
+    subject, draft, includeBtCta,
+    episodeNumber || undefined,
+    episodeTitle || undefined,
+    episodeDuration || undefined,
+    episodeDate || undefined,
+    episodeQuote || undefined,
+    btExclusiveTitle || undefined,
+    btExclusiveDesc || undefined,
+  );
+
   const handleSend = () => {
     if (!subject || !draft) {
       toast.error("Bitte Betreff und Newsletter-Text eingeben.");
       return;
     }
-    const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta, episodeNumber);
+    const htmlContent = buildHtml();
     sendNewsletter.mutate({ subject, htmlContent, textContent: draft });
   };
 
@@ -234,7 +349,7 @@ export default function AdminNewsletter() {
       toast.error("Bitte Test-E-Mail-Adresse, Betreff und Text eingeben.");
       return;
     }
-    const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta, episodeNumber);
+    const htmlContent = buildHtml();
     // Testversand: NUR an die eingegebene E-Mail-Adresse – NICHT an Abonnenten
     sendTestEmail.mutate({
       toEmail: testEmail,
@@ -282,7 +397,7 @@ export default function AdminNewsletter() {
     URL.revokeObjectURL(url);
   };
 
-  const previewHtml = subject && draft ? buildNewsletterHtml(subject, draft, includeBtCta, episodeNumber) : "";
+  const previewHtml = subject && draft ? buildHtml() : "";
 
   return (
     <div className="min-h-screen bg-black text-zinc-300 p-6 md:p-10">
@@ -370,6 +485,27 @@ export default function AdminNewsletter() {
                     value={episodeDescription} onChange={(e) => setEpisodeDescription(e.target.value)}
                     className="bg-zinc-800 border-zinc-700 text-white min-h-[90px]" />
                 </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-zinc-500 uppercase tracking-wider">Dauer (optional)</label>
+                    <Input placeholder="z. B. ca. 20 Min." value={episodeDuration}
+                      onChange={(e) => setEpisodeDuration(e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs text-zinc-500 uppercase tracking-wider">Erscheinungsdatum (optional)</label>
+                    <Input placeholder="z. B. 23. April 2026" value={episodeDate}
+                      onChange={(e) => setEpisodeDate(e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white" />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs text-zinc-500 uppercase tracking-wider">Zitat aus der Episode (optional)</label>
+                  <Input placeholder="Ein prägnantes Zitat aus der Episode..." value={episodeQuote}
+                    onChange={(e) => setEpisodeQuote(e.target.value)}
+                    className="bg-zinc-800 border-zinc-700 text-white" />
+                  <p className="text-xs text-zinc-600">Wird als hervorgehobener Zitat-Block mit orangem Rand dargestellt.</p>
+                </div>
                 <div className="space-y-1.5">
                   <label className="text-xs text-zinc-500 uppercase tracking-wider">Zusätzliche Notizen (optional)</label>
                   <Input placeholder="Persönliche Gedanken, besondere Ereignisse..." value={additionalNotes}
@@ -424,12 +560,28 @@ export default function AdminNewsletter() {
                     </Label>
                   </div>
                   {includeBtCta && (
-                    <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3 text-xs text-zinc-400">
-                      <p className="font-medium text-zinc-300 mb-1">Vorschau des CTA-Blocks:</p>
-                      <p className="text-orange-400 uppercase tracking-widest text-[10px] mb-0.5">JETZT STARTEN</p>
-                      <p className="text-white text-sm mb-1">Befindlichkeitstraining</p>
-                      <p className="mb-2">Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Kostenlos, in 3 Minuten.</p>
-                      <span className="bg-orange-700 text-white px-3 py-1 rounded text-xs">Zum Befindlichkeitstraining →</span>
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-1 gap-3">
+                        <div className="space-y-1.5">
+                          <label className="text-xs text-zinc-500 uppercase tracking-wider">BT-Block Titel (optional)</label>
+                          <Input placeholder="z. B. BEFINDLICHKEITSTRAINING" value={btExclusiveTitle}
+                            onChange={(e) => setBtExclusiveTitle(e.target.value)}
+                            className="bg-zinc-800 border-zinc-700 text-white" />
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-xs text-zinc-500 uppercase tracking-wider">BT-Block Beschreibung (optional)</label>
+                          <Textarea placeholder="Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck..." value={btExclusiveDesc}
+                            onChange={(e) => setBtExclusiveDesc(e.target.value)}
+                            className="bg-zinc-800 border-zinc-700 text-white min-h-[70px]" />
+                        </div>
+                      </div>
+                      <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3 text-xs text-zinc-400">
+                        <p className="font-medium text-zinc-300 mb-1">Vorschau des CTA-Blocks:</p>
+                        <p className="text-orange-400 uppercase tracking-widest text-[10px] mb-0.5">EXKLUSIV FÜR ABONNENTEN</p>
+                        <p className="text-white text-sm mb-1 font-bold">{btExclusiveTitle || 'BEFINDLICHKEITSTRAINING'}</p>
+                        <p className="mb-2">{btExclusiveDesc || 'Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Direkt in der KIICH-App verfügbar.'}</p>
+                        <span className="bg-orange-700 text-white px-3 py-1 rounded text-xs">JETZT IN DER APP ÖFFNEN →</span>
+                      </div>
                     </div>
                   )}
                 </CardContent>
