@@ -276,7 +276,7 @@ export function TrainingCategoryStructure({
                   </div>
                   <div>
                     <h3 className="text-orange-400 font-bold text-base uppercase tracking-widest mb-3">Das WIE</h3>
-                    <p className="mb-2">Es gibt vier Grundregeln für das optimale Tun mit BT:</p>
+                    <p className="mb-2">Es gibt fünf Grundregeln für das optimale Tun mit BT:</p>
                     <ol className="list-decimal list-inside space-y-2 text-zinc-300">
                       <li>Sei für die wenigen Minuten des Trainierens voll im Tun <strong className="text-white">OHNE ABLENKUNG</strong>.</li>
                       <li>Trage Sorge, dass du während der Trainingsession ungestört bist an einem ruhigen Ort.</li>
