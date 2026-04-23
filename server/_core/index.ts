@@ -42,17 +42,36 @@ async function startServer() {
   app.use(audioUploadRouter);
 
   // Audio-Proxy: liefert CDN-Audiodateien mit korrektem Content-Type und CORS
-  app.get('/api/audio-proxy', async (req, res) => {
+  // Audio-Proxy: HEAD + GET handler
+  const audioProxyHandler = async (req: any, res: any) => {
     const url = req.query.url as string;
     if (!url || !url.startsWith('https://d2xsxph8kpxj0f.cloudfront.net/')) {
       return res.status(400).send('Invalid URL');
     }
+    const isHead = req.method === 'HEAD';
     try {
-      // Always forward Range header; if browser sends none, request first chunk
+      if (isHead) {
+        // HEAD: fetch just the first byte to get Content-Length without streaming body
+        const upstream = await fetch(url, { headers: { 'Range': 'bytes=0-0' } });
+        if (!upstream.ok && upstream.status !== 206) {
+          return res.status(upstream.status).send('Upstream error');
+        }
+        // Extract total size from Content-Range: bytes 0-0/TOTAL
+        const cr = upstream.headers.get('content-range') || '';
+        const totalMatch = cr.match(/\/(\d+)$/);
+        const totalSize = totalMatch ? totalMatch[1] : upstream.headers.get('content-length') || '0';
+        res.setHeader('Content-Type', 'audio/mpeg');
+        res.setHeader('Content-Length', totalSize);
+        res.setHeader('Accept-Ranges', 'bytes');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+        return res.status(200).end();
+      }
+
+      // GET: forward Range header; if browser sends none, request full file
       const rangeHeader = req.headers.range || 'bytes=0-';
       const upstream = await fetch(url, { headers: { 'Range': rangeHeader } });
 
-      // Accept both 200 and 206 from upstream
       if (!upstream.ok && upstream.status !== 206) {
         return res.status(upstream.status).send('Upstream error');
       }
@@ -62,7 +81,6 @@ async function startServer() {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Accept-Ranges', 'bytes');
 
-      // Forward content-length and content-range
       const cl = upstream.headers.get('content-length');
       if (cl) res.setHeader('Content-Length', cl);
       const cr = upstream.headers.get('content-range');
@@ -73,7 +91,6 @@ async function startServer() {
         res.status(200);
       }
 
-      // Stream bytes directly – no buffering
       if (!upstream.body) return res.end();
       const { Readable } = await import('stream');
       const nodeStream = Readable.fromWeb(upstream.body as any);
@@ -82,7 +99,9 @@ async function startServer() {
     } catch (e) {
       res.status(500).send('Proxy error');
     }
-  });
+  };
+  app.head('/api/audio-proxy', audioProxyHandler);
+  app.get('/api/audio-proxy', audioProxyHandler);
   // App-Version-Endpoint: gibt Build-Timestamp zurück für iOS-kompatibles Update-Polling
   const APP_VERSION = process.env.APP_BUILD_TIME || Date.now().toString();
   app.get('/api/app-version', (_req, res) => {
