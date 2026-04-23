@@ -1577,7 +1577,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       description={
                         <div className="mt-4 border border-zinc-700/50 bg-zinc-900/50 rounded-xl px-4 py-4">
                           <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-3">Inhalt dieser Episode....</p>
-                          <p className="text-sm text-zinc-300 leading-relaxed">Audio verfügbar – Inhaltsbeschreibung folgt.</p>
+                          <p className="text-sm text-zinc-300 leading-relaxed">EPISODE 01 stellt die Hörbuchreihe „Maschinen atmen nicht" von Thomas Chochola vor, die in der nahen Zukunft des Jahres 2026 angesiedelt ist. Das Werk thematisiert den massiven Wandel der menschlichen Lebensqualität durch technologische Fortschritte und unbegrenzte Entfaltungsmöglichkeiten. Im Zentrum steht dabei die kritische Auseinandersetzung mit der Frage nach Selbstbestimmung versus Fremdstimmung in einer zunehmend digitalisierten Welt. Die Zuhörer werden dazu angeregt, ihre eigene Rolle innerhalb dieser modernen Ära zu reflektieren und Strategien für eine optimale Lebensgestaltung zu entwickeln. Die erste Episode befasst sich konkret mit der Kontrolle über das eigene Schicksal im sogenannten Agentenzeitalter. Somit dient der Text als Einleitung zu einer philosophischen und zukunftsorientierten Auseinandersetzung mit unserer aktuellen gesellschaftlichen Realität.</p>
                         </div>
                       }
                     />
