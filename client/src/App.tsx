@@ -25,6 +25,7 @@ import AdminTts from "@/pages/AdminTts";
 import FAQ from "@/pages/FAQ";
 import Abo from "@/pages/Abo";
 import AdminFaq from "@/pages/AdminFaq";
+import AdminEpisoden from "@/pages/AdminEpisoden";
 import Befindlichkeit from "@/pages/Befindlichkeit";
 import { Nutzungsbedingungen } from "@/pages/Nutzungsbedingungen";
 import { RechtsCheckliste } from "@/pages/RechtsCheckliste";
@@ -56,6 +57,7 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/abo" component={Abo} />
       <Route path="/admin/faq" component={AdminFaq} />
+      <Route path="/admin/episoden" component={AdminEpisoden} />
       <Route path="/befindlichkeit" component={Befindlichkeit} />
       <Route path="/nutzungsbedingungen" component={Nutzungsbedingungen} />
       <Route path="/rechts-checkliste" component={RechtsCheckliste} />
