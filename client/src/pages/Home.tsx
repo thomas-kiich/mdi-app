@@ -1525,6 +1525,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       title={<>2026 EPISODE 04<br/><span className="text-orange-400 block mt-1">ECHT KRASS!</span></>}
                       subtitle="MASCHINEN wollen atmen? _ Heute musst du entscheiden, wer du wirklich sein willst ..."
                       coverImage="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/logo_16abbbd5.png"
+                      audioUrl="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/episode04PODCAST_88c5ec93.mp3"
                       description={
                         <div className="mt-4 border border-zinc-700/50 bg-zinc-900/50 rounded-xl px-4 py-4">
                           <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-3">Inhalt dieser Episode....</p>
