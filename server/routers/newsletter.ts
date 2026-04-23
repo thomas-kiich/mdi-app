@@ -252,6 +252,36 @@ Antworte NUR mit dem Newsletter-Text, ohne Erklärungen oder Metakommentare.`;
     }),
 
   /**
+   * Admin only: Test-E-Mail NUR an eine einzige Adresse senden.
+   * Sendet NIEMALS an die Abonnentenliste.
+   */
+  sendTest: protectedProcedure
+    .input(
+      z.object({
+        toEmail: z.string().email(),
+        subject: z.string().min(1),
+        htmlContent: z.string().min(1),
+        textContent: z.string().min(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      const { sendEmail } = await import("../brevo");
+      const success = await sendEmail({
+        to: [{ email: input.toEmail }],
+        subject: `[TEST] ${input.subject}`,
+        htmlContent: input.htmlContent,
+        textContent: input.textContent,
+      });
+      if (!success) {
+        throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Test-E-Mail konnte nicht gesendet werden." });
+      }
+      return { message: `Test-E-Mail an ${input.toEmail} gesendet.` };
+    }),
+
+  /**
    * Admin only: Newsletter an alle aktiven Abonnenten versenden.
    */
   send: protectedProcedure

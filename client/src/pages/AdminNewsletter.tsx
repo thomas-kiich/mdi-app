@@ -123,6 +123,7 @@ export default function AdminNewsletter() {
   const [draft, setDraft] = useState("");
   const [subject, setSubject] = useState("");
   const [testEmail, setTestEmail] = useState("");
+  const [confirmSendAll, setConfirmSendAll] = useState(false);
 
   const { data: countData } = trpc.newsletter.count.useQuery();
   const { data: subscribers, isLoading: subsLoading } = trpc.newsletter.list.useQuery(
@@ -145,8 +146,8 @@ export default function AdminNewsletter() {
     onError: (err) => toast.error("Fehler beim Versenden: " + err.message),
   });
 
-  const sendTestEmail = trpc.newsletter.send.useMutation({
-    onSuccess: () => toast.success(`Test-E-Mail an ${testEmail} versendet!`),
+  const sendTestEmail = trpc.newsletter.sendTest.useMutation({
+    onSuccess: (data) => toast.success(data.message),
     onError: (err) => toast.error("Fehler: " + err.message),
   });
 
@@ -195,13 +196,22 @@ export default function AdminNewsletter() {
       return;
     }
     const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta);
-    // Testversand: nur an eine Adresse – wir nutzen den direkten Brevo-Aufruf über send
-    // mit einer gefilterten Empfängerliste (Workaround: subject mit [TEST] prefix)
+    // Testversand: NUR an die eingegebene E-Mail-Adresse – NICHT an Abonnenten
     sendTestEmail.mutate({
-      subject: `[TEST] ${subject}`,
+      toEmail: testEmail,
+      subject,
       htmlContent,
-      textContent: `[TEST]\n\n${draft}`,
+      textContent: draft,
     });
+  };
+
+  const handleSendAll = () => {
+    if (!confirmSendAll) {
+      setConfirmSendAll(true);
+      return;
+    }
+    setConfirmSendAll(false);
+    handleSend();
   };
 
   const handleDirectSend = () => {
@@ -469,13 +479,42 @@ export default function AdminNewsletter() {
                       <p className="text-zinc-500 text-xs">An {countData?.active ?? 0} aktive Abonnenten · Von: newsletter@kiich.de</p>
                     </div>
                   </div>
-                  <Button onClick={handleSend} disabled={sendNewsletter.isPending || !subject || !draft}
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white gap-2 h-12 text-base">
-                    {sendNewsletter.isPending
-                      ? <><Loader2 className="w-5 h-5 animate-spin" /> Wird versendet...</>
-                      : <><Send className="w-5 h-5" /> Newsletter jetzt versenden ({countData?.active ?? 0} Empfänger)</>}
-                  </Button>
-                  <p className="text-xs text-zinc-600 text-center">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+
+                  {!confirmSendAll ? (
+                    <Button
+                      onClick={() => setConfirmSendAll(true)}
+                      disabled={sendNewsletter.isPending || !subject || !draft}
+                      className="w-full bg-zinc-700 hover:bg-zinc-600 text-white gap-2 h-12 text-base border border-zinc-600"
+                    >
+                      <Send className="w-5 h-5" /> An alle {countData?.active ?? 0} Abonnenten senden ...
+                    </Button>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="bg-red-950/50 border border-red-800 rounded-lg p-4">
+                        <p className="text-red-400 font-semibold text-sm mb-1">⚠️ Letzte Bestätigung erforderlich</p>
+                        <p className="text-red-300 text-xs">Du sendest jetzt an <strong>{countData?.active ?? 0} echte Abonnenten</strong>. Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                      </div>
+                      <div className="flex gap-3">
+                        <Button
+                          onClick={() => setConfirmSendAll(false)}
+                          variant="outline"
+                          className="flex-1 border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                        >
+                          Abbrechen
+                        </Button>
+                        <Button
+                          onClick={handleSend}
+                          disabled={sendNewsletter.isPending}
+                          className="flex-1 bg-red-700 hover:bg-red-600 text-white gap-2 h-12"
+                        >
+                          {sendNewsletter.isPending
+                            ? <><Loader2 className="w-5 h-5 animate-spin" /> Wird versendet...</>
+                            : <><Send className="w-5 h-5" /> JA – JETZT AN ALLE SENDEN</>}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  <p className="text-xs text-zinc-600 text-center">Tipp: Erst Test-E-Mail senden (Schritt 05), dann hier bestätigen.</p>
                 </CardContent>
               </Card>
             )}
