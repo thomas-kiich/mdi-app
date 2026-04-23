@@ -289,7 +289,7 @@ export function TrainingCategoryStructure({
                   <div>
                     <h3 className="text-orange-400 font-bold text-base uppercase tracking-widest mb-3">Das WANN</h3>
                     <p className="mb-3">Generelle Empfehlung ist es, zumindest zu Beginn deiner Erfahrungen mit dem BT, ein <strong className="text-white">LICHTKLANGTHEMA</strong> zu wählen und mindestens sieben Tage damit zu trainieren. So kannst du nachhaltige Wirkungen in deinem Verhaltenskonzept bewirken.</p>
-                    <p className="mb-2">Es gibt vier Zeitfenster über den Tag verteilt, die für ein BT empfohlen sind:</p>
+                    <p className="mb-2">Es gibt verschiedene Zeitfenster über den Tag verteilt, die für ein BT empfohlen sind:</p>
                     <ol className="list-decimal list-inside space-y-2 text-zinc-300">
                       <li><strong className="text-white">Als Morgen- und Abendritual</strong> – Entscheide dich zu Beginn für einen siebenminütigen Ablauf. Am besten schon auf deinem Schlafplatz, mit geschlossenen Augen am Rücken liegend.</li>
                       <li>Zu einer bestimmten Tageszeit, an der du das Training als regelmässiges Ritual einbaust.</li>
