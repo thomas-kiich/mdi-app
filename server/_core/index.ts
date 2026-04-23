@@ -68,43 +68,31 @@ async function startServer() {
         return res.status(200).end();
       }
 
-      // GET: always use Range header to avoid streaming the full file at once
-      // If browser sends no Range, we use bytes=0- and respond with 200 (not 206)
       const browserRange = req.headers.range as string | undefined;
-      const fetchRange = browserRange || 'bytes=0-';
 
-      const upstream = await fetch(url, { headers: { 'Range': fetchRange } });
+      if (!browserRange) {
+        // No Range header: redirect directly to CDN to avoid streaming 55MB through proxy
+        // Browser will follow redirect and load directly from CDN
+        return res.redirect(302, url);
+      }
 
-      // Accept 200 and 206 from upstream
+      // Range request: proxy it to add CORS headers
+      const upstream = await fetch(url, { headers: { 'Range': browserRange } });
+
       if (upstream.status !== 200 && upstream.status !== 206) {
         return res.status(upstream.status).send('Upstream error');
       }
-
-      // Extract total file size from Content-Range header
-      const upstreamCR = upstream.headers.get('content-range') || '';
-      const totalMatch = upstreamCR.match(/\/(\d+)$/);
-      const totalSize = totalMatch ? totalMatch[1] : null;
 
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Accept-Ranges', 'bytes');
 
-      if (browserRange) {
-        // Browser requested a specific range → respond with 206
-        const cl = upstream.headers.get('content-length');
-        if (cl) res.setHeader('Content-Length', cl);
-        if (upstreamCR) res.setHeader('Content-Range', upstreamCR);
-        res.status(206);
-      } else {
-        // Browser requested full file → respond with 200, set full Content-Length
-        if (totalSize) res.setHeader('Content-Length', totalSize);
-        else {
-          const cl = upstream.headers.get('content-length');
-          if (cl) res.setHeader('Content-Length', cl);
-        }
-        res.status(200);
-      }
+      const cl = upstream.headers.get('content-length');
+      if (cl) res.setHeader('Content-Length', cl);
+      const upstreamCR = upstream.headers.get('content-range') || '';
+      if (upstreamCR) res.setHeader('Content-Range', upstreamCR);
+      res.status(206);
 
       if (!upstream.body) return res.end();
       const { Readable } = await import('stream');
