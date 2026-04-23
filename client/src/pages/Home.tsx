@@ -1550,7 +1550,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     description={
                       <div className="mt-4 border border-zinc-700/50 bg-zinc-900/50 rounded-xl px-4 py-4">
                         <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-3">Inhalt dieser Episode....</p>
-                        <p className="text-sm text-zinc-300 leading-relaxed">Audio verfügbar – Inhaltsbeschreibung folgt.</p>
+                        <p className="text-sm text-zinc-300 leading-relaxed">Dieser Text thematisiert die biologische Selbstreinigung des Gehirns sowie die existenzielle Abgrenzung zwischen menschlicher Lebendigkeit und maschineller Funktion. Der Autor erläutert das glymphatische System, welches als „Müllabfuhr" des Kopfes fungiert und maßgeblich durch gezielte Atmung und den Vagusnerv aktiviert wird. Davon ausgehend wird die Warnung ausgesprochen, dass Menschen in einer technisierten Welt zunehmend ihre Fähigkeit zur Empfindung verlieren und zu bloßen Funktionsträgern degradiert werden. Anhand der Metapher der sinkenden Titanic wird dazu aufgerufen, durch bewusste Atemtechniken die eigene Identität und Autoregulation zurückzugewinnen. Verschiedene Archetypen veranschaulichen dabei das Spektrum zwischen natürlicher Beseeltheit und technologischer Verschmelzung. Letztlich dient das Werk als Weckruf, die menschliche Essenz gegenüber dem fortschreitenden Transhumanismus aktiv zu schützen.</p>
                       </div>
                     }
                   />
