@@ -68,11 +68,15 @@ async function startServer() {
         return res.status(200).end();
       }
 
-      // GET: forward Range header; if browser sends none, request full file
-      const rangeHeader = req.headers.range || 'bytes=0-';
-      const upstream = await fetch(url, { headers: { 'Range': rangeHeader } });
+      // GET: if browser sends Range header, forward it; otherwise fetch without Range for a clean 200
+      const hasRange = !!req.headers.range;
+      const fetchHeaders: Record<string, string> = {};
+      if (hasRange) fetchHeaders['Range'] = req.headers.range as string;
 
-      if (!upstream.ok && upstream.status !== 206) {
+      const upstream = await fetch(url, { headers: fetchHeaders });
+
+      // Accept 200 and 206
+      if (upstream.status !== 200 && upstream.status !== 206) {
         return res.status(upstream.status).send('Upstream error');
       }
 
@@ -83,9 +87,10 @@ async function startServer() {
 
       const cl = upstream.headers.get('content-length');
       if (cl) res.setHeader('Content-Length', cl);
-      const cr = upstream.headers.get('content-range');
-      if (cr) {
-        res.setHeader('Content-Range', cr);
+
+      if (upstream.status === 206) {
+        const cr = upstream.headers.get('content-range');
+        if (cr) res.setHeader('Content-Range', cr);
         res.status(206);
       } else {
         res.status(200);
