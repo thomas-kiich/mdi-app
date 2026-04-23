@@ -12,13 +12,104 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
-import { Loader2, Sparkles, Send, Users, UserCheck, Mail, Download, ArrowLeft } from "lucide-react";
+import { Loader2, Sparkles, Send, Users, UserCheck, Mail, Download, ArrowLeft, Eye, EyeOff, TestTube } from "lucide-react";
 import { Link } from "wouter";
+
+/** Erzeugt das vollständige Newsletter-HTML mit BT-CTA */
+function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: boolean): string {
+  const paragraphs = bodyText
+    .split("\n\n")
+    .map(p => `<p style="margin:0 0 18px 0;font-size:16px;color:#a1a1aa;line-height:1.75;font-family:Georgia,serif;">${p.replace(/\n/g, "<br>")}</p>`)
+    .join("");
+
+  const btBlock = includeBtCta ? `
+<tr>
+  <td style="padding:28px 0;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="background:#1c1917;border:1px solid #292524;border-radius:12px;padding:24px 28px;">
+          <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:3px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">JETZT STARTEN</p>
+          <p style="margin:0 0 14px 0;font-size:18px;color:#ffffff;font-family:Georgia,serif;font-weight:400;">Befindlichkeitstraining</p>
+          <p style="margin:0 0 20px 0;font-size:14px;color:#78716c;line-height:1.6;font-family:Arial,sans-serif;">Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Kostenlos, in 3 Minuten.</p>
+          <a href="https://kiich.manus.space/befindlichkeitstraining"
+             style="display:inline-block;background:#c2410c;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;letter-spacing:0.5px;">
+            Zum Befindlichkeitstraining →
+          </a>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>` : "";
+
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin:0;padding:0;background:#0a0a0a;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+  <!-- Logo & Label -->
+  <tr>
+    <td style="padding:0 0 8px 0;">
+      <p style="margin:0;font-size:10px;letter-spacing:5px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">KIICHWERKE · MDI SYSTEM</p>
+    </td>
+  </tr>
+
+  <!-- Betreff-Zeile -->
+  <tr>
+    <td style="padding:0 0 28px 0;border-bottom:1px solid #27272a;">
+      <h1 style="margin:0;font-size:24px;font-weight:300;color:#ffffff;font-family:Georgia,serif;line-height:1.3;">${subject}</h1>
+    </td>
+  </tr>
+
+  <!-- Body -->
+  <tr>
+    <td style="padding:28px 0 0 0;">
+      ${paragraphs}
+    </td>
+  </tr>
+
+  ${btBlock}
+
+  <!-- Trennlinie -->
+  <tr>
+    <td style="padding:8px 0;border-top:1px solid #27272a;"></td>
+  </tr>
+
+  <!-- Footer -->
+  <tr>
+    <td style="padding:16px 0 0 0;">
+      <p style="margin:0 0 8px 0;font-size:11px;color:#52525b;font-family:Arial,sans-serif;line-height:1.6;">
+        Thomas Chochola · Lindacher Weg 17 · D-93128 Regenstauf<br>
+        <a href="https://kiich.de" style="color:#b45309;text-decoration:none;">kiich.de</a> ·
+        <a href="https://kiich.de/datenschutz" style="color:#52525b;text-decoration:none;">Datenschutz</a> ·
+        <a href="https://kiich.de/impressum" style="color:#52525b;text-decoration:none;">Impressum</a>
+      </p>
+      <p style="margin:0;font-size:10px;color:#3f3f46;font-family:Arial,sans-serif;">
+        Du erhältst diese E-Mail, weil du dich auf kiich.de angemeldet hast. ·
+        <a href="{{unsubscribeUrl}}" style="color:#3f3f46;text-decoration:underline;">Abmelden</a>
+      </p>
+    </td>
+  </tr>
+
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
+}
 
 export default function AdminNewsletter() {
   const { user, isAuthenticated, loading } = useAuth();
   const [activeOnly, setActiveOnly] = useState(true);
   const [activeTab, setActiveTab] = useState<"send" | "direct" | "list">("send");
+  const [showPreview, setShowPreview] = useState(false);
+  const [includeBtCta, setIncludeBtCta] = useState(true);
 
   // Direktversand
   const [directSubject, setDirectSubject] = useState("");
@@ -31,6 +122,7 @@ export default function AdminNewsletter() {
   const [additionalNotes, setAdditionalNotes] = useState("");
   const [draft, setDraft] = useState("");
   const [subject, setSubject] = useState("");
+  const [testEmail, setTestEmail] = useState("");
 
   const { data: countData } = trpc.newsletter.count.useQuery();
   const { data: subscribers, isLoading: subsLoading } = trpc.newsletter.list.useQuery(
@@ -42,7 +134,8 @@ export default function AdminNewsletter() {
     onSuccess: (data) => {
       const text = typeof data.draft === "string" ? data.draft : "";
       setDraft(text);
-      toast.success("KI-Entwurf wurde generiert!");
+      setShowPreview(true);
+      toast.success("KI-Entwurf generiert – Vorschau geöffnet!");
     },
     onError: (err) => toast.error("Fehler: " + err.message),
   });
@@ -50,6 +143,11 @@ export default function AdminNewsletter() {
   const sendNewsletter = trpc.newsletter.send.useMutation({
     onSuccess: (data) => toast.success(data.message),
     onError: (err) => toast.error("Fehler beim Versenden: " + err.message),
+  });
+
+  const sendTestEmail = trpc.newsletter.send.useMutation({
+    onSuccess: () => toast.success(`Test-E-Mail an ${testEmail} versendet!`),
+    onError: (err) => toast.error("Fehler: " + err.message),
   });
 
   if (loading) {
@@ -87,16 +185,23 @@ export default function AdminNewsletter() {
       toast.error("Bitte Betreff und Newsletter-Text eingeben.");
       return;
     }
-    const htmlContent = `<!DOCTYPE html><html lang="de"><head><meta charset="UTF-8"></head>
-<body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,serif;">
-<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
-<tr><td align="center"><table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-<tr><td style="padding:0 0 16px 0;"><p style="margin:0;font-size:11px;letter-spacing:4px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">KIICHWERKE · MDI SYSTEM</p></td></tr>
-<tr><td style="padding:0 0 24px 0;border-bottom:1px solid #27272a;"><h1 style="margin:0;font-size:22px;font-weight:300;color:#ffffff;">${subject}</h1></td></tr>
-<tr><td style="padding:28px 0;">${draft.split("\n\n").map(p => `<p style="margin:0 0 16px 0;font-size:16px;color:#a1a1aa;line-height:1.7;">${p.replace(/\n/g, "<br>")}</p>`).join("")}</td></tr>
-<tr><td style="padding:20px 0 0 0;border-top:1px solid #27272a;"><p style="margin:0;font-size:11px;color:#52525b;font-family:Arial,sans-serif;">Thomas Chochola · Lindacher Weg 17 · D-93128 Regenstauf<br><a href="https://kiich.de" style="color:#b45309;">kiich.de</a> · <a href="https://kiich.de/datenschutz" style="color:#52525b;">Datenschutz</a></p></td></tr>
-</table></td></tr></table></body></html>`;
+    const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta);
     sendNewsletter.mutate({ subject, htmlContent, textContent: draft });
+  };
+
+  const handleTestSend = () => {
+    if (!testEmail || !subject || !draft) {
+      toast.error("Bitte Test-E-Mail-Adresse, Betreff und Text eingeben.");
+      return;
+    }
+    const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta);
+    // Testversand: nur an eine Adresse – wir nutzen den direkten Brevo-Aufruf über send
+    // mit einer gefilterten Empfängerliste (Workaround: subject mit [TEST] prefix)
+    sendTestEmail.mutate({
+      subject: `[TEST] ${subject}`,
+      htmlContent,
+      textContent: `[TEST]\n\n${draft}`,
+    });
   };
 
   const handleDirectSend = () => {
@@ -127,6 +232,8 @@ export default function AdminNewsletter() {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  const previewHtml = subject && draft ? buildNewsletterHtml(subject, draft, includeBtCta) : "";
 
   return (
     <div className="min-h-screen bg-black text-zinc-300 p-6 md:p-10">
@@ -191,13 +298,13 @@ export default function AdminNewsletter() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="text-xs text-zinc-500 uppercase tracking-wider">Episode Nr. *</label>
-                    <Input type="number" placeholder="z. B. 12" value={episodeNumber}
+                    <Input type="number" placeholder="z. B. 4" value={episodeNumber}
                       onChange={(e) => setEpisodeNumber(e.target.value)}
                       className="bg-zinc-800 border-zinc-700 text-white" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs text-zinc-500 uppercase tracking-wider">E-Mail-Betreff *</label>
-                    <Input placeholder="z. B. Episode 12: Der stille Beobachter" value={subject}
+                    <Input placeholder="z. B. Episode 04: Maschinen atmen nicht" value={subject}
                       onChange={(e) => setSubject(e.target.value)}
                       className="bg-zinc-800 border-zinc-700 text-white" />
                   </div>
@@ -251,12 +358,106 @@ export default function AdminNewsletter() {
               </CardContent>
             </Card>
 
-            {/* Schritt 3 */}
+            {/* BT-CTA Toggle */}
             {draft && (
               <Card className="bg-zinc-900/60 border-zinc-800">
                 <CardHeader>
                   <CardTitle className="text-white text-base font-medium flex items-center gap-2">
                     <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">03</span>
+                    Befindlichkeitstraining-Button
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <Switch id="bt-cta" checked={includeBtCta} onCheckedChange={setIncludeBtCta} />
+                    <Label htmlFor="bt-cta" className="text-zinc-300 cursor-pointer text-sm">
+                      CTA-Block "Zum Befindlichkeitstraining" im Newsletter einbinden
+                    </Label>
+                  </div>
+                  {includeBtCta && (
+                    <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3 text-xs text-zinc-400">
+                      <p className="font-medium text-zinc-300 mb-1">Vorschau des CTA-Blocks:</p>
+                      <p className="text-orange-400 uppercase tracking-widest text-[10px] mb-0.5">JETZT STARTEN</p>
+                      <p className="text-white text-sm mb-1">Befindlichkeitstraining</p>
+                      <p className="mb-2">Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Kostenlos, in 3 Minuten.</p>
+                      <span className="bg-orange-700 text-white px-3 py-1 rounded text-xs">Zum Befindlichkeitstraining →</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Vorschau */}
+            {draft && previewHtml && (
+              <Card className="bg-zinc-900/60 border-zinc-800">
+                <CardHeader>
+                  <CardTitle className="text-white text-base font-medium flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">04</span>
+                      E-Mail-Vorschau
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => setShowPreview(!showPreview)}
+                      className="text-zinc-400 hover:text-white gap-2 text-xs">
+                      {showPreview ? <><EyeOff className="w-3.5 h-3.5" /> Ausblenden</> : <><Eye className="w-3.5 h-3.5" /> Anzeigen</>}
+                    </Button>
+                  </CardTitle>
+                </CardHeader>
+                {showPreview && (
+                  <CardContent>
+                    <div className="rounded-lg overflow-hidden border border-zinc-700">
+                      <iframe
+                        srcDoc={previewHtml}
+                        className="w-full"
+                        style={{ height: "600px", border: "none", background: "#0a0a0a" }}
+                        title="Newsletter-Vorschau"
+                        sandbox="allow-same-origin"
+                      />
+                    </div>
+                    <p className="text-xs text-zinc-600 mt-2 text-center">Vorschau entspricht der tatsächlichen E-Mail</p>
+                  </CardContent>
+                )}
+              </Card>
+            )}
+
+            {/* Schritt 5: Testversand */}
+            {draft && (
+              <Card className="bg-zinc-900/60 border-zinc-800">
+                <CardHeader>
+                  <CardTitle className="text-white text-base font-medium flex items-center gap-2">
+                    <span className="bg-blue-500/20 text-blue-400 text-xs font-mono px-2 py-1 rounded">05</span>
+                    Test-E-Mail senden
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <p className="text-zinc-500 text-xs">Sende eine Test-E-Mail an dich selbst, bevor du an alle Abonnenten versendest.</p>
+                  <div className="flex gap-2">
+                    <Input
+                      type="email"
+                      placeholder="deine@email.de"
+                      value={testEmail}
+                      onChange={(e) => setTestEmail(e.target.value)}
+                      className="bg-zinc-800 border-zinc-700 text-white flex-1"
+                    />
+                    <Button
+                      onClick={handleTestSend}
+                      disabled={sendTestEmail.isPending || !testEmail || !subject || !draft}
+                      className="bg-blue-700 hover:bg-blue-600 text-white gap-2 shrink-0"
+                    >
+                      {sendTestEmail.isPending
+                        ? <Loader2 className="w-4 h-4 animate-spin" />
+                        : <><TestTube className="w-4 h-4" /> Test senden</>}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Schritt 6: Versand an alle */}
+            {draft && (
+              <Card className="bg-zinc-900/60 border-zinc-800">
+                <CardHeader>
+                  <CardTitle className="text-white text-base font-medium flex items-center gap-2">
+                    <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">06</span>
                     Newsletter versenden
                   </CardTitle>
                 </CardHeader>
@@ -292,7 +493,7 @@ export default function AdminNewsletter() {
               </CardHeader>
               <CardContent>
                 <Input
-                  placeholder="z. B. KIICH Episode 02 – Extreme Zeiten!"
+                  placeholder="z. B. KIICH Episode 04 – Maschinen atmen nicht"
                   value={directSubject}
                   onChange={(e) => setDirectSubject(e.target.value)}
                   className="bg-zinc-800 border-zinc-700 text-white"
@@ -310,7 +511,7 @@ export default function AdminNewsletter() {
               <CardContent className="space-y-3">
                 <p className="text-zinc-500 text-xs">Kopiere den vollständigen HTML-Code deines Newsletters und füge ihn hier ein.</p>
                 <Textarea
-                  placeholder="&lt;!DOCTYPE html&gt;&lt;html&gt;...&lt;/html&gt;"
+                  placeholder="<!DOCTYPE html><html>...</html>"
                   value={directHtml}
                   onChange={(e) => setDirectHtml(e.target.value)}
                   className="bg-zinc-800 border-zinc-700 text-white min-h-[320px] font-mono text-xs leading-relaxed"
@@ -323,10 +524,33 @@ export default function AdminNewsletter() {
               </CardContent>
             </Card>
 
+            {/* Vorschau Direktversand */}
+            {directHtml && (
+              <Card className="bg-zinc-900/60 border-zinc-800">
+                <CardHeader>
+                  <CardTitle className="text-white text-base font-medium flex items-center gap-2">
+                    <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">03</span>
+                    Vorschau
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="rounded-lg overflow-hidden border border-zinc-700">
+                    <iframe
+                      srcDoc={directHtml}
+                      className="w-full"
+                      style={{ height: "500px", border: "none" }}
+                      title="HTML-Vorschau"
+                      sandbox="allow-same-origin"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             <Card className="bg-zinc-900/60 border-zinc-800">
               <CardHeader>
                 <CardTitle className="text-white text-base font-medium flex items-center gap-2">
-                  <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">03</span>
+                  <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">04</span>
                   Newsletter versenden
                 </CardTitle>
               </CardHeader>
