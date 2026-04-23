@@ -68,31 +68,41 @@ async function startServer() {
         return res.status(200).end();
       }
 
-      // GET: if browser sends Range header, forward it; otherwise fetch without Range for a clean 200
-      const hasRange = !!req.headers.range;
-      const fetchHeaders: Record<string, string> = {};
-      if (hasRange) fetchHeaders['Range'] = req.headers.range as string;
+      // GET: always use Range header to avoid streaming the full file at once
+      // If browser sends no Range, we use bytes=0- and respond with 200 (not 206)
+      const browserRange = req.headers.range as string | undefined;
+      const fetchRange = browserRange || 'bytes=0-';
 
-      const upstream = await fetch(url, { headers: fetchHeaders });
+      const upstream = await fetch(url, { headers: { 'Range': fetchRange } });
 
-      // Accept 200 and 206
+      // Accept 200 and 206 from upstream
       if (upstream.status !== 200 && upstream.status !== 206) {
         return res.status(upstream.status).send('Upstream error');
       }
+
+      // Extract total file size from Content-Range header
+      const upstreamCR = upstream.headers.get('content-range') || '';
+      const totalMatch = upstreamCR.match(/\/(\d+)$/);
+      const totalSize = totalMatch ? totalMatch[1] : null;
 
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Accept-Ranges', 'bytes');
 
-      const cl = upstream.headers.get('content-length');
-      if (cl) res.setHeader('Content-Length', cl);
-
-      if (upstream.status === 206) {
-        const cr = upstream.headers.get('content-range');
-        if (cr) res.setHeader('Content-Range', cr);
+      if (browserRange) {
+        // Browser requested a specific range → respond with 206
+        const cl = upstream.headers.get('content-length');
+        if (cl) res.setHeader('Content-Length', cl);
+        if (upstreamCR) res.setHeader('Content-Range', upstreamCR);
         res.status(206);
       } else {
+        // Browser requested full file → respond with 200, set full Content-Length
+        if (totalSize) res.setHeader('Content-Length', totalSize);
+        else {
+          const cl = upstream.headers.get('content-length');
+          if (cl) res.setHeader('Content-Length', cl);
+        }
         res.status(200);
       }
 
