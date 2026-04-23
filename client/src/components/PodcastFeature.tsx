@@ -114,8 +114,13 @@ export function PodcastFeature({
             {/* Embedded Audio Player */}
             {audioUrl && (
               <div className="pt-2">
-                <audio controls className="w-full h-12 rounded-md bg-zinc-900/50">
-                  <source src={audioUrl} type="audio/mpeg" />
+                <audio
+                  controls
+                  src={`/api/audio-proxy?url=${encodeURIComponent(audioUrl)}`}
+                  className="w-full h-12 rounded-md bg-zinc-900/50"
+                  preload="metadata"
+                >
+                  <source src={`/api/audio-proxy?url=${encodeURIComponent(audioUrl)}`} type="audio/mpeg" />
                   Dein Browser unterstützt das Audio-Element nicht.
                 </audio>
               </div>
