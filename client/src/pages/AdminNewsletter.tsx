@@ -79,11 +79,11 @@ function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: bo
     <td style="padding:24px 0 8px 0;">
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
-          <td style="background:#0f172a;border:1px solid #1e3a5f;border-radius:12px;padding:20px 24px;text-align:center;">
-            <p style="margin:0 0 4px 0;font-size:10px;letter-spacing:4px;color:#60a5fa;text-transform:uppercase;font-family:Arial,sans-serif;">JETZT ANHÖREN</p>
+          <td style="background:#1c1917;border:1px solid #292524;border-radius:12px;padding:20px 24px;text-align:center;">
+            <p style="margin:0 0 4px 0;font-size:10px;letter-spacing:4px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">JETZT ANHÖREN</p>
             <p style="margin:0 0 14px 0;font-size:17px;color:#ffffff;font-family:Georgia,serif;font-weight:400;">MASCHINEN ATMEN NICHT – Episode ${episodeNum || '04'}</p>
             <a href="https://kiich.manus.space/episoden"
-               style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;padding:11px 26px;border-radius:8px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;letter-spacing:0.5px;">
+               style="display:inline-block;background:#c2410c;color:#ffffff;text-decoration:none;padding:11px 26px;border-radius:8px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;letter-spacing:0.5px;">
               Episode ${episodeNum || '04'} jetzt hören →
             </a>
           </td>
