@@ -145,7 +145,7 @@ export default function Episoden() {
               description={
                 <div className="mt-4 border border-zinc-700/50 bg-zinc-900/50 rounded-xl px-4 py-4">
                   <p className="text-xs font-bold text-orange-400 uppercase tracking-widest mb-3">Inhalt dieser Episode....</p>
-                  <p className="text-sm text-zinc-300 leading-relaxed">Audio verfügbar – Inhaltsbeschreibung folgt.</p>
+                  <p className="text-sm text-zinc-300 leading-relaxed">Dieser Dialog beleuchtet die menschliche Selbstbestimmung in einer zunehmend durch künstliche Intelligenz geprägten Zukunft. Thomas Chochola beschreibt darin, wie Individuen ihre einzigartige Identität durch die Analyse ihrer eigenen Stimmfrequenzen und biologischen Rhythmen bewahren können. Ein zentraler Aspekt ist die bewusste Atmung, die als regulierendes Werkzeug dient, um die Zusammenarbeit zwischen Kopf-, Herz- und Bauchgehirn zu harmonisieren. Durch das Verständnis dieser inneren Schwingungen soll der Mensch zum Dirigenten seines eigenen Lebens werden, anstatt die Kontrolle an digitale Agenten abzugeben. Der Autor nutzt dabei Vergleiche aus der Technikwelt, um komplexe biologische Vorgänge wie die psychophysiologische Kohärenz verständlich zu machen. Letztlich plädieren die Texte für eine achtsame Präsenz, die den Einzelnen dazu befähigt, Verantwortung für seine Gesundheit und Talente zu übernehmen.</p>
                 </div>
               }
             />
