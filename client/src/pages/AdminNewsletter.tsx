@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -122,26 +122,47 @@ function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: bo
 </html>`;
 }
 
+const NL_STORAGE_KEY = "kiich_nl_draft_v1";
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(NL_STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveDraft(data: Record<string, string | boolean>) {
+  try { localStorage.setItem(NL_STORAGE_KEY, JSON.stringify(data)); } catch {}
+}
+
 export default function AdminNewsletter() {
   const { user, isAuthenticated, loading } = useAuth();
   const [activeOnly, setActiveOnly] = useState(true);
   const [activeTab, setActiveTab] = useState<"send" | "direct" | "list">("send");
   const [showPreview, setShowPreview] = useState(false);
-  const [includeBtCta, setIncludeBtCta] = useState(true);
+
+  // Alle Felder aus localStorage initialisieren
+  const saved = loadDraft();
+  const [includeBtCta, setIncludeBtCta] = useState<boolean>(saved.includeBtCta !== undefined ? Boolean(saved.includeBtCta) : true);
 
   // Direktversand
-  const [directSubject, setDirectSubject] = useState("");
-  const [directHtml, setDirectHtml] = useState("");
+  const [directSubject, setDirectSubject] = useState(saved.directSubject ?? "");
+  const [directHtml, setDirectHtml] = useState(saved.directHtml ?? "");
 
   // Episode-Eingabe
-  const [episodeNumber, setEpisodeNumber] = useState("");
-  const [episodeTitle, setEpisodeTitle] = useState("");
-  const [episodeDescription, setEpisodeDescription] = useState("");
-  const [additionalNotes, setAdditionalNotes] = useState("");
-  const [draft, setDraft] = useState("");
-  const [subject, setSubject] = useState("");
-  const [testEmail, setTestEmail] = useState("");
+  const [episodeNumber, setEpisodeNumber] = useState(saved.episodeNumber ?? "");
+  const [episodeTitle, setEpisodeTitle] = useState(saved.episodeTitle ?? "");
+  const [episodeDescription, setEpisodeDescription] = useState(saved.episodeDescription ?? "");
+  const [additionalNotes, setAdditionalNotes] = useState(saved.additionalNotes ?? "");
+  const [draft, setDraft] = useState(saved.draft ?? "");
+  const [subject, setSubject] = useState(saved.subject ?? "");
+  const [testEmail, setTestEmail] = useState(saved.testEmail ?? "");
   const [confirmSendAll, setConfirmSendAll] = useState(false);
+
+  // Automatisch speichern wenn sich Felder ändern
+  useEffect(() => {
+    saveDraft({ includeBtCta, directSubject, directHtml, episodeNumber, episodeTitle, episodeDescription, additionalNotes, draft, subject, testEmail });
+  }, [includeBtCta, directSubject, directHtml, episodeNumber, episodeTitle, episodeDescription, additionalNotes, draft, subject, testEmail]);
 
   const { data: countData } = trpc.newsletter.count.useQuery();
   const { data: subscribers, isLoading: subsLoading } = trpc.newsletter.list.useQuery(
