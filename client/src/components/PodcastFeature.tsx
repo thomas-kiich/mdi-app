@@ -122,7 +122,7 @@ export function PodcastFeature({
                   style={{ height: '48px' }}
                 >
                   <source
-                    src={`/api/audio-proxy?url=${encodeURIComponent(audioUrl)}&v=3`}
+                    src={`/api/audio-proxy?url=${encodeURIComponent(audioUrl)}&v=4`}
                     type="audio/mpeg"
                   />
                   Dein Browser unterstützt das Audio-Element nicht.

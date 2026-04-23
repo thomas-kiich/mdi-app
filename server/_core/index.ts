@@ -59,7 +59,7 @@ async function startServer() {
 
       res.setHeader('Content-Type', 'audio/mpeg');
       res.setHeader('Access-Control-Allow-Origin', '*');
-      res.setHeader('Cache-Control', 'public, max-age=86400');
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Accept-Ranges', 'bytes');
 
       // Forward content-length and content-range
