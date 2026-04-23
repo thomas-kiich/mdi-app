@@ -16,7 +16,7 @@ import { Loader2, Sparkles, Send, Users, UserCheck, Mail, Download, ArrowLeft, E
 import { Link } from "wouter";
 
 /** Erzeugt das vollständige Newsletter-HTML mit BT-CTA */
-function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: boolean): string {
+function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: boolean, episodeNum?: string): string {
   const paragraphs = bodyText
     .split("\n\n")
     .map(p => `<p style="margin:0 0 18px 0;font-size:16px;color:#a1a1aa;line-height:1.75;font-family:Georgia,serif;">${p.replace(/\n/g, "<br>")}</p>`)
@@ -31,7 +31,7 @@ function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: bo
           <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:3px;color:#b45309;text-transform:uppercase;font-family:Arial,sans-serif;">JETZT STARTEN</p>
           <p style="margin:0 0 14px 0;font-size:18px;color:#ffffff;font-family:Georgia,serif;font-weight:400;">Befindlichkeitstraining</p>
           <p style="margin:0 0 20px 0;font-size:14px;color:#78716c;line-height:1.6;font-family:Arial,sans-serif;">Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Kostenlos, in 3 Minuten.</p>
-          <a href="https://kiich.manus.space/befindlichkeitstraining"
+          <a href="https://kiich.manus.space/befindlichkeit"
              style="display:inline-block;background:#c2410c;color:#ffffff;text-decoration:none;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;letter-spacing:0.5px;">
             Zum Befindlichkeitstraining →
           </a>
@@ -71,6 +71,24 @@ function buildNewsletterHtml(subject: string, bodyText: string, includeBtCta: bo
   <tr>
     <td style="padding:28px 0 0 0;">
       ${paragraphs}
+    </td>
+  </tr>
+
+  <!-- Episode hören Button -->
+  <tr>
+    <td style="padding:24px 0 8px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0">
+        <tr>
+          <td style="background:#0f172a;border:1px solid #1e3a5f;border-radius:12px;padding:20px 24px;text-align:center;">
+            <p style="margin:0 0 4px 0;font-size:10px;letter-spacing:4px;color:#60a5fa;text-transform:uppercase;font-family:Arial,sans-serif;">JETZT ANHÖREN</p>
+            <p style="margin:0 0 14px 0;font-size:17px;color:#ffffff;font-family:Georgia,serif;font-weight:400;">MASCHINEN ATMEN NICHT – Episode ${episodeNum || '04'}</p>
+            <a href="https://kiich.manus.space/episoden"
+               style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;padding:11px 26px;border-radius:8px;font-size:14px;font-weight:600;font-family:Arial,sans-serif;letter-spacing:0.5px;">
+              Episode ${episodeNum || '04'} jetzt hören →
+            </a>
+          </td>
+        </tr>
+      </table>
     </td>
   </tr>
 
@@ -186,7 +204,7 @@ export default function AdminNewsletter() {
       toast.error("Bitte Betreff und Newsletter-Text eingeben.");
       return;
     }
-    const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta);
+    const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta, episodeNumber);
     sendNewsletter.mutate({ subject, htmlContent, textContent: draft });
   };
 
@@ -195,7 +213,7 @@ export default function AdminNewsletter() {
       toast.error("Bitte Test-E-Mail-Adresse, Betreff und Text eingeben.");
       return;
     }
-    const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta);
+    const htmlContent = buildNewsletterHtml(subject, draft, includeBtCta, episodeNumber);
     // Testversand: NUR an die eingegebene E-Mail-Adresse – NICHT an Abonnenten
     sendTestEmail.mutate({
       toEmail: testEmail,
@@ -243,7 +261,7 @@ export default function AdminNewsletter() {
     URL.revokeObjectURL(url);
   };
 
-  const previewHtml = subject && draft ? buildNewsletterHtml(subject, draft, includeBtCta) : "";
+  const previewHtml = subject && draft ? buildNewsletterHtml(subject, draft, includeBtCta, episodeNumber) : "";
 
   return (
     <div className="min-h-screen bg-black text-zinc-300 p-6 md:p-10">
