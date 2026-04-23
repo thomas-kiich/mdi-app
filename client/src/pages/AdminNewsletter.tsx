@@ -69,7 +69,7 @@ function buildNewsletterHtml(
             <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:3px;color:#d97706;text-transform:uppercase;font-family:Arial,sans-serif;">EXKLUSIV FÜR ABONNENTEN</p>
             <p style="margin:0 0 14px 0;font-size:20px;color:#ffffff;font-family:Arial,sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${btExclusiveTitle || 'BEFINDLICHKEITSTRAINING'}</p>
             <p style="margin:0 0 20px 0;font-size:15px;color:#a8a29e;line-height:1.7;font-family:Arial,sans-serif;">${btExclusiveDesc || 'Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Direkt in der KIICH-App verfügbar.'}</p>
-            <a href="https://kiich.manus.space/befindlichkeit"
+            <a href="https://kiich.manus.space/befindlichkeit" target="_blank"
                style="display:inline-block;background:#d97706;color:#000000;text-decoration:none;padding:13px 28px;border-radius:4px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;">
               JETZT IN DER APP ÖFFNEN →
             </a>
@@ -171,7 +171,7 @@ function buildNewsletterHtml(
   <!-- Großer CTA-Button -->
   <tr>
     <td style="padding:0 0 40px 0;text-align:center;">
-      <a href="https://kiich.manus.space/episoden"
+      <a href="https://kiich.manus.space/episoden" target="_blank"
          style="display:inline-block;background:#d97706;color:#000000;text-decoration:none;padding:16px 40px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;letter-spacing:3px;text-transform:uppercase;border-radius:2px;">
         JETZT EPISODE ${ep} HÖREN →
       </a>
@@ -191,11 +191,11 @@ function buildNewsletterHtml(
         </tr>
         <tr>
           <td style="text-align:center;padding:0 0 12px 0;">
-            <a href="https://kiich.de" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Website</a>
+            <a href="https://kiich.de" target="_blank" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Website</a>
             <span style="color:#52525b;font-size:12px;font-family:Arial,sans-serif;"> &nbsp;|&nbsp; </span>
-            <a href="https://kiich.de/impressum" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Impressum</a>
+            <a href="https://kiich.de/impressum" target="_blank" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Impressum</a>
             <span style="color:#52525b;font-size:12px;font-family:Arial,sans-serif;"> &nbsp;|&nbsp; </span>
-            <a href="https://kiich.de/datenschutz" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Datenschutz</a>
+            <a href="https://kiich.de/datenschutz" target="_blank" style="color:#d97706;text-decoration:none;font-size:12px;font-family:Arial,sans-serif;">Datenschutz</a>
           </td>
         </tr>
         <tr>
@@ -611,7 +611,7 @@ export default function AdminNewsletter() {
                         className="w-full"
                         style={{ height: "600px", border: "none", background: "#0a0a0a" }}
                         title="Newsletter-Vorschau"
-                        sandbox="allow-same-origin"
+                        sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
                       />
                     </div>
                     <p className="text-xs text-zinc-600 mt-2 text-center">Vorschau entspricht der tatsächlichen E-Mail</p>
