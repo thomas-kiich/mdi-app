@@ -121,8 +121,10 @@ export function PodcastFeature({
                   className="w-full rounded-md bg-zinc-900/50"
                   style={{ height: '48px' }}
                 >
+                  {/* CDN direkt – kein Proxy, da Live-Server bei GET ohne Range-Header 500 liefert.
+                      CDN hat access-control-allow-origin: * → kein CORS-Problem. */}
                   <source
-                    src={`/api/audio-proxy?url=${encodeURIComponent(audioUrl)}&v=8`}
+                    src={`${audioUrl}?v=8`}
                     type="audio/mpeg"
                   />
                   Dein Browser unterstützt das Audio-Element nicht.
