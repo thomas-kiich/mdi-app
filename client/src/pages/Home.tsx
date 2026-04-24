@@ -111,6 +111,13 @@ function AdminStatsDashboard() {
         <div className="flex items-center gap-2 mb-6">
           <Activity className="w-5 h-5 text-orange-400" />
           <h2 className="text-orange-400 font-bold uppercase tracking-widest text-sm font-mono">Admin · Plattform-Statistiken</h2>
+          <div className="ml-auto">
+            <Link href="/admin/benutzer">
+              <button className="text-xs text-orange-400 border border-orange-500/40 hover:border-orange-400 hover:bg-orange-500/10 rounded px-3 py-1.5 transition-colors font-mono uppercase tracking-wider">
+                Benutzerverwaltung →
+              </button>
+            </Link>
+          </div>
         </div>
 
         {isLoading ? (
