@@ -167,3 +167,80 @@ export async function sendeWillkommensEmail(user: {
     textContent: `Willkommen bei KIICH, ${vorname}!\n\nDu bist jetzt Teil von KIICH – einem System, das dir hilft, deine Identität im KI-Zeitalter zu verstehen, zu stärken und zu gestalten.\n\nDein erster Schritt: https://www.kiich.de/episoden\n\nKIICH – Dein Identitätssystem für das KI-Zeitalter`,
   });
 }
+
+/**
+ * Admin-Benachrichtigung bei neuer Registrierung
+ * Sendet eine E-Mail an den KIICH-Admin wenn sich ein neuer User registriert.
+ */
+export async function sendeAdminRegistrierungsbenachrichtigung(user: {
+  name: string | null;
+  email: string | null;
+  loginMethod: string | null;
+}): Promise<boolean> {
+  const ADMIN_EMAIL = "lkrforschung@gmail.com";
+  const name = user.name ?? "Unbekannt";
+  const email = user.email ?? "keine E-Mail";
+  const methode = user.loginMethod ?? "unbekannt";
+  const zeitpunkt = new Date().toLocaleString("de-AT", { timeZone: "Europe/Vienna" });
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8" /><title>Neue KIICH-Registrierung</title></head>
+<body style="margin:0;padding:0;background-color:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a10;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+          <tr>
+            <td align="center" style="padding-bottom:24px;">
+              <p style="font-size:26px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">
+                K<span style="color:#e85d04;">II</span>CH
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:32px;">
+              <p style="font-size:20px;font-weight:700;color:#e85d04;margin:0 0 20px 0;">🎉 Neue Registrierung</p>
+              <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #1e1e2e;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Name</span><br/>
+                    <span style="font-size:16px;color:#fff;font-weight:600;">${name}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #1e1e2e;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">E-Mail</span><br/>
+                    <span style="font-size:16px;color:#fff;">${email}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #1e1e2e;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Login via</span><br/>
+                    <span style="font-size:16px;color:#fff;">${methode}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Zeitpunkt</span><br/>
+                    <span style="font-size:16px;color:#fff;">${zeitpunkt}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`.trim();
+
+  return sendEmail({
+    to: [{ name: "Thomas Chochola", email: ADMIN_EMAIL }],
+    subject: `🎉 Neue KIICH-Registrierung: ${name}`,
+    htmlContent,
+    textContent: `Neue KIICH-Registrierung:\nName: ${name}\nE-Mail: ${email}\nLogin via: ${methode}\nZeitpunkt: ${zeitpunkt}`,
+  });
+}

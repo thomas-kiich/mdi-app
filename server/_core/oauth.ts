@@ -4,7 +4,7 @@ import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 import { notifyOwner } from "./notification";
-import { sendeWillkommensEmail } from "./email";
+import { sendeWillkommensEmail, sendeAdminRegistrierungsbenachrichtigung } from "./email";
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
@@ -71,6 +71,12 @@ export function registerOAuthRoutes(app: Express) {
           content: `${neuerName} hat sich soeben bei KIICH registriert (via ${loginMethodText}).`,
         }).catch(err => console.warn("[Notify] Fehler bei Neuregistrierungs-Benachrichtigung:", err));
         console.log(`[OAuth] Neue Registrierung: ${neuerName} (${userInfo.openId})`);
+        // Admin-Benachrichtigung per E-Mail (zuverlässiger Fallback zur Manus-Notification)
+        sendeAdminRegistrierungsbenachrichtigung({
+          name: userInfo.name ?? null,
+          email: userInfo.email ?? null,
+          loginMethod: loginMethodText,
+        }).catch(err => console.warn("[Email] Fehler bei Admin-Benachrichtigung:", err));
         // Willkommens-E-Mail senden (nur wenn E-Mail-Adresse vorhanden)
         if (userInfo.email) {
           sendeWillkommensEmail({
