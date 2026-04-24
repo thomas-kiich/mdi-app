@@ -97,7 +97,7 @@ function buildNewsletterHtml(
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="vertical-align:middle;">
-            <span style="font-size:26px;font-weight:900;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-1px;">K<span style="color:#dc2626;">II</span>CH</span>
+            <span style="font-size:26px;font-weight:900;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-1px;">K<span style="color:#d97706;">II</span>CH</span>
           </td>
           <td style="text-align:right;vertical-align:middle;">
             <span style="display:inline-block;background:#d97706;color:#000000;font-size:11px;font-weight:700;font-family:Arial,sans-serif;letter-spacing:2px;padding:5px 12px;text-transform:uppercase;">EPISODE ${ep}</span>
@@ -110,7 +110,7 @@ function buildNewsletterHtml(
   <!-- Meta-Zeile -->
   <tr>
     <td style="padding:16px 0 20px 0;">
-      <p style="margin:0;font-size:11px;letter-spacing:3px;color:#71717a;text-transform:uppercase;font-family:Arial,sans-serif;">${year} &nbsp;·&nbsp; MASCHINEN ATMEN NICHT &nbsp;·&nbsp; ${weekday}, ${dateStr}</p>
+      <p style="margin:0;font-size:11px;letter-spacing:3px;color:#d97706;text-transform:uppercase;font-family:Arial,sans-serif;">${year} &nbsp;·&nbsp; MASCHINEN ATMEN NICHT &nbsp;·&nbsp; ${weekday}, ${dateStr}</p>
     </td>
   </tr>
 
@@ -185,7 +185,7 @@ function buildNewsletterHtml(
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="text-align:center;padding:0 0 16px 0;">
-            <span style="font-size:22px;font-weight:900;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-1px;">K<span style="color:#dc2626;">II</span>CH</span><br>
+            <span style="font-size:22px;font-weight:900;color:#ffffff;font-family:Arial,sans-serif;letter-spacing:-1px;">K<span style="color:#d97706;">II</span>CH</span><br>
             <span style="font-size:11px;color:#52525b;font-family:Arial,sans-serif;letter-spacing:2px;">2 minds ∿ 1 source</span>
           </td>
         </tr>
