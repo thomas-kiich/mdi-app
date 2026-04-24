@@ -258,7 +258,9 @@ Antworte NUR mit dem Newsletter-Text, ohne Erklärungen oder Metakommentare.`;
   sendTest: protectedProcedure
     .input(
       z.object({
-        toEmail: z.string().email(),
+        // toEmail wird aus Sicherheitsgründen IGNORIERT – die Test-E-Mail geht
+        // immer nur an die E-Mail-Adresse des eingeloggten Admins (ctx.user.email).
+        toEmail: z.string().email().optional(),
         subject: z.string().min(1),
         htmlContent: z.string().min(1),
         textContent: z.string().min(1),
@@ -268,9 +270,14 @@ Antworte NUR mit dem Newsletter-Text, ohne Erklärungen oder Metakommentare.`;
       if (ctx.user.role !== "admin") {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
+      // Sicherheit: Immer nur an die E-Mail des eingeloggten Admins senden
+      const adminEmail = ctx.user.email;
+      if (!adminEmail) {
+        throw new TRPCError({ code: "BAD_REQUEST", message: "Keine E-Mail-Adresse für den Admin hinterlegt." });
+      }
       const { sendEmail } = await import("../brevo");
       const success = await sendEmail({
-        to: [{ email: input.toEmail }],
+        to: [{ email: adminEmail }],
         subject: `[TEST] ${input.subject}`,
         htmlContent: input.htmlContent,
         textContent: input.textContent,
@@ -278,7 +285,7 @@ Antworte NUR mit dem Newsletter-Text, ohne Erklärungen oder Metakommentare.`;
       if (!success) {
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Test-E-Mail konnte nicht gesendet werden." });
       }
-      return { message: `Test-E-Mail an ${input.toEmail} gesendet.` };
+      return { message: `Test-E-Mail an ${adminEmail} gesendet.` };
     }),
 
   /**

@@ -236,10 +236,11 @@ export default function AdminNewsletter() {
   const { user, isAuthenticated, loading } = useAuth();
   const [activeOnly, setActiveOnly] = useState(true);
   const [activeTab, setActiveTab] = useState<"send" | "direct" | "list">("send");
-  const [showPreview, setShowPreview] = useState(false);
 
   // Alle Felder aus localStorage initialisieren
   const saved = loadDraft();
+  // Vorschau direkt anzeigen wenn ein gespeicherter Entwurf vorhanden ist
+  const [showPreview, setShowPreview] = useState(() => !!(saved.draft && saved.subject));
   const [includeBtCta, setIncludeBtCta] = useState<boolean>(saved.includeBtCta !== undefined ? Boolean(saved.includeBtCta) : true);
 
   // Direktversand
@@ -345,14 +346,13 @@ export default function AdminNewsletter() {
   };
 
   const handleTestSend = () => {
-    if (!testEmail || !subject || !draft) {
-      toast.error("Bitte Test-E-Mail-Adresse, Betreff und Text eingeben.");
+    if (!subject || !draft) {
+      toast.error("Bitte Betreff und Text eingeben.");
       return;
     }
     const htmlContent = buildHtml();
-    // Testversand: NUR an die eingegebene E-Mail-Adresse – NICHT an Abonnenten
+    // Testversand: Server sendet IMMER nur an ctx.user.email (Admin) – toEmail wird ignoriert
     sendTestEmail.mutate({
-      toEmail: testEmail,
       subject,
       htmlContent,
       textContent: draft,
@@ -630,18 +630,15 @@ export default function AdminNewsletter() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <p className="text-zinc-500 text-xs">Sende eine Test-E-Mail an dich selbst, bevor du an alle Abonnenten versendest.</p>
-                  <div className="flex gap-2">
-                    <Input
-                      type="email"
-                      placeholder="deine@email.de"
-                      value={testEmail}
-                      onChange={(e) => setTestEmail(e.target.value)}
-                      className="bg-zinc-800 border-zinc-700 text-white flex-1"
-                    />
+                  <div className="bg-zinc-800/60 border border-zinc-700 rounded-lg px-4 py-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-zinc-500 uppercase tracking-wider mb-0.5">Empfänger (fest)</p>
+                      <p className="text-white text-sm font-mono">{user?.email ?? "Admin-E-Mail"}</p>
+                      <p className="text-zinc-600 text-xs mt-0.5">Test-E-Mails gehen immer nur an dich – nie an Abonnenten.</p>
+                    </div>
                     <Button
                       onClick={handleTestSend}
-                      disabled={sendTestEmail.isPending || !testEmail || !subject || !draft}
+                      disabled={sendTestEmail.isPending || !subject || !draft}
                       className="bg-blue-700 hover:bg-blue-600 text-white gap-2 shrink-0"
                     >
                       {sendTestEmail.isPending
