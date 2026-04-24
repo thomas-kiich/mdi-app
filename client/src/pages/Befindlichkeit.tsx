@@ -47,13 +47,13 @@ export default function Befindlichkeit() {
         <div className="text-5xl">🌈</div>
         <h1 className="text-2xl font-bold tracking-widest uppercase">Befindlichkeitstraining</h1>
         <p className="text-zinc-400 max-w-sm text-sm leading-relaxed">
-          Dieses Training ist für registrierte Nutzer. Bitte melde dich an, um Zugang zu erhalten.
+          Dieses Training steht dir als registrierter Nutzer kostenfrei zur Verfügung.
         </p>
         <a
           href={getLoginUrl()}
           className="flex items-center gap-2 bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-colors"
         >
-          Einloggen
+          Einloggen →
         </a>
         <Link href="/" className="text-zinc-600 hover:text-zinc-400 text-xs transition-colors">
           ← Zurück zur Startseite
