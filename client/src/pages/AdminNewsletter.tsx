@@ -41,7 +41,7 @@ function buildNewsletterHtml(
   const bodyParas = allParas.slice(1);
 
   const bodyHtml = bodyParas
-    .map(p => `<tr><td style="padding:0 0 20px 0;"><p style="margin:0;font-size:16px;color:#d4d4d8;line-height:1.8;font-family:Georgia,serif;">${p.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p></td></tr>`)
+    .map(p => `<tr><td style="padding:0 0 20px 0;"><p style="margin:0;font-size:16px;color:#d4d4d8;line-height:1.8;font-family:Arial,sans-serif;">${p.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p></td></tr>`)
     .join('');
 
   const quoteBlock = episodeQuote ? `
@@ -51,7 +51,7 @@ function buildNewsletterHtml(
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="border-left:4px solid #d97706;padding:16px 20px;background:#111111;">
-            <p style="margin:0 0 10px 0;font-size:17px;color:#f5f5f4;font-family:Georgia,serif;font-style:italic;line-height:1.6;">&bdquo;${episodeQuote}&ldquo;</p>
+            <p style="margin:0 0 10px 0;font-size:17px;color:#f5f5f4;font-family:Arial,sans-serif;font-style:italic;line-height:1.6;">&bdquo;${episodeQuote}&ldquo;</p>
             <p style="margin:0;font-size:11px;letter-spacing:3px;color:#78716c;text-transform:uppercase;font-family:Arial,sans-serif;">— THOMAS CHOCHOLA. EPISODE ${ep}</p>
           </td>
         </tr>
@@ -124,7 +124,7 @@ function buildNewsletterHtml(
   <!-- Teaser -->
   <tr>
     <td style="padding:0 0 24px 0;">
-      <p style="margin:0;font-size:16px;color:#a1a1aa;line-height:1.7;font-family:Georgia,serif;">${teaserPara.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p>
+      <p style="margin:0;font-size:16px;color:#a1a1aa;line-height:1.7;font-family:Arial,sans-serif;">${teaserPara.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</p>
     </td>
   </tr>
 
