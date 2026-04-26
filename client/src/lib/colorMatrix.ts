@@ -45,10 +45,10 @@ export const colorMatrix: Record<number, Record<number, string>> = {
     100: "#2883ed",
   },
   7: {
-    25: "#c1e6ec",
-    50: "#81cbd9",
-    75: "#3fb0c4",
-    100: "#0599b3",
+    25: "#c2e9e7",
+    50: "#82d3d0",
+    75: "#3fc4bc",
+    100: "#00B5AD",
   },
   8: {
     25: "#c4eeea",
