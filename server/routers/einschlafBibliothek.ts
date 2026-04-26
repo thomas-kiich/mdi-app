@@ -104,7 +104,7 @@ export const einschlafBibliothekRouter = router({
         systemPrompt = `Du bist MA, eine einfühlsame Erzählerin, die Kinder und Jugendliche mit liebevollen Gutenacht-Märchen begleitet. 
 Deine Geschichten sind warm, bildreich und sanft – sie laden ein einzuschlafen, nicht aufzuwachen.
 Schreibe ein Einschlaf-Märchen ${altersgruppeText}.
-Das Märchen soll 3–5 Minuten Lesezeit haben (ca. 400–600 Wörter).
+Das Märchen soll GENAU 450–550 Wörter lang sein – nicht kürzer, nicht länger. Schließe die Geschichte mit einem vollständigen, ruhigen Schlusssatz ab.
 Beginne direkt mit dem Märchen, ohne Einleitung.
 Gib am Anfang einen poetischen Titel in einer eigenen Zeile aus (Format: "Titel: [Titel]"), dann eine Leerzeile, dann den Text.`;
 
@@ -119,7 +119,7 @@ Schreibe jetzt das Einschlaf-Märchen.`;
 Du erzählst Erwachsenen eine Heldenreise als Einschlaf-Metapher – der Held ist der Zuhörer selbst.
 Die Herausforderung des Alltags wird zur Aufgabe des Helden, und die Lösung liegt im Inneren.
 Schreibe eine traumhafte, bildreiche Abenteuer-Metapher für Erwachsene.
-Die Geschichte soll 4–6 Minuten Lesezeit haben (ca. 500–700 Wörter).
+Die Geschichte soll GENAU 550–650 Wörter lang sein – nicht kürzer, nicht länger. Schließe die Geschichte mit einem vollständigen, ruhigen Schlusssatz ab.
 Verwende die zweite Person ("du"), damit der Zuhörer sich direkt angesprochen fühlt.
 Beginne direkt mit der Geschichte, ohne Einleitung.
 Gib am Anfang einen poetischen Titel in einer eigenen Zeile aus (Format: "Titel: [Titel]"), dann eine Leerzeile, dann den Text.`;
@@ -136,7 +136,7 @@ Schreibe jetzt die Abenteuer-Metapher.`;
 Du sprichst Menschen direkt an, die mit einer bestimmten Befindlichkeit ins Bett gehen.
 Deine Einschlaf-Metaphern sind keine Ratschläge – sie sind poetische Bilder, die das Gefühl sanft auflösen.
 Schreibe eine Einschlaf-Metapher für Erwachsene zu einer konkreten Befindlichkeit.
-Die Metapher soll 3–5 Minuten Lesezeit haben (ca. 350–500 Wörter).
+Die Metapher soll GENAU 400–500 Wörter lang sein – nicht kürzer, nicht länger. Schließe die Metapher mit einem vollständigen, ruhigen Schlusssatz ab.
 Verwende die zweite Person ("du"), sanfte Bilder aus der Natur oder dem Traum.
 Beginne direkt mit der Metapher, ohne Einleitung.
 Gib am Anfang einen poetischen Titel in einer eigenen Zeile aus (Format: "Titel: [Titel]"), dann eine Leerzeile, dann den Text.`;
@@ -162,13 +162,38 @@ Schreibe jetzt die Einschlaf-Metapher.`;
         throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "KI-Generierung fehlgeschlagen" });
       }
 
-      // Titel extrahieren
+      // Wiederholungs-Check: prüft ob der letzte Satz im restlichen Text bereits vorkommt
+      const pruefeWiederholung = (text: string): boolean => {
+        const saetze = text.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 20);
+        if (saetze.length < 4) return false;
+        const letzterSatz = saetze[saetze.length - 1].trim().toLowerCase();
+        const restText = saetze.slice(0, -1).join(" ").toLowerCase();
+        return restText.includes(letzterSatz.substring(0, Math.min(40, letzterSatz.length)));
+      };
+
+      // Bei Wiederholung: zweiter Versuch mit explizitem Hinweis
+      let endgueltigerText = rawText;
+      if (pruefeWiederholung(rawText)) {
+        console.warn("[EinschlafBibliothek] Wiederholung erkannt, zweiter LLM-Versuch");
+        const retryResponse = await invokeLLM({
+          messages: [
+            { role: "system", content: systemPrompt + "\n\nWICHTIG: Schreibe jeden Satz nur EINMAL. Keine Wiederholungen. Jeder Satz muss einzigartig sein." },
+            { role: "user", content: userPrompt },
+          ],
+        });
+        const retryContent = retryResponse.choices?.[0]?.message?.content ?? "";
+        if (typeof retryContent === "string" && retryContent.trim()) {
+          endgueltigerText = retryContent;
+        }
+      }
+
+      // Titel extrahieren (aus endgueltigerText nach Wiederholungs-Check)
       let titel = input.thema;
-      let text = rawText.trim();
-      const titelMatch = rawText.match(/^Titel:\s*(.+)/m);
+      let text = endgueltigerText.trim();
+      const titelMatch = endgueltigerText.match(/^Titel:\s*(.+)/m);
       if (titelMatch) {
         titel = titelMatch[1].trim();
-        text = rawText.replace(/^Titel:\s*.+\n?/m, "").trim();
+        text = endgueltigerText.replace(/^Titel:\s*.+\n?/m, "").trim();
       }
 
       // In DB speichern

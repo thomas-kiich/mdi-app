@@ -1154,3 +1154,13 @@
 - [ ] Admin-UI zum Hinzufügen/Bearbeiten von Episoden (inkl. Audio-Upload)
 - [x] Frontend auf DB-Daten umstellen (Episoden.tsx + Home.tsx)
 - [x] Bestehende 4 Episoden in DB migrieren
+
+## Einschlafbibliothek Qualitätssicherung (April 2026)
+- [x] Bug-Fix: Satzzeichen-Bug in fuegeSprechpausenEin behoben
+- [x] Bug-Fix: Text-Limit auf 12000 Zeichen erhöht
+- [x] Bug-Fix: Gemini thinking budget_tokens auf 0 gesetzt
+- [x] Längen-Constraint in alle 3 LLM-Prompts eingebaut (MÄRCHEN 450-550, ABENTEUER 550-650, BEFINDLICHKEIT 400-500 Wörter)
+- [x] Wiederholungs-Check im Backend: automatischer zweiter LLM-Versuch bei erkannter Wiederholung
+- [x] schlafMetapher-Prompt mit Wiederholungs-Verbot versehen
+- [x] Unit-Tests für Wiederholungs-Check und Titel-Extraktion (10 Tests, alle grün)
+- [ ] 12 Lichtklang-Archetyp-Geschichten erstellen und in App integrieren

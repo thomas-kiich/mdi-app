@@ -453,7 +453,8 @@ Die Botschaft soll:
 - Die Kernthemen des Tages als Bilder und Symbole aufgreifen (z.B. Wasser, Licht, Atem, Wald, Stille)
 - Dem Geist erlauben loszulassen – keine offenen Fragen, keine Aufgaben, nur Ankommen
 - Mit einer sanften Einladung in den Schlaf enden
-- Genau 4–5 Sätze lang sein
+- GENAU 4–5 vollständige Sätze lang sein – nicht mehr, nicht weniger
+- Jeden Satz nur EINMAL schreiben – keine Wiederholungen
 - Auf Deutsch
 - Wie ein Gutenacht-Gedicht klingen, nicht wie eine Analyse
 
