@@ -13,16 +13,13 @@ const MAX_TEXT_LENGTH = 12000; // Erhöht für vollständige Einschlaf-Geschicht
 const TIMEOUT_MS = 180_000; // 3 Minuten für lange Texte
 
 /**
- * Fügt nach Satzenden eine meditativ Pause ein.
- * Technik: Satzzeichen bleibt erhalten, danach wird ein kurzes Pause-Signal
- * als Komma + Leerzeichen eingefügt — Voxtral pausiert bei Komma natürlich.
- * Das originale Satzzeichen bleibt, damit kuerzeText() korrekt schneiden kann.
+ * Text unverändert durchleiten – keine künstlichen Kommas einfügen.
+ * Voxtral pausiert natürlich bei Punkten, Absätzen und Zeilenumbrüchen.
+ * Thomas' Satzstruktur erzeugt die richtigen Pausen von selbst.
+ * Erlaubte Pause-Methoden im Text: Punkt+Absatz, Gedankenstrich, Auslassungspunkte (...)
  */
 function fuegeSprechpausenEin(text: string): string {
-  // Satzende (. ! ?) gefolgt von Leerzeichen + Großbuchstabe:
-  // Satzzeichen BEHALTEN, danach kurze Pause als zusätzliches Komma einfügen
-  return text
-    .replace(/([.!?])(\s+)([A-ZÄÖÜ\u00C0-\u00DC])/g, '$1, $3');
+  return text;
 }
 
 /**
