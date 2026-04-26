@@ -589,7 +589,7 @@ Wichtig: Beginne DIREKT mit der Botschaft. Kein Einleitungssatz.`,
    */
   vorlesen: protectedProcedure
     .input(z.object({
-      text: z.string().min(1).max(4500),
+      text: z.string().min(1).max(12000),
     }))
     .mutation(async ({ input, ctx }) => {
       console.log(`[VoxtralTTS/vorlesen] User ${ctx.user.id}, ${input.text.length} Zeichen`);
@@ -714,7 +714,7 @@ Regeln:
 
   elevenLabsTTS: protectedProcedure
     .input(z.object({
-      text: z.string().min(1).max(4500),
+      text: z.string().min(1).max(12000),
       voiceId: z.string().optional(),
     }))
     .mutation(async ({ input, ctx }) => {

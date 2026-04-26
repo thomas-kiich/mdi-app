@@ -9,40 +9,46 @@ import { ENV } from "./env";
 const VOXTRAL_API_URL = "https://api.mistral.ai/v1/audio/speech";
 const VOXTRAL_MODEL = "voxtral-mini-tts-latest";
 const MA_VOICE_ID = "89bc29eb-c96b-44bd-8a0b-712d89ede7e0";
-const MAX_TEXT_LENGTH = 8000; // Erhöht für vollständige Einschlaf-Geschichten (vorher: 2500)
+const MAX_TEXT_LENGTH = 12000; // Erhöht für vollständige Einschlaf-Geschichten (vorher: 8000)
 const TIMEOUT_MS = 180_000; // 3 Minuten für lange Texte
 
 /**
  * Fügt nach Satzenden eine meditativ Pause ein.
- * Technik: Punkt/Ausrufe/Fragezeichen wird durch Komma ersetzt —
- * Voxtral macht bei Komma eine natürliche Atempause (wie bei Beistrichen
- * innerhalb der Sätze, die bereits gut funktionieren).
- * Das Satzzeichen wird durch ein Komma ersetzt, damit kein Sonderzeichen
- * vorgelesen wird.
+ * Technik: Satzzeichen bleibt erhalten, danach wird ein kurzes Pause-Signal
+ * als Komma + Leerzeichen eingefügt — Voxtral pausiert bei Komma natürlich.
+ * Das originale Satzzeichen bleibt, damit kuerzeText() korrekt schneiden kann.
  */
 function fuegeSprechpausenEin(text: string): string {
   // Satzende (. ! ?) gefolgt von Leerzeichen + Großbuchstabe:
-  // Satzzeichen durch Komma ersetzen — Voxtral pausiert bei Komma natürlich
+  // Satzzeichen BEHALTEN, danach kurze Pause als zusätzliches Komma einfügen
   return text
-    .replace(/([.!?])(\s+)([A-ZÄÖÜ\u00C0-\u00DC])/g, ', $3');
+    .replace(/([.!?])(\s+)([A-ZÄÖÜ\u00C0-\u00DC])/g, '$1, $3');
 }
 
 /**
  * Kürzt Text auf maximal MAX_TEXT_LENGTH Zeichen,
- * schneidet am letzten Satzende ab.
+ * schneidet am letzten vollständigen Satz ab.
  */
 function kuerzeText(text: string): string {
   if (text.length <= MAX_TEXT_LENGTH) return text;
   const gekuerzt = text.slice(0, MAX_TEXT_LENGTH);
+  // Letztes vollständiges Satzende finden (Punkt/Ausrufe/Fragezeichen)
   const letzterSatz = Math.max(
     gekuerzt.lastIndexOf(". "),
     gekuerzt.lastIndexOf("! "),
     gekuerzt.lastIndexOf("? "),
     gekuerzt.lastIndexOf(".\n"),
+    gekuerzt.lastIndexOf("!\n"),
+    gekuerzt.lastIndexOf("?\n"),
   );
-  return letzterSatz > MAX_TEXT_LENGTH * 0.7
-    ? gekuerzt.slice(0, letzterSatz + 1)
-    : gekuerzt;
+  if (letzterSatz > MAX_TEXT_LENGTH * 0.5) {
+    return gekuerzt.slice(0, letzterSatz + 1).trim();
+  }
+  // Fallback: am letzten Zeilenumbruch kürzen
+  const letzterZeilenumbruch = gekuerzt.lastIndexOf("\n");
+  return letzterZeilenumbruch > MAX_TEXT_LENGTH * 0.5
+    ? gekuerzt.slice(0, letzterZeilenumbruch).trim()
+    : gekuerzt.trim();
 }
 
 export interface VoxtralTtsOptions {
