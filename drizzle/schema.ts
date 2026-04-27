@@ -656,7 +656,26 @@ export const trainingFreigaben = mysqlTable('training_freigaben', {
   createdAt: timestamp('createdAt').defaultNow().notNull(),
 });
 export type TrainingFreigabe = typeof trainingFreigaben.$inferSelect;
-export type InsertTrainingFreigabe = typeof trainingFreigaben.$inferInsert;
+export type InsertTrainingFreigabe = typeof trainingFreigaben.$inferSelect;
+
+/**
+ * USER TRAINING FREIGABEN – Nutzer-spezifische Trainingsfreigaben
+ * Überschreiben die globalen Freigaben für einzelne Nutzer.
+ * enabled=true: Modul für diesen Nutzer freigeschaltet (auch wenn global gesperrt)
+ * enabled=false: Modul für diesen Nutzer gesperrt (auch wenn global freigeschaltet)
+ */
+export const userTrainingFreigaben = mysqlTable('user_training_freigaben', {
+  id: int('id').autoincrement().primaryKey(),
+  userId: int('userId').notNull(),
+  categoryId: varchar('categoryId', { length: 50 }).notNull(),
+  itemId: varchar('itemId', { length: 50 }),
+  enabled: boolean('enabled').notNull().default(true),
+  label: varchar('label', { length: 100 }),
+  updatedAt: timestamp('updatedAt').defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+});
+export type UserTrainingFreigabe = typeof userTrainingFreigaben.$inferSelect;
+export type InsertUserTrainingFreigabe = typeof userTrainingFreigaben.$inferInsert;
 
 
 /**

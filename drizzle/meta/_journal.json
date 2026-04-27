@@ -176,6 +176,13 @@
       "when": 1776955359153,
       "tag": "0024_dark_aqueduct",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1777279605279,
+      "tag": "0025_free_the_hunter",
+      "breakpoints": true
     }
   ]
 }
