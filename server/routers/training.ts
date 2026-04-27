@@ -3,7 +3,7 @@ import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
 import { trainingFreigaben, userTrainingFreigaben } from "../../drizzle/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 // Alle bekannten Kategorien und Items
 const ALLE_KATEGORIEN = ["befindlichkeit", "breathing", "voice", "movement", "ambient"] as const;
@@ -213,7 +213,7 @@ export const trainingRouter = router({
             eq(userTrainingFreigaben.categoryId, input.categoryId),
             input.itemId
               ? eq(userTrainingFreigaben.itemId, input.itemId)
-              : eq(userTrainingFreigaben.itemId, null as any)
+              : isNull(userTrainingFreigaben.itemId)
           )
         )
         .limit(1);
