@@ -146,6 +146,28 @@ export const trainingRouter = router({
   }),
 
   /**
+   * Gibt die Dashboard-Freigaben des eingeloggten Nutzers zurück.
+   * Wird im Dashboard verwendet um individuelle Bereiche freizuschalten.
+   */
+  getMyDashboardFreigaben: protectedProcedure
+    .query(async ({ ctx }) => {
+      const db = await getDb();
+      if (!db) return {} as Record<string, boolean>;
+      const rows = await db
+        .select()
+        .from(userTrainingFreigaben)
+        .where(eq(userTrainingFreigaben.userId, ctx.user.id));
+      const result: Record<string, boolean> = {};
+      for (const row of rows) {
+        // Dashboard-Bereiche haben categoryId ohne itemId
+        if (!row.itemId) {
+          result[row.categoryId] = row.enabled;
+        }
+      }
+      return result;
+    }),
+
+  /**
    * Admin-only: Gibt alle nutzer-spezifischen Freigaben für einen bestimmten Nutzer zurück.
    */
   getUserFreigaben: protectedProcedure

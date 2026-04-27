@@ -20,6 +20,7 @@ interface DashboardProps {
     onOpenVisionsraum: () => void;
     isPremium: boolean;
     onTogglePremium: () => void;
+    userFreigaben?: Record<string, boolean>;
 }
 
 export function Dashboard({ 
@@ -33,8 +34,13 @@ export function Dashboard({
     onOpenHistory,
     onOpenVisionsraum,
     isPremium,
-    onTogglePremium
+    onTogglePremium,
+    userFreigaben = {},
 }: DashboardProps) {
+    const isFreigegeben = (bereichId: string) => {
+        if (bereichId in userFreigaben) return userFreigaben[bereichId];
+        return isPremium;
+    };
     const [clickCount, setClickCount] = useState(0);
     const [lastClickTime, setLastClickTime] = useState(0);
 
@@ -65,8 +71,9 @@ export function Dashboard({
         setStreak(calculateStreak());
     }, []);
 
-    const handlePremiumClick = (callback: () => void, moduleName: string) => {
-        if (!isPremium) {
+    const handlePremiumClick = (callback: () => void, moduleName: string, bereichId?: string) => {
+        const freigegeben = bereichId ? isFreigegeben(bereichId) : isPremium;
+        if (!freigegeben) {
             toast({
                 title: "Premium Funktion",
                 description: `Das Modul "${moduleName}" ist Teil der Premium-Version und aktuell gesperrt.`,
@@ -153,7 +160,7 @@ export function Dashboard({
                                 <div className="w-12 h-12 rounded-xl bg-orange-500/20 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform">
                                     <Mic className="w-6 h-6" />
                                 </div>
-                                {!isPremium && (
+                                {!isFreigegeben('stimmklang') && (
                                     <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
                                         <Lock className="w-3 h-3" />
                                         <span>Premium</span>
@@ -169,7 +176,7 @@ export function Dashboard({
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onStartAnalysis, "Stimmklang-Analyse")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onStartAnalysis, "Stimmklang-Analyse", 'stimmklang')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Analyse Starten <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -221,7 +228,7 @@ export function Dashboard({
                                 <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
                                     <HeartPulse className="w-6 h-6" />
                                 </div>
-                                {!isPremium && (
+                                {!isFreigegeben('vitalmonitor') && (
                                     <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
                                         <Lock className="w-3 h-3" />
                                         <span>Premium</span>
@@ -235,7 +242,7 @@ export function Dashboard({
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onOpenVital, "Vital Monitor")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenVital, "Vital Monitor", 'vitalmonitor')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Monitor Öffnen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -258,7 +265,7 @@ export function Dashboard({
                                 <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
                                     <Activity className="w-6 h-6" />
                                 </div>
-                                {!isPremium && (
+                                {!isFreigegeben('frequenzlabor') && (
                                     <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
                                         <Lock className="w-3 h-3" />
                                         <span>Premium</span>
@@ -272,7 +279,7 @@ export function Dashboard({
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onOpenScanner, "Frequenz-Labor")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenScanner, "Frequenz-Labor", 'frequenzlabor')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Scanner Starten <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -295,7 +302,7 @@ export function Dashboard({
                                 <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
                                     <BookOpen className="w-6 h-6" />
                                 </div>
-                                {!isPremium && (
+                                {!isFreigegeben('wissenspool') && (
                                     <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
                                         <Lock className="w-3 h-3" />
                                         <span>Premium</span>
@@ -309,7 +316,7 @@ export function Dashboard({
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onOpenKnowledge, "Wissenspool")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenKnowledge, "Wissenspool", 'wissenspool')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Wissen Öffnen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -332,7 +339,7 @@ export function Dashboard({
                                 <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
                                     <Moon className="w-6 h-6" />
                                 </div>
-                                {!isPremium && (
+                                {!isFreigegeben('schlafoptimierung') && (
                                     <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
                                         <Lock className="w-3 h-3" />
                                         <span>Premium</span>
@@ -348,7 +355,7 @@ export function Dashboard({
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onOpenSleep, "Schlaf-Optimierung")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenSleep, "Schlaf-Optimierung", 'schlafoptimierung')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Session starten <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -401,7 +408,7 @@ export function Dashboard({
                                 <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-500 group-hover:scale-110 transition-transform">
                                     <Activity className="w-6 h-6" />
                                 </div>
-                                {!isPremium && (
+                                {!isFreigegeben('meineanalysen') && (
                                     <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
                                         <Lock className="w-3 h-3" />
                                         <span>Premium</span>
@@ -415,7 +422,7 @@ export function Dashboard({
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onOpenHistory, "Meine Analysen")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenHistory, "Meine Analysen", 'meineanalysen')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Historie Ansehen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
@@ -438,7 +445,7 @@ export function Dashboard({
                                 <div className="w-12 h-12 rounded-xl bg-cyan-500/20 flex items-center justify-center text-cyan-500 group-hover:scale-110 transition-transform">
                                     <BarChart3 className="w-6 h-6" />
                                 </div>
-                                {!isPremium && (
+                                        {!isFreigegeben('lichtklang') && (
                                     <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
                                         <Lock className="w-3 h-3" />
                                         <span>Premium</span>
@@ -452,7 +459,7 @@ export function Dashboard({
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onOpenTable, "LICHTKLANG Tabelle")} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                <button onClick={() => handlePremiumClick(onOpenTable, "LICHTKLANG Tabelle", 'lichtklang')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Tabelle Ansehen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>

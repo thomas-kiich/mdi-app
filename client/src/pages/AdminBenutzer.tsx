@@ -23,20 +23,31 @@ import { toast } from "sonner";
 import { Loader2, Search, Trash2, ArrowLeft, Users, ChevronLeft, ChevronRight, Unlock, X, RotateCcw } from "lucide-react";
 import { Link } from "wouter";
 
-// Trainingsstruktur
+// Alle freischaltbaren Bereiche – Trainings + Dashboard-Module
 const KATEGORIEN = [
-  { id: "befindlichkeit", name: "BEFINDLICHKEITSTRAINING", icon: "🌈", items: [] as {id:string;name:string}[] },
-  { id: "breathing", name: "ATEMTRAINING", icon: "🫁", items: [] as {id:string;name:string}[] },
-  { id: "voice", name: "STIMMKLANGTRAINING", icon: "🎵", items: [
+  // Dashboard-Module (Premium-unabhängig steuerbar)
+  { id: "stimmklang", name: "STIMMKLANG-ANALYSE", icon: "🎤", group: "Dashboard", items: [] as {id:string;name:string}[] },
+  { id: "vitalmonitor", name: "VITAL MONITOR", icon: "❤️", group: "Dashboard", items: [] as {id:string;name:string}[] },
+  { id: "frequenzlabor", name: "FREQUENZ-LABOR", icon: "🔬", group: "Dashboard", items: [] as {id:string;name:string}[] },
+  { id: "wissenspool", name: "WISSENSPOOL", icon: "📚", group: "Dashboard", items: [] as {id:string;name:string}[] },
+  { id: "schlafoptimierung", name: "SCHLAF-OPTIMIERUNG", icon: "🌙", group: "Dashboard", items: [] as {id:string;name:string}[] },
+  { id: "analysehistorie", name: "MEINE ANALYSEN", icon: "📊", group: "Dashboard", items: [] as {id:string;name:string}[] },
+  { id: "lichtklang", name: "LICHTKLANG-TABELLE", icon: "🌈", group: "Dashboard", items: [] as {id:string;name:string}[] },
+  // Trainingskategorien
+  { id: "befindlichkeit", name: "BEFINDLICHKEITSTRAINING", icon: "💫", group: "Training", items: [] as {id:string;name:string}[] },
+  { id: "breathing", name: "ATEMTRAINING", icon: "🫁", group: "Training", items: [] as {id:string;name:string}[] },
+  { id: "voice", name: "STIMMKLANGTRAINING", icon: "🎵", group: "Training", items: [
     { id: "yohn", name: "YOHN-Atmung" },
     { id: "interval", name: "Intervall-Training" },
   ]},
-  { id: "movement", name: "BEWEGUNGSTRAINING", icon: "🏃", items: [] as {id:string;name:string}[] },
-  { id: "ambient", name: "UMFELDAKTIVIERUNG", icon: "✨", items: [
+  { id: "movement", name: "BEWEGUNGSTRAINING", icon: "🏃", group: "Training", items: [] as {id:string;name:string}[] },
+  { id: "ambient", name: "UMFELDAKTIVIERUNG", icon: "✨", group: "Training", items: [
     { id: "metabolic", name: "STOFFWECHSELATMUNG" },
     { id: "mayerwelle", name: "MAYERWELLE 5,5 / MW" },
   ]},
 ];
+
+const GRUPPEN = ["Dashboard", "Training"] as const;
 
 function TrainingFreigabenModal({ userId, userName, onClose }: { userId: number; userName: string; onClose: () => void }) {
   const utils = trpc.useUtils();
@@ -69,8 +80,12 @@ function TrainingFreigabenModal({ userId, userName, onClose }: { userId: number;
         {isLoading ? (
           <div className="flex justify-center py-8"><Loader2 className="w-5 h-5 text-orange-400 animate-spin" /></div>
         ) : (
-          <div className="space-y-4">
-            {KATEGORIEN.map(kat => (
+          <div className="space-y-6">
+            {GRUPPEN.map(gruppe => (
+              <div key={gruppe}>
+                <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest mb-3">{gruppe}</p>
+                <div className="space-y-2">
+            {KATEGORIEN.filter(k => k.group === gruppe).map(kat => (
               <div key={kat.id} className="border border-zinc-800 rounded-xl p-4 bg-zinc-900/20 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2"><span>{kat.icon}</span><span className="text-sm font-medium text-zinc-200">{kat.name}</span></div>
@@ -90,6 +105,9 @@ function TrainingFreigabenModal({ userId, userName, onClose }: { userId: number;
                 )}
               </div>
             ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
         {freigaben && freigaben.length > 0 && (
@@ -103,6 +121,7 @@ function TrainingFreigabenModal({ userId, userName, onClose }: { userId: number;
     </div>
   );
 }
+
 
 export default function AdminBenutzer() {
   const { user, loading } = useAuth();

@@ -362,6 +362,11 @@ export default function Home() {
   const isPremiumMomentaufnahme = premiumSettings?.momentaufnahme ?? false;
   const isPremiumBefindlichkeit = premiumSettings?.befindlichkeitstraining ?? false;
   const isPremium = premiumSettings?.trainingscenter ?? false;
+  // Individuelle Nutzer-Freigaben für Dashboard-Bereiche
+  const { data: myDashboardFreigaben } = trpc.training.getMyDashboardFreigaben.useQuery(
+    undefined,
+    { enabled: !!user } // Nur wenn eingeloggt
+  );
   // Podcast-Episoden aus der Datenbank
   const { data: podcastEpisodesData } = trpc.podcastEpisodes.list.useQuery();
   const latestPodcastEpisode = podcastEpisodesData?.find(ep => ep.isLatest);
@@ -919,6 +924,7 @@ export default function Home() {
                   onOpenVisionsraum={() => setShowVisionsraum(true)}
                   isPremium={isPremium || user?.role === "admin"}
                   onTogglePremium={() => {}}
+                  userFreigaben={myDashboardFreigaben ?? {}}
                 />
               </div>
               <div id="newsletter-section" className="container max-w-6xl mx-auto px-4 mt-10 mb-8">

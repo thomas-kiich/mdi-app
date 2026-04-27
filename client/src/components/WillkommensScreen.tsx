@@ -7,7 +7,6 @@ interface WillkommensScreenProps {
 }
 
 export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
-  const [consentGiven, setConsentGiven] = useState(false);
   const [showDsgvo, setShowDsgvo] = useState(false);
   const [showVideo, setShowVideo] = useState(false);
 
@@ -17,14 +16,6 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
   const refCode = new URLSearchParams(window.location.search).get("ref") ?? OWNER_REF_CODE;
 
   const handleLogin = () => {
-    if (!consentGiven) {
-      const el = document.getElementById("dsgvo-checkbox");
-      if (el) {
-        el.classList.add("ring-2", "ring-orange-500");
-        setTimeout(() => el.classList.remove("ring-2", "ring-orange-500"), 1500);
-      }
-      return;
-    }
     localStorage.setItem("kiich_dsgvo_consent", new Date().toISOString());
     if (onConsentGiven) onConsentGiven();
     // refCode mitgeben falls vorhanden (Einladungslink-Tracking)
@@ -58,7 +49,7 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
         </h1>
         <p className="text-zinc-300 text-base md:text-lg leading-relaxed">
           Für die Nutzung aller KIICH-Tools benötigst du einen{" "}
-          <span className="text-amber-400 font-semibold">kostenlosen Account</span> —{" "}
+          <span className="text-white font-semibold">kostenlosen Account</span> —{" "}
           in 30 Sekunden erstellt, keine Kreditkarte erforderlich.
         </p>
       </div>
@@ -121,13 +112,13 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
         )}
       </div>
 
-      {/* DSGVO Consent */}
+      {/* Datenschutz-Info (kein Consent nötig) */}
       <div className="max-w-xl w-full mb-8">
         <button
           onClick={() => setShowDsgvo(!showDsgvo)}
           className="w-full flex items-center justify-between px-5 py-4 bg-zinc-900/80 border border-zinc-700 rounded-xl text-base text-zinc-300 hover:text-white hover:border-zinc-500 transition-all mb-3"
         >
-          <span className="font-semibold">🔒 Datenschutz & Einwilligung</span>
+          <span className="font-semibold">🔒 Datenschutz</span>
           {showDsgvo ? <ChevronUp className="w-5 h-5 text-zinc-400 shrink-0 ml-2" /> : <ChevronDown className="w-5 h-5 text-zinc-500 shrink-0 ml-2" />}
         </button>
 
@@ -143,38 +134,20 @@ export function WillkommensScreen({ onConsentGiven }: WillkommensScreenProps) {
           </div>
         )}
 
-        {/* Checkbox */}
-        <label
-          id="dsgvo-checkbox"
-          className="flex items-start gap-4 cursor-pointer group px-4 py-4 rounded-xl border border-zinc-800 hover:border-zinc-600 transition-all"
-          onClick={() => setConsentGiven(!consentGiven)}
-        >
-          <div className={`w-6 h-6 rounded border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all ${consentGiven ? 'bg-amber-500 border-amber-500' : 'border-zinc-600 group-hover:border-zinc-400'}`}>
-            {consentGiven && (
-              <svg className="w-3.5 h-3.5 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
-            )}
-          </div>
-          <span className="text-base text-zinc-300 group-hover:text-white leading-relaxed transition-colors">
-            Ich habe die{" "}
-            <a href="/datenschutz" className="text-blue-400 hover:text-blue-300 underline" onClick={e => e.stopPropagation()}>Datenschutzerklärung</a>{" "}
-            gelesen und stimme der Verarbeitung meiner Daten für die Nutzung von KIICH zu. Diese Einwilligung kann ich jederzeit widerrufen.
-          </span>
-        </label>
+        {/* Datenschutz-Hinweis ohne Einwilligungs-Checkbox */}
+        <p className="text-sm text-zinc-400 leading-relaxed px-1">
+          Informationen zu unserer Verarbeitung Ihrer personenbezogenen Daten finden Sie in unserer{" "}
+          <a href="/datenschutz" className="text-blue-400 hover:text-blue-300 underline">Datenschutzerklärung</a>.
+        </p>
       </div>
 
       {/* CTA Button */}
       <div className="max-w-xl w-full">
         <button
           onClick={handleLogin}
-          className={`w-full py-5 text-lg font-black tracking-widest uppercase rounded-xl transition-all duration-200 ${
-            consentGiven
-              ? 'bg-gradient-to-r from-orange-500 to-amber-400 text-black hover:opacity-90 hover:scale-[1.02] shadow-lg shadow-orange-500/20'
-              : 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700'
-          }`}
+          className="w-full py-5 text-lg font-black tracking-widest uppercase rounded-xl transition-all duration-200 bg-gradient-to-r from-orange-500 to-amber-400 text-black hover:opacity-90 hover:scale-[1.02] shadow-lg shadow-orange-500/20"
         >
-          {consentGiven ? 'Jetzt kostenlos bei KIICH starten →' : 'Bitte Datenschutz bestätigen'}
+          Jetzt kostenlos bei KIICH starten →
         </button>
         <p className="text-center text-sm text-zinc-500 mt-3">
           Bereits registriert? Der Button führt dich direkt zum Login.
