@@ -89,9 +89,7 @@ function TrainingFreigabenModal({ userId, userName, onClose }: { userId: number;
               <div key={kat.id} className="border border-zinc-800 rounded-xl p-4 bg-zinc-900/20 space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2"><span>{kat.icon}</span><span className="text-sm font-medium text-zinc-200">{kat.name}</span></div>
-                  {kat.items.length === 0 && (
-                    <Switch checked={isEnabled(kat.id)} onCheckedChange={() => toggle(kat.id, undefined, kat.name)} disabled={setFreigabe.isPending} className="data-[state=checked]:bg-orange-500" />
-                  )}
+                  <Switch checked={isEnabled(kat.id)} onCheckedChange={() => toggle(kat.id, undefined, kat.name)} disabled={setFreigabe.isPending} className="data-[state=checked]:bg-orange-500" />
                 </div>
                 {kat.items.length > 0 && (
                   <div className="space-y-2 pl-6 border-l border-zinc-800">
