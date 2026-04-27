@@ -28,6 +28,7 @@ import AdminFaq from "@/pages/AdminFaq";
 import AdminEpisoden from "@/pages/AdminEpisoden";
 import AdminBenutzer from "@/pages/AdminBenutzer";
 import AdminHub from "@/pages/AdminHub";
+import AdminStatistik from "@/pages/AdminStatistik";
 import Befindlichkeit from "@/pages/Befindlichkeit";
 import { Nutzungsbedingungen } from "@/pages/Nutzungsbedingungen";
 import { RechtsCheckliste } from "@/pages/RechtsCheckliste";
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/admin/faq" component={AdminFaq} />
       <Route path="/admin/episoden" component={AdminEpisoden} />
       <Route path="/admin/benutzer" component={AdminBenutzer} />
+      <Route path="/admin/statistik" component={AdminStatistik} />
       <Route path="/admin" component={AdminHub} />
       <Route path="/befindlichkeit" component={Befindlichkeit} />
       <Route path="/nutzungsbedingungen" component={Nutzungsbedingungen} />

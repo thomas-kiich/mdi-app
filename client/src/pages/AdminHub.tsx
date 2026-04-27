@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Link } from "wouter";
-import { ArrowLeft, Mail, Crown, Mic, Headphones, HelpCircle, BookOpen, Users, BarChart3, Loader2 } from "lucide-react";
+import { ArrowLeft, Mail, Crown, Mic, Headphones, HelpCircle, BookOpen, Users, BarChart3, TrendingUp, Loader2 } from "lucide-react";
 
 const adminTools = [
   {
@@ -56,6 +56,15 @@ const adminTools = [
     bg: "bg-cyan-500/5 hover:bg-cyan-500/10",
     title: "Training",
     desc: "Trainingsmodule und Inhalte konfigurieren",
+  },
+  {
+    href: "/admin/statistik",
+    icon: TrendingUp,
+    color: "text-emerald-400",
+    border: "border-emerald-500/30 hover:border-emerald-400/60",
+    bg: "bg-emerald-500/5 hover:bg-emerald-500/10",
+    title: "Nutzungsstatistik",
+    desc: "Einschlafbibliothek · YOHN-Training · Aktivste Nutzer",
   },
   {
     href: "/admin/faq",

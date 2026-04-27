@@ -2,8 +2,8 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { users, newsletterSubscribers } from "../../drizzle/schema";
-import { sql, gte, count, like, or, eq } from "drizzle-orm";
+import { users, newsletterSubscribers, einschlafBibliothek, momentaufnahmen } from "../../drizzle/schema";
+import { sql, gte, count, like, or, eq, desc } from "drizzle-orm";
 
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
@@ -95,6 +95,126 @@ export const adminRouter = router({
       await db.delete(users).where(eq(users.id, input.userId));
       return { success: true, deletedId: input.userId };
     }),
+
+  // Nutzungsstatistiken: Einschlafbibliothek
+  getEinschlafStats: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
+
+    // Gesamtzahl Geschichten
+    const [totalResult] = await db.select({ count: count() }).from(einschlafBibliothek);
+    const total = totalResult?.count ?? 0;
+
+    // Aufschlüsselung nach Kategorie
+    const byKategorie = await db
+      .select({ kategorie: einschlafBibliothek.kategorie, count: count() })
+      .from(einschlafBibliothek)
+      .groupBy(einschlafBibliothek.kategorie);
+
+    // Top-Themen (Befindlichkeit)
+    const topThemen = await db
+      .select({ thema: einschlafBibliothek.thema, count: count() })
+      .from(einschlafBibliothek)
+      .where(eq(einschlafBibliothek.kategorie, "BEFINDLICHKEIT"))
+      .groupBy(einschlafBibliothek.thema)
+      .orderBy(desc(count()))
+      .limit(15);
+
+    // Aktivste Nutzer (nach Anzahl generierter Geschichten)
+    const aktivsteNutzer = await db
+      .select({
+        userId: einschlafBibliothek.userId,
+        name: users.name,
+        vorname: users.vorname,
+        count: count(),
+      })
+      .from(einschlafBibliothek)
+      .leftJoin(users, eq(einschlafBibliothek.userId, users.id))
+      .groupBy(einschlafBibliothek.userId, users.name, users.vorname)
+      .orderBy(desc(count()))
+      .limit(10);
+
+    // Letzte 30 Tage
+    const dreissigTageAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const [letzteMonatResult] = await db
+      .select({ count: count() })
+      .from(einschlafBibliothek)
+      .where(gte(einschlafBibliothek.createdAt, dreissigTageAgo));
+    const letzterMonat = letzteMonatResult?.count ?? 0;
+
+    // Letzte 7 Tage
+    const siebenTageAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const [letzteWocheResult] = await db
+      .select({ count: count() })
+      .from(einschlafBibliothek)
+      .where(gte(einschlafBibliothek.createdAt, siebenTageAgo));
+    const letzteWoche = letzteWocheResult?.count ?? 0;
+
+    // Mit Audio (wurden abgehört)
+    const [mitAudioResult] = await db
+      .select({ count: count() })
+      .from(einschlafBibliothek)
+      .where(sql`${einschlafBibliothek.audioUrl} IS NOT NULL`);
+    const mitAudio = mitAudioResult?.count ?? 0;
+
+    return { total, byKategorie, topThemen, aktivsteNutzer, letzterMonat, letzteWoche, mitAudio };
+  }),
+
+  // Nutzungsstatistiken: Momentaufnahmen (YOHN-Training)
+  getMomentaufnahmenStats: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
+
+    // Gesamtzahl
+    const [totalResult] = await db.select({ count: count() }).from(momentaufnahmen);
+    const total = totalResult?.count ?? 0;
+
+    // Aufschlüsselung nach Kategorie (Gravitationszentrum)
+    const byKategorie = await db
+      .select({ kategorie: momentaufnahmen.kategorie, count: count() })
+      .from(momentaufnahmen)
+      .groupBy(momentaufnahmen.kategorie)
+      .orderBy(desc(count()));
+
+    // Aktivste Nutzer
+    const aktivsteNutzer = await db
+      .select({
+        userId: momentaufnahmen.userId,
+        name: users.name,
+        vorname: users.vorname,
+        count: count(),
+      })
+      .from(momentaufnahmen)
+      .leftJoin(users, eq(momentaufnahmen.userId, users.id))
+      .groupBy(momentaufnahmen.userId, users.name, users.vorname)
+      .orderBy(desc(count()))
+      .limit(10);
+
+    // Letzte 30 Tage
+    const dreissigTageAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const [letzteMonatResult] = await db
+      .select({ count: count() })
+      .from(momentaufnahmen)
+      .where(gte(momentaufnahmen.createdAt, dreissigTageAgo));
+    const letzterMonat = letzteMonatResult?.count ?? 0;
+
+    // Letzte 7 Tage
+    const siebenTageAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const [letzteWocheResult] = await db
+      .select({ count: count() })
+      .from(momentaufnahmen)
+      .where(gte(momentaufnahmen.createdAt, siebenTageAgo));
+    const letzteWoche = letzteWocheResult?.count ?? 0;
+
+    // Durchschnittliche Aufnahmedauer
+    const [avgResult] = await db
+      .select({ avg: sql<number>`AVG(${momentaufnahmen.dauerSekunden})` })
+      .from(momentaufnahmen)
+      .where(sql`${momentaufnahmen.dauerSekunden} IS NOT NULL`);
+    const avgDauer = Math.round(avgResult?.avg ?? 0);
+
+    return { total, byKategorie, aktivsteNutzer, letzterMonat, letzteWoche, avgDauer };
+  }),
 
   getUserStats: adminProcedure.query(async () => {
     const db = await getDb();
