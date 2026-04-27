@@ -3,7 +3,7 @@ import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { users, newsletterSubscribers, einschlafBibliothek, momentaufnahmen } from "../../drizzle/schema";
-import { sql, gte, count, like, or, eq, desc } from "drizzle-orm";
+import { sql, gte, count, like, or, eq, desc, and, lt } from "drizzle-orm";
 
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
@@ -214,6 +214,146 @@ export const adminRouter = router({
     const avgDauer = Math.round(avgResult?.avg ?? 0);
 
     return { total, byKategorie, aktivsteNutzer, letzterMonat, letzteWoche, avgDauer };
+  }),
+
+  // Zeitverlauf: Nutzung pro Tag (letzte 30 Tage)
+  getZeitverlauf: adminProcedure
+    .input(z.object({ feature: z.enum(["einschlaf", "momentaufnahmen"]) }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
+
+      const tage: { datum: string; count: number }[] = [];
+      const now = new Date();
+
+      for (let i = 29; i >= 0; i--) {
+        const start = new Date(now);
+        start.setDate(now.getDate() - i);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 1);
+
+        let result;
+        if (input.feature === "einschlaf") {
+          [result] = await db
+            .select({ count: count() })
+            .from(einschlafBibliothek)
+            .where(and(gte(einschlafBibliothek.createdAt, start), lt(einschlafBibliothek.createdAt, end)));
+        } else {
+          [result] = await db
+            .select({ count: count() })
+            .from(momentaufnahmen)
+            .where(and(gte(momentaufnahmen.createdAt, start), lt(momentaufnahmen.createdAt, end)));
+        }
+
+        tage.push({
+          datum: start.toISOString().split("T")[0],
+          count: result?.count ?? 0,
+        });
+      }
+
+      return tage;
+    }),
+
+  // Nutzer-Details: alle Aktivitäten eines bestimmten Nutzers
+  getUserDetail: adminProcedure
+    .input(z.object({ userId: z.number() }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
+
+      const [user] = await db
+        .select({ id: users.id, name: users.name, vorname: users.vorname, email: users.email, createdAt: users.createdAt, lastSignedIn: users.lastSignedIn })
+        .from(users)
+        .where(eq(users.id, input.userId));
+
+      if (!user) throw new TRPCError({ code: "NOT_FOUND", message: "Nutzer nicht gefunden" });
+
+      const geschichten = await db
+        .select({ id: einschlafBibliothek.id, kategorie: einschlafBibliothek.kategorie, thema: einschlafBibliothek.thema, createdAt: einschlafBibliothek.createdAt, audioUrl: einschlafBibliothek.audioUrl })
+        .from(einschlafBibliothek)
+        .where(eq(einschlafBibliothek.userId, input.userId))
+        .orderBy(desc(einschlafBibliothek.createdAt))
+        .limit(50);
+
+      const aufnahmen = await db
+        .select({ id: momentaufnahmen.id, kategorie: momentaufnahmen.kategorie, createdAt: momentaufnahmen.createdAt })
+        .from(momentaufnahmen)
+        .where(eq(momentaufnahmen.userId, input.userId))
+        .orderBy(desc(momentaufnahmen.createdAt))
+        .limit(50);
+
+      return { user, geschichten, aufnahmen };
+    }),
+
+  // CSV-Export: alle Einschlafbibliothek-Einträge
+  exportEinschlafCsv: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
+
+    const rows = await db
+      .select({
+        id: einschlafBibliothek.id,
+        userId: einschlafBibliothek.userId,
+        vorname: users.vorname,
+        name: users.name,
+        kategorie: einschlafBibliothek.kategorie,
+        thema: einschlafBibliothek.thema,
+        createdAt: einschlafBibliothek.createdAt,
+        hatAudio: sql<number>`CASE WHEN ${einschlafBibliothek.audioUrl} IS NOT NULL THEN 1 ELSE 0 END`,
+      })
+      .from(einschlafBibliothek)
+      .leftJoin(users, eq(einschlafBibliothek.userId, users.id))
+      .orderBy(desc(einschlafBibliothek.createdAt));
+
+    const header = "ID,UserID,Vorname,Name,Kategorie,Thema,Datum,HatAudio";
+    const lines = rows.map(r =>
+      [
+        r.id,
+        r.userId,
+        `"${(r.vorname ?? "").replace(/"/g, "'")}"`,
+        `"${(r.name ?? "").replace(/"/g, "'")}"`,
+        r.kategorie,
+        `"${(r.thema ?? "").replace(/"/g, "'")}"`,
+        r.createdAt ? new Date(r.createdAt).toISOString().split("T")[0] : "",
+        r.hatAudio ? "ja" : "nein",
+      ].join(",")
+    );
+
+    return [header, ...lines].join("\n");
+  }),
+
+  // CSV-Export: alle Momentaufnahmen
+  exportMomentaufnahmenCsv: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
+
+    const rows = await db
+      .select({
+        id: momentaufnahmen.id,
+        userId: momentaufnahmen.userId,
+        vorname: users.vorname,
+        name: users.name,
+        kategorie: momentaufnahmen.kategorie,
+        createdAt: momentaufnahmen.createdAt,
+      })
+      .from(momentaufnahmen)
+      .leftJoin(users, eq(momentaufnahmen.userId, users.id))
+      .orderBy(desc(momentaufnahmen.createdAt));
+
+    const header = "ID,UserID,Vorname,Name,Kategorie,Datum";
+    const lines = rows.map(r =>
+      [
+        r.id,
+        r.userId,
+        `"${(r.vorname ?? "").replace(/"/g, "'")}"`,
+        `"${(r.name ?? "").replace(/"/g, "'")}"`,
+        r.kategorie,
+        r.createdAt ? new Date(r.createdAt).toISOString().split("T")[0] : "",
+      ].join(",")
+    );
+
+    return [header, ...lines].join("\n");
   }),
 
   getUserStats: adminProcedure.query(async () => {
