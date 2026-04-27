@@ -526,7 +526,7 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                         {/* Feedback Section */}
                         <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 mt-8">
                             <h3 className="text-lg font-medium text-white mb-4">Wie fühlst du dich nach dem Training?</h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                                 <Button 
                                     variant="outline" 
                                     className="border-zinc-700 hover:bg-orange-500/20 hover:text-orange-400 hover:border-orange-500/50 h-auto py-3 flex flex-col gap-2"
@@ -571,7 +571,21 @@ export function Method36Trainer({ frequency, toneName, color, typeId, duration, 
                                     <span className="text-2xl">🎯</span>
                                     <span className="text-xs">Zentriert</span>
                                 </Button>
+                                <Button 
+                                    variant="outline" 
+                                    className="border-zinc-700 hover:bg-blue-500/20 hover:text-blue-400 hover:border-blue-500/50 h-auto py-3 flex flex-col gap-2 col-span-2 sm:col-span-1"
+                                    onClick={() => {
+                                        toast({ title: "Wichtiges Signal", description: "Erschöpfung nach dem Training zeigt: dein System lässt los. Das ist Regulation – kein Versagen." });
+                                        setTimeout(onClose, 2000);
+                                    }}
+                                >
+                                    <span className="text-2xl">🌊</span>
+                                    <span className="text-xs">Erschöpft</span>
+                                </Button>
                             </div>
+                            <p className="text-xs text-zinc-500 mt-3 leading-relaxed">
+                                Erschöpfung nach dem Training ist ein positives Signal – dein Nervensystem beginnt loszulassen. Besonders bei intensiven Typen zeigt das: Regulation findet statt.
+                            </p>
                         </div>
 
                         <div className="flex flex-col gap-4 mt-6">
