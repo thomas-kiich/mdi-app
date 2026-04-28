@@ -712,3 +712,55 @@ export const podcastEpisodes = mysqlTable('podcast_episodes', {
 });
 export type PodcastEpisode = typeof podcastEpisodes.$inferSelect;
 export type InsertPodcastEpisode = typeof podcastEpisodes.$inferInsert;
+
+/**
+ * VITAL EINTRÄGE – Tägliche Vitalwerte pro Nutzer
+ *
+ * DSGVO Art. 9 – Besondere Kategorien personenbezogener Daten (Gesundheitsdaten).
+ * Zugriff ist strikt auf den jeweiligen Nutzer selbst beschränkt.
+ * Coach-Zugriff nur nach expliziter Einwilligung (→ coachingEinwilligungen).
+ *
+ * datum: ISO-String 'YYYY-MM-DD' (Lokalzeit des Nutzers).
+ */
+export const vitalEintraege = mysqlTable("vital_eintraege", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  datum: varchar("datum", { length: 10 }).notNull(),
+  ruhepuls: int("ruhepuls"),
+  hrv: int("hrv"),
+  apnoeAus: varchar("apnoeAus", { length: 10 }),
+  apnoeEin: varchar("apnoeEin", { length: 10 }),
+  bolt: int("bolt"),
+  temperatur: varchar("temperatur", { length: 10 }),
+  gewicht: varchar("gewicht", { length: 10 }),
+  anmerkungen: text("anmerkungen"),
+  tagesplan: text("tagesplan"),
+  createdAtMs: bigint("createdAtMs", { mode: "number" }).notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type VitalEintrag = typeof vitalEintraege.$inferSelect;
+export type InsertVitalEintrag = typeof vitalEintraege.$inferInsert;
+
+/**
+ * COACHING EINWILLIGUNGEN – DSGVO-konforme Opt-in Einwilligung
+ *
+ * Art. 9 Abs. 2 lit. a DSGVO: Explizite Einwilligung zur Verarbeitung
+ * besonderer Kategorien personenbezogener Daten (Gesundheitsdaten).
+ *
+ * coachId: User-ID des Coaches (= Thomas, OWNER)
+ * widerrufenAtMs: null = Einwilligung aktiv
+ */
+export const coachingEinwilligungen = mysqlTable("coaching_einwilligungen", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  coachId: int("coachId").notNull(),
+  eingewilligtAtMs: bigint("eingewilligtAtMs", { mode: "number" }).notNull(),
+  widerrufenAtMs: bigint("widerrufenAtMs", { mode: "number" }),
+  einwilligungsText: text("einwilligungsText").notNull(),
+  ipAdresse: varchar("ipAdresse", { length: 45 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type CoachingEinwilligung = typeof coachingEinwilligungen.$inferSelect;
+export type InsertCoachingEinwilligung = typeof coachingEinwilligungen.$inferInsert;

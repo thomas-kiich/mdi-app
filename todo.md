@@ -1164,3 +1164,21 @@
 - [x] schlafMetapher-Prompt mit Wiederholungs-Verbot versehen
 - [x] Unit-Tests für Wiederholungs-Check und Titel-Extraktion (10 Tests, alle grün)
 - [ ] 12 Lichtklang-Archetyp-Geschichten erstellen und in App integrieren
+
+## Vitalwerte & Coaching (2026-04-28)
+
+- [x] DB-Schema: Tabelle `vitalEintraege` (Gesundheitsdaten DSGVO Art. 9)
+- [x] DB-Schema: Tabelle `coachingEinwilligungen` (Opt-in mit IP-Logging)
+- [x] DB-Migration: pnpm db:push durchgeführt
+- [x] Server-Router `vital.ts`: saveEintrag, getMyEintraege, getEintragByDatum
+- [x] Server-Router `vital.ts`: activateCoachingMode, revokeCoachingMode, getMyCoachingStatus
+- [x] Server-Router `vital.ts`: getCoachingClients, getClientEintraege, getClientProfile (Admin)
+- [x] resolveCoachId(-1) auf Owner-User via OWNER_OPEN_ID auflösen
+- [x] VitalDashboard: DB-Speicherung statt localStorage
+- [x] VitalDashboard: Opt-in Coaching-Modus mit DSGVO-Einwilligungs-Dialog
+- [x] CoachingDashboard: Admin-Seite /admin/coaching fuer Thomas
+- [x] CoachingDashboard: Client-Liste mit aktiven Einwilligungen
+- [x] CoachingDashboard: Client-Detail mit Verlauf und Charts (Recharts)
+- [x] AdminHub: Link zum Coaching Dashboard eingebunden
+- [x] App.tsx: Route /admin/coaching registriert
+- [x] Vitest: 7 Tests fuer vital Router (DSGVO-Text, Datum-Validierung)

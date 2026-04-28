@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Link } from "wouter";
-import { ArrowLeft, Mail, Crown, Mic, Headphones, HelpCircle, BookOpen, Users, BarChart3, TrendingUp, Loader2 } from "lucide-react";
+import { ArrowLeft, Mail, Crown, Mic, Headphones, HelpCircle, BookOpen, Users, BarChart3, TrendingUp, Loader2, Activity } from "lucide-react";
 
 const adminTools = [
   {
@@ -73,7 +73,16 @@ const adminTools = [
     border: "border-zinc-500/30 hover:border-zinc-400/60",
     bg: "bg-zinc-500/5 hover:bg-zinc-500/10",
     title: "FAQ",
-    desc: "Häufige Fragen verwalten und aktualisieren",
+    desc: "H\u00e4ufige Fragen verwalten und aktualisieren",
+  },
+  {
+    href: "/admin/coaching",
+    icon: Activity,
+    color: "text-pink-400",
+    border: "border-pink-500/30 hover:border-pink-400/60",
+    bg: "bg-pink-500/5 hover:bg-pink-500/10",
+    title: "Coaching Dashboard",
+    desc: "Vitalwerte deiner Coaching-Clients einsehen",
   },
 ];
 

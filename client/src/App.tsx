@@ -32,6 +32,7 @@ import AdminStatistik from "@/pages/AdminStatistik";
 import Befindlichkeit from "@/pages/Befindlichkeit";
 import { Nutzungsbedingungen } from "@/pages/Nutzungsbedingungen";
 import { RechtsCheckliste } from "@/pages/RechtsCheckliste";
+import CoachingDashboard from "@/pages/CoachingDashboard";
 import { VornameProvider, useVorname } from "@/contexts/VornameContext";
 import { OnboardingNameModal } from "@/components/OnboardingNameModal";
 import { UpdateBanner } from "@/components/UpdateBanner";
@@ -67,6 +68,7 @@ function Router() {
       <Route path="/befindlichkeit" component={Befindlichkeit} />
       <Route path="/nutzungsbedingungen" component={Nutzungsbedingungen} />
       <Route path="/rechts-checkliste" component={RechtsCheckliste} />
+      <Route path="/admin/coaching" component={CoachingDashboard} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
