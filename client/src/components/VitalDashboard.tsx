@@ -447,6 +447,17 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                               </div>
                             </div>
                           </div>
+                          {/* Befindlichkeit / Anmerkungen */}
+                          <div className="space-y-1.5">
+                            <Label className="text-zinc-400 text-xs">Befindlichkeit / Auffälligkeiten / Anmerkungen</Label>
+                            <textarea
+                              value={notes}
+                              onChange={e => setNotes(e.target.value)}
+                              placeholder="Wie fühlst du dich heute? Besonderheiten, Auffälligkeiten, Gedanken..."
+                              rows={3}
+                              className="w-full bg-black/50 border border-white/20 rounded-md px-3 py-2 text-sm text-white placeholder:text-zinc-600 resize-none focus:outline-none focus:ring-1 focus:ring-orange-500"
+                            />
+                          </div>
                           <div className="flex justify-end">
                             <Button type="submit" className="bg-white text-black hover:bg-white/90">Speichern</Button>
                           </div>
@@ -713,6 +724,9 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                         {entry.apnoeEin > 0  && <span className="text-teal-400">Apnoe EIN: <b>{entry.apnoeEin} min</b></span>}
                         {entry.temperature > 0 && <span className="text-blue-400">Temp: <b>{entry.temperature}°C</b></span>}
                       </div>
+                      {entry.notes && (
+                        <div className="text-xs text-zinc-500 italic mt-1 border-l-2 border-zinc-700 pl-2">{entry.notes}</div>
+                      )}
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => handleDelete(entry.id)}
                       className="text-zinc-700 hover:text-red-500 hover:bg-red-500/10 shrink-0">
