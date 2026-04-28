@@ -39,7 +39,9 @@ const STANDARD_ITEMS: { kategorie: TagesplanKategorie; label: string }[] = [
   { kategorie: 'atemtraining',   label: 'Apnoe-Messung' },
   { kategorie: 'kiich_training', label: 'BT 3× 7 min' },
   { kategorie: 'kiich_training', label: 'Befindlichkeitstraining' },
-  { kategorie: 'bewegung',       label: 'Bewegung / Sport' },
+  { kategorie: 'bewegung',       label: 'Bewegung 1 (frei)' },
+  { kategorie: 'bewegung',       label: 'Bewegung 2 (frei)' },
+  { kategorie: 'bewegung',       label: 'Bewegung 3 (frei)' },
   { kategorie: 'schlaf',         label: 'HRV-Messung (morgens)' },
 ];
 
