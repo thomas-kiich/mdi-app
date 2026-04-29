@@ -394,10 +394,11 @@ export const adminRouter = router({
       .limit(10);
 
     // Newsletter-Abonnenten (aktiv)
+    // Nutzt idx_newsletter_subscribers_active Index
     const [nlTotalResult] = await db
       .select({ count: count() })
       .from(newsletterSubscribers)
-      .where(sql`${newsletterSubscribers.active} = true`);
+      .where(eq(newsletterSubscribers.active, true));
     const totalNewsletterSubscribers = nlTotalResult?.count ?? 0;
 
     return {

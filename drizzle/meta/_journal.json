@@ -190,6 +190,13 @@
       "when": 1777364464654,
       "tag": "0026_kind_saracen",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "5",
+      "when": 1777449898696,
+      "tag": "0027_mature_sentinel",
+      "breakpoints": true
     }
   ]
 }

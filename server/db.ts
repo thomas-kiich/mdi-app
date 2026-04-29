@@ -1,19 +1,55 @@
 import { and, desc, eq, or } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2";
 import { randomBytes } from "crypto";
 import { InsertNewsletterSubscriber, InsertUser, newsletterSubscribers, users, einladungsCodes, referrals } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
+let _pool: mysql.Pool | null = null;
+
+// Create connection pool with optimized settings
+function createPool() {
+  if (_pool) return _pool;
+  
+  if (!process.env.DATABASE_URL) {
+    throw new Error("DATABASE_URL not set");
+  }
+  
+  try {
+    const dbUrl = new URL(process.env.DATABASE_URL);
+    
+    _pool = mysql.createPool({
+      host: dbUrl.hostname,
+      user: dbUrl.username,
+      password: dbUrl.password,
+      database: dbUrl.pathname.slice(1),
+      waitForConnections: true,
+      connectionLimit: 50,  // Erhöht von default 10
+      queueLimit: 0,        // Unbegrenzte Queue
+      idleTimeout: 60000,   // 1 Minute statt 8 Stunden
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 0,
+    });
+    
+    console.log("[Database] Connection pool created with limit=50");
+    return _pool;
+  } catch (error) {
+    console.error("[Database] Failed to create pool:", error);
+    throw error;
+  }
+}
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
   if (!_db && process.env.DATABASE_URL) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      const pool = createPool();
+      _db = drizzle(pool);
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
+      _pool = null;
     }
   }
   return _db;

@@ -1,4 +1,4 @@
-import { bigint, boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { bigint, boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar, index } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -738,7 +738,12 @@ export const vitalEintraege = mysqlTable("vital_eintraege", {
   createdAtMs: bigint("createdAtMs", { mode: "number" }).notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
+},
+(table) => ({
+  idxUserIdDatum: index("idx_vital_eintraege_userId_datum").on(table.userId, table.datum),
+  idxUserId: index("idx_vital_eintraege_userId").on(table.userId),
+})
+);
 export type VitalEintrag = typeof vitalEintraege.$inferSelect;
 export type InsertVitalEintrag = typeof vitalEintraege.$inferInsert;
 
@@ -761,6 +766,12 @@ export const coachingEinwilligungen = mysqlTable("coaching_einwilligungen", {
   ipAdresse: varchar("ipAdresse", { length: 45 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
+},
+(table) => ({
+  idxCoachIdWiderrufenAtMs: index("idx_coaching_einwilligungen_coachId_widerrufenAtMs").on(table.coachId, table.widerrufenAtMs),
+  idxCoachId: index("idx_coaching_einwilligungen_coachId").on(table.coachId),
+  idxUserId: index("idx_coaching_einwilligungen_userId").on(table.userId),
+})
+);
 export type CoachingEinwilligung = typeof coachingEinwilligungen.$inferSelect;
 export type InsertCoachingEinwilligung = typeof coachingEinwilligungen.$inferInsert;
