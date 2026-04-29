@@ -1182,3 +1182,11 @@
 - [x] AdminHub: Link zum Coaching Dashboard eingebunden
 - [x] App.tsx: Route /admin/coaching registriert
 - [x] Vitest: 7 Tests fuer vital Router (DSGVO-Text, Datum-Validierung)
+
+
+## Prio-2 Stabilitätsfixes für 5.000+ User (2026-04-29)
+- [x] N+1 Query-Probleme im Coaching-Dashboard beheben (JOIN-Queries statt separate Queries) – getZeitverlauf: 30 Queries → 1 Query
+- [x] Redis-Caching für häufige Queries einbauen (Befindlichkeits-Kategorien, Nutzer-Freigaben) – cache.ts mit TTL-Strategie
+- [x] Pagination für große Datenmengen implementieren (Vitalwerte, Coaching-Clients) – pagination.ts mit Offset + Cursor-basiert
+- [x] Performance-Tests schreiben und ausführen – 15 Tests bestanden
+- [ ] Checkpoint speichern: Prio-2 Stabilitätsfixes

@@ -1,9 +1,11 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { users, newsletterSubscribers, einschlafBibliothek, momentaufnahmen } from "../../drizzle/schema";
 import { sql, gte, count, like, or, eq, desc, and, lt } from "drizzle-orm";
+import { TRPCError } from "@trpc/server";
+import { cacheAdminStats, invalidateAdminStats } from "../_core/cache";
+import { paginationInputSchema, createPaginationResult, calculateOffset } from "../_core/pagination";
 
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
@@ -96,8 +98,9 @@ export const adminRouter = router({
       return { success: true, deletedId: input.userId };
     }),
 
-  // Nutzungsstatistiken: Einschlafbibliothek
+  // Nutzungsstatistiken: Einschlafbibliothek (mit Caching)
   getEinschlafStats: adminProcedure.query(async () => {
+    return cacheAdminStats("einschlaf", async () => {
     const db = await getDb();
     if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
 
@@ -158,10 +161,12 @@ export const adminRouter = router({
     const mitAudio = mitAudioResult?.count ?? 0;
 
     return { total, byKategorie, topThemen, aktivsteNutzer, letzterMonat, letzteWoche, mitAudio };
+    });
   }),
 
-  // Nutzungsstatistiken: Momentaufnahmen (YOHN-Training)
+  // Nutzungsstatistiken: Momentaufnahmen (YOHN-Training) (mit Caching)
   getMomentaufnahmenStats: adminProcedure.query(async () => {
+    return cacheAdminStats("momentaufnahmen", async () => {
     const db = await getDb();
     if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
 
@@ -214,41 +219,44 @@ export const adminRouter = router({
     const avgDauer = Math.round(avgResult?.avg ?? 0);
 
     return { total, byKategorie, aktivsteNutzer, letzterMonat, letzteWoche, avgDauer };
+    });
   }),
 
   // Zeitverlauf: Nutzung pro Tag (letzte 30 Tage)
+  // OPTIMIERT: 1 Query statt 30 (N+1 Problem behoben)
   getZeitverlauf: adminProcedure
     .input(z.object({ feature: z.enum(["einschlaf", "momentaufnahmen"]) }))
     .query(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "DB nicht verfügbar" });
 
-      const tage: { datum: string; count: number }[] = [];
+      const dreissigTageAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const now = new Date();
 
+      // Eine einzige Query mit GROUP BY DATE
+      const table = input.feature === "einschlaf" ? einschlafBibliothek : momentaufnahmen;
+      const results = await db
+        .select({
+          datum: sql<string>`DATE(${table.createdAt})`,
+          count: count(),
+        })
+        .from(table)
+        .where(gte(table.createdAt, dreissigTageAgo))
+        .groupBy(sql<string>`DATE(${table.createdAt})`)
+        .orderBy(sql<string>`DATE(${table.createdAt})`);
+
+      // Fülle fehlende Tage mit 0 auf
+      const tage: { datum: string; count: number }[] = [];
+      const resultMap = new Map(results.map(r => [r.datum, r.count]));
+
       for (let i = 29; i >= 0; i--) {
-        const start = new Date(now);
-        start.setDate(now.getDate() - i);
-        start.setHours(0, 0, 0, 0);
-        const end = new Date(start);
-        end.setDate(start.getDate() + 1);
-
-        let result;
-        if (input.feature === "einschlaf") {
-          [result] = await db
-            .select({ count: count() })
-            .from(einschlafBibliothek)
-            .where(and(gte(einschlafBibliothek.createdAt, start), lt(einschlafBibliothek.createdAt, end)));
-        } else {
-          [result] = await db
-            .select({ count: count() })
-            .from(momentaufnahmen)
-            .where(and(gte(momentaufnahmen.createdAt, start), lt(momentaufnahmen.createdAt, end)));
-        }
-
+        const date = new Date(now);
+        date.setDate(now.getDate() - i);
+        date.setHours(0, 0, 0, 0);
+        const dateStr = date.toISOString().split("T")[0];
         tage.push({
-          datum: start.toISOString().split("T")[0],
-          count: result?.count ?? 0,
+          datum: dateStr,
+          count: resultMap.get(dateStr) ?? 0,
         });
       }
 
