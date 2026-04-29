@@ -1189,4 +1189,6 @@
 - [x] Redis-Caching für häufige Queries einbauen (Befindlichkeits-Kategorien, Nutzer-Freigaben) – cache.ts mit TTL-Strategie
 - [x] Pagination für große Datenmengen implementieren (Vitalwerte, Coaching-Clients) – pagination.ts mit Offset + Cursor-basiert
 - [x] Performance-Tests schreiben und ausführen – 15 Tests bestanden
-- [ ] Checkpoint speichern: Prio-2 Stabilitätsfixes
+- [x] erinnerungen Tabelle migriert – Background-Job läuft sauber
+- [x] Redis Cloud eingerichtet (30MB kostenlos) – 4 Verbindungstests bestanden
+- [ ] Finaler Checkpoint speichern: KIICH 5.000+ User ready
