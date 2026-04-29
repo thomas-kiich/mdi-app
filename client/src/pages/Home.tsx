@@ -358,19 +358,21 @@ export default function Home() {
   const [showHistory, setShowHistory] = useState(false);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
   // Premium-Einstellungen dynamisch aus der Datenbank laden
-  const { data: premiumSettings } = trpc.premium.getSettings.useQuery();
-  const isPremiumMomentaufnahme = premiumSettings?.momentaufnahme ?? false;
-  const isPremiumBefindlichkeit = premiumSettings?.befindlichkeitstraining ?? false;
-  const isPremium = premiumSettings?.trainingscenter ?? false;
+  // DEAKTIVIERT: Verursacht Errors bei fehlender Tabelle
+  // const { data: premiumSettings } = trpc.premium.getSettings.useQuery();
+  const isPremiumMomentaufnahme = false; // premiumSettings?.momentaufnahme ?? false;
+  const isPremiumBefindlichkeit = false; // premiumSettings?.befindlichkeitstraining ?? false;
+  const isPremium = false; // premiumSettings?.trainingscenter ?? false;
   // Individuelle Nutzer-Freigaben für Dashboard-Bereiche
   const { data: myDashboardFreigaben } = trpc.training.getMyDashboardFreigaben.useQuery(
     undefined,
     { enabled: !!user } // Nur wenn eingeloggt
   );
   // Podcast-Episoden aus der Datenbank
-  const { data: podcastEpisodesData } = trpc.podcastEpisodes.list.useQuery();
-  const latestPodcastEpisode = podcastEpisodesData?.find(ep => ep.isLatest);
-  const olderPodcastEpisodes = podcastEpisodesData?.filter(ep => !ep.isLatest) ?? [];
+  // DEAKTIVIERT: Verursacht Errors bei fehlender Tabelle
+  // const { data: podcastEpisodesData } = trpc.podcastEpisodes.list.useQuery();
+  const latestPodcastEpisode = undefined; // podcastEpisodesData?.find(ep => ep.isLatest);
+  const olderPodcastEpisodes = []; // podcastEpisodesData?.filter(ep => !ep.isLatest) ?? [];
   const [showPodcast, setShowPodcast] = useState(false);
   const [showVisionsraum, setShowVisionsraum] = useState(false);
   const [showPraxis01, setShowPraxis01] = useState(false);
@@ -1532,7 +1534,8 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     </p>
                   </div>
 
-                  {/* ===== AKTUELLE EPISODE AUS DATENBANK ===== */}
+                  {/* ===== PODCAST SEKTION DEAKTIVIERT ===== */}
+                  {/* DEAKTIVIERT: Verursacht Errors bei fehlender Tabelle
                   {latestPodcastEpisode && (
                     <div id={`episode-${latestPodcastEpisode.episodeNumber}`} style={{scrollMarginTop: '80px'}}>
                       <p className="text-xs text-orange-400 uppercase tracking-widest font-mono mb-4">Aktuelle Episode</p>
@@ -1547,7 +1550,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     </div>
                   )}
 
-                  {/* ===== FRÜHERE EPISODEN AUS DATENBANK ===== */}
                   {olderPodcastEpisodes.length > 0 && (
                     <div className="border-t border-zinc-800 pt-8">
                       <p className="text-zinc-500 text-xs uppercase tracking-widest mb-6 text-center">Frühere Episoden</p>
@@ -1566,6 +1568,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       </div>
                     </div>
                   )}
+                  */}
 
                   {/* STIMMEN AUS DEM FELD */}
                   <div className="mt-10 mb-4 relative">

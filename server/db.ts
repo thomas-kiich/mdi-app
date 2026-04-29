@@ -30,6 +30,7 @@ function createPool() {
       idleTimeout: 60000,   // 1 Minute statt 8 Stunden
       enableKeepAlive: true,
       keepAliveInitialDelay: 0,
+      ssl: { rejectUnauthorized: false },  // TiDB Cloud erfordert SSL
     });
     
     console.log("[Database] Connection pool created with limit=50");
