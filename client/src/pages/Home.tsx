@@ -369,10 +369,9 @@ export default function Home() {
     { enabled: !!user } // Nur wenn eingeloggt
   );
   // Podcast-Episoden aus der Datenbank
-  // DEAKTIVIERT: Verursacht Errors bei fehlender Tabelle
-  // const { data: podcastEpisodesData } = trpc.podcastEpisodes.list.useQuery();
-  const latestPodcastEpisode = undefined; // podcastEpisodesData?.find(ep => ep.isLatest);
-  const olderPodcastEpisodes = []; // podcastEpisodesData?.filter(ep => !ep.isLatest) ?? [];
+  const { data: podcastEpisodesData } = trpc.podcastEpisodes.list.useQuery();
+  const latestPodcastEpisode = podcastEpisodesData?.find(ep => ep.isLatest);
+  const olderPodcastEpisodes = podcastEpisodesData?.filter(ep => !ep.isLatest) ?? [];
   const [showPodcast, setShowPodcast] = useState(false);
   const [showVisionsraum, setShowVisionsraum] = useState(false);
   const [showPraxis01, setShowPraxis01] = useState(false);
@@ -1455,7 +1454,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
           </div>
         );
     }
-  };
+  }
 
   // Nicht eingeloggt: Willkommens-Screen mit Manus-Login + DSGVO anzeigen
   if (!loading && !isAuthenticated) {
