@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Play, Music, ExternalLink } from "lucide-react";
+import { Play, Music, BookOpen, ExternalLink, ChevronDown, ChevronUp } from "lucide-react";
 
 interface PodcastFeatureProps {
   youtubeUrl?: string;
@@ -30,6 +30,9 @@ export function PodcastFeature({
   topLabel = "DIE HÖRBUCHSERIE",
   titleClassName = "text-3xl md:text-4xl font-bold mb-2",
 }: PodcastFeatureProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [descOpen, setDescOpen] = useState(false);
+
   return (
     <Card className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border-red-800/50 overflow-hidden">
       <CardContent className="p-0">
@@ -52,7 +55,6 @@ export function PodcastFeature({
 
           {/* Content */}
           <div className="md:col-span-2 p-6 space-y-4">
-            {/* Title Section */}
             <div>
               <div className="flex items-center gap-3 mb-2">
                 <p className="text-sm font-mono text-red-500 uppercase tracking-widest">
@@ -73,7 +75,7 @@ export function PodcastFeature({
                   title
                 )}
               </h2>
-              <div className="text-lg font-semibold">
+              <div className="text-lg font-semibold mb-4">
                 {subtitle.includes(" _ ") ? (
                   <>
                     <span className="text-orange-400">{subtitle.split(" _ ")[0]}</span>
@@ -84,11 +86,34 @@ export function PodcastFeature({
                   <span className="text-orange-400">{subtitle}</span>
                 )}
               </div>
+
+              {/* Collapsible description */}
+              {description && (
+                <div>
+                  <button
+                    onClick={() => setDescOpen(prev => !prev)}
+                    className="flex items-center gap-2 text-xs font-bold text-orange-400 uppercase tracking-widest hover:text-orange-300 transition-colors group"
+                  >
+                    <BookOpen className="w-3.5 h-3.5 shrink-0" />
+                    Inhalt dieser Episode hier nachlesen....
+                    {descOpen
+                      ? <ChevronUp className="w-3.5 h-3.5 shrink-0 transition-transform" />
+                      : <ChevronDown className="w-3.5 h-3.5 shrink-0 transition-transform" />
+                    }
+                  </button>
+
+                  {descOpen && (
+                    <div className="mt-3 text-zinc-300 leading-relaxed max-w-lg">
+                      {description}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Embedded Audio Player - MUST be before description */}
+            {/* Embedded Audio Player */}
             {audioUrl && (
-              <div>
+              <div className="pt-2">
                 <audio
                   key={audioUrl}
                   controls
@@ -96,6 +121,8 @@ export function PodcastFeature({
                   className="w-full rounded-md bg-zinc-900/50"
                   style={{ height: '48px' }}
                 >
+                  {/* CDN direkt – kein Proxy, da Live-Server bei GET ohne Range-Header 500 liefert.
+                      CDN hat access-control-allow-origin: * → kein CORS-Problem. */}
                   <source
                     src={`${audioUrl}?v=8`}
                     type="audio/mpeg"
@@ -105,15 +132,8 @@ export function PodcastFeature({
               </div>
             )}
 
-            {/* Description - shown directly without collapsible button */}
-            {description && (
-              <div className="text-zinc-300 leading-relaxed max-w-lg">
-                {description}
-              </div>
-            )}
-
             {/* Action Buttons */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-3 pt-4">
               {youtubeUrl && (
                 <Button
                   asChild
@@ -142,6 +162,7 @@ export function PodcastFeature({
 
               {customAction && customAction}
             </div>
+
           </div>
         </div>
       </CardContent>
