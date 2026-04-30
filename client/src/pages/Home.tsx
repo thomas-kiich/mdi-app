@@ -1533,8 +1533,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     </p>
                   </div>
 
-                  {/* ===== PODCAST SEKTION DEAKTIVIERT ===== */}
-                  {/* DEAKTIVIERT: Verursacht Errors bei fehlender Tabelle
+                  {/* ===== PODCAST SEKTION ===== */}
                   {latestPodcastEpisode && (
                     <div id={`episode-${latestPodcastEpisode.episodeNumber}`} style={{scrollMarginTop: '80px'}}>
                       <p className="text-xs text-orange-400 uppercase tracking-widest font-mono mb-4">Aktuelle Episode</p>
@@ -1567,7 +1566,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       </div>
                     </div>
                   )}
-                  */}
 
                   {/* STIMMEN AUS DEM FELD */}
                   <div className="mt-10 mb-4 relative">
