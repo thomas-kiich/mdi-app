@@ -87,28 +87,7 @@ export function PodcastFeature({
                 )}
               </div>
 
-              {/* Collapsible description */}
-              {description && (
-                <div>
-                  <button
-                    onClick={() => setDescOpen(prev => !prev)}
-                    className="flex items-center gap-2 text-xs font-bold text-orange-400 uppercase tracking-widest hover:text-orange-300 transition-colors group"
-                  >
-                    <BookOpen className="w-3.5 h-3.5 shrink-0" />
-                    Inhalt dieser Episode hier nachlesen....
-                    {descOpen
-                      ? <ChevronUp className="w-3.5 h-3.5 shrink-0 transition-transform" />
-                      : <ChevronDown className="w-3.5 h-3.5 shrink-0 transition-transform" />
-                    }
-                  </button>
-
-                  {descOpen && (
-                    <div className="mt-3 text-zinc-300 leading-relaxed max-w-lg">
-                      {description}
-                    </div>
-                  )}
-                </div>
-              )}
+              {/* Description removed - no collapsible description button */}
             </div>
 
             {/* Embedded Audio Player */}
