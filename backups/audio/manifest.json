@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-04-30T10:04:49.714Z",
+  "totalEpisodes": 4,
+  "successful": 3,
+  "failed": 1,
+  "backups": [
+    {
+      "episode": "01",
+      "status": "FAILED",
+      "reason": "Download failed"
+    },
+    {
+      "episode": "02",
+      "status": "SUCCESS",
+      "fileName": "EP02-extreme-zeiten!.mp3",
+      "hash": "6a5d26f5eff723a3f7872c2903f85878e3197b175d8c27913e7f1d8be540a429",
+      "size": 26725120,
+      "backupPath": "/home/ubuntu/mdi-app/backups/audio/EP02-extreme-zeiten!.mp3"
+    },
+    {
+      "episode": "03",
+      "status": "SUCCESS",
+      "fileName": "EP03-alles-klar!.mp3",
+      "hash": "b7cc76b2bf7c4abe63714258225af974a3e5681079bb527547c24b3845d95b85",
+      "size": 19108864,
+      "backupPath": "/home/ubuntu/mdi-app/backups/audio/EP03-alles-klar!.mp3"
+    },
+    {
+      "episode": "04",
+      "status": "SUCCESS",
+      "fileName": "EP04-echt-krass!.mp3",
+      "hash": "b04e936bf5f3468950950eab79c837ac63d7d01bab94cac441b73efafe9ad146",
+      "size": 116059319,
+      "backupPath": "/home/ubuntu/mdi-app/backups/audio/EP04-echt-krass!.mp3"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "scripts": {
+    "backup:audio": "node scripts/backup-audio-files.mjs",
+    "backup:database": "node scripts/backup-database.mjs",
+    "backup:all": "npm run backup:audio && npm run backup:database",
+    "monitor:audio": "node scripts/monitor-audio-urls.mjs",
+    "restore:database": "node scripts/restore-from-backup.mjs",
+    "backup:schedule": "node scripts/schedule-backups.mjs"
+  },
+  "description": "Add these scripts to your package.json 'scripts' section"
+}

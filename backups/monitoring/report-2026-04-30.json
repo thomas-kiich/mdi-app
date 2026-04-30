@@ -1,0 +1,39 @@
+{
+  "timestamp": "2026-04-30T10:05:31.664Z",
+  "totalEpisodes": 4,
+  "healthy": 3,
+  "unhealthy": 1,
+  "healthPercentage": "75.00",
+  "results": [
+    {
+      "episode": "01",
+      "status": "UNHEALTHY",
+      "url": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/2026-ep01-befehl-erteilt.mp3",
+      "httpStatus": 403
+    },
+    {
+      "episode": "02",
+      "status": "HEALTHY",
+      "url": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EP02_034d43ca.mp3",
+      "httpStatus": 200,
+      "contentType": "application/octet-stream",
+      "contentLength": "26725120"
+    },
+    {
+      "episode": "03",
+      "status": "HEALTHY",
+      "url": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EP03_285512b0.mp3",
+      "httpStatus": 200,
+      "contentType": "application/octet-stream",
+      "contentLength": "19108864"
+    },
+    {
+      "episode": "04",
+      "status": "HEALTHY",
+      "url": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EP04_7c0bf4f5.mp3",
+      "httpStatus": 200,
+      "contentType": "application/octet-stream",
+      "contentLength": "116059319"
+    }
+  ]
+}
