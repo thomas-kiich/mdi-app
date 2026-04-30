@@ -87,7 +87,12 @@ export function PodcastFeature({
                 )}
               </div>
 
-              {/* Description removed - no collapsible description button */}
+              {/* Show description directly without collapsible button */}
+              {description && (
+                <div className="mt-3 text-zinc-300 leading-relaxed max-w-lg">
+                  {description}
+                </div>
+              )}
             </div>
 
             {/* Embedded Audio Player */}
