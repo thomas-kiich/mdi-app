@@ -25,6 +25,8 @@ import AdminTts from "@/pages/AdminTts";
 import FAQ from "@/pages/FAQ";
 import Abo from "@/pages/Abo";
 import AdminFaq from "@/pages/AdminFaq";
+import AdminGeo from "@/pages/AdminGeo";
+import AdminBacklog from "@/pages/AdminBacklog";
 import AdminEpisoden from "@/pages/AdminEpisoden";
 import AdminBenutzer from "@/pages/AdminBenutzer";
 import AdminHub from "@/pages/AdminHub";
@@ -61,6 +63,8 @@ function Router() {
       <Route path="/faq" component={FAQ} />
       <Route path="/abo" component={Abo} />
       <Route path="/admin/faq" component={AdminFaq} />
+      <Route path="/admin/geo" component={AdminGeo} />
+      <Route path="/admin/backlog" component={AdminBacklog} />
       <Route path="/admin/episoden" component={AdminEpisoden} />
       <Route path="/admin/benutzer" component={AdminBenutzer} />
       <Route path="/admin/statistik" component={AdminStatistik} />

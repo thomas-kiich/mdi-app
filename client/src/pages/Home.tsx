@@ -759,10 +759,10 @@ export default function Home() {
                         {showAuthorText && (
                           <div className="bg-zinc-900/50 p-4 rounded-lg border border-orange-900/30 text-zinc-300 text-sm leading-relaxed mb-6 shadow-inner">
                             <p>
-                              Der Autor ist kein Physiker, Mediziner oder Programmierexperte. Vielmehr baut er sein Weltbild kontrovers aus der Sicht eines Brückenbauingenieurs, Musikers und Atemexperten auf. Diese drei Fähigkeiten vereint das Naturgesetz der Harmonie. Ein lebendiges System fordert ein harmonisches, sich selbst regulierendes Tun als Existenzgrundlage ein. Genau hier zieht der Autor die Trennlinie zwischen Mensch und Maschine. Die fundamentale Fähigkeit des ATMENS wird dabei als entscheidender Qualitätsunterschied bestätigt. In beeindruckender Weise komprimiert der Autor wissenschaftlich-philosophische Darlegungen zu einer einfach zugänglichen Alltagspraxis, der METHODE 36.
+                              Thomas Chochola verbindet seine 50-jährige Erfahrung als Jazzmusiker und Atemcoach mit seiner technischen Profession eines Strassen- und Brückenbauers. Sein athletischer Fitnesslevel als 66-jähriger weist den Weg für ein zeitgemässes Bewusstsein, wie man im Zeitalter der KI ethisch und selbstbestimmt ein glückerfülltes Dasein leben kann.
                             </p>
                             <p className="mt-3">
-                              Ein revolutionäres Hörbuch im Podcast-Format. Es verwebt die Originaltexte des Autors mit kontroversen Reflexionen KI-generierter Kompetenz zu einem lebendigen Dialog. Diese innovative Form bereitet anspruchsvolle wissenschaftliche und philosophische Themen leicht verständlich auf – um dich zu inspirieren und direkt in dein eigenes, selbstbestimmtes Tun mit der METHODE 36 zu führen.
+                              METHODE 36 basiert auf den wissenschaftlichen wie empirischen Erkenntnissen, wie der Stoffwechsel des Menschen durch atemzyklische Trainingseinheiten optimiert werden kann. Dabei entsteht eine naturgemässe Wiederherstellung der Kommunikation zwischen geistiger und körperhafter Kompetenz. Das Ergebnis: INTEGRATION statt KOLLISION durch wiederhergestellte Kommunikationsqualität des eigenen Geist-Körper-Komplexes.
                             </p>
                           </div>
                         )}

@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Link } from "wouter";
-import { ArrowLeft, Mail, Crown, Mic, Headphones, HelpCircle, BookOpen, Users, BarChart3, TrendingUp, Loader2, Activity } from "lucide-react";
+import { ArrowLeft, Mail, Crown, Mic, Headphones, HelpCircle, BookOpen, Users, BarChart3, TrendingUp, Loader2, Activity, Bot } from "lucide-react";
 
 const adminTools = [
   {
@@ -83,6 +83,24 @@ const adminTools = [
     bg: "bg-pink-500/5 hover:bg-pink-500/10",
     title: "Coaching Dashboard",
     desc: "Vitalwerte deiner Coaching-Clients einsehen",
+  },
+  {
+    href: "/admin/geo",
+    icon: Bot,
+    color: "text-orange-400",
+    border: "border-orange-500/30 hover:border-orange-400/60",
+    bg: "bg-orange-500/5 hover:bg-orange-500/10",
+    title: "GEO-Monitoring",
+    desc: "Sichtbarkeit in KI-Engines messen · ChatGPT · Perplexity · Claude",
+  },
+  {
+    href: "/admin/backlog",
+    icon: BookOpen,
+    color: "text-violet-400",
+    border: "border-violet-500/30 hover:border-violet-400/60",
+    bg: "bg-violet-500/5 hover:bg-violet-500/10",
+    title: "Strategischer Backlog",
+    desc: "Ideen, Vorhaben und offene Fragen für KIICH verwalten",
   },
 ];
 

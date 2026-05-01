@@ -1210,3 +1210,20 @@
 - [ ] Cron-Job für tägliche Validierung konfigurieren (optional)
 
 - [x] Button-Text "INHALT DIESER EPISODE HIER NACHLESEN" zu "MEHR LESEN" geändert (PodcastFeature.tsx)
+
+## GEO (Generative Engine Optimization)
+- [ ] Schema Markup implementieren (Podcast, Person, FAQ, WebSite)
+- [ ] GEO-optimierte Texte vorbereiten und Thomas zur Freigabe vorlegen
+- [ ] FAQ-Seite erstellen (nach Freigabe)
+- [ ] Homepage-Texte GEO-optimieren (nach Freigabe)
+- [ ] Episode-Beschreibungen GEO-optimieren (nach Freigabe)
+- [ ] Autor-Bio erweitern (nach Freigabe)
+- [ ] GEO-Monitoring-Seite im Admin-Bereich erstellen
+- [ ] Monatliche Test-Prompts für ChatGPT/Perplexity/Claude dokumentieren
+- [ ] Google Alert Setup-Anleitung integrieren
+- [ ] GEO-Wirksamkeits-Dashboard (Traffic-Quellen, Erwähnungen)
+- [ ] Admin-Backlog-Seite mit DB-Anbindung bauen (/admin/backlog)
+- [ ] Monatlichen Cron-Job für GEO-Erinnerungen einrichten
+- [x] GEO-Texte in index.html (Meta-Description + Schema Markup) aktualisieren
+- [x] FAQ-Seite mit neuen KIICH-Statements erweitern (5.1–5.5)
+- [x] Homepage-Texte aktualisieren (Thomas-Bio, METHODE 36)

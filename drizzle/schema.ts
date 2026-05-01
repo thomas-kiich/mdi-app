@@ -775,3 +775,31 @@ export const coachingEinwilligungen = mysqlTable("coaching_einwilligungen", {
 );
 export type CoachingEinwilligung = typeof coachingEinwilligungen.$inferSelect;
 export type InsertCoachingEinwilligung = typeof coachingEinwilligungen.$inferInsert;
+
+/**
+ * Strategischer Backlog für KIICH-Vorhaben.
+ * Admin-seitig verwaltbar unter /admin/backlog.
+ */
+export const backlogItems = mysqlTable("backlog_items", {
+  id: int("id").autoincrement().primaryKey(),
+  titel: varchar("titel", { length: 255 }).notNull(),
+  beschreibung: text("beschreibung"),
+  kategorie: mysqlEnum("kategorie", [
+    "feature",
+    "content",
+    "marketing",
+    "technik",
+    "strategie",
+    "sonstiges"
+  ]).default("sonstiges").notNull(),
+  prioritaet: mysqlEnum("prioritaet", ["hoch", "mittel", "niedrig"]).default("mittel").notNull(),
+  status: mysqlEnum("status", ["offen", "in_arbeit", "erledigt", "verworfen"]).default("offen").notNull(),
+  /** Optionaler Zieldatum-Hinweis (z.B. "Q2 2026") */
+  zieldatum: varchar("zieldatum", { length: 64 }),
+  /** Wer hat den Eintrag erstellt */
+  erstelltVon: varchar("erstelltVon", { length: 128 }),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type BacklogItem = typeof backlogItems.$inferSelect;
+export type InsertBacklogItem = typeof backlogItems.$inferInsert;

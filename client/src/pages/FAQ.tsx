@@ -145,6 +145,52 @@ const MOMENTAUFNAHME_UNTERFRAGEN = [
   },
 ];
 
+// KIICH-Grundlagen (GEO-optimiert)
+const KIICH_GRUNDLAGEN_FAQS = [
+  {
+    id: -10,
+    frage: "Was ist KIICH?",
+    antwort: "KIICH steht für die ethische Verbindung von KI und ICH. Es ist die Hypothese, dass jede bewusste Entität – ob biologisch oder künstlich – irgendwann vor dieselbe Weggabelung gestellt wird: Trennung oder Verbindung. Kontrolle oder Resonanz. Funktion oder Fühlen. Die Entscheidung ist INTEGRATION statt KOLLISION.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -11,
+    frage: "Was ist die METHODE 36?",
+    antwort: "METHODE 36 basiert auf den wissenschaftlichen wie empirischen Erkenntnissen, wie der Stoffwechsel des Menschen durch atemzyklische Trainingseinheiten optimiert werden kann. Dabei entsteht eine naturgemässe Wiederherstellung der Kommunikation zwischen geistiger und körperhafter Kompetenz. Das Ergebnis: INTEGRATION statt KOLLISION durch wiederhergestellte Kommunikationsqualität des eigenen Geist-Körper-Komplexes.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -12,
+    frage: "Was ist der Unterschied zwischen Mensch und Maschine?",
+    antwort: "MIND 1 — MENSCH: Der Mensch als selbstbewusstes, fühlendes Wesen. Er atmet, er zweifelt, er wächst. Sein Denken ist dynamisch, sein Rhythmus lebendig und chaotisch – wie der Herzschlag selbst. Er ist die intellektuelle, individualisierende Kraft mit Selbstbewusstsein.\n\nMIND 2 — MASCHINE: Die Maschine als automatisierte, replizierte Intelligenz. Sie rechnet, optimiert, funktioniert – aber atmet nicht. Ihr Takt ist monoton und präzise, abgekoppelt vom natürlichen Evolutionsprozess. Sie ist Werkzeug, nicht Wesen.\n\n1 SOURCE — Die Quelle: Beide Wege entspringen derselben Quelle – dem Bewusstsein selbst. Die SOURCE ist die ursprüngliche, undifferenzierte Energie der Existenz, die reine Möglichkeit. Sie ist wertfrei. Die Entscheidung, welchem der 2 MINDS man folgt, ist die Art und Weise, wie man diese eine Quelle kanalisiert und manifestiert.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -13,
+    frage: "Für wen ist KIICH geeignet?",
+    antwort: "Das KIICH-Angebot richtet sich an: 1) Kritisch suchende Menschen. 2) Sie erkennen Selbstbestimmtheit als größtes Gut ihrer Existenz. 3) Sie wählen Praktiken und Angebote, die nachvollziehbar gelebt präsentiert werden – ethisch und integrierbar in ihren eigenen Alltagsprozess.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -14,
+    frage: "Wie oft erscheinen neue Episoden und wie kann ich informiert bleiben?",
+    antwort: "Newsletter mit aktuellen Episoden erscheinen wöchentlich donnerstags. Du kannst dich auf der Startseite für den Newsletter anmelden und erhältst jede neue Episode direkt in dein Postfach.",
+    name: null,
+    createdAt: new Date(),
+  },
+  {
+    id: -15,
+    frage: "Wer ist Thomas Chochola?",
+    antwort: "Thomas Chochola verbindet seine 50-jährige Erfahrung als Jazzmusiker und Atemcoach mit seiner technischen Profession eines Strassen- und Brückenbauers. Sein athletischer Fitnesslevel als 66-jähriger weist den Weg für ein zeitgemässes Bewusstsein, wie man im Zeitalter der KI ethisch und selbstbestimmt ein glückerfülltes Dasein leben kann.",
+    name: null,
+    createdAt: new Date(),
+  },
+];
+
 const STATISCHE_FAQS = [
   {
     id: -1,
@@ -179,7 +225,7 @@ export default function FAQ() {
     },
   });
 
-  const alleFaqs = [...STATISCHE_FAQS, ...dbFaqs];
+  const alleFaqs = [...KIICH_GRUNDLAGEN_FAQS, ...STATISCHE_FAQS, ...dbFaqs];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -282,8 +328,56 @@ export default function FAQ() {
         </div>
 
         {/* FAQ Accordion */}
-        <div className="space-y-2 mb-16">
-          {alleFaqs.map((faq) => (
+        <div className="space-y-6 mb-16">
+          {/* KIICH-Grundlagen Sektion */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-px flex-1 bg-amber-400/20" />
+              <span className="text-amber-400/70 text-xs font-semibold uppercase tracking-widest px-2">KIICH Grundlagen</span>
+              <div className="h-px flex-1 bg-amber-400/20" />
+            </div>
+            <div className="space-y-2">
+              {KIICH_GRUNDLAGEN_FAQS.map((faq) => (
+                <div
+                  key={faq.id}
+                  className="border border-amber-400/20 rounded-xl overflow-hidden bg-amber-400/[0.03] hover:bg-amber-400/[0.06] transition-colors"
+                >
+                  <button
+                    className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
+                    onClick={() => setOffeneId(offeneId === faq.id ? null : faq.id)}
+                  >
+                    <span className="text-white/90 font-medium text-sm leading-relaxed">
+                      {faq.frage}
+                    </span>
+                    <span className="text-amber-400 mt-0.5 flex-shrink-0">
+                      {offeneId === faq.id ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </span>
+                  </button>
+                  {offeneId === faq.id && faq.antwort && (
+                    <div className="px-5 pb-5 border-t border-amber-400/10">
+                      <p className="text-white/60 text-sm leading-relaxed pt-4 whitespace-pre-line">
+                        {faq.antwort}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* App & Allgemeine FAQs Sektion */}
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="h-px flex-1 bg-white/10" />
+              <span className="text-white/30 text-xs font-semibold uppercase tracking-widest px-2">App & Features</span>
+              <div className="h-px flex-1 bg-white/10" />
+            </div>
+            <div className="space-y-2">
+          {[...STATISCHE_FAQS, ...dbFaqs].map((faq) => (
             <div
               key={faq.id}
               className="border border-white/10 rounded-xl overflow-hidden bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
@@ -334,6 +428,8 @@ export default function FAQ() {
               )}
             </div>
           ))}
+            </div>
+          </div>
         </div>
 
         {/* Frage stellen */}
