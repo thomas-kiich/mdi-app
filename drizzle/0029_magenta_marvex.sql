@@ -1,0 +1,1 @@
+ALTER TABLE `podcast_episodes` DROP INDEX `uc_latest_episode`;

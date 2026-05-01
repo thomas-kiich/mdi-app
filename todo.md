@@ -1192,3 +1192,19 @@
 - [x] erinnerungen Tabelle migriert – Background-Job läuft sauber
 - [x] Redis Cloud eingerichtet (30MB kostenlos) – 4 Verbindungstests bestanden
 - [ ] Finaler Checkpoint speichern: KIICH 5.000+ User ready
+
+
+## 🔒 Sicherheitsfixes - Podcast Episode Integrität (SOFORT)
+- [ ] Database Constraint hinzufügen: UNIQUE (isLatest) WHERE isLatest = true
+- [ ] Backend-Validierung in podcastEpisodes.update verschärfen
+- [ ] Monitoring-Script für tägliche Integrität-Checks
+- [ ] Frontend-Fehlerbehandlung für mehrere isLatest=true
+- [ ] Tests für Podcast-Episode-Logik schreiben
+
+## 🔒 Sicherheitsfixes - Podcast Episode Integrität (UMGESETZT)
+- [x] Backend-Validierung in podcastEpisodes.create und .update verschärft
+- [x] Monitoring-Procedure validateIntegrity hinzugefügt
+- [x] Validierungs-Job für tägliche Integrität-Checks erstellt
+- [x] Frontend-Hook usePodcastValidation für Fehlerbehandlung erstellt
+- [x] Umfangreiche Test-Suite mit 12 Tests geschrieben und bestanden
+- [ ] Cron-Job für tägliche Validierung konfigurieren (optional)

@@ -3,7 +3,8 @@ import { publicProcedure, protectedProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getDb } from "../db";
 import { podcastEpisodes } from "../../drizzle/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, count, ne, and } from "drizzle-orm";
+import { notifyOwner } from "../_core/notification";
 
 /** Nur Admin darf schreiben */
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -54,12 +55,22 @@ export const podcastEpisodesRouter = router({
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      
+      // ✓ VALIDIERUNG: Wenn isLatest=true, setze alle anderen auf false
       if (input.isLatest) {
-        await db
-          .update(podcastEpisodes)
-          .set({ isLatest: false })
+        const [existing] = await db
+          .select({ count: count() })
+          .from(podcastEpisodes)
           .where(eq(podcastEpisodes.isLatest, true));
+        
+        if (existing?.count > 0) {
+          await db
+            .update(podcastEpisodes)
+            .set({ isLatest: false })
+            .where(eq(podcastEpisodes.isLatest, true));
+        }
       }
+      
       const [result] = await db.insert(podcastEpisodes).values(input);
       return { id: (result as any).insertId };
     }),
@@ -84,17 +95,35 @@ export const podcastEpisodesRouter = router({
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      
       const { id, ...data } = input;
-      if (data.isLatest) {
-        await db
-          .update(podcastEpisodes)
-          .set({ isLatest: false })
-          .where(eq(podcastEpisodes.isLatest, true));
+      
+      // ✓ VALIDIERUNG: Wenn isLatest=true, setze alle anderen (außer diese) auf false
+      if (data.isLatest === true) {
+        const [existing] = await db
+          .select({ count: count() })
+          .from(podcastEpisodes)
+          .where(and(
+            eq(podcastEpisodes.isLatest, true),
+            ne(podcastEpisodes.id, id)
+          ));
+        
+        if (existing?.count > 0) {
+          await db
+            .update(podcastEpisodes)
+            .set({ isLatest: false })
+            .where(and(
+              eq(podcastEpisodes.isLatest, true),
+              ne(podcastEpisodes.id, id)
+            ));
+        }
       }
+      
       await db
         .update(podcastEpisodes)
         .set(data as any)
         .where(eq(podcastEpisodes.id, id));
+      
       return { ok: true };
     }),
 
@@ -109,5 +138,38 @@ export const podcastEpisodesRouter = router({
         .where(eq(podcastEpisodes.id, input.id));
       return { ok: true };
     }),
+
+  /** ✓ MONITORING: Validiere Podcast-Datenbank-Integrität */
+  validateIntegrity: publicProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) return { ok: false, error: "DB nicht verfügbar" };
+    
+    try {
+      // Zähle Episoden mit isLatest=true
+      const [result] = await db
+        .select({ count: count() })
+        .from(podcastEpisodes)
+        .where(eq(podcastEpisodes.isLatest, true));
+      
+      const latestCount = result?.count ?? 0;
+      
+      if (latestCount !== 1) {
+        console.error(`❌ PODCAST INTEGRITY CHECK FAILED: ${latestCount} episodes marked as latest`);
+        
+        // Sende Alert an Owner
+        await notifyOwner({
+          title: "🚨 Podcast Datenbank-Fehler",
+          content: `${latestCount} Episoden sind als 'latest' markiert. Bitte überprüfen.`
+        }).catch(() => {});
+        
+        return { ok: false, error: `${latestCount} episodes with isLatest=true (expected 1)` };
+      }
+      
+      return { ok: true, latestCount };
+    } catch (err: any) {
+      console.error("Integrity check error:", err.message);
+      return { ok: false, error: err.message };
+    }
+  }),
 
 });
