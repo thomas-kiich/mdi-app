@@ -920,8 +920,7 @@ export default function Home() {
                 <NewsletterSignup source="podcast" />
               </div>
 
-              {/* Admin-Statistik-Dashboard – nur für Admins sichtbar */}
-              {user?.role === "admin" && <AdminStatsDashboard />}
+
               
             </div>
         );
