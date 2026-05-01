@@ -1208,3 +1208,5 @@
 - [x] Frontend-Hook usePodcastValidation für Fehlerbehandlung erstellt
 - [x] Umfangreiche Test-Suite mit 12 Tests geschrieben und bestanden
 - [ ] Cron-Job für tägliche Validierung konfigurieren (optional)
+
+- [x] Button-Text "INHALT DIESER EPISODE HIER NACHLESEN" zu "MEHR LESEN" geändert (PodcastFeature.tsx)

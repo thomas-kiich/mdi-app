@@ -95,7 +95,7 @@ export function PodcastFeature({
                     className="flex items-center gap-2 text-xs font-bold text-orange-400 uppercase tracking-widest hover:text-orange-300 transition-colors group"
                   >
                     <BookOpen className="w-3.5 h-3.5 shrink-0" />
-                    Inhalt dieser Episode hier nachlesen....
+                    Mehr lesen
                     {descOpen
                       ? <ChevronUp className="w-3.5 h-3.5 shrink-0 transition-transform" />
                       : <ChevronDown className="w-3.5 h-3.5 shrink-0 transition-transform" />
