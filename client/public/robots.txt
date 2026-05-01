@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.kiich.de/sitemap.xml
+
+# Admin-Bereich nicht indexieren
+Disallow: /admin/
+Disallow: /api/
+Disallow: /momentaufnahme/app
+Disallow: /momentaufnahme/archiv
+Disallow: /momentaufnahme/obsidian
+Disallow: /obsidian
+Disallow: /newsletter/bestaetigen
+Disallow: /newsletter/abmelden
+Disallow: /befindlichkeit
+Disallow: /rechts-checkliste

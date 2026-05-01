@@ -1227,3 +1227,6 @@
 - [x] GEO-Texte in index.html (Meta-Description + Schema Markup) aktualisieren
 - [x] FAQ-Seite mit neuen KIICH-Statements erweitern (5.1–5.5)
 - [x] Homepage-Texte aktualisieren (Thomas-Bio, METHODE 36)
+- [x] Sitemap.xml erstellen und in public/ ablegen
+- [x] robots.txt mit Sitemap-Verweis optimieren
+- [x] Google Search Console Anleitung erstellen
