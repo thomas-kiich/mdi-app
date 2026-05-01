@@ -714,13 +714,7 @@ export default function Home() {
                       >
                         NEWSLETTER
                       </button>
-                      <button
-                        onClick={() => document.getElementById('vorschau-april-2026')?.scrollIntoView({behavior: 'smooth'})}
-                        className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border transition-all duration-200"
-                        style={{borderColor: 'rgba(245,166,35,0.5)', color: '#f5a623'}}
-                      >
-                        VORSCHAU APRIL 2026
-                      </button>
+
                       <button
                         onClick={() => setLocation('/momentaufnahme')}
                         className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-violet-500/60 text-violet-300 hover:border-violet-400 hover:text-violet-200 transition-colors"
