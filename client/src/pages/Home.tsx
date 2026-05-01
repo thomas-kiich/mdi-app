@@ -708,12 +708,6 @@ export default function Home() {
                       >
                         HÖRBUCH
                       </button>
-                      <button
-                        onClick={() => document.getElementById('newsletter-section')?.scrollIntoView({behavior: 'smooth'})}
-                        className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-600 hover:border-white text-zinc-300 hover:text-white transition-all duration-200"
-                      >
-                        NEWSLETTER
-                      </button>
 
                       <button
                         onClick={() => setLocation('/momentaufnahme')}
