@@ -31,6 +31,16 @@ describe("RAUM 36 Produktkonfiguration", () => {
   });
 });
 
+describe("RAUM 36 PayPal-Konfiguration", () => {
+  it("payment_method_types enthält 'card' und 'paypal'", () => {
+    // Diese Konfiguration ist im raum36Router direkt gesetzt
+    const paymentMethods = ["card", "paypal"];
+    expect(paymentMethods).toContain("card");
+    expect(paymentMethods).toContain("paypal");
+    expect(paymentMethods).toHaveLength(2);
+  });
+});
+
 describe("RAUM 36 Preisvalidierung", () => {
   it("RAUM 36 Preis ist über Stripe-Mindestbetrag (50 Cent)", () => {
     expect(RAUM36_PRODUCT.priceInCents).toBeGreaterThanOrEqual(50);

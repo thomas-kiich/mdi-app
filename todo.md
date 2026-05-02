@@ -1242,3 +1242,6 @@
 - [x] Frontend: Checkout-Flow für beide Produkte
 - [x] Frontend: Pseudonym-Auswahl beim Betreten des RAUM 36
 - [ ] Stimmklanganalyse hinter Paywall stellen (optional, separate Task)
+
+## PayPal Integration
+- [x] PayPal als payment_method_type in Stripe Checkout Sessions einbinden (RAUM 36 + Stimmklanganalyse)
