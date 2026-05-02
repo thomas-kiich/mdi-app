@@ -1230,3 +1230,15 @@
 - [x] Sitemap.xml erstellen und in public/ ablegen
 - [x] robots.txt mit Sitemap-Verweis optimieren
 - [x] Google Search Console Anleitung erstellen
+- [ ] Sicherheits-Audit: Öffentlich sichtbare nutzerspezifische Daten prüfen und beheben
+
+## RAUM 36 & Monetarisierung
+- [x] Stripe-Integration einrichten (sk_test Key)
+- [x] Stripe-Produkte anlegen: RAUM 36 Abo (€ 4,90/Monat) + Stimmklanganalyse (€ 96,– einmalig)
+- [x] DB-Schema: subscriptions, raum36_posts, raum36_questions Tabellen
+- [x] Backend: Stripe Webhook, Abo-Status-Verwaltung
+- [x] Backend: RAUM 36 Procedures (Wochenvideo, Fragen, Wissenspool)
+- [x] Frontend: RAUM 36 Hauptseite mit 4 Bereichen (Wochenvideo, Fragen, Wissenspool, Vitalmonitor)
+- [x] Frontend: Checkout-Flow für beide Produkte
+- [x] Frontend: Pseudonym-Auswahl beim Betreten des RAUM 36
+- [ ] Stimmklanganalyse hinter Paywall stellen (optional, separate Task)

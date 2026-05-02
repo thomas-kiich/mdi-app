@@ -217,6 +217,9 @@ importers:
       streamdown:
         specifier: ^1.4.0
         version: 1.4.0(@types/react@19.2.1)(react@19.2.1)
+      stripe:
+        specifier: ^22.1.0
+        version: 22.1.0(@types/node@24.7.0)
       superjson:
         specifier: ^1.13.3
         version: 1.13.3
@@ -5457,6 +5460,15 @@ packages:
   strip-comments@2.0.1:
     resolution: {integrity: sha512-ZprKx+bBLXv067WTCALv8SSz5l2+XhpYCsVtSqlMnkAXMWDq+/ekVbl1ghqP9rUHTzv6sm/DwCOiYutU/yp1fw==}
     engines: {node: '>=10'}
+
+  stripe@22.1.0:
+    resolution: {integrity: sha512-w/xHyJGxXWnLPbNHG13sz/fae0MrFGC80Oz7YbICQymbfpqfEcsoG+6yG+9BWb81PWc4rrkeSO4wmTcmefmbLw==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   strnum@2.2.2:
     resolution: {integrity: sha512-DnR90I+jtXNSTXWdwrEy9FakW7UX+qUZg28gj5fk2vxxl7uS/3bpI4fjFYVmdK9etptYBPNkpahuQnEwhwECqA==}
@@ -12008,6 +12020,10 @@ snapshots:
       is-regexp: 1.0.0
 
   strip-comments@2.0.1: {}
+
+  stripe@22.1.0(@types/node@24.7.0):
+    optionalDependencies:
+      '@types/node': 24.7.0
 
   strnum@2.2.2: {}
 

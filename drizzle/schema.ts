@@ -803,3 +803,115 @@ export const backlogItems = mysqlTable("backlog_items", {
 });
 export type BacklogItem = typeof backlogItems.$inferSelect;
 export type InsertBacklogItem = typeof backlogItems.$inferInsert;
+
+/**
+ * RAUM 36 – Subscriptions
+ * Speichert den Stripe-Subscription-Status und den Pseudonym des Nutzers.
+ * Stripe ist die einzige Quelle der Wahrheit für Zahlungsstatus.
+ */
+export const raum36Subscriptions = mysqlTable("raum36_subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Stripe Customer ID für API-Abfragen */
+  stripeCustomerId: varchar("stripeCustomerId", { length: 128 }),
+  /** Stripe Subscription ID für Statusabfragen */
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 128 }),
+  /** Gecachter Status für schnelle Abfragen – wird via Webhook aktualisiert */
+  status: mysqlEnum("status", ["active", "inactive", "cancelled", "past_due"]).default("inactive").notNull(),
+  /** Pseudonym des Nutzers im RAUM 36 (frei wählbar, einmalig) */
+  pseudonym: varchar("pseudonym", { length: 64 }),
+  /** Zeitpunkt der ersten Aktivierung */
+  activatedAt: timestamp("activatedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type Raum36Subscription = typeof raum36Subscriptions.$inferSelect;
+export type InsertRaum36Subscription = typeof raum36Subscriptions.$inferInsert;
+
+/**
+ * RAUM 36 – Wochenvideo-Posts (nur Thomas kann posten)
+ */
+export const raum36Posts = mysqlTable("raum36_posts", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Titel des Wochenvideos */
+  titel: varchar("titel", { length: 255 }).notNull(),
+  /** Beschreibung / Begleittext */
+  beschreibung: text("beschreibung"),
+  /** YouTube-URL oder direkter Video-Link */
+  videoUrl: varchar("videoUrl", { length: 512 }),
+  /** Optionaler Thumbnail-URL */
+  thumbnailUrl: varchar("thumbnailUrl", { length: 512 }),
+  /** Nur sichtbar wenn published=true */
+  published: boolean("published").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type Raum36Post = typeof raum36Posts.$inferSelect;
+export type InsertRaum36Post = typeof raum36Posts.$inferInsert;
+
+/**
+ * RAUM 36 – Fragen von Mitgliedern (nur Thomas antwortet)
+ * Alle Fragen und Antworten sind für alle Mitglieder sichtbar (mit Pseudonym).
+ */
+export const raum36Fragen = mysqlTable("raum36_fragen", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Nutzer-ID des Fragestellers */
+  userId: int("userId").notNull(),
+  /** Pseudonym des Fragestellers (aus raum36_subscriptions) */
+  pseudonym: varchar("pseudonym", { length: 64 }).notNull(),
+  /** Die Frage */
+  frage: text("frage").notNull(),
+  /** Antwort von Thomas (null = noch nicht beantwortet) */
+  antwort: text("antwort"),
+  /** Zeitpunkt der Antwort */
+  beantwortetAt: timestamp("beantwortetAt"),
+  /** Sichtbar für alle Mitglieder */
+  sichtbar: boolean("sichtbar").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type Raum36Frage = typeof raum36Fragen.$inferSelect;
+export type InsertRaum36Frage = typeof raum36Fragen.$inferInsert;
+
+/**
+ * RAUM 36 – Wissenspool (spezielle Podcasts, Fakten, Ressourcen)
+ * Nur Thomas kann Einträge erstellen.
+ */
+export const raum36Wissenspool = mysqlTable("raum36_wissenspool", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Titel des Eintrags */
+  titel: varchar("titel", { length: 255 }).notNull(),
+  /** Beschreibung */
+  beschreibung: text("beschreibung"),
+  /** Typ: podcast, artikel, fakt, video, tool */
+  typ: mysqlEnum("typ", ["podcast", "artikel", "fakt", "video", "tool", "sonstiges"]).default("sonstiges").notNull(),
+  /** URL zum Inhalt */
+  url: varchar("url", { length: 512 }),
+  /** Nur sichtbar wenn published=true */
+  published: boolean("published").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type Raum36Wissenspool = typeof raum36Wissenspool.$inferSelect;
+export type InsertRaum36Wissenspool = typeof raum36Wissenspool.$inferInsert;
+
+/**
+ * Stimmklanganalyse – Bestellungen (Einmalzahlung €96)
+ * Stripe ist die Quelle der Wahrheit für den Zahlungsstatus.
+ */
+export const stimmklanganalyseOrders = mysqlTable("stimmklanganalyse_orders", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Stripe Payment Intent ID */
+  stripePaymentIntentId: varchar("stripePaymentIntentId", { length: 128 }),
+  /** Stripe Customer ID */
+  stripeCustomerId: varchar("stripeCustomerId", { length: 128 }),
+  /** Gecachter Status */
+  status: mysqlEnum("status", ["pending", "paid", "cancelled", "refunded"]).default("pending").notNull(),
+  /** Zeitpunkt der Zahlung */
+  paidAt: timestamp("paidAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type StimmklanganalyseOrder = typeof stimmklanganalyseOrders.$inferSelect;
+export type InsertStimmklanganalyseOrder = typeof stimmklanganalyseOrders.$inferInsert;

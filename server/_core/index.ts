@@ -9,6 +9,7 @@ import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import audioUploadRouter from "../routes/audioUpload";
 import obsidianSyncRouter from "../routes/obsidianSync";
+import stripeWebhookRouter from "../routes/stripeWebhook";
 import { startPushJob } from "../pushJob";
 
 function isPortAvailable(port: number): Promise<boolean> {
@@ -33,6 +34,8 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  // Stripe Webhook MUSS vor express.json() registriert werden (raw body für Signaturverifikation)
+  app.use(stripeWebhookRouter);
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));

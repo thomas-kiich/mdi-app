@@ -35,6 +35,8 @@ import Befindlichkeit from "@/pages/Befindlichkeit";
 import { Nutzungsbedingungen } from "@/pages/Nutzungsbedingungen";
 import { RechtsCheckliste } from "@/pages/RechtsCheckliste";
 import CoachingDashboard from "@/pages/CoachingDashboard";
+import Raum36 from "@/pages/Raum36";
+import Stimmklanganalyse from "@/pages/Stimmklanganalyse";
 import { VornameProvider, useVorname } from "@/contexts/VornameContext";
 import { OnboardingNameModal } from "@/components/OnboardingNameModal";
 import { UpdateBanner } from "@/components/UpdateBanner";
@@ -73,6 +75,8 @@ function Router() {
       <Route path="/nutzungsbedingungen" component={Nutzungsbedingungen} />
       <Route path="/rechts-checkliste" component={RechtsCheckliste} />
       <Route path="/admin/coaching" component={CoachingDashboard} />
+      <Route path="/raum36" component={Raum36} />
+      <Route path="/stimmklanganalyse" component={Stimmklanganalyse} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

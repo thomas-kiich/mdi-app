@@ -16,4 +16,6 @@ export const ENV = {
   mistralApiKey: process.env.MISTRAL_API_KEY ?? "",
   vapidPublicKey: process.env.VAPID_PUBLIC_KEY ?? "",
   vapidPrivateKey: process.env.VAPID_PRIVATE_KEY ?? "",
+  stripeSecretKey: process.env.STRIPE_SECRET_KEY ?? "",
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? "",
 };

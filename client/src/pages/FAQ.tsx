@@ -377,57 +377,57 @@ export default function FAQ() {
               <div className="h-px flex-1 bg-white/10" />
             </div>
             <div className="space-y-2">
-          {[...STATISCHE_FAQS, ...dbFaqs].map((faq) => (
-            <div
-              key={faq.id}
-              className="border border-white/10 rounded-xl overflow-hidden bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
-            >
-              <button
-                className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
-                onClick={() => setOffeneId(offeneId === faq.id ? null : faq.id)}
-              >
-                <span className="text-white/90 font-medium text-sm leading-relaxed">
-                  {faq.frage}
-                </span>
-                <span className="text-amber-400 mt-0.5 flex-shrink-0">
-                  {offeneId === faq.id ? (
-                    <ChevronUp className="w-4 h-4" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4" />
-                  )}
-                </span>
-              </button>
-              {offeneId === faq.id && faq.antwort && (
-                <div className="px-5 pb-5 border-t border-white/10">
-                  <p className="text-white/60 text-sm leading-relaxed pt-4">
-                    {faq.antwort}
-                  </p>
-                  {/* Unterfragen (z.B. für MOMENTAUFNAHME) */}
-                  {(faq as any).unterfragen && (
-                    <div className="mt-4 space-y-2">
-                      <p className="text-amber-400/70 text-xs font-semibold uppercase tracking-wider mb-3">Details</p>
-                      {(faq as any).unterfragen.map((uf: any, idx: number) => (
-                        <details key={idx} className="group border border-white/10 rounded-lg overflow-hidden">
-                          <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none hover:bg-white/[0.04] transition-colors">
-                            <span className="text-white/70 text-sm">{uf.frage}</span>
-                            <ChevronDown className="w-3.5 h-3.5 text-amber-400/60 group-open:rotate-180 transition-transform flex-shrink-0" />
-                          </summary>
-                          <div className="px-4 pb-4 pt-2 border-t border-white/10">
-                            <p className="text-white/50 text-sm leading-relaxed">{uf.antwort}</p>
-                          </div>
-                        </details>
-                      ))}
+              {[...STATISCHE_FAQS, ...dbFaqs].map((faq) => (
+                <div
+                  key={faq.id}
+                  className="border border-white/10 rounded-xl overflow-hidden bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
+                >
+                  <button
+                    className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
+                    onClick={() => setOffeneId(offeneId === faq.id ? null : faq.id)}
+                  >
+                    <span className="text-white/90 font-medium text-sm leading-relaxed">
+                      {faq.frage}
+                    </span>
+                    <span className="text-amber-400 mt-0.5 flex-shrink-0">
+                      {offeneId === faq.id ? (
+                        <ChevronUp className="w-4 h-4" />
+                      ) : (
+                        <ChevronDown className="w-4 h-4" />
+                      )}
+                    </span>
+                  </button>
+                  {offeneId === faq.id && faq.antwort && (
+                    <div className="px-5 pb-5 border-t border-white/10">
+                      <p className="text-white/60 text-sm leading-relaxed pt-4">
+                        {faq.antwort}
+                      </p>
+                      {/* Unterfragen (z.B. für MOMENTAUFNAHME) */}
+                      {(faq as any).unterfragen && (
+                        <div className="mt-4 space-y-2">
+                          <p className="text-amber-400/70 text-xs font-semibold uppercase tracking-wider mb-3">Details</p>
+                          {(faq as any).unterfragen.map((uf: any, idx: number) => (
+                            <details key={idx} className="group border border-white/10 rounded-lg overflow-hidden">
+                              <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none hover:bg-white/[0.04] transition-colors">
+                                <span className="text-white/70 text-sm">{uf.frage}</span>
+                                <ChevronDown className="w-3.5 h-3.5 text-amber-400/60 group-open:rotate-180 transition-transform flex-shrink-0" />
+                              </summary>
+                              <div className="px-4 pb-4 pt-2 border-t border-white/10">
+                                <p className="text-white/50 text-sm leading-relaxed">{uf.antwort}</p>
+                              </div>
+                            </details>
+                          ))}
+                        </div>
+                      )}
+                      {faq.name && (
+                        <p className="text-white/30 text-xs mt-3">
+                          Gefragt von: {faq.name}
+                        </p>
+                      )}
                     </div>
                   )}
-                  {faq.name && (
-                    <p className="text-white/30 text-xs mt-3">
-                      Gefragt von: {faq.name}
-                    </p>
-                  )}
                 </div>
-              )}
-            </div>
-          ))}
+              ))}
             </div>
           </div>
         </div>
