@@ -1252,3 +1252,6 @@
 ## UX: Login-Indikator & PWA-Hinweis
 - [x] Login-Status-Indikator im Dashboard (Avatar-Kreis mit Initialen, Name, Logout-Button)
 - [x] PWA-Installationshinweis-Banner für iOS ("Zum Home-Bildschirm hinzufügen") und Android
+
+## Cover-Bilder Episoden
+- [x] Cover-Bild-Bereich aus PodcastFeature entfernt (war nie vorhanden) + DB-URLs geleert

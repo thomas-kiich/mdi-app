@@ -163,8 +163,8 @@ export default function AdminEpisoden() {
       spotifyUrl: form.spotifyUrl?.trim() || undefined,
     };
 
-    if (!payload.episodeNumber || !payload.catchphrase || !payload.audioUrl || !payload.coverImageUrl) {
-      toast.error("Bitte alle Pflichtfelder ausfüllen (Nummer, Catchphrase, Audio-URL, Cover-URL).");
+    if (!payload.episodeNumber || !payload.catchphrase || !payload.audioUrl) {
+      toast.error("Bitte alle Pflichtfelder ausfüllen (Nummer, Catchphrase, Audio-URL).");
       return;
     }
 
