@@ -1245,3 +1245,6 @@
 
 ## PayPal Integration
 - [x] PayPal als payment_method_type in Stripe Checkout Sessions einbinden (RAUM 36 + Stimmklanganalyse)
+
+## Session-Cookie Fix
+- [x] Session-Cookie-Refresh bei jedem authentifizierten Request implementiert (ITP-Fix für iOS Safari – verhindert Logout nach Herunterfahren)
