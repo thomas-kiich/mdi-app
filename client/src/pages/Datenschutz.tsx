@@ -254,6 +254,22 @@ export function Datenschutz() {
                       <a href="https://legal.mistral.ai/terms/privacy-policy" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">legal.mistral.ai/privacy</a>
                     </td>
                   </tr>
+                  <tr>
+                    <td className="p-3 text-zinc-300 font-medium">Stripe, Inc.</td>
+                    <td className="p-3">Zahlungsabwicklung (RAUM 36 Abo, Stimmklanganalyse). Stripe verarbeitet Zahlungsdaten (Kartendaten, Rechnungsadresse) als eigenverantwortlicher Verantwortlicher gemäß Art. 4 Nr. 7 DSGVO. Wir übermitteln Name, E-Mail-Adresse und Bestellbetrag.</td>
+                    <td className="p-3">USA / EU-SCCs, EU-US Data Privacy Framework</td>
+                    <td className="p-3">
+                      <a href="https://stripe.com/de/privacy" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">stripe.com/privacy</a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 text-zinc-300 font-medium">Google Fonts</td>
+                    <td className="p-3">Einbindung von Schriftarten (Inter, Playfair Display, Cinzel). Beim Seitenaufruf wird Ihre IP-Adresse an Google-Server übertragen, um die Schriftdateien zu laden.</td>
+                    <td className="p-3">USA / EU-SCCs, EU-US Data Privacy Framework</td>
+                    <td className="p-3">
+                      <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer" className="text-orange-400 hover:underline">policies.google.com/privacy</a>
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -403,10 +419,10 @@ export function Datenschutz() {
                 </thead>
                 <tbody>
                   <tr>
-                    <td className="py-2 text-zinc-300">session / auth_token</td>
-                    <td className="py-2">Anmeldestatus (JWT)</td>
+                    <td className="py-2 text-zinc-300">app_session_id</td>
+                    <td className="py-2">Anmeldestatus (signiertes JWT mit Nutzer-ID)</td>
                     <td className="py-2">Technisch notwendig</td>
-                    <td className="py-2">Sitzung / 30 Tage</td>
+                    <td className="py-2">1 Jahr (wird bei jedem Besuch automatisch verlängert)</td>
                   </tr>
                 </tbody>
               </table>
@@ -544,9 +560,15 @@ export function Datenschutz() {
                 </thead>
                 <tbody className="divide-y divide-zinc-800/50">
                   <tr>
-                    <td className="p-3 text-zinc-300">Session-Cookie (HTTP)</td>
-                    <td className="p-3">Authentifizierung und Sitzungsverwaltung nach Login</td>
-                    <td className="p-3">Sitzungsdauer (wird beim Schließen des Browsers gelöscht)</td>
+                    <td className="p-3 text-zinc-300">app_session_id<br/><span className="text-zinc-500 text-xs">HTTP-Cookie, HttpOnly, Secure</span></td>
+                    <td className="p-3">Authentifizierung und Sitzungsverwaltung nach Login (signiertes JWT)</td>
+                    <td className="p-3">1 Jahr; wird bei jedem Besuch automatisch verlängert (ITP-Schutz für iOS Safari)</td>
+                    <td className="p-3">Art. 6 Abs. 1 lit. b DSGVO</td>
+                  </tr>
+                  <tr>
+                    <td className="p-3 text-zinc-300">sidebar_state<br/><span className="text-zinc-500 text-xs">HTTP-Cookie</span></td>
+                    <td className="p-3">Speichert den Zustand der Navigationsleiste (auf- oder zugeklappt)</td>
+                    <td className="p-3">7 Tage</td>
                     <td className="p-3">Art. 6 Abs. 1 lit. b DSGVO</td>
                   </tr>
                   <tr>

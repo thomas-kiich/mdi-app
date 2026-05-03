@@ -1255,3 +1255,8 @@
 
 ## Cover-Bilder Episoden
 - [x] Cover-Bild-Bereich aus PodcastFeature entfernt (war nie vorhanden) + DB-URLs geleert
+
+## Datenschutzerklärung Update
+- [x] Stripe als Drittanbieter eintragen (Zahlungsabwicklung)
+- [x] Google Fonts als Drittanbieter eintragen (IP-Übertragung)
+- [x] Cookie-Tabelle korrigieren: Name app_session_id, Laufzeit 1 Jahr
