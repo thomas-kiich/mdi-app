@@ -40,6 +40,7 @@ import Stimmklanganalyse from "@/pages/Stimmklanganalyse";
 import { VornameProvider, useVorname } from "@/contexts/VornameContext";
 import { OnboardingNameModal } from "@/components/OnboardingNameModal";
 import { UpdateBanner } from "@/components/UpdateBanner";
+import { PwaInstallBanner } from "@/components/PwaInstallBanner";
 
 function Router() {
   return (
@@ -93,6 +94,7 @@ function AppInner() {
         onComplete={setVornameLocal}
       />
       <UpdateBanner />
+      <PwaInstallBanner />
     </>
   );
 }

@@ -914,6 +914,8 @@ export default function Home() {
                   isPremium={isPremium || user?.role === "admin"}
                   onTogglePremium={() => {}}
                   userFreigaben={myDashboardFreigaben ?? {}}
+                  userName={user?.name || user?.email || null}
+                  onLogout={logout}
                 />
               </div>
               <div id="newsletter-section" className="container max-w-6xl mx-auto px-4 mt-10 mb-8">

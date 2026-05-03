@@ -1248,3 +1248,7 @@
 
 ## Session-Cookie Fix
 - [x] Session-Cookie-Refresh bei jedem authentifizierten Request implementiert (ITP-Fix für iOS Safari – verhindert Logout nach Herunterfahren)
+
+## UX: Login-Indikator & PWA-Hinweis
+- [x] Login-Status-Indikator im Dashboard (Avatar-Kreis mit Initialen, Name, Logout-Button)
+- [x] PWA-Installationshinweis-Banner für iOS ("Zum Home-Bildschirm hinzufügen") und Android
