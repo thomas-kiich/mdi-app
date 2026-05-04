@@ -57,6 +57,7 @@ function Raum36Landing() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+
       {/* Hero */}
       <section className="border-b border-zinc-800 px-6 py-20 md:py-32">
         <div className="max-w-4xl mx-auto">
@@ -66,64 +67,79 @@ function Raum36Landing() {
           <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none mb-6">
             RAUM 36
           </h1>
-          <p className="text-xl md:text-2xl text-zinc-400 max-w-2xl leading-relaxed mb-4">
-            Der direkte Kanal zu Thomas Chochola.
-          </p>
-          <p className="text-zinc-500 max-w-xl leading-relaxed mb-12">
-            Wöchentliche Impulse, deine Fragen – direkt beantwortet, ein kuratierter Wissenspool
-            aus 20 Jahren Arbeit mit Klang, Identität und Bewusstsein.
+          <p className="text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed mb-10">
+            Der direkte Kanal zu Thomas Chochola
           </p>
 
-          <div className="flex flex-col sm:flex-row items-start gap-6">
-            <div>
-              <Button
-                onClick={handleJoin}
-                disabled={checkoutMutation.isPending}
-                className="bg-orange-600 hover:bg-orange-500 text-white font-bold text-lg px-8 py-6 h-auto rounded-none border-0"
-              >
-                {checkoutMutation.isPending ? (
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                ) : null}
-                Jetzt Mitglied werden
-              </Button>
-              <p className="text-zinc-500 text-sm mt-3">
-                € 4,90 / Monat · Jederzeit kündbar
-              </p>
-            </div>
+          {/* 5 Leistungsversprechen */}
+          <ul className="space-y-4 mb-12 max-w-2xl">
+            {[
+              "Stelle deine persönlichen Fragen an Thomas (auch mit Pseudonym möglich).",
+              "Erhalte detailgenaue Trainingsanleitungen zu allen Bereichen der METHODE 36.",
+              "Schöpfe aus einem tiefgreifenden Wissensschatz.",
+              "Tausche kontinuierlich Informationen aus, wie du KI mit Vorsicht und Überblick für dein Leben nützen kannst.",
+              "Profitiere von der sich aufbauenden Gruppendynamik und deren Lebenserfahrung.",
+            ].map((text, i) => (
+              <li key={i} className="flex items-start gap-4">
+                <span className="w-5 h-5 mt-0.5 flex-shrink-0 border border-orange-600 flex items-center justify-center">
+                  <CheckCircle className="w-3 h-3 text-orange-500" />
+                </span>
+                <span className="text-zinc-300 leading-relaxed">{text}</span>
+              </li>
+            ))}
+          </ul>
+
+          {/* CTA */}
+          <div>
+            <Button
+              onClick={handleJoin}
+              disabled={checkoutMutation.isPending}
+              className="bg-orange-600 hover:bg-orange-500 text-white font-bold text-lg px-10 py-6 h-auto rounded-none border-0 uppercase tracking-wide"
+            >
+              {checkoutMutation.isPending ? (
+                <Loader2 className="w-5 h-5 animate-spin mr-2" />
+              ) : null}
+              JETZT MITGLIED WERDEN
+            </Button>
+            <p className="text-zinc-500 text-sm mt-3">
+              Werteausgleich: € 4,90 pro Monat · jederzeit kündbar
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Was dich erwartet */}
+      {/* 4 Feature-Bereiche */}
       <section className="px-6 py-20 border-b border-zinc-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl font-black mb-12 tracking-tight">
-            Was dich im RAUM 36 erwartet
-          </h2>
-          <div className="grid md:grid-cols-3 gap-0 border border-zinc-800">
+          <div className="grid md:grid-cols-2 gap-0 border border-zinc-800">
             {[
               {
-                icon: <Video className="w-6 h-6 text-orange-500" />,
-                title: "Wochenvideo",
-                desc: "Jede Woche ein neues Video von Thomas – Impulse, Methoden, Hintergründe aus seiner Arbeit.",
+                icon: <Video className="w-7 h-7 text-orange-500" />,
+                title: "ERKLÄRVIDEOS",
+                desc: "Thomas führt dich detailgenau und anschaulich durch das umfangreiche System der METHODE 36.",
               },
               {
-                icon: <MessageSquare className="w-6 h-6 text-orange-500" />,
-                title: "Fragen an Thomas",
-                desc: "Stelle deine Fragen direkt. Thomas antwortet – und alle Mitglieder profitieren von den Antworten.",
+                icon: <MessageSquare className="w-7 h-7 text-orange-500" />,
+                title: "PERSÖNLICHES FEEDBACK",
+                desc: "Thomas steht dir für deine Fragen zur Verfügung. Du kannst auch anonym im Gruppenprozess teilhaben.",
               },
               {
-                icon: <BookOpen className="w-6 h-6 text-orange-500" />,
-                title: "Wissenspool",
-                desc: "Kuratierte Ressourcen: Podcasts, Artikel, Fakten und Tools aus 20 Jahren Forschung.",
+                icon: <BookOpen className="w-7 h-7 text-orange-500" />,
+                title: "WISSENSPOOL",
+                desc: "Du erhältst weiterführende Informationen zu den im Hörbuch angesprochenen Themen mit Quellenangaben und Detailschärfe.",
+              },
+              {
+                icon: <Lightbulb className="w-7 h-7 text-orange-500" />,
+                title: "KIICH PRAXIS",
+                desc: "Thomas zeigt dir, wie er selbst den ethischen Dialog mit Künstlicher Intelligenz führt. Du kannst deine Ideen, Bedenken und Interessen persönlich formulieren und reflektieren.",
               },
             ].map((item, i) => (
               <div
                 key={i}
-                className="p-8 border-r border-b border-zinc-800 last:border-r-0"
+                className="p-8 border-r border-b border-zinc-800 last:border-b-0 md:odd:border-r md:even:border-r-0"
               >
-                <div className="mb-4">{item.icon}</div>
-                <h3 className="font-bold text-lg mb-3">{item.title}</h3>
+                <div className="mb-5">{item.icon}</div>
+                <h3 className="font-black text-xl mb-3 tracking-tight">{item.title}</h3>
                 <p className="text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
@@ -131,7 +147,7 @@ function Raum36Landing() {
         </div>
       </section>
 
-      {/* Preis */}
+      {/* Mitgliedschaft */}
       <section className="px-6 py-20 border-b border-zinc-800">
         <div className="max-w-4xl mx-auto">
           <div className="border border-zinc-700 p-8 md:p-12 max-w-lg">
@@ -142,10 +158,11 @@ function Raum36Landing() {
             <div className="text-zinc-400 mb-8">pro Monat · Jederzeit kündbar</div>
             <ul className="space-y-3 mb-10">
               {[
-                "Wöchentliches Video von Thomas",
-                "Direkte Fragen an Thomas stellen",
-                "Zugang zum Wissenspool",
-                "Pseudonym für Anonymität",
+                "Persönliche Fragen an Thomas stellen",
+                "Zugang zu allen Erklärvideos",
+                "Wissenspool mit Quellenangaben",
+                "KIICH Praxis – ethischer KI-Dialog",
+                "Pseudonym für anonyme Teilnahme möglich",
                 "Alle zukünftigen Inhalte inklusive",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-sm">
@@ -157,28 +174,31 @@ function Raum36Landing() {
             <Button
               onClick={handleJoin}
               disabled={checkoutMutation.isPending}
-              className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-4 h-auto rounded-none"
+              className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold py-4 h-auto rounded-none uppercase tracking-wide"
             >
               {checkoutMutation.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : null}
-              Mitglied werden
+              MITGLIED WERDEN
             </Button>
+            <p className="text-zinc-500 text-xs mt-3 text-center">
+              Werteausgleich: € 4,90 pro Monat · jederzeit kündbar
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Über Thomas */}
+      {/* Thomas Chochola */}
       <section className="px-6 py-20">
         <div className="max-w-4xl mx-auto">
-          <div className="border-l-2 border-orange-600 pl-6">
-            <p className="text-zinc-400 text-sm font-mono uppercase tracking-widest mb-4">
+          <div className="border-l-4 border-orange-600 pl-8">
+            <p className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-4">
               Thomas Chochola
             </p>
-            <p className="text-xl text-zinc-300 leading-relaxed max-w-2xl">
-              20 Jahre Arbeit mit Klang, Stimme und Bewusstsein. Entwickler der MDI-Methode,
-              Autor von "Maschinen atmen nicht". RAUM 36 ist der direkte Zugang zu diesem Wissen –
-              ohne Filter, ohne Algorithmus.
+            <p className="text-xl text-zinc-200 leading-relaxed max-w-2xl">
+              50 Jahre Erfahrung mit dem Thema ATMUNG als Jazzmusiker, Entwickler und
+              Musikpädagoge. Autor von „MASCHINEN ATMEN NICHT". RAUM 36 ist der direkte
+              Zugang zu diesen Erfahrungen – menschlich, ohne Filter, ohne Algorithmus.
             </p>
           </div>
         </div>

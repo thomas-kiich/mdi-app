@@ -1267,3 +1267,10 @@
 
 ## Bugfix: ADMIN-Badge
 - [x] ADMIN-Badge entfernt aus TrainingCategoryStructure (war für Admin-Nutzer sichtbar, verwirrt normale Nutzer)
+
+## RAUM 36 Seite Redesign (gem. PDF)
+- [x] Intro-Text: "Der direkte Kanal zu Thomas Chochola" mit 5 Bullet-Points
+- [x] CTA-Button "JETZT MITGLIED WERDEN" mit Preis €4,90/Monat
+- [x] 4 Feature-Karten: Erklärvideos, Persönliches Feedback, Wissenspool, KIICH Praxis
+- [x] Thomas-Bio-Abschnitt am Ende (50 Jahre Erfahrung, Jazzmusiker, Autor)
+- [x] Mitgliedschafts-Button anpassen (Werteausgleich €4,90)
