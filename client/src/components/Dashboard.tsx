@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame, Moon, Lock, ChevronDown, ChevronUp, Headphones, LogOut } from "lucide-react";
+import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, HeartPulse, GraduationCap, Flame, Moon, Lock, ChevronDown, ChevronUp, Headphones, LogOut, DoorOpen } from "lucide-react";
+import { Link } from "wouter";
 import { calculateStreak } from "@/lib/training";
 import { useEffect, useState } from "react";
 import { motion } from 'framer-motion';
@@ -491,6 +492,34 @@ export function Dashboard({
                                     Tabelle Ansehen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
                             </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
+
+                {/* RAUM 36 */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.9 }}
+                    className="md:col-span-2 lg:col-span-4"
+                >
+                    <Card className="bg-gradient-to-br from-rose-950/40 to-zinc-900/60 border-rose-800/30 hover:border-rose-500/50 transition-all group relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-br from-rose-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <CardContent className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-6 relative z-10">
+                            <div className="w-12 h-12 rounded-xl bg-rose-500/20 flex items-center justify-center text-rose-400 group-hover:scale-110 transition-transform shrink-0">
+                                <DoorOpen className="w-6 h-6" />
+                            </div>
+                            <div className="flex-1">
+                                <h2 className="text-xl font-bold text-white mb-1">RAUM 36</h2>
+                                <p className="text-sm text-zinc-400 leading-relaxed">
+                                    Der exklusive Mitgliederbereich · Wochenvideos · Fragen an Thomas · Wissenspool
+                                </p>
+                            </div>
+                            <Link href="/raum36">
+                                <button className="text-rose-400 hover:text-rose-300 text-sm font-medium inline-flex items-center gap-1.5 border border-rose-500/30 hover:border-rose-400/60 rounded-lg px-4 py-2 transition-all whitespace-nowrap">
+                                    RAUM 36 betreten <ArrowRight className="w-4 h-4" />
+                                </button>
+                            </Link>
                         </CardContent>
                     </Card>
                 </motion.div>
