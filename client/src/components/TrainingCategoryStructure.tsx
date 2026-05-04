@@ -462,13 +462,7 @@ export function TrainingCategoryStructure({
                 <CardContent className="p-8">
                   <div className="flex justify-between items-start mb-4">
                     <div className="text-5xl">{cat.icon}</div>
-                    {freigeschaltet ? (
-                      isAdmin && (
-                        <div className="flex items-center gap-1.5 bg-green-500/10 text-green-400 px-3 py-1 rounded-full text-xs font-semibold border border-green-500/20">
-                          <span>ADMIN</span>
-                        </div>
-                      )
-                    ) : (
+                    {!freigeschaltet && (
                       <div className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 px-3 py-1 rounded-full text-xs font-semibold border border-amber-500/20">
                         <Lock className="w-3 h-3" />
                         <span>BALD</span>

@@ -1264,3 +1264,6 @@
 ## Admin-Hub & Navigation
 - [x] AdminHub mit vollständiger Bereichsübersicht ausbauen (inkl. RAUM 36 / Stripe)
 - [x] RAUM 36 in die Hauptnavigation der App einbinden (Dashboard + Home)
+
+## Bugfix: ADMIN-Badge
+- [x] ADMIN-Badge entfernt aus TrainingCategoryStructure (war für Admin-Nutzer sichtbar, verwirrt normale Nutzer)
