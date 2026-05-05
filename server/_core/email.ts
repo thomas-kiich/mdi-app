@@ -451,3 +451,170 @@ export async function sendeAdminRegistrierungsbenachrichtigung(user: {
     textContent: `Neue KIICH-Registrierung:\nName: ${name}\nE-Mail: ${email}\nLogin via: ${methode}\nZeitpunkt: ${zeitpunkt}`,
   });
 }
+
+/**
+ * Bestätigungs-E-Mail nach RAUM 36 Abo-Kauf
+ * Geht an den Käufer (Willkommen + nächste Schritte)
+ * und an Thomas (Benachrichtigung über neues Mitglied).
+ */
+export async function sendeRaum36KaufBestaetigung(user: {
+  name: string | null;
+  email: string | null;
+}): Promise<boolean> {
+  if (!user.email) {
+    console.warn("[Email] Keine E-Mail für RAUM 36-Bestätigung.");
+    return false;
+  }
+
+  const vorname = user.name?.split(" ")[0] ?? "du";
+  const ADMIN_EMAIL = "lkrforschung@gmail.com";
+  const zeitpunkt = new Date().toLocaleString("de-AT", { timeZone: "Europe/Vienna" });
+
+  // ── 1. Bestätigungs-E-Mail an den Käufer ──────────────────────────────────
+  const htmlKaeufer = `
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Willkommen in RAUM 36</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a10;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">
+                K<span style="color:#e85d04;">II</span>CH
+              </p>
+              <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">
+                Dein Identitätssystem für das KI-Zeitalter
+              </p>
+            </td>
+          </tr>
+
+          <!-- Hauptinhalt -->
+          <tr>
+            <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+              <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 8px 0;">
+                Willkommen in RAUM 36, ${vorname}.
+              </p>
+              <p style="font-size:13px;letter-spacing:2px;color:#7c3aed;text-transform:uppercase;font-weight:700;margin:0 0 24px 0;">
+                Abo aktiviert
+              </p>
+
+              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px 0;">
+                Dein Zugang zu RAUM 36 ist jetzt aktiv. Du hast Zugriff auf alle exklusiven Inhalte,
+                Übungen und Praktiken, die Thomas Chochola speziell für RAUM 36-Mitglieder bereitstellt.
+              </p>
+
+              <!-- CTA -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 0 32px 0;">
+                <tr>
+                  <td style="background-color:#7c3aed;border-radius:4px;">
+                    <a href="https://www.kiich.de/raum36"
+                       style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">
+                      RAUM 36 betreten →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="font-size:13px;line-height:1.7;color:#666;margin:0;">
+                Bei Fragen erreichst du Thomas unter
+                <a href="mailto:lkrforschung@gmail.com" style="color:#e85d04;text-decoration:none;">lkrforschung@gmail.com</a>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top:28px;">
+              <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">
+                Du erhältst diese E-Mail, weil du RAUM 36 abonniert hast.<br/>
+                <a href="https://www.kiich.de/datenschutz" style="color:#555;text-decoration:underline;">Datenschutz</a>
+                &nbsp;·&nbsp;
+                <a href="https://www.kiich.de/impressum" style="color:#555;text-decoration:underline;">Impressum</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+
+  const kaeuferOk = await sendEmail({
+    to: [{ name: user.name ?? undefined, email: user.email }],
+    subject: "Willkommen in RAUM 36 – dein Zugang ist aktiv",
+    htmlContent: htmlKaeufer,
+    textContent: `Willkommen in RAUM 36, ${vorname}!\n\nDein Zugang ist jetzt aktiv. Besuche RAUM 36 unter: https://www.kiich.de/raum36\n\nBei Fragen: lkrforschung@gmail.com\n\nKIICH – Dein Identitätssystem für das KI-Zeitalter`,
+  });
+
+  // ── 2. Admin-Benachrichtigung an Thomas ───────────────────────────────────
+  const htmlAdmin = `
+<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8" /><title>Neues RAUM 36 Mitglied</title></head>
+<body style="margin:0;padding:0;background-color:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a10;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+          <tr>
+            <td align="center" style="padding-bottom:24px;">
+              <p style="font-size:26px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">
+                K<span style="color:#e85d04;">II</span>CH
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:32px;">
+              <p style="font-size:20px;font-weight:700;color:#7c3aed;margin:0 0 20px 0;">🏛️ Neues RAUM 36 Mitglied</p>
+              <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #1e1e2e;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Name</span><br/>
+                    <span style="font-size:16px;color:#fff;font-weight:600;">${user.name ?? "Unbekannt"}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #1e1e2e;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">E-Mail</span><br/>
+                    <span style="font-size:16px;color:#fff;">
+                      <a href="mailto:${user.email}" style="color:#e85d04;text-decoration:none;">${user.email}</a>
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Zeitpunkt</span><br/>
+                    <span style="font-size:16px;color:#fff;">${zeitpunkt}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`.trim();
+
+  const adminOk = await sendEmail({
+    to: [{ name: "Thomas Chochola", email: ADMIN_EMAIL }],
+    subject: `🏛️ Neues RAUM 36 Mitglied: ${user.name ?? "Unbekannt"} (${user.email})`,
+    htmlContent: htmlAdmin,
+    textContent: `Neues RAUM 36 Mitglied:\nName: ${user.name ?? "Unbekannt"}\nE-Mail: ${user.email}\nZeitpunkt: ${zeitpunkt}`,
+  });
+
+  return kaeuferOk && adminOk;
+}

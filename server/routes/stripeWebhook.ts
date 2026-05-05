@@ -19,7 +19,7 @@ import { getDb } from "../db";
 import { raum36Subscriptions, stimmklanganalyseOrders, users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { notifyOwner } from "../_core/notification";
-import { sendeStimmklangKaufBestaetigung } from "../_core/email";
+import { sendeStimmklangKaufBestaetigung, sendeRaum36KaufBestaetigung } from "../_core/email";
 const router = express.Router();
 
 router.post(
@@ -97,6 +97,21 @@ router.post(
             }
 
             console.log(`[Webhook] RAUM 36 Abo aktiviert für userId=${userId}`);
+            // Bestätigungs-E-Mail an Käufer + Admin
+            try {
+              const userRows = await db
+                .select({ name: users.name, email: users.email })
+                .from(users)
+                .where(eq(users.id, userId))
+                .limit(1);
+              const buyer = userRows[0] ?? {
+                name: session.metadata?.customer_name ?? null,
+                email: session.metadata?.customer_email ?? null,
+              };
+              await sendeRaum36KaufBestaetigung(buyer);
+            } catch (emailErr: any) {
+              console.error("[Webhook] RAUM 36 E-Mail-Versand fehlgeschlagen:", emailErr.message);
+            }
             await notifyOwner({
               title: "RAUM 36: Neues Mitglied",
               content: `Nutzer ${session.metadata?.customer_name ?? "Unbekannt"} (${session.metadata?.customer_email ?? ""}) hat RAUM 36 abonniert.`,
