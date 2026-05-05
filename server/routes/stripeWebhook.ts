@@ -16,10 +16,10 @@ import Stripe from "stripe";
 import { getStripe } from "../stripe/products";
 import { ENV } from "../_core/env";
 import { getDb } from "../db";
-import { raum36Subscriptions, stimmklanganalyseOrders } from "../../drizzle/schema";
+import { raum36Subscriptions, stimmklanganalyseOrders, users } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 import { notifyOwner } from "../_core/notification";
-
+import { sendeStimmklangKaufBestaetigung } from "../_core/email";
 const router = express.Router();
 
 router.post(
@@ -134,6 +134,22 @@ router.post(
               title: "Stimmklanganalyse: Neue Bestellung",
               content: `Nutzer ${session.metadata?.customer_name ?? "Unbekannt"} (${session.metadata?.customer_email ?? ""}) hat die Stimmklanganalyse gebucht.`,
             });
+
+            // Bestätigungs-E-Mail an Käufer + Admin
+            try {
+              const userRows = await db
+                .select({ name: users.name, email: users.email })
+                .from(users)
+                .where(eq(users.id, userId))
+                .limit(1);
+              const buyer = userRows[0] ?? {
+                name: session.metadata?.customer_name ?? null,
+                email: session.metadata?.customer_email ?? null,
+              };
+              await sendeStimmklangKaufBestaetigung(buyer);
+            } catch (emailErr: any) {
+              console.error("[Webhook] E-Mail-Versand fehlgeschlagen:", emailErr.message);
+            }
           }
           break;
         }

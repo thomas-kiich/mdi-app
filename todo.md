@@ -1286,3 +1286,7 @@
 - [ ] Google Fonts lokal hosten (Datenschutz-Fix)
 - [ ] Stripe Live-Keys nach KYC eintragen (Settings → Payment)
 - [x] Stimmklanganalyse-Ablaufbeschreibung ergänzen (Thomas' Text eingebaut + Datenschutz-Modal)
+
+## Stimmklanganalyse – Datenschutz & E-Mail (Mai 2026)
+- [x] Datenschutzerklärung: Stimmklanganalyse-Abschnitt einbauen (Abschnitt 3b mit Zweck, Zugriff, Speicherdauer, Rechtsgrundlage)
+- [x] Bestätigungs-E-Mail nach Stimmklanganalyse-Kauf via Brevo (Webhook-Handler erweitert, E-Mail an Käufer + Admin)

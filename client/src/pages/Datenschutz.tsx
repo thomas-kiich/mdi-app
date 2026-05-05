@@ -144,6 +144,64 @@ export function Datenschutz() {
             </p>
           </section>
 
+          {/* 3b. Stimmklanganalyse */}
+          <section className="space-y-3">
+            <h2 className="text-white text-xl font-medium">3b. Stimmklanganalyse – Persönliches Coaching-Produkt</h2>
+            <p>
+              Die <strong className="text-white">Stimmklanganalyse</strong> ist ein kostenpflichtiges
+              Einzelprodukt (Einmalzahlung). Im Rahmen dieses Angebots werden folgende
+              personenbezogene Daten verarbeitet:
+            </p>
+
+            <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-4 text-sm">
+              <div>
+                <p className="text-white font-medium mb-1">Verarbeitete Daten</p>
+                <p className="text-zinc-400">
+                  Stimmfrequenzanalysen über 3 aufeinanderfolgende Tage (berechnete Klangparameter:
+                  Lebensklang, Wurzelklang), Name und E-Mail-Adresse zur Terminvereinbarung.
+                  Die Rohaudioaufnahmen werden <strong className="text-zinc-300">nicht</strong> gespeichert –
+                  nur die daraus berechneten Frequenzwerte.
+                </p>
+              </div>
+              <div>
+                <p className="text-white font-medium mb-1">Zugriff</p>
+                <p className="text-zinc-400">
+                  Ihre Analysedaten sind ausschließlich Ihnen und Thomas Chochola (Verantwortlicher)
+                  zugänglich. Eine Weitergabe an Dritte findet nicht statt.
+                </p>
+              </div>
+              <div>
+                <p className="text-white font-medium mb-1">Zweck</p>
+                <p className="text-zinc-400">
+                  Auswertung Ihres persönlichen Stimmklangs und Durchführung des abschließenden
+                  Coaching-Gesprächs mit Thomas Chochola. Nach dem Coaching erhalten Sie eine
+                  dauerhafte Dokumentation Ihrer Ergebnisse in Ihrem KIICH-Konto.
+                </p>
+              </div>
+              <div>
+                <p className="text-white font-medium mb-1">Speicherdauer</p>
+                <p className="text-zinc-400">
+                  Ihre Analysedaten werden dauerhaft in Ihrem KIICH-Konto gespeichert, damit Sie
+                  jederzeit auf Ihre Ergebnisse zugreifen können. Sie können die Löschung Ihrer
+                  Daten jederzeit unter{" "}
+                  <a href="mailto:lkrforschung@gmail.com" className="text-orange-400 hover:underline">
+                    lkrforschung@gmail.com
+                  </a>{" "}
+                  beantragen (Art. 17 DSGVO).
+                </p>
+              </div>
+            </div>
+
+            <p>
+              <strong className="text-white">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO
+              (Einwilligung) sowie Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung). Stimm- und
+              Frequenzdaten können als besondere Kategorie personenbezogener Daten gemäß Art. 9
+              DSGVO eingestuft werden; die Verarbeitung erfolgt auf Basis Ihrer ausdrücklichen
+              Einwilligung (Art. 9 Abs. 2 lit. a DSGVO), die Sie durch die Buchung und Nutzung
+              der Stimmklanganalyse erteilen.
+            </p>
+          </section>
+
           {/* 4. KI-Verarbeitung */}
           <section className="space-y-3">
             <h2 className="text-white text-xl font-medium">4. KI-gestützte Verarbeitung (MA-Assistent)</h2>
