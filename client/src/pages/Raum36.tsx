@@ -76,7 +76,7 @@ function Raum36Landing() {
             {[
               "Stelle deine persönlichen Fragen an Thomas (auch mit Pseudonym möglich).",
               "Erhalte detailgenaue Trainingsanleitungen zu allen Bereichen der METHODE 36.",
-              "Schöpfe aus einem tiefgreifenden Wissensschatz.",
+              "Erhalte Zugang zu den besten Trainingstools wie YOHNATMUNG | VITALMONITOR und dem erweiterten WISSENSPOOL.",
               "Tausche kontinuierlich Informationen aus, wie du KI mit Vorsicht und Überblick für dein Leben nützen kannst.",
               "Profitiere von der sich aufbauenden Gruppendynamik und deren Lebenserfahrung.",
             ].map((text, i) => (
