@@ -19,6 +19,7 @@ import {
   CheckCircle,
   Loader2,
   ArrowRight,
+  ArrowLeft,
   Shield,
   X,
 } from "lucide-react";
@@ -64,6 +65,14 @@ export default function Stimmklanganalyse() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {/* Navigation */}
+      <div className="px-6 pt-6">
+        <div className="max-w-4xl mx-auto">
+          <Link href="/" className="inline-flex items-center gap-1 text-xs font-mono text-zinc-600 hover:text-orange-500 uppercase tracking-widest transition-colors">
+            <ArrowLeft className="w-3 h-3" /> Startseite
+          </Link>
+        </div>
+      </div>
 
       {/* Hero */}
       <section className="border-b border-zinc-800 px-6 py-20 md:py-32">
