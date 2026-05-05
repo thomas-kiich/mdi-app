@@ -1285,4 +1285,4 @@
 - [x] Backend: adminGetZahlungsStats (Summen + Anzahlen)
 - [ ] Google Fonts lokal hosten (Datenschutz-Fix)
 - [ ] Stripe Live-Keys nach KYC eintragen (Settings → Payment)
-- [ ] Stimmklanganalyse-Ablaufbeschreibung ergänzen (Text von Thomas ausstehend)
+- [x] Stimmklanganalyse-Ablaufbeschreibung ergänzen (Thomas' Text eingebaut + Datenschutz-Modal)

@@ -6,7 +6,7 @@
  * - Persönliches Abschluss-Coaching mit Thomas Chochola
  */
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -19,10 +19,14 @@ import {
   CheckCircle,
   Loader2,
   ArrowRight,
+  Shield,
+  X,
 } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Stimmklanganalyse() {
   const { isAuthenticated } = useAuth();
+  const [datenschutzOpen, setDatenschutzOpen] = useState(false);
 
   const checkoutMutation = trpc.raum36.createCheckoutStimmklang.useMutation({
     onSuccess: (data) => {
@@ -60,6 +64,7 @@ export default function Stimmklanganalyse() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+
       {/* Hero */}
       <section className="border-b border-zinc-800 px-6 py-20 md:py-32">
         <div className="max-w-4xl mx-auto">
@@ -96,7 +101,56 @@ export default function Stimmklanganalyse() {
         </div>
       </section>
 
-      {/* Ablauf */}
+      {/* Ablaufbeschreibung – Thomas' Text */}
+      <section className="px-6 py-20 border-b border-zinc-800 bg-zinc-950">
+        <div className="max-w-4xl mx-auto">
+          <div className="inline-block border border-orange-600/40 px-3 py-1 text-xs font-mono text-orange-500/80 mb-8 uppercase tracking-widest">
+            Hier bestimmst du deinen Stimmklang
+          </div>
+
+          <div className="space-y-6 max-w-3xl">
+            <p className="text-zinc-300 leading-relaxed text-lg">
+              <span className="text-orange-500 font-bold">Voraussetzung:</span> Abschluss der Pubertät.
+              Erst danach sind die Hohlraumsysteme in deinem Körper voll ausgebildet. Sie stellen die
+              Resonanzräume dar, welche beim aktiven Nützen deiner Stimme die einzigartigen Frequenzen
+              hörbar machen.
+            </p>
+
+            <p className="text-zinc-400 leading-relaxed">
+              Das Prozedere teilt sich in zwei Hauptabschnitte. Im ersten Abschnitt führst du die
+              beschriebene Frequenzanalyse deiner Stimme durch. Du wirst detailgenau durch den Ablauf
+              geführt. In drei aufeinanderfolgenden Tagen vollziehst du dieses Ritual und erhältst die
+              jeweils produzierten Frequenzen deiner Stimme. Alles wird automatisch gespeichert und
+              nach den drei Tagen final ausgewertet.
+            </p>
+
+            <p className="text-zinc-400 leading-relaxed">
+              Danach führst du ein Gespräch mit Thomas. Er bespricht mit dir eingehend das Ergebnis
+              und führt eine finale Justierung deines Stimmklangs durch. Als Abschluss erklärt dir
+              Thomas die Möglichkeiten, wie du deinen Stimmklang für den Rest deines Lebens im Alltag
+              nützen kannst.
+            </p>
+
+            {/* Datenschutz-Hinweis */}
+            <div className="border border-zinc-700 bg-zinc-900/50 p-5 flex items-start gap-4 mt-8">
+              <Shield className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-zinc-300 text-sm leading-relaxed">
+                  Deine Daten sind nur Dir und Thomas zugänglich.
+                </p>
+                <button
+                  onClick={() => setDatenschutzOpen(true)}
+                  className="mt-2 text-orange-500 hover:text-orange-400 text-sm underline underline-offset-2 transition-colors"
+                >
+                  Zur datenschutzrechtlichen Einverständniserklärung →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Ablauf Schritte */}
       <section className="px-6 py-20 border-b border-zinc-800">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-3xl font-black mb-12 tracking-tight">So läuft es ab</h2>
@@ -124,7 +178,7 @@ export default function Stimmklanganalyse() {
                 step: "04",
                 icon: <MessageSquare className="w-5 h-5 text-orange-500" />,
                 title: "Finalcoaching",
-                desc: "Thomas erklärt dir dein Ergebnis, beantwortet deine Fragen und zeigt dir konkrete Übungen für deinen persönlichen Klang.",
+                desc: "Thomas erklärt dir dein Ergebnis, führt eine finale Justierung deines Stimmklangs durch und zeigt dir, wie du ihn für den Rest deines Lebens im Alltag nützen kannst.",
               },
             ].map((item) => (
               <div
@@ -161,7 +215,7 @@ export default function Stimmklanganalyse() {
                 "3-tägige Stimmklanganalyse",
                 "Persönlicher Lebensklang & Wurzelklang",
                 "45-minütiges Finalcoaching mit Thomas",
-                "Konkrete Übungen für deinen Klang",
+                "Finale Justierung deines Stimmklangs",
                 "Dauerhafter Zugang zu deinen Ergebnissen",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-sm">
@@ -181,7 +235,7 @@ export default function Stimmklanganalyse() {
               Jetzt buchen
             </Button>
             <p className="text-zinc-600 text-xs mt-4 text-center">
-              Sichere Zahlung via Stripe · Kreditkarte, SEPA
+              Sichere Zahlung via Stripe · Kreditkarte, PayPal
             </p>
           </div>
         </div>
@@ -206,6 +260,89 @@ export default function Stimmklanganalyse() {
           </div>
         </div>
       </section>
+
+      {/* Datenschutz-Modal */}
+      {datenschutzOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setDatenschutzOpen(false)}
+        >
+          <div
+            className="bg-zinc-900 border border-zinc-700 max-w-2xl w-full max-h-[80vh] overflow-y-auto p-8 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setDatenschutzOpen(false)}
+              className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-6">
+              <Shield className="w-6 h-6 text-orange-500" />
+              <h2 className="text-xl font-black">Datenschutzrechtliche Einverständniserklärung</h2>
+            </div>
+
+            <div className="space-y-4 text-zinc-400 text-sm leading-relaxed">
+              <p>
+                Mit der Buchung der Stimmklanganalyse erklärst du dich einverstanden, dass
+                Thomas Chochola (KIICH) deine im Rahmen der Analyse aufgezeichneten Stimmfrequenzdaten
+                zum Zweck der persönlichen Auswertung und des Finalcoachings verarbeitet.
+              </p>
+              <p>
+                <strong className="text-zinc-300">Welche Daten werden verarbeitet:</strong><br />
+                Deine Stimmaufnahmen (Frequenzanalysen über 3 Tage), die daraus berechneten
+                Klangparameter (Lebensklang, Wurzelklang) sowie deine Kontaktdaten (Name, E-Mail)
+                für die Terminvereinbarung.
+              </p>
+              <p>
+                <strong className="text-zinc-300">Zugriff:</strong><br />
+                Deine Daten sind ausschließlich dir und Thomas Chochola zugänglich.
+                Sie werden nicht an Dritte weitergegeben.
+              </p>
+              <p>
+                <strong className="text-zinc-300">Speicherdauer:</strong><br />
+                Deine Analysedaten werden dauerhaft in deinem KIICH-Konto gespeichert,
+                sodass du jederzeit auf deine Ergebnisse zugreifen kannst. Du kannst die
+                Löschung deiner Daten jederzeit unter{" "}
+                <a href="mailto:lkrforschung@gmail.com" className="text-orange-500 hover:text-orange-400 underline">
+                  lkrforschung@gmail.com
+                </a>{" "}
+                beantragen.
+              </p>
+              <p>
+                <strong className="text-zinc-300">Rechtsgrundlage:</strong><br />
+                Die Verarbeitung erfolgt auf Grundlage deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO)
+                sowie zur Erfüllung des Vertrags (Art. 6 Abs. 1 lit. b DSGVO).
+              </p>
+              <p>
+                Weitere Informationen findest du in unserer{" "}
+                <Link href="/datenschutz">
+                  <span className="text-orange-500 hover:text-orange-400 underline cursor-pointer">
+                    Datenschutzerklärung
+                  </span>
+                </Link>.
+              </p>
+            </div>
+
+            <div className="mt-8 flex gap-3">
+              <Button
+                onClick={() => setDatenschutzOpen(false)}
+                className="bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-none flex-1"
+              >
+                Verstanden & Einverstanden
+              </Button>
+              <Button
+                onClick={() => setDatenschutzOpen(false)}
+                variant="outline"
+                className="rounded-none border-zinc-700 text-zinc-400 hover:text-white"
+              >
+                Schließen
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
