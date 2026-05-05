@@ -2,7 +2,7 @@
  * Stripe-Produktkonfiguration für KIICH
  *
  * RAUM 36 – Monatliches Abo: €4.90/Monat (recurring)
- * Stimmklanganalyse – Einmalzahlung: €96
+ * Stimmklanganalyse – Einmalzahlung: €150
  *
  * Stripe ist im TEST-Modus. Vor dem Launch Donnerstag
  * muss der Live-Key in Settings → Payment eingetragen werden.
@@ -45,7 +45,7 @@ export const STIMMKLANGANALYSE_PRODUCT = {
   name: "Stimmklanganalyse + Finalcoaching",
   description:
     "3-tägige Selbstanalyse mit persönlichem Abschluss-Coaching mit Thomas Chochola. Einmalzahlung.",
-  priceInCents: 9600, // €96
+  priceInCents: 15000, // €150
   currency: "eur",
 };
 

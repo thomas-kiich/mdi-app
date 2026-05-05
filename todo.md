@@ -1274,3 +1274,15 @@
 - [x] 4 Feature-Karten: Erklärvideos, Persönliches Feedback, Wissenspool, KIICH Praxis
 - [x] Thomas-Bio-Abschnitt am Ende (50 Jahre Erfahrung, Jazzmusiker, Autor)
 - [x] Mitgliedschafts-Button anpassen (Werteausgleich €4,90)
+
+## Stripe Webhook & Preise Update (Mai 2026)
+- [x] Stripe Webhook auf kiich.de registriert (we_1TTdXCCta0adAerA2h44FlFm)
+- [x] Stripe Sandbox beansprucht (bereits aktiv)
+- [x] Stimmklanganalyse-Preis auf €150 geändert (products.ts + Stimmklanganalyse.tsx)
+- [x] Admin-Zahlungsübersicht (/admin/zahlungen) implementiert
+- [x] Backend: adminGetSubscriptions mit User-Daten (JOIN users)
+- [x] Backend: adminGetStimmklangOrders mit User-Daten
+- [x] Backend: adminGetZahlungsStats (Summen + Anzahlen)
+- [ ] Google Fonts lokal hosten (Datenschutz-Fix)
+- [ ] Stripe Live-Keys nach KYC eintragen (Settings → Payment)
+- [ ] Stimmklanganalyse-Ablaufbeschreibung ergänzen (Text von Thomas ausstehend)

@@ -16,8 +16,8 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { raum36Subscriptions, raum36Fragen, raum36Posts, raum36Wissenspool } from "../../drizzle/schema";
-import { eq, desc, and } from "drizzle-orm";
+import { raum36Subscriptions, raum36Fragen, raum36Posts, raum36Wissenspool, stimmklanganalyseOrders, users } from "../../drizzle/schema";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { getStripe, getRaum36PriceId, getStimmklanganalysePriceId } from "../stripe/products";
 
@@ -326,7 +326,7 @@ export const raum36Router = router({
   }),
 
   /**
-   * Admin: Alle Subscriptions anzeigen
+   * Admin: Alle Subscriptions anzeigen (mit User-Daten)
    */
   adminGetSubscriptions: protectedProcedure.query(async ({ ctx }) => {
     if (ctx.user.role !== "admin") {
@@ -336,9 +336,92 @@ export const raum36Router = router({
     const db = await getDb();
     if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-    return db
-      .select()
+    const rows = await db
+      .select({
+        id: raum36Subscriptions.id,
+        userId: raum36Subscriptions.userId,
+        status: raum36Subscriptions.status,
+        pseudonym: raum36Subscriptions.pseudonym,
+        stripeSubscriptionId: raum36Subscriptions.stripeSubscriptionId,
+        stripeCustomerId: raum36Subscriptions.stripeCustomerId,
+        activatedAt: raum36Subscriptions.activatedAt,
+        createdAt: raum36Subscriptions.createdAt,
+        userName: users.name,
+        userEmail: users.email,
+      })
       .from(raum36Subscriptions)
+      .leftJoin(users, eq(raum36Subscriptions.userId, users.id))
       .orderBy(desc(raum36Subscriptions.createdAt));
+
+    return rows;
+  }),
+
+  /**
+   * Admin: Alle Stimmklanganalyse-Bestellungen anzeigen (mit User-Daten)
+   */
+  adminGetStimmklangOrders: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "admin") {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+    const rows = await db
+      .select({
+        id: stimmklanganalyseOrders.id,
+        userId: stimmklanganalyseOrders.userId,
+        status: stimmklanganalyseOrders.status,
+        stripePaymentIntentId: stimmklanganalyseOrders.stripePaymentIntentId,
+        stripeCustomerId: stimmklanganalyseOrders.stripeCustomerId,
+        paidAt: stimmklanganalyseOrders.paidAt,
+        createdAt: stimmklanganalyseOrders.createdAt,
+        userName: users.name,
+        userEmail: users.email,
+      })
+      .from(stimmklanganalyseOrders)
+      .leftJoin(users, eq(stimmklanganalyseOrders.userId, users.id))
+      .orderBy(desc(stimmklanganalyseOrders.createdAt));
+
+    return rows;
+  }),
+
+  /**
+   * Admin: Zusammenfassung aller Zahlungen (Summen + Anzahlen)
+   */
+  adminGetZahlungsStats: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "admin") {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+    const [raum36Active] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(raum36Subscriptions)
+      .where(eq(raum36Subscriptions.status, "active"));
+
+    const [raum36Total] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(raum36Subscriptions);
+
+    const [stimmklangPaid] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(stimmklanganalyseOrders)
+      .where(eq(stimmklanganalyseOrders.status, "paid"));
+
+    const [stimmklangTotal] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(stimmklanganalyseOrders);
+
+    return {
+      raum36ActiveCount: Number(raum36Active?.count ?? 0),
+      raum36TotalCount: Number(raum36Total?.count ?? 0),
+      raum36MonthlyRevenue: Number(raum36Active?.count ?? 0) * 4.9,
+      stimmklangPaidCount: Number(stimmklangPaid?.count ?? 0),
+      stimmklangTotalCount: Number(stimmklangTotal?.count ?? 0),
+      stimmklangRevenue: Number(stimmklangPaid?.count ?? 0) * 150,
+    };
   }),
 });

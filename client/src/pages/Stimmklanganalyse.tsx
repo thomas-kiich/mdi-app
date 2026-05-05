@@ -1,7 +1,7 @@
 /**
  * Stimmklanganalyse – Buchungsseite
  *
- * Einmalzahlung €96 für:
+ * Einmalzahlung €150 für:
  * - 3-tägige Selbstanalyse mit der KIICH-App
  * - Persönliches Abschluss-Coaching mit Thomas Chochola
  */
@@ -90,7 +90,7 @@ export default function Stimmklanganalyse() {
                 Jetzt buchen
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-              <p className="text-zinc-500 text-sm mt-3">€ 96 · Einmalzahlung</p>
+              <p className="text-zinc-500 text-sm mt-3">€ 150 · Einmalzahlung</p>
             </div>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function Stimmklanganalyse() {
             <div className="text-orange-500 text-sm font-mono uppercase tracking-widest mb-4">
               Einmalzahlung
             </div>
-            <div className="text-5xl font-black mb-2">€ 96</div>
+            <div className="text-5xl font-black mb-2">€ 150</div>
             <div className="text-zinc-400 mb-8">Einmalig · Keine Folgekosten</div>
             <ul className="space-y-3 mb-10">
               {[
