@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -258,6 +258,9 @@ function Raum36Member() {
       <div className="border-b border-zinc-800 px-6 py-6">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
+            <Link href="/" className="text-xs font-mono text-zinc-600 hover:text-orange-500 uppercase tracking-widest mb-1 flex items-center gap-1 transition-colors">
+              ← Startseite
+            </Link>
             <div className="text-xs font-mono text-orange-500 uppercase tracking-widest mb-1">
               Mitglieder-Bereich
             </div>
