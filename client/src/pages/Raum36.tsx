@@ -90,20 +90,29 @@ function Raum36Landing() {
           </ul>
 
           {/* CTA */}
-          <div>
-            <Button
-              onClick={handleJoin}
-              disabled={checkoutMutation.isPending}
-              className="bg-orange-600 hover:bg-orange-500 text-white font-bold text-lg px-10 py-6 h-auto rounded-none border-0 uppercase tracking-wide"
-            >
-              {checkoutMutation.isPending ? (
-                <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              ) : null}
-              JETZT MITGLIED WERDEN
-            </Button>
-            <p className="text-zinc-500 text-sm mt-3">
-              Werteausgleich: € 4,90 pro Monat · jederzeit kündbar
-            </p>
+          <div className="space-y-4">
+            {/* Eröffnungs-Badge */}
+            <div className="inline-flex items-center gap-3 border border-orange-600/40 bg-orange-600/10 px-5 py-3">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+              <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">
+                Eröffnung · 14. Mai 2026
+              </span>
+            </div>
+            <div>
+              <Button
+                onClick={handleJoin}
+                disabled={checkoutMutation.isPending}
+                className="bg-orange-600 hover:bg-orange-500 text-white font-bold text-lg px-10 py-6 h-auto rounded-none border-0 uppercase tracking-wide"
+              >
+                {checkoutMutation.isPending ? (
+                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                ) : null}
+                JETZT MITGLIED WERDEN
+              </Button>
+              <p className="text-zinc-500 text-sm mt-3">
+                Werteausgleich: € 4,90 pro Monat · jederzeit kündbar
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -171,6 +180,13 @@ function Raum36Landing() {
                 </li>
               ))}
             </ul>
+            {/* Eröffnungs-Badge */}
+            <div className="flex items-center gap-3 border border-orange-600/40 bg-orange-600/10 px-4 py-3 mb-4">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+              <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">
+                Eröffnung · 14. Mai 2026
+              </span>
+            </div>
             <Button
               onClick={handleJoin}
               disabled={checkoutMutation.isPending}
