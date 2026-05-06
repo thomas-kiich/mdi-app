@@ -47,7 +47,15 @@ function Raum36Landing() {
     },
   });
 
+  // Eröffnung am 14. Mai 2026 – bis dahin kein Checkout
+  const EROEFFNUNG = new Date("2026-05-14T00:00:00");
+  const isBeforeEroeffnung = new Date() < EROEFFNUNG;
+
   const handleJoin = () => {
+    if (isBeforeEroeffnung) {
+      toast.info("RAUM 36 öffnet am 14. Mai 2026. Wir freuen uns auf dich!");
+      return;
+    }
     if (!isAuthenticated) {
       window.location.href = getLoginUrl("/raum36");
       return;
