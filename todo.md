@@ -1336,3 +1336,9 @@
 
 ## RAUM 36 – Vital Monitor Tab-Korrektur (07.05.2026)
 - [x] Vital Monitor als regulären Tab in Tab-Leiste (neben Videos/Fragen/Wissenspool), separate Vital-Sektion entfernt
+
+## Episode 06 – INTEGRATION STATT KOLLISION (07.05.2026)
+- [x] MP3 konvertieren (128k, Info-Header) und auf CDN hochladen
+- [x] DB-Eintrag für Episode 06 anlegen (Titel, Teaser, audio_url)
+- [x] PodcastFeature: Episode 06 einrichten, Cache-Busting erhöht (v=9)
+- [ ] Admin-Newsletter: Episode 06 Newsletter versenden (via /admin/newsletter)
