@@ -64,12 +64,13 @@ export const raum36Router = router({
         )
       )
       .limit(1) : [];
+    const isAdmin = ctx.user.role === "admin";
     return {
-      isActive: sub?.status === "active",
-      status: sub?.status ?? "inactive",
+      isActive: isAdmin || sub?.status === "active",
+      status: isAdmin ? "active" : (sub?.status ?? "inactive"),
       pseudonym: sub?.pseudonym ?? null,
       activatedAt: sub?.activatedAt ?? null,
-      hasStimmklangAccess: stimmklangOrder.length > 0,
+      hasStimmklangAccess: isAdmin || stimmklangOrder.length > 0,
     };
   }),
 
