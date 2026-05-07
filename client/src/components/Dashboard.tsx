@@ -410,7 +410,7 @@ export function Dashboard({
                             
                             <h2 className="text-xl font-bold text-white mb-2">Visionsraum</h2>
                             <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
-                                Der Inkubator für neue Konzepte und Ideen der Expedition 2026. Aktuell: DIE ATEMDIÄT.
+                                Der Inkubator für neue Konzepte und Ideen der Expedition 2026.
                             </p>
 
                             <div className="mt-auto">
