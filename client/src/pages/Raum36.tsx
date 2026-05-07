@@ -29,6 +29,7 @@ import {
   Mic,
   X,
   ArrowLeft,
+  HeartPulse,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -236,6 +237,45 @@ function Raum36Landing() {
                   >
                     <Mic className="w-4 h-4 mr-2" />
                     Voranmeldung
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Vital Monitor – exklusiv in RAUM 36 */}
+      <section className="px-6 py-16 border-b border-zinc-800 bg-zinc-900/20">
+        <div className="max-w-4xl mx-auto">
+          <div className="border border-red-600/30 p-8 md:p-10">
+            <div className="flex items-start gap-6">
+              <div className="w-14 h-14 bg-red-600/20 flex items-center justify-center text-red-500 flex-shrink-0">
+                <HeartPulse className="w-7 h-7" />
+              </div>
+              <div className="flex-1">
+                <div className="text-red-500 text-xs font-mono uppercase tracking-widest mb-2">
+                  Exklusiv in RAUM 36
+                </div>
+                <h3 className="text-lg font-semibold tracking-widest mb-3 text-zinc-100">
+                  VITAL MONITOR
+                </h3>
+                <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                  Erfasse BOLT, Körpertemperatur &amp; HRV und verfolge deine physiologische Entwicklung. Der Vital Monitor macht die biologische Pulsation deines Systems sichtbar – als Grundlage für gezieltes Training mit METHODE 36.
+                </p>
+                <div className="flex items-center gap-3 border border-red-600/40 bg-red-600/10 px-4 py-3 mb-4 w-fit">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                  <span className="text-red-400 text-xs font-mono uppercase tracking-widest">
+                    Verfügbar ab · 14. Mai 2026
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={() => toast.info("Der Vital Monitor ist ab 14. Mai 2026 in RAUM 36 verfügbar.")}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border border-zinc-600"
+                  >
+                    <Lock className="w-4 h-4 mr-2" />
+                    Ab 14. Mai verfügbar
                   </Button>
                 </div>
               </div>

@@ -1311,3 +1311,6 @@
 - [x] Stimmklanganalyse.tsx: Datenschutz-Modal von Einwilligungsabfrage zu reinem Art. 13-Informationshinweis umbauen (kein "Verstanden & Einverstanden"-Button, nur "Schließen")
 - [x] Raum36.tsx: Voranmeldungs-Formular mit kurzem Datenschutzhinweis ergänzen (lit. b, kein Einwilligungstext)
 - [x] Datenschutz.tsx: Abschnitt 3b – Einwilligungsrhetorik durch Vertragserfüllungs-Sprache ersetzen, Voranmeldung als neue Verarbeitungstätigkeit in Übersichtstabelle eintragen
+
+## RAUM 36 – Vital Monitor (07.05.2026)
+- [x] RAUM 36: Vital-Monitor-Block einbauen (analog Stimmklanganalyse-Sektion, gesperrt bis 14.05.2026, HeartPulse-Icon, rot)
