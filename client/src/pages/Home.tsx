@@ -18,7 +18,6 @@ import { useLongitudinalStudy } from "@/hooks/useLongitudinalStudy";
 import { InterpretationView } from "@/components/InterpretationView";
 import { ConnectionStory } from "@/components/ConnectionStory";
 import { SpectralScanner } from "@/components/SpectralScanner";
-import { VitalDashboard } from "@/components/VitalDashboard";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
@@ -343,7 +342,6 @@ export default function Home() {
   const [knowledgePoolInitialToneId, setKnowledgePoolInitialToneId] = useState<number | undefined>(undefined);
   const [showStory, setShowStory] = useState(false);
   const [showSpectralScanner, setShowSpectralScanner] = useState(false);
-  const [showVitalDashboard, setShowVitalDashboard] = useState(false);
   const [showIntervalTrainer, setShowIntervalTrainer] = useState(false);
   const [showFrequencyTable, setShowFrequencyTable] = useState(false);
   const [showDirectTrainer, setShowDirectTrainer] = useState(false);
@@ -907,7 +905,6 @@ export default function Home() {
                   onOpenScanner={() => setShowSpectralScanner(true)}
                   onOpenKnowledge={() => setShowKnowledgePool(true)}
                   onOpenTable={() => setShowFrequencyTable(true)}
-                  onOpenVital={() => setShowVitalDashboard(true)}
                   onOpenSleep={() => setShowSleepTheta(true)}
                   onOpenHistory={() => setShowHistory(true)}
                   onOpenVisionsraum={() => setShowVisionsraum(true)}
@@ -1470,14 +1467,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     variant="ghost" 
                     size="sm" 
                     className="text-zinc-500 hover:text-white"
-                    onClick={() => setShowVitalDashboard(true)}
-                  >
-                    <span className="mr-2">❤️</span> Vital
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-zinc-500 hover:text-white ml-2"
                     onClick={() => setShowKnowledgePool(true)}
                   >
                     <span className="mr-2">📚</span> Wissen
@@ -1695,8 +1684,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
               onClose={() => setShowSpectralScanner(false)} 
               forcedFrequency={finalResult?.fundamentalFreq}
             />
-          ) : showVitalDashboard ? (
-            <VitalDashboard onClose={() => setShowVitalDashboard(false)} />
           ) : showIntervalTrainer && finalResult ? (
             <IntervalTrainer 
               baseTone={finalResult.tone} 
@@ -1901,7 +1888,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
         </main>
         
         {/* Footer */}
-        {!showStory && !showSpectralScanner && !showVitalDashboard && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && !showVisionsraum && currentStep === 'dashboard' && (
+        {!showStory && !showSpectralScanner && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && !showVisionsraum && currentStep === 'dashboard' && (
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col gap-6 text-xs text-zinc-600">
                 {/* Disclaimer */}
                 <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg px-5 py-4 text-zinc-400 text-xs leading-relaxed">

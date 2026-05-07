@@ -1314,3 +1314,7 @@
 
 ## RAUM 36 – Vital Monitor (07.05.2026)
 - [x] RAUM 36: Vital-Monitor-Block einbauen (analog Stimmklanganalyse-Sektion, gesperrt bis 14.05.2026, HeartPulse-Icon, rot)
+
+## Vital Monitor – Entfernung von Startseite (07.05.2026)
+- [x] Home.tsx: Vital-Monitor-State, showVitalDashboard und VitalDashboard-Komponente entfernen
+- [x] Dashboard.tsx: Vital-Monitor-Karte (Pillar 3) und onOpenVital-Prop entfernen
