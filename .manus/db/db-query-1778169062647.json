@@ -1,0 +1,118 @@
+{
+  "query": "SHOW TABLES;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SHOW TABLES;",
+  "rows": [
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "__drizzle_migrations"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "abonnements"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "api_tokens"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "backlog_items"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "beta_invites"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "coaching_einwilligungen"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "dankbarkeit"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "einkaufsliste"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "einladungs_codes"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "einschlaf_bibliothek"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "erinnerungen"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "erledigungen"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "faq_fragen"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "momentaufnahmen"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "newsletter_subscribers"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "nutzungs_limits"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "podcast_episodes"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "premium_settings"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "push_subscriptions"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "raum36_fragen"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "raum36_posts"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "raum36_subscriptions"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "raum36_wissenspool"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "rechts_aufgaben"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "rechts_pruefprotokoll"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "referrals"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "ritual_logs"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "rituale_einstellungen"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "stimmklanganalyse_orders"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "tages_summaries"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "training_freigaben"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "tts_nutzungslog"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "user_training_freigaben"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "users"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "visionen"
+    },
+    {
+      "Tables_in_VyRb5akas5jLZtUDKwE632": "vital_eintraege"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_VyRb5akas5jLZtUDKwE632\n__drizzle_migrations\nabonnements\napi_tokens\nbacklog_items\nbeta_invites\ncoaching_einwilligungen\ndankbarkeit\neinkaufsliste\neinladungs_codes\neinschlaf_bibliothek\nerinnerungen\nerledigungen\nfaq_fragen\nmomentaufnahmen\nnewsletter_subscribers\nnutzungs_limits\npodcast_episodes\npremium_settings\npush_subscriptions\nraum36_fragen\nraum36_posts\nraum36_subscriptions\nraum36_wissenspool\nrechts_aufgaben\nrechts_pruefprotokoll\nreferrals\nritual_logs\nrituale_einstellungen\nstimmklanganalyse_orders\ntages_summaries\ntraining_freigaben\ntts_nutzungslog\nuser_training_freigaben\nusers\nvisionen\nvital_eintraege\n",
+  "stderr": "",
+  "execution_time_ms": 50
+}

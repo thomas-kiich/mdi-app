@@ -451,7 +451,7 @@ function Raum36Member() {
       <div className="border-b border-zinc-800 px-6 py-6">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
-            <Link href="/" className="text-xs font-mono text-zinc-600 hover:text-orange-500 uppercase tracking-widest mb-1 flex items-center gap-1 transition-colors">
+            <Link href="/" className="text-xs font-mono text-zinc-400 hover:text-orange-500 uppercase tracking-widest mb-2 flex items-center gap-1.5 transition-colors border border-zinc-700 hover:border-orange-600 px-3 py-1.5 w-fit">
               ← Startseite
             </Link>
             <div className="text-xs font-mono text-orange-500 uppercase tracking-widest mb-1">

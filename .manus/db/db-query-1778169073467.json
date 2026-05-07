@@ -1,0 +1,9 @@
+{
+  "query": "SELECT u.id, u.name, u.email, u.role, r.status, r.stripeSubscriptionId, r.activatedAt FROM users u JOIN raum36_subscriptions r ON u.id = r.userId WHERE r.status = 'active' ORDER BY u.id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT u.id, u.name, u.email, u.role, r.status, r.stripeSubscriptionId, r.activatedAt FROM users u JOIN raum36_subscriptions r ON u.id = r.userId WHERE r.status = 'active' ORDER BY u.id;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 60
+}
