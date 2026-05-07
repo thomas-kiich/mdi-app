@@ -257,21 +257,6 @@ function Raum36Landing() {
         </div>
       </section>
 
-      {/* Thomas Chochola */}
-      <section className="px-6 py-20">
-        <div className="max-w-4xl mx-auto">
-          <div className="border-l-4 border-orange-600 pl-8">
-            <p className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-4">
-              Thomas Chochola
-            </p>
-            <p className="text-xl text-zinc-200 leading-relaxed max-w-2xl">
-              50 Jahre Erfahrung mit dem Thema ATMUNG als Jazzmusiker, Entwickler und
-              Musikpädagoge. Autor von „MASCHINEN ATMEN NICHT". RAUM 36 ist der direkte
-              Zugang zu diesen Erfahrungen – menschlich, ohne Filter, ohne Algorithmus.
-            </p>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
