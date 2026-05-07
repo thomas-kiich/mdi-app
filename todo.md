@@ -1318,3 +1318,8 @@
 ## Vital Monitor – Entfernung von Startseite (07.05.2026)
 - [x] Home.tsx: Vital-Monitor-State, showVitalDashboard und VitalDashboard-Komponente entfernen
 - [x] Dashboard.tsx: Vital-Monitor-Karte (Pillar 3) und onOpenVital-Prop entfernen
+
+## RAUM 36 – Vollständige Feature-Integration (07.05.2026)
+- - [x] RAUM 36: Vital Monitor vollständig einbauen (VitalDashboard-Komponente, Admin-Zugriff sofort, User ab 14. Mai)
+- [x] RAUM 36: Stimmklanganalyse vollständig einbauen (Stimmklanganalyse-Seite direkt in RAUM 36, Admin-Zugriff sofort, User ab 14. Mai)er ab 14.05.2026)
+- [ ] Freischaltungslogik: isAdmin || new Date() >= new Date('2026-05-14') als gemeinsame Bedingung

@@ -33,6 +33,8 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { VitalDashboard } from "@/components/VitalDashboard";
+import StimmklangPage from "@/pages/Stimmklanganalyse";
 
 // ─── Öffentliche Landing-Page ───────────────────────────────────────────────
 
@@ -426,10 +428,15 @@ function Raum36Landing() {
 }
 
 // ─── Mitglieder-Bereich ──────────────────────────────────────────────────────
+type Tab = "videos" | "fragen" | "wissenspool" | "vital" | "stimmklang";
 
-type Tab = "videos" | "fragen" | "wissenspool";
+// Freischaltungsdatum für neue Features
+const FEATURE_UNLOCK = new Date("2026-05-14T00:00:00");
 
 function Raum36Member() {
+  const { user } = useAuth();
+  const isAdmin = user?.role === "admin";
+  const isFeatureUnlocked = isAdmin || new Date() >= FEATURE_UNLOCK;
   const [activeTab, setActiveTab] = useState<Tab>("videos");
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
@@ -556,6 +563,8 @@ function Raum36Member() {
               { id: "videos", label: "Wochenvideos", icon: <Video className="w-4 h-4" /> },
               { id: "fragen", label: "Fragen", icon: <MessageSquare className="w-4 h-4" /> },
               { id: "wissenspool", label: "Wissenspool", icon: <Lightbulb className="w-4 h-4" /> },
+              { id: "vital", label: "Vital Monitor", icon: <HeartPulse className="w-4 h-4" /> },
+              { id: "stimmklang", label: "Stimmklang", icon: <Mic className="w-4 h-4" /> },
             ] as { id: Tab; label: string; icon: React.ReactNode }[]
           ).map((tab) => (
             <button
@@ -807,6 +816,41 @@ function Raum36Member() {
                       )}
                     </div>
                   ))}
+                </div>
+              )}
+            </div>
+          )}
+          {/* Vital Monitor */}
+          {activeTab === "vital" && (
+            <div>
+              {isFeatureUnlocked ? (
+                <VitalDashboard onClose={() => setActiveTab("videos")} />
+              ) : (
+                <div className="border border-red-600/30 p-12 text-center">
+                  <HeartPulse className="w-12 h-12 text-red-500/40 mx-auto mb-4" />
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-red-400 text-xs font-mono uppercase tracking-widest">Verfügbar ab · 14. Mai 2026</span>
+                  </div>
+                  <p className="text-zinc-500 text-sm">Der Vital Monitor öffnet am 14. Mai 2026.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Stimmklanganalyse */}
+          {activeTab === "stimmklang" && (
+            <div>
+              {isFeatureUnlocked ? (
+                <StimmklangPage embedded={true} params={{}} />
+              ) : (
+                <div className="border border-orange-600/30 p-12 text-center">
+                  <Mic className="w-12 h-12 text-orange-500/40 mx-auto mb-4" />
+                  <div className="flex items-center justify-center gap-3 mb-4">
+                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                    <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">Verfügbar ab · 14. Mai 2026</span>
+                  </div>
+                  <p className="text-zinc-500 text-sm">Die Stimmklanganalyse öffnet am 14. Mai 2026.</p>
                 </div>
               )}
             </div>

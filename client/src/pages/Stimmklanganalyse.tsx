@@ -24,8 +24,9 @@ import {
   X,
 } from "lucide-react";
 import { Link } from "wouter";
+import type { RouteComponentProps } from "wouter";
 
-export default function Stimmklanganalyse() {
+export default function Stimmklanganalyse({ embedded = false }: RouteComponentProps & { embedded?: boolean }) {
   const { isAuthenticated } = useAuth();
   const [datenschutzOpen, setDatenschutzOpen] = useState(false);
 
@@ -64,15 +65,17 @@ export default function Stimmklanganalyse() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Navigation */}
-      <div className="px-6 pt-6">
-        <div className="max-w-4xl mx-auto">
-          <Link href="/" className="inline-flex items-center gap-1 text-xs font-mono text-zinc-600 hover:text-orange-500 uppercase tracking-widest transition-colors">
-            <ArrowLeft className="w-3 h-3" /> Startseite
-          </Link>
+    <div className={embedded ? "text-white" : "min-h-screen bg-black text-white"}>
+      {/* Navigation – nur als eigenständige Seite */}
+      {!embedded && (
+        <div className="px-6 pt-6">
+          <div className="max-w-4xl mx-auto">
+            <Link href="/" className="inline-flex items-center gap-1 text-xs font-mono text-zinc-600 hover:text-orange-500 uppercase tracking-widest transition-colors">
+              <ArrowLeft className="w-3 h-3" /> Startseite
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Hero */}
       <section className="border-b border-zinc-800 px-6 py-20 md:py-32">
