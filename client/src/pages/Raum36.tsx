@@ -73,7 +73,7 @@ function Raum36Landing() {
           <div className="inline-block border border-orange-600 px-3 py-1 text-xs font-mono text-orange-500 mb-8 uppercase tracking-widest">
             Exklusiver Mitglieder-Bereich
           </div>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none mb-6">
+          <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-none mb-6">
             RAUM 36
           </h1>
           <p className="text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed mb-10">
@@ -157,7 +157,7 @@ function Raum36Landing() {
                 className="p-8 border-r border-b border-zinc-800 last:border-b-0 md:odd:border-r md:even:border-r-0"
               >
                 <div className="mb-5">{item.icon}</div>
-                <h3 className="font-black text-xl mb-3 tracking-tight">{item.title}</h3>
+                <h3 className="font-semibold text-base mb-3 tracking-widest text-zinc-200">{item.title}</h3>
                 <p className="text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
@@ -177,15 +177,15 @@ function Raum36Landing() {
                 <div className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-2">
                   Exklusiv in RAUM 36
                 </div>
-                <h3 className="text-2xl font-black tracking-tight mb-3">
+                <h3 className="text-lg font-semibold tracking-widest mb-3 text-zinc-100">
                   STIMMKLANGANALYSE
                 </h3>
                 <p className="text-zinc-400 text-sm leading-relaxed mb-6">
                   Hier bestimmst du deinen Stimmklang. In drei aufeinanderfolgenden Tagen führst du die Frequenzanalyse deiner Stimme durch – vollständig begleitet. Danach bespricht Thomas das Ergebnis persönlich mit dir und führt die finale Justierung durch.
                 </p>
-                <div className="flex items-center gap-3 mb-5">
-                  <span className="text-3xl font-black">€ 150</span>
-                  <span className="text-zinc-500 text-sm">· Einmalig · Inkl. persönlichem Gespräch mit Thomas</span>
+                <div className="flex items-baseline gap-2 mb-5">
+                  <span className="text-xl font-medium text-white">€ 150</span>
+                  <span className="text-zinc-500 text-xs">einmalig · inkl. persönlichem Gespräch mit Thomas</span>
                 </div>
                 <div className="flex items-center gap-3 border border-orange-600/40 bg-orange-600/10 px-4 py-3 mb-4 w-fit">
                   <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
@@ -213,8 +213,11 @@ function Raum36Landing() {
             <div className="text-orange-500 text-sm font-mono uppercase tracking-widest mb-4">
               Mitgliedschaft
             </div>
-            <div className="text-5xl font-black mb-2">€ 4,90</div>
-            <div className="text-zinc-400 mb-8">pro Monat · Jederzeit kündbar</div>
+            <div className="flex items-baseline gap-2 mb-1">
+              <span className="text-2xl font-medium text-white">€ 4,90</span>
+              <span className="text-zinc-500 text-sm">/ Monat</span>
+            </div>
+            <div className="text-zinc-500 text-xs mb-8">Jederzeit kündbar</div>
             <ul className="space-y-3 mb-10">
               {[
                 "Persönliche Fragen an Thomas stellen",

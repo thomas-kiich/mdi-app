@@ -1298,3 +1298,6 @@
 - [x] Dashboard.tsx: Stimmklang-Karte – Button "Analyse Starten" → Link "In RAUM 36 buchen" (/raum36)
 - [x] RAUM 36 Mitglieder-Header: "← Startseite" Zurück-Link ergänzt
 - [x] Stimmklanganalyse.tsx: Zurück-Link zur Startseite ergänzt
+
+## Typografie & Design-Feinschliff (Mai 2026)
+- [x] RAUM 36 Landing-Page: Überschriften feiner gestalten (font-black → font-bold/semibold, Schriftgröße reduzieren), Preise kleiner und eleganter darstellen
