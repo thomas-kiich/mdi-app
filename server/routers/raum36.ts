@@ -52,11 +52,24 @@ export const raum36Router = router({
    */
   getStatus: protectedProcedure.query(async ({ ctx }) => {
     const sub = await getRaum36Sub(ctx.user.id);
+    // Stimmklanganalyse: bezahlte Bestellung vorhanden?
+    const db = await getDb();
+    const stimmklangOrder = db ? await db
+      .select({ id: stimmklanganalyseOrders.id })
+      .from(stimmklanganalyseOrders)
+      .where(
+        and(
+          eq(stimmklanganalyseOrders.userId, ctx.user.id),
+          eq(stimmklanganalyseOrders.status, "paid")
+        )
+      )
+      .limit(1) : [];
     return {
       isActive: sub?.status === "active",
       status: sub?.status ?? "inactive",
       pseudonym: sub?.pseudonym ?? null,
       activatedAt: sub?.activatedAt ?? null,
+      hasStimmklangAccess: stimmklangOrder.length > 0,
     };
   }),
 

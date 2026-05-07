@@ -29,6 +29,7 @@ import {
   Mic,
   X,
   ArrowLeft,
+  ArrowRight,
   HeartPulse,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -428,15 +429,15 @@ function Raum36Landing() {
 }
 
 // ─── Mitglieder-Bereich ──────────────────────────────────────────────────────
-type Tab = "videos" | "fragen" | "wissenspool" | "vital" | "stimmklang";
+type Tab = "videos" | "fragen" | "wissenspool" | "vital";
 
-// Freischaltungsdatum für neue Features
+// Freischaltungsdatum für neue Features (Vital Monitor)
 const FEATURE_UNLOCK = new Date("2026-05-14T00:00:00");
 
 function Raum36Member() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  const isFeatureUnlocked = isAdmin || new Date() >= FEATURE_UNLOCK;
+  const isVitalUnlocked = isAdmin || new Date() >= FEATURE_UNLOCK;
   const [activeTab, setActiveTab] = useState<Tab>("videos");
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
@@ -564,7 +565,6 @@ function Raum36Member() {
               { id: "fragen", label: "Fragen", icon: <MessageSquare className="w-4 h-4" /> },
               { id: "wissenspool", label: "Wissenspool", icon: <Lightbulb className="w-4 h-4" /> },
               { id: "vital", label: "Vital Monitor", icon: <HeartPulse className="w-4 h-4" /> },
-              { id: "stimmklang", label: "Stimmklang", icon: <Mic className="w-4 h-4" /> },
             ] as { id: Tab; label: string; icon: React.ReactNode }[]
           ).map((tab) => (
             <button
@@ -823,7 +823,7 @@ function Raum36Member() {
           {/* Vital Monitor */}
           {activeTab === "vital" && (
             <div>
-              {isFeatureUnlocked ? (
+              {isVitalUnlocked ? (
                 <VitalDashboard onClose={() => setActiveTab("videos")} />
               ) : (
                 <div className="border border-red-600/30 p-12 text-center">
@@ -837,22 +837,37 @@ function Raum36Member() {
               )}
             </div>
           )}
+        </div>
+      </div>
 
-          {/* Stimmklanganalyse */}
-          {activeTab === "stimmklang" && (
-            <div>
-              {isFeatureUnlocked ? (
-                <StimmklangPage embedded={true} params={{}} />
-              ) : (
-                <div className="border border-orange-600/30 p-12 text-center">
-                  <Mic className="w-12 h-12 text-orange-500/40 mx-auto mb-4" />
-                  <div className="flex items-center justify-center gap-3 mb-4">
-                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                    <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">Verfügbar ab · 14. Mai 2026</span>
-                  </div>
-                  <p className="text-zinc-500 text-sm">Die Stimmklanganalyse öffnet am 14. Mai 2026.</p>
-                </div>
-              )}
+      {/* ─── Stimmklanganalyse – Separater Bereich (nur nach Kauf) ────────────────────── */}
+      <div className="border-t border-zinc-800 mt-8">
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="flex items-center gap-3 mb-6">
+            <Mic className="w-5 h-5 text-orange-500" />
+            <h2 className="text-lg font-semibold tracking-widest uppercase text-zinc-200">Stimmklanganalyse</h2>
+            <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">· Persönliche Buchung</span>
+          </div>
+          {statusQuery.data?.hasStimmklangAccess || isAdmin ? (
+            <StimmklangPage embedded={true} params={{}} />
+          ) : (
+            <div className="border border-zinc-800 bg-zinc-900/40 p-8 flex flex-col sm:flex-row items-start gap-6">
+              <div className="w-12 h-12 bg-orange-600/10 flex items-center justify-center text-orange-500 flex-shrink-0">
+                <Mic className="w-6 h-6" />
+              </div>
+              <div className="flex-1">
+                <p className="text-zinc-300 text-sm leading-relaxed mb-4">
+                  Die Stimmklanganalyse ist eine einmalige persönliche Buchung (€ 150) – unabhängig von der Mitgliedschaft.
+                  Nach der Buchung erhältst du hier direkten Zugang.
+                </p>
+                <a
+                  href="/stimmklanganalyse"
+                  className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white text-sm font-bold px-5 py-3 uppercase tracking-wide transition-colors"
+                >
+                  Zur Buchungsseite
+                  <ArrowRight className="w-4 h-4" />
+                </a>
+              </div>
             </div>
           )}
         </div>

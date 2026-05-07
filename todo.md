@@ -1323,3 +1323,8 @@
 - - [x] RAUM 36: Vital Monitor vollständig einbauen (VitalDashboard-Komponente, Admin-Zugriff sofort, User ab 14. Mai)
 - [x] RAUM 36: Stimmklanganalyse vollständig einbauen (Stimmklanganalyse-Seite direkt in RAUM 36, Admin-Zugriff sofort, User ab 14. Mai)er ab 14.05.2026)
 - [ ] Freischaltungslogik: isAdmin || new Date() >= new Date('2026-05-14') als gemeinsame Bedingung
+
+## RAUM 36 – Navigation Umbau (07.05.2026)
+- [x] Vital Monitor als regulären Tab in obere Tab-Leiste verschieben (neben Videos, Wissenspool, Praxis, Fragen)
+- [x] Stimmklanganalyse-Tab entfernen, stattdessen als separate Sektion unterhalb der Tabs (nur nach individuellem Kauf sichtbar)
+- [x] Freischaltungslogik Vital Monitor: Mitgliedschaft aktiv = Zugang (kein separater Kauf nötig)
