@@ -66,12 +66,12 @@ function buildNewsletterHtml(
       <table width="100%" cellpadding="0" cellspacing="0">
         <tr>
           <td style="border:1px solid #292524;border-radius:4px;padding:24px 28px;background:#111111;">
-            <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:3px;color:#d97706;text-transform:uppercase;font-family:Arial,sans-serif;">EXKLUSIV FÜR ABONNENTEN</p>
-            <p style="margin:0 0 14px 0;font-size:20px;color:#ffffff;font-family:Arial,sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${btExclusiveTitle || 'BEFINDLICHKEITSTRAINING'}</p>
+                            <p style="margin:0 0 6px 0;font-size:11px;letter-spacing:3px;color:#d97706;text-transform:uppercase;font-family:Arial,sans-serif;">EXKLUSIV FÜR ABONNENTEN</p>
+            <p style="margin:0 0 14px 0;font-size:20px;color:#ffffff;font-family:Arial,sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;">${btExclusiveTitle || 'RAUM 36'}</p>
             <p style="margin:0 0 20px 0;font-size:15px;color:#a8a29e;line-height:1.7;font-family:Arial,sans-serif;">${btExclusiveDesc || 'Analysiere deine Stimmfrequenzen und entdecke deinen persönlichen Klang-Fingerabdruck. Direkt in der KIICH-App verfügbar.'}</p>
-            <a href="https://kiich.manus.space/befindlichkeit" target="_blank"
+            <a href="https://www.kiich.de/raum36" target="_blank"
                style="display:inline-block;background:#d97706;color:#000000;text-decoration:none;padding:13px 28px;border-radius:4px;font-size:13px;font-weight:700;font-family:Arial,sans-serif;letter-spacing:2px;text-transform:uppercase;">
-              JETZT IN DER APP ÖFFNEN →
+              RAUM 36 BETRETEN →
             </a>
           </td>
         </tr>
@@ -547,16 +547,16 @@ export default function AdminNewsletter() {
             {draft && (
               <Card className="bg-zinc-900/60 border-zinc-800">
                 <CardHeader>
-                  <CardTitle className="text-white text-base font-medium flex items-center gap-2">
+                    <CardTitle className="text-white text-base font-medium flex items-center gap-2">
                     <span className="bg-orange-500/20 text-orange-400 text-xs font-mono px-2 py-1 rounded">03</span>
-                    Befindlichkeitstraining-Button
+                    RAUM 36-Button
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center gap-3">
                     <Switch id="bt-cta" checked={includeBtCta} onCheckedChange={setIncludeBtCta} />
                     <Label htmlFor="bt-cta" className="text-zinc-300 cursor-pointer text-sm">
-                      CTA-Block "Zum Befindlichkeitstraining" im Newsletter einbinden
+                      CTA-Block "Zu RAUM 36" im Newsletter einbinden
                     </Label>
                   </div>
                   {includeBtCta && (
@@ -564,7 +564,7 @@ export default function AdminNewsletter() {
                       <div className="grid grid-cols-1 gap-3">
                         <div className="space-y-1.5">
                           <label className="text-xs text-zinc-500 uppercase tracking-wider">BT-Block Titel (optional)</label>
-                          <Input placeholder="z. B. BEFINDLICHKEITSTRAINING" value={btExclusiveTitle}
+                          <Input placeholder="z. B. RAUM 36" value={btExclusiveTitle}
                             onChange={(e) => setBtExclusiveTitle(e.target.value)}
                             className="bg-zinc-800 border-zinc-700 text-white" />
                         </div>

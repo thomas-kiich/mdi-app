@@ -1345,3 +1345,6 @@
 
 ## Dashboard – Meine Analysen entfernen (07.05.2026)
 - [x] Dashboard.tsx: Meine-Analysen-Karte entfernen, onOpenHistory-Prop bereinigen
+
+## Newsletter Episode 06 – CTA-Link-Korrektur (07.05.2026)
+- [x] Newsletter-Template: CTA-Button-Link von Befindlichkeitstraining auf RAUM 36 aktualisiert (https://www.kiich.de/raum36, Button-Text: RAUM 36 BETRETEN)
