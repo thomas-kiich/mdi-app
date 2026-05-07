@@ -1328,3 +1328,8 @@
 - [x] Vital Monitor als regulären Tab in obere Tab-Leiste verschieben (neben Videos, Wissenspool, Praxis, Fragen)
 - [x] Stimmklanganalyse-Tab entfernen, stattdessen als separate Sektion unterhalb der Tabs (nur nach individuellem Kauf sichtbar)
 - [x] Freischaltungslogik Vital Monitor: Mitgliedschaft aktiv = Zugang (kein separater Kauf nötig)
+
+## Vital Monitor & Meine Analysen (07.05.2026)
+- [x] Dashboard: Vital Monitor Karte auf /raum36 umleiten (war bereits entfernt, bestätigt)
+- [x] Meine Analysen: Button auf Startseite → leitet jetzt auf /raum36 um
+- [x] Stimmklang-Sektion RAUM 36: AnalysisHistory-Komponente eingebaut (zeigt bisherige Stimmklanganalysen)

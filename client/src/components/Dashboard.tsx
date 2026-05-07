@@ -412,9 +412,9 @@ export function Dashboard({
                             </p>
 
                             <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onOpenHistory, "Meine Analysen", 'meineanalysen')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
-                                    Historie Ansehen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                </button>
+                                <a href="/raum36" className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
+                                    In RAUM 36 ansehen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                </a>
                             </div>
                         </CardContent>
                     </Card>

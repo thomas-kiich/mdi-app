@@ -31,11 +31,13 @@ import {
   ArrowLeft,
   ArrowRight,
   HeartPulse,
+  Activity,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import StimmklangPage from "@/pages/Stimmklanganalyse";
+import { AnalysisHistory } from "@/components/AnalysisHistory";
 
 // ─── Öffentliche Landing-Page ───────────────────────────────────────────────
 
@@ -849,7 +851,16 @@ function Raum36Member() {
             <span className="text-xs font-mono text-zinc-600 uppercase tracking-widest">· Persönliche Buchung</span>
           </div>
           {statusQuery.data?.hasStimmklangAccess || isAdmin ? (
-            <StimmklangPage embedded={true} params={{}} />
+            <>
+              <StimmklangPage embedded={true} params={{}} />
+              <div className="mt-8 border-t border-zinc-800 pt-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Activity className="w-4 h-4 text-orange-500" />
+                  <h3 className="text-sm font-semibold tracking-widest uppercase text-zinc-400">Deine bisherigen Analysen</h3>
+                </div>
+                <AnalysisHistory />
+              </div>
+            </>
           ) : (
             <div className="border border-zinc-800 bg-zinc-900/40 p-8 flex flex-col sm:flex-row items-start gap-6">
               <div className="w-12 h-12 bg-orange-600/10 flex items-center justify-center text-orange-500 flex-shrink-0">
