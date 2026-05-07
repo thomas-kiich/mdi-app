@@ -48,7 +48,7 @@ export function Visionsraum({ onClose }: VisionsraumProps) {
                                 <Activity className="w-5 h-5" />
                             </div>
                             <div>
-                                <h4 className="text-white font-medium">TAKT VS. PULSATION</h4>
+                                <h4 className="text-white font-medium">TAKT VS. RHYTHMUS</h4>
                                 <p className="text-xs text-zinc-500">Philosophie & Rhythmus</p>
                             </div>
                         </CardContent>
@@ -84,10 +84,10 @@ export function Visionsraum({ onClose }: VisionsraumProps) {
                                 </div>
                                 
                                 <h2 className="text-3xl md:text-5xl font-bold text-white mb-4 tracking-tighter leading-tight">
-                                    TAKT VS. PULSATION
+                                    TAKT VS. RHYTHMUS
                                 </h2>
                                 <p className="text-xl text-yellow-500/80 font-medium mb-8 leading-relaxed">
-                                    Maschinen Atmen Nicht: Der Unterschied zwischen monotoner Reproduktion und chaotischem Leben.
+                                    MASCHINEN ATMEN NICHT: Der Unterschied zwischen klinisch-monotoner Reproduktion und chaotisch-kreativem Leben.
                                 </p>
                                 
                                 <div className="prose prose-invert max-w-none prose-p:text-zinc-300 prose-p:leading-relaxed prose-headings:text-white prose-strong:text-orange-400">
@@ -107,7 +107,7 @@ export function Visionsraum({ onClose }: VisionsraumProps) {
                                             </ul>
                                         </div>
                                         <div className="bg-orange-900/20 border border-orange-500/30 p-6 rounded-xl">
-                                            <h4 className="text-xl text-orange-400 mt-0 mb-3 border-b border-orange-500/20 pb-2">Die Pulsation (Leben)</h4>
+                                            <h4 className="text-xl text-orange-400 mt-0 mb-3 border-b border-orange-500/20 pb-2">Der Rhythmus (Mensch)</h4>
                                             <ul className="space-y-2 text-sm">
                                                 <li>Dynamisch, chaotisch, anpassungsfähig</li>
                                                 <li>Wie der Wiener Walzer (oder HRV)</li>
