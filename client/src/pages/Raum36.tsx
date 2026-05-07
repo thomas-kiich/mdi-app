@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect } from "react";
+import React from "react";
 import { Link, useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -854,8 +855,14 @@ function Raum36Member() {
 // ─── Haupt-Komponente ────────────────────────────────────────────────────────
 
 export default function Raum36() {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
   const [location] = useLocation();
+  const isAdmin = user?.role === "admin";
+
+  // Admin kann per ?preview=landing die öffentliche Landing-Page sehen
+  const [previewLanding, setPreviewLanding] = React.useState(() => {
+    return new URLSearchParams(window.location.search).get("preview") === "landing";
+  });
 
   const statusQuery = trpc.raum36.getStatus.useQuery(undefined, {
     enabled: isAuthenticated,
@@ -866,7 +873,6 @@ export default function Raum36() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("checkout") === "success") {
       toast.success("Willkommen im RAUM 36! Dein Abo ist aktiv.");
-      // URL bereinigen
       window.history.replaceState({}, "", "/raum36");
     } else if (params.get("checkout") === "cancelled") {
       toast.info("Checkout abgebrochen.");
@@ -882,9 +888,53 @@ export default function Raum36() {
     );
   }
 
-  // Mitglied → Member-Bereich
+  // Admin: Landing-Page-Vorschau
+  if (isAdmin && previewLanding) {
+    return (
+      <div className="relative">
+        {/* Admin-Banner oben */}
+        <div className="fixed top-0 left-0 right-0 z-50 bg-orange-600 text-white text-xs font-mono uppercase tracking-widest px-4 py-2 flex items-center justify-between">
+          <span>⚙ Admin-Vorschau: Öffentliche Landing-Page</span>
+          <button
+            onClick={() => {
+              setPreviewLanding(false);
+              window.history.replaceState({}, "", "/raum36");
+            }}
+            className="underline hover:no-underline"
+          >
+            → Zum Mitglieder-Bereich
+          </button>
+        </div>
+        <div className="pt-8">
+          <Raum36Landing />
+        </div>
+      </div>
+    );
+  }
+
+  // Mitglied (oder Admin) → Member-Bereich mit Admin-Link zur Landing-Vorschau
   if (isAuthenticated && statusQuery.data?.isActive) {
-    return <Raum36Member />;
+    return (
+      <div className="relative">
+        {isAdmin && (
+          <div className="fixed top-0 left-0 right-0 z-50 bg-zinc-900 border-b border-zinc-700 text-xs font-mono uppercase tracking-widest px-4 py-2 flex items-center justify-between">
+            <span className="text-zinc-500">⚙ Admin-Ansicht</span>
+            <button
+              onClick={() => {
+                setPreviewLanding(true);
+                window.history.replaceState({}, "", "/raum36?preview=landing");
+              }}
+              className="text-orange-500 hover:text-orange-400 underline hover:no-underline"
+            >
+              → Landing-Page ansehen
+            </button>
+          </div>
+        )}
+        <div className={isAdmin ? "pt-8" : ""}>
+          <Raum36Member />
+        </div>
+      </div>
+    );
   }
 
   // Nicht eingeloggt oder kein Abo → Landing-Page
