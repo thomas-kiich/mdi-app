@@ -1348,3 +1348,10 @@
 
 ## Newsletter Episode 06 – CTA-Link-Korrektur (07.05.2026)
 - [x] Newsletter-Template: CTA-Button-Link von Befindlichkeitstraining auf RAUM 36 aktualisiert (https://www.kiich.de/raum36, Button-Text: RAUM 36 BETRETEN)
+
+## Vital Monitor – Wiederherstellung RAUM 36 (07.05.2026)
+- [x] Raum36.tsx: Vital Monitor Tab korrekt vorhanden (VitalDashboard-Import, Tab in Leiste, Admin-Sofortzugriff) – Publish war ausstehend
+
+## Vital Monitor & Newsletter-Fix (07.05.2026)
+- [x] Raum36.tsx: Vital Monitor für alle aktiven RAUM 36 Mitglieder freigeschaltet (isVitalUnlocked = isAdmin || statusQuery.data?.isActive)
+- [x] AdminNewsletter.tsx: CTA-Button-Link zeigt auf www.kiich.de/raum36 (war bereits korrekt im Code, Publish war ausstehend)

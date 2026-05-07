@@ -402,7 +402,6 @@ const FEATURE_UNLOCK = new Date("2026-05-14T00:00:00");
 function Raum36Member() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  const isVitalUnlocked = isAdmin || new Date() >= FEATURE_UNLOCK;
   const [activeTab, setActiveTab] = useState<Tab>("videos");
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
@@ -410,6 +409,8 @@ function Raum36Member() {
   const [showPseudonymForm, setShowPseudonymForm] = useState(false);
 
   const statusQuery = trpc.raum36.getStatus.useQuery();
+  // Vital Monitor ist für alle aktiven RAUM 36 Mitglieder zugänglich (kein separater Kauf nötig)
+  const isVitalUnlocked = isAdmin || statusQuery.data?.isActive === true;
   const postsQuery = trpc.raum36.getPosts.useQuery(undefined, {
     enabled: activeTab === "videos",
   });
