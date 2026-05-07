@@ -118,9 +118,9 @@ export function Visionsraum({ onClose }: VisionsraumProps) {
                                         </div>
                                     </div>
                                     
-                                    <h3 className="text-2xl mt-12 mb-4 border-b border-zinc-800 pb-2">Die Synthese für die Praxis</h3>
+                                    <h3 className="text-2xl mt-12 mb-4 border-b border-zinc-800 pb-2">DIE SYNTHESE IN DER PRAXIS</h3>
                                     <p>
-                                        Unser Ziel ist es nicht, die Maschine zu verteufeln, sondern den Menschen aus dem maschinellen Takt zu befreien, in den er sich selbst gezwungen hat. Durch Methoden wie das <strong>Method 36 Training</strong> oder die <strong>Stimmklanganalyse</strong> bringen wir die chaotische, gesunde Pulsation zurück in das System.
+                                        Unsere Absicht ist es nicht, Maschinen zu verteufeln, sondern den Menschen aus seinem maschinellen Takt zu befreien in den er sich selbst manövriert hat. METHODE 36 mit ihren vielfältigen Trainingseinheiten und dem vermittelten Wissen unterstützen die Rückkehr zur biologischen Pulsation und Rhythmisierung seines eigenen Systems.
                                     </p>
                                 </div>
                             </div>
