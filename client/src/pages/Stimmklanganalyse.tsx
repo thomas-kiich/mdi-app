@@ -64,8 +64,80 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
     checkoutMutation.mutate({ origin: window.location.origin });
   };
 
+  // Im embedded-Modus (RAUM 36 Mitglieder-Bereich nach Kauf) nur kompakten Hinweis zeigen
+  if (embedded) {
+    return (
+      <div className="text-white">
+        <div className="border border-zinc-800 bg-zinc-900/40 p-6 mb-2">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 bg-orange-600/20 flex items-center justify-center text-orange-500 flex-shrink-0">
+              <Mic className="w-5 h-5" />
+            </div>
+            <div className="flex-1">
+              <div className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-1">Dein Zugang ist aktiv</div>
+              <h3 className="font-semibold text-base mb-2 text-zinc-100">Stimmklanganalyse</h3>
+              <p className="text-zinc-400 text-sm leading-relaxed mb-4">
+                Führe die Frequenzanalyse deiner Stimme über 3 aufeinanderfolgende Tage durch.
+                Die App führt dich detailgenau durch den Ablauf. Danach bespricht Thomas das
+                Ergebnis persönlich mit dir.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href="/"
+                  className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white text-sm font-bold px-5 py-3 uppercase tracking-wide transition-colors"
+                >
+                  <Mic className="w-4 h-4" />
+                  Analyse starten
+                </a>
+                <button
+                  onClick={() => setDatenschutzOpen(true)}
+                  className="inline-flex items-center gap-2 text-zinc-500 hover:text-zinc-300 text-xs font-mono uppercase tracking-widest transition-colors"
+                >
+                  <Shield className="w-3 h-3" />
+                  Datenschutz
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Datenschutz-Modal */}
+        {datenschutzOpen && (
+          <div
+            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+            onClick={() => setDatenschutzOpen(false)}
+          >
+            <div
+              className="bg-zinc-900 border border-zinc-700 max-w-2xl w-full max-h-[80vh] overflow-y-auto p-8 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setDatenschutzOpen(false)}
+                className="absolute top-4 right-4 text-zinc-500 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="flex items-center gap-3 mb-6">
+                <Shield className="w-6 h-6 text-orange-500" />
+                <h2 className="text-xl font-semibold">Datenschutzinformation (Art. 13 DSGVO)</h2>
+              </div>
+              <div className="space-y-4 text-zinc-400 text-sm leading-relaxed">
+                <p>Deine Stimmaufnahmen und Klangparameter werden ausschließlich zur Durchführung der Stimmklanganalyse verarbeitet. Zugriff haben nur du und Thomas Chochola.</p>
+                <p><strong className="text-zinc-300">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung).</p>
+                <p>Weitere Infos in der <a href="/datenschutz" className="text-orange-500 hover:text-orange-400 underline">Datenschutzerklärung</a>.</p>
+              </div>
+              <div className="mt-6">
+                <Button onClick={() => setDatenschutzOpen(false)} className="bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-none w-full">Schließen</Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className={embedded ? "text-white" : "min-h-screen bg-black text-white"}>
+    <div className="min-h-screen bg-black text-white">
       {/* Navigation – nur als eigenständige Seite */}
       {!embedded && (
         <div className="px-6 pt-6">
