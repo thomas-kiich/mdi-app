@@ -362,6 +362,11 @@ function Raum36Landing() {
                   Abbrechen
                 </Button>
               </div>
+              <p className="text-zinc-600 text-xs leading-relaxed pt-1">
+                Deine Angaben werden ausschließlich zur Kontaktaufnahme verwendet
+                (Art. 6 Abs. 1 lit. b DSGVO). Weitere Infos in der{" "}
+                <a href="/datenschutz" className="underline hover:text-zinc-400 transition-colors">Datenschutzerklärung</a>.
+              </p>
             </div>
           </div>
         </div>

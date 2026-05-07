@@ -151,7 +151,7 @@ export default function Stimmklanganalyse() {
                   onClick={() => setDatenschutzOpen(true)}
                   className="mt-2 text-orange-500 hover:text-orange-400 text-sm underline underline-offset-2 transition-colors"
                 >
-                  Zur datenschutzrechtlichen Einverständniserklärung →
+                  Datenschutzinformation zur Stimmklanganalyse →
                 </button>
               </div>
             </div>
@@ -289,14 +289,14 @@ export default function Stimmklanganalyse() {
 
             <div className="flex items-center gap-3 mb-6">
               <Shield className="w-6 h-6 text-orange-500" />
-              <h2 className="text-xl font-black">Datenschutzrechtliche Einverständniserklärung</h2>
+              <h2 className="text-xl font-semibold">Datenschutzinformation (Art. 13 DSGVO)</h2>
             </div>
 
             <div className="space-y-4 text-zinc-400 text-sm leading-relaxed">
               <p>
-                Mit der Buchung der Stimmklanganalyse erklärst du dich einverstanden, dass
-                Thomas Chochola (KIICH) deine im Rahmen der Analyse aufgezeichneten Stimmfrequenzdaten
-                zum Zweck der persönlichen Auswertung und des Finalcoachings verarbeitet.
+                Wenn du die Stimmklanganalyse buchst, verarbeiten wir deine Daten ausschließlich
+                zur Durchführung des gebuchten Produkts. Diese Information erklärt, welche Daten
+                wir verarbeiten und warum.
               </p>
               <p>
                 <strong className="text-zinc-300">Welche Daten werden verarbeitet:</strong><br />
@@ -321,8 +321,10 @@ export default function Stimmklanganalyse() {
               </p>
               <p>
                 <strong className="text-zinc-300">Rechtsgrundlage:</strong><br />
-                Die Verarbeitung erfolgt auf Grundlage deiner Einwilligung (Art. 6 Abs. 1 lit. a DSGVO)
-                sowie zur Erfüllung des Vertrags (Art. 6 Abs. 1 lit. b DSGVO).
+                Die Verarbeitung erfolgt zur Erfüllung des Vertrags (Art. 6 Abs. 1 lit. b DSGVO).
+                Stimm- und Frequenzdaten können als besondere Datenkategorie eingestuft werden;
+                die Verarbeitung ist für die Erbringung der gebuchten Leistung erforderlich
+                (Art. 9 Abs. 2 lit. b DSGVO).
               </p>
               <p>
                 Weitere Informationen findest du in unserer{" "}
@@ -334,17 +336,10 @@ export default function Stimmklanganalyse() {
               </p>
             </div>
 
-            <div className="mt-8 flex gap-3">
+            <div className="mt-8">
               <Button
                 onClick={() => setDatenschutzOpen(false)}
-                className="bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-none flex-1"
-              >
-                Verstanden & Einverstanden
-              </Button>
-              <Button
-                onClick={() => setDatenschutzOpen(false)}
-                variant="outline"
-                className="rounded-none border-zinc-700 text-zinc-400 hover:text-white"
+                className="bg-zinc-800 hover:bg-zinc-700 text-white font-semibold rounded-none w-full"
               >
                 Schließen
               </Button>

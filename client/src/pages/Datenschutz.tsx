@@ -15,7 +15,7 @@ export function Datenschutz() {
         <div className="space-y-4">
           <h1 className="text-4xl font-light text-white tracking-tight">Datenschutzerklärung</h1>
           <p className="text-zinc-500 text-sm uppercase tracking-widest">
-            Gemäß DSGVO (EU) 2016/679 und BDSG (DE) · Stand: April 2026
+            Gemäß DSGVO (EU) 2016/679 und BDSG (DE) · Stand: Mai 2026
           </p>
         </div>
 
@@ -99,6 +99,12 @@ export function Datenschutz() {
                     <td className="p-3">Max. 7 Tage</td>
                   </tr>
                   <tr>
+                    <td className="p-3 text-zinc-300">Name, E-Mail (Voranmeldung Stimmklanganalyse)</td>
+                    <td className="p-3">Kontaktaufnahme auf Anfrage des Nutzers (vorvertragliche Maßnahme)</td>
+                    <td className="p-3">Art. 6 Abs. 1 lit. b DSGVO</td>
+                    <td className="p-3">Bis zur Kontaktaufnahme, max. 6 Monate</td>
+                  </tr>
+                  <tr>
                     <td className="p-3 text-zinc-300">E-Mail-Adresse (Newsletter)</td>
                     <td className="p-3">Newsletter-Versand</td>
                     <td className="p-3">Art. 6 Abs. 1 lit. a DSGVO</td>
@@ -149,8 +155,9 @@ export function Datenschutz() {
             <h2 className="text-white text-xl font-medium">3b. Stimmklanganalyse – Persönliches Coaching-Produkt</h2>
             <p>
               Die <strong className="text-white">Stimmklanganalyse</strong> ist ein kostenpflichtiges
-              Einzelprodukt (Einmalzahlung). Im Rahmen dieses Angebots werden folgende
-              personenbezogene Daten verarbeitet:
+              Einzelprodukt (Einmalzahlung). Die Verarbeitung personenbezogener Daten erfolgt
+              ausschließlich zur Erfüllung dieses Vertrags. Im Rahmen dieses Angebots werden
+              folgende personenbezogene Daten verarbeitet:
             </p>
 
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-4 text-sm">
@@ -193,12 +200,11 @@ export function Datenschutz() {
             </div>
 
             <p>
-              <strong className="text-white">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. a DSGVO
-              (Einwilligung) sowie Art. 6 Abs. 1 lit. b DSGVO (Vertragserfüllung). Stimm- und
-              Frequenzdaten können als besondere Kategorie personenbezogener Daten gemäß Art. 9
-              DSGVO eingestuft werden; die Verarbeitung erfolgt auf Basis Ihrer ausdrücklichen
-              Einwilligung (Art. 9 Abs. 2 lit. a DSGVO), die Sie durch die Buchung und Nutzung
-              der Stimmklanganalyse erteilen.
+              <strong className="text-white">Rechtsgrundlage:</strong> Art. 6 Abs. 1 lit. b DSGVO
+              (Vertragserfüllung). Stimm- und Frequenzdaten können als besondere Kategorie
+              personenbezogener Daten gemäß Art. 9 DSGVO eingestuft werden; die Verarbeitung
+              ist für die Erbringung der gebuchten Leistung erforderlich
+              (Art. 9 Abs. 2 lit. b DSGVO).
             </p>
           </section>
 
