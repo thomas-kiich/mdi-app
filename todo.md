@@ -1342,3 +1342,6 @@
 - [x] DB-Eintrag für Episode 06 anlegen (Titel, Teaser, audio_url)
 - [x] PodcastFeature: Episode 06 einrichten, Cache-Busting erhöht (v=9)
 - [ ] Admin-Newsletter: Episode 06 Newsletter versenden (via /admin/newsletter)
+
+## Dashboard – Meine Analysen entfernen (07.05.2026)
+- [x] Dashboard.tsx: Meine-Analysen-Karte entfernen, onOpenHistory-Prop bereinigen

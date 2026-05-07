@@ -353,7 +353,6 @@ export default function Home() {
   const [selectedTrainingItem, setSelectedTrainingItem] = useState<string | null>(null);
   const [selectedFeature, setSelectedFeature] = useState<{title: string, description: string, icon: any, bg: string} | null>(null);
   const [showSleepTheta, setShowSleepTheta] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
   const [showAppInstallGuide, setShowAppInstallGuide] = useState(false);
   // Premium-Einstellungen dynamisch aus der Datenbank laden
   // DEAKTIVIERT: Verursacht Errors bei fehlender Tabelle
@@ -906,7 +905,6 @@ export default function Home() {
                   onOpenKnowledge={() => setShowKnowledgePool(true)}
                   onOpenTable={() => setShowFrequencyTable(true)}
                   onOpenSleep={() => setShowSleepTheta(true)}
-                  onOpenHistory={() => setShowHistory(true)}
                   onOpenVisionsraum={() => setShowVisionsraum(true)}
                   isPremium={isPremium || user?.role === "admin"}
                   onTogglePremium={() => {}}
@@ -1650,21 +1648,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
             </div>
           )}
 
-          {showHistory ? (
-             <div className="fixed inset-0 z-50 bg-black overflow-y-auto pt-24">
-                <div className="container max-w-4xl mx-auto px-4 py-8 relative">
-	                  <Button
-	                    variant="ghost"
-	                    onClick={() => setShowHistory(false)}
-	                    className="absolute top-4 left-4 z-50 text-zinc-400 hover:text-white"
-	                  >
-	                    <ArrowLeft className="w-5 h-5 mr-2" />
-	                    ZUR HAUPTSEITE
-	                  </Button>
-                  <AnalysisHistory />
-                </div>
-             </div>
-          ) : showSleepTheta ? (
+          {showSleepTheta ? (
             <SleepTheta onClose={() => setShowSleepTheta(false)} />
           ) : showKnowledgePool ? (
             <KnowledgePool 
