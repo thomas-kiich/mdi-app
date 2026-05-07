@@ -1333,3 +1333,6 @@
 - [x] Dashboard: Vital Monitor Karte auf /raum36 umleiten (war bereits entfernt, bestätigt)
 - [x] Meine Analysen: Button auf Startseite → leitet jetzt auf /raum36 um
 - [x] Stimmklang-Sektion RAUM 36: AnalysisHistory-Komponente eingebaut (zeigt bisherige Stimmklanganalysen)
+
+## RAUM 36 – Vital Monitor Tab-Korrektur (07.05.2026)
+- [x] Vital Monitor als regulären Tab in Tab-Leiste (neben Videos/Fragen/Wissenspool), separate Vital-Sektion entfernt
