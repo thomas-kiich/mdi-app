@@ -27,6 +27,7 @@ import {
   User,
   Video,
   Lightbulb,
+  Mic,
 } from "lucide-react";
 
 // ─── Öffentliche Landing-Page ───────────────────────────────────────────────
@@ -160,6 +161,47 @@ function Raum36Landing() {
                 <p className="text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stimmklanganalyse – exklusiv in RAUM 36 */}
+      <section className="px-6 py-16 border-b border-zinc-800 bg-zinc-900/40">
+        <div className="max-w-4xl mx-auto">
+          <div className="border border-orange-600/30 p-8 md:p-10">
+            <div className="flex items-start gap-6">
+              <div className="w-14 h-14 bg-orange-600/20 flex items-center justify-center text-orange-500 flex-shrink-0">
+                <Mic className="w-7 h-7" />
+              </div>
+              <div className="flex-1">
+                <div className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-2">
+                  Exklusiv in RAUM 36
+                </div>
+                <h3 className="text-2xl font-black tracking-tight mb-3">
+                  STIMMKLANGANALYSE
+                </h3>
+                <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                  Hier bestimmst du deinen Stimmklang. In drei aufeinanderfolgenden Tagen führst du die Frequenzanalyse deiner Stimme durch – vollständig begleitet. Danach bespricht Thomas das Ergebnis persönlich mit dir und führt die finale Justierung durch.
+                </p>
+                <div className="flex items-center gap-3 mb-5">
+                  <span className="text-3xl font-black">€ 150</span>
+                  <span className="text-zinc-500 text-sm">· Einmalig · Inkl. persönlichem Gespräch mit Thomas</span>
+                </div>
+                <div className="flex items-center gap-3 border border-orange-600/40 bg-orange-600/10 px-4 py-3 mb-4 w-fit">
+                  <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                  <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">
+                    Verfügbar ab · 14. Mai 2026
+                  </span>
+                </div>
+                <Button
+                  onClick={() => toast.info("Die Stimmklanganalyse ist ab 14. Mai 2026 in RAUM 36 buchbar.")}
+                  className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border border-zinc-600"
+                >
+                  <Lock className="w-4 h-4 mr-2" />
+                  AB 14. MAI BUCHBAR
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>

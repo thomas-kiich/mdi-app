@@ -1290,3 +1290,11 @@
 ## Stimmklanganalyse – Datenschutz & E-Mail (Mai 2026)
 - [x] Datenschutzerklärung: Stimmklanganalyse-Abschnitt einbauen (Abschnitt 3b mit Zweck, Zugriff, Speicherdauer, Rechtsgrundlage)
 - [x] Bestätigungs-E-Mail nach Stimmklanganalyse-Kauf via Brevo (Webhook-Handler erweitert, E-Mail an Käufer + Admin)
+
+## RAUM 36 – Eröffnung & Stimmklang-Integration (Mai 2026)
+- [x] RAUM 36 Landing-Page: Eröffnungs-Badge "ERÖFFNUNG · 14. MAI 2026" vor beiden Mitglied-werden-Buttons
+- [x] RAUM 36 Landing-Page: Mitglied-werden-Button bis 14.05.2026 deaktiviert (Toast statt Checkout)
+- [x] RAUM 36 Landing-Page: Stimmklanganalyse-Block in Vorschau-Sektion eingebaut (gesperrt bis 14.05.2026 mit Toast)
+- [x] Dashboard.tsx: Stimmklang-Karte – Button "Analyse Starten" → Link "In RAUM 36 buchen" (/raum36)
+- [x] RAUM 36 Mitglieder-Header: "← Startseite" Zurück-Link ergänzt
+- [x] Stimmklanganalyse.tsx: Zurück-Link zur Startseite ergänzt
