@@ -12,8 +12,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+
 import {
   Lock,
   Play,
@@ -28,13 +27,33 @@ import {
   Video,
   Lightbulb,
   Mic,
+  X,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 // ─── Öffentliche Landing-Page ───────────────────────────────────────────────
 
 function Raum36Landing() {
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+
+  // Voranmeldungs-Modal State
+  const [showVoranmeldung, setShowVoranmeldung] = useState(false);
+  const [voranName, setVoranName] = useState("");
+  const [voranEmail, setVoranEmail] = useState("");
+  const [voranNachricht, setVoranNachricht] = useState("Ich interessiere mich für die Stimmklanganalyse und bitte um Kontaktaufnahme.");
+
+  const voranmeldungMutation = trpc.raum36.voranmeldungStimmklang.useMutation({
+    onSuccess: () => {
+      toast.success("Voranmeldung gesendet! Thomas meldet sich bei dir.");
+      setShowVoranmeldung(false);
+      setVoranName("");
+      setVoranEmail("");
+      setVoranNachricht("Ich interessiere mich für die Stimmklanganalyse und bitte um Kontaktaufnahme.");
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
   const checkoutMutation = trpc.raum36.createCheckoutRaum36.useMutation({
     onSuccess: (data) => {
@@ -181,7 +200,7 @@ function Raum36Landing() {
                   STIMMKLANGANALYSE
                 </h3>
                 <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                  Hier bestimmst du deinen Stimmklang. In drei aufeinanderfolgenden Tagen führst du die Frequenzanalyse deiner Stimme durch – vollständig begleitet. Danach bespricht Thomas das Ergebnis persönlich mit dir und führt die finale Justierung durch.
+                  Hier bestimmst du deinen Stimmklang. In drei aufeinanderfolgenden Tagen führst du die Frequenzanalyse deiner Stimme durch – detailgenaue Anleitung mit sofortiger Darstellung deines Klangspektrums. Danach bespricht Thomas das Ergebnis persönlich mit dir und führt die finale Justierung durch.
                 </p>
                 <div className="flex items-baseline gap-2 mb-5">
                   <span className="text-xl font-medium text-white">€ 150</span>
@@ -193,13 +212,22 @@ function Raum36Landing() {
                     Verfügbar ab · 14. Mai 2026
                   </span>
                 </div>
-                <Button
-                  onClick={() => toast.info("Die Stimmklanganalyse ist ab 14. Mai 2026 in RAUM 36 buchbar.")}
-                  className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border border-zinc-600"
-                >
-                  <Lock className="w-4 h-4 mr-2" />
-                  AB 14. MAI BUCHBAR
-                </Button>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={() => toast.info("Die Stimmklanganalyse ist ab 14. Mai 2026 in RAUM 36 buchbar.")}
+                    className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border border-zinc-600"
+                  >
+                    <Lock className="w-4 h-4 mr-2" />
+                    Ab 14. Mai buchbar
+                  </Button>
+                  <Button
+                    onClick={() => setShowVoranmeldung(true)}
+                    className="bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 font-semibold py-3 h-auto rounded-none uppercase tracking-wide border border-orange-600/40"
+                  >
+                    <Mic className="w-4 h-4 mr-2" />
+                    Voranmeldung
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -257,6 +285,87 @@ function Raum36Landing() {
         </div>
       </section>
 
+      {/* Voranmeldungs-Modal */}
+      {showVoranmeldung && (
+        <div className="fixed inset-0 bg-black/85 z-50 flex items-center justify-center p-4">
+          <div className="bg-zinc-900 border border-zinc-700 p-8 max-w-md w-full relative">
+            <button
+              onClick={() => setShowVoranmeldung(false)}
+              className="absolute top-4 right-4 text-zinc-600 hover:text-white transition-colors"
+              aria-label="Schließen"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            <div className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-2">Stimmklanganalyse</div>
+            <h3 className="text-xl font-semibold mb-1">Voranmeldung</h3>
+            <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
+              Thomas meldet sich bei dir, sobald die Stimmklanganalyse in RAUM 36 verfügbar ist.
+            </p>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-1.5 block">Name</label>
+                <Input
+                  value={voranName}
+                  onChange={(e) => setVoranName(e.target.value)}
+                  placeholder="Dein Name"
+                  className="rounded-none border-zinc-700 bg-zinc-800 text-white"
+                  maxLength={100}
+                />
+              </div>
+              <div>
+                <label className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-1.5 block">E-Mail</label>
+                <Input
+                  type="email"
+                  value={voranEmail}
+                  onChange={(e) => setVoranEmail(e.target.value)}
+                  placeholder="deine@email.com"
+                  className="rounded-none border-zinc-700 bg-zinc-800 text-white"
+                />
+              </div>
+              <div>
+                <label className="text-xs font-mono uppercase tracking-widest text-zinc-500 mb-1.5 block">Nachricht</label>
+                <Textarea
+                  value={voranNachricht}
+                  onChange={(e) => setVoranNachricht(e.target.value)}
+                  rows={3}
+                  className="rounded-none border-zinc-700 bg-zinc-800 text-white resize-none"
+                  maxLength={1000}
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button
+                  onClick={() =>
+                    voranmeldungMutation.mutate({
+                      name: voranName,
+                      email: voranEmail,
+                      nachricht: voranNachricht,
+                    })
+                  }
+                  disabled={
+                    voranmeldungMutation.isPending ||
+                    voranName.length < 2 ||
+                    voranEmail.length < 5 ||
+                    voranNachricht.length < 5
+                  }
+                  className="bg-orange-600 hover:bg-orange-500 rounded-none flex-1 font-semibold"
+                >
+                  {voranmeldungMutation.isPending ? (
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  ) : null}
+                  Absenden
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowVoranmeldung(false)}
+                  className="rounded-none border-zinc-700"
+                >
+                  Abbrechen
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

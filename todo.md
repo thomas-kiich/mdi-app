@@ -1301,3 +1301,8 @@
 
 ## Typografie & Design-Feinschliff (Mai 2026)
 - [x] RAUM 36 Landing-Page: Überschriften feiner gestalten (font-black → font-bold/semibold, Schriftgröße reduzieren), Preise kleiner und eleganter darstellen
+
+## Stimmklanganalyse – Voranmeldung (Mai 2026)
+- [x] RAUM 36: Stimmklanganalyse-Text anpassen ("detailgenaue Anleitung mit sofortiger Darstellung deines Klangspektrums")
+- [x] RAUM 36: Voranmeldungs-Button "Voranmeldung zur Stimmklanganalyse" mit Modal-Formular (Name, E-Mail, Nachricht)
+- [x] Backend: tRPC-Prozedur voranmeldungStimmklang – sendet E-Mail an lkrforschung@gmail.com via Brevo

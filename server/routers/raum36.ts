@@ -14,7 +14,8 @@
  */
 
 import { z } from "zod";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
+import { sendeVoranmeldungStimmklang } from "../_core/email";
 import { getDb } from "../db";
 import { raum36Subscriptions, raum36Fragen, raum36Posts, raum36Wissenspool, stimmklanganalyseOrders, users } from "../../drizzle/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -222,6 +223,26 @@ export const raum36Router = router({
       .where(eq(raum36Wissenspool.published, true))
       .orderBy(desc(raum36Wissenspool.createdAt));
   }),
+
+  /**
+   * Voranmeldung zur Stimmklanganalyse (öffentlich, kein Login nötig)
+   */
+  voranmeldungStimmklang: publicProcedure
+    .input(
+      z.object({
+        name: z.string().min(2).max(100),
+        email: z.string().email(),
+        nachricht: z.string().min(5).max(1000),
+      })
+    )
+    .mutation(async ({ input }) => {
+      await sendeVoranmeldungStimmklang({
+        name: input.name,
+        email: input.email,
+        nachricht: input.nachricht,
+      });
+      return { success: true };
+    }),
 
   /**
    * Admin: Beantwortet eine Frage (nur Thomas/Admin)

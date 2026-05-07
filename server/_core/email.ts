@@ -618,3 +618,84 @@ export async function sendeRaum36KaufBestaetigung(user: {
 
   return kaeuferOk && adminOk;
 }
+
+
+/**
+ * Voranmeldung zur Stimmklanganalyse
+ * Sendet eine Benachrichtigung an Thomas (lkrforschung@gmail.com)
+ * wenn sich jemand für die Stimmklanganalyse vormerken lässt.
+ */
+export async function sendeVoranmeldungStimmklang(data: {
+  name: string;
+  email: string;
+  nachricht: string;
+}): Promise<boolean> {
+  const ADMIN_EMAIL = "lkrforschung@gmail.com";
+  const zeitpunkt = new Date().toLocaleString("de-AT", { timeZone: "Europe/Vienna" });
+
+  const htmlAdmin = `
+<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8" /><title>Voranmeldung Stimmklanganalyse</title></head>
+<body style="margin:0;padding:0;background-color:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a10;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+          <tr>
+            <td align="center" style="padding-bottom:24px;">
+              <p style="font-size:26px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">
+                K<span style="color:#e85d04;">II</span>CH
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:32px;">
+              <p style="font-size:20px;font-weight:700;color:#e85d04;margin:0 0 20px 0;">🎤 Voranmeldung: Stimmklanganalyse</p>
+              <table cellpadding="0" cellspacing="0" width="100%">
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #1e1e2e;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Name</span><br/>
+                    <span style="font-size:16px;color:#fff;font-weight:600;">${data.name}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #1e1e2e;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">E-Mail</span><br/>
+                    <span style="font-size:16px;color:#fff;">
+                      <a href="mailto:${data.email}" style="color:#e85d04;text-decoration:none;">${data.email}</a>
+                    </span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;border-bottom:1px solid #1e1e2e;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Nachricht</span><br/>
+                    <span style="font-size:15px;color:#ccc;line-height:1.6;">${data.nachricht.replace(/\n/g, "<br/>")}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:10px 0;">
+                    <span style="font-size:12px;color:#666;text-transform:uppercase;letter-spacing:1px;">Zeitpunkt</span><br/>
+                    <span style="font-size:14px;color:#888;">${zeitpunkt}</span>
+                  </td>
+                </tr>
+              </table>
+              <p style="margin:24px 0 0 0;font-size:13px;color:#888;line-height:1.6;">
+                Bitte nimm Kontakt mit dieser Person auf, sobald die Stimmklanganalyse in RAUM 36 verfügbar ist.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`.trim();
+
+  return sendEmail({
+    to: [{ name: "Thomas Chochola", email: ADMIN_EMAIL }],
+    subject: `🎤 Voranmeldung Stimmklanganalyse: ${data.name} (${data.email})`,
+    htmlContent: htmlAdmin,
+    textContent: `Voranmeldung Stimmklanganalyse:\nName: ${data.name}\nE-Mail: ${data.email}\nNachricht: ${data.nachricht}\nZeitpunkt: ${zeitpunkt}`,
+  });
+}
