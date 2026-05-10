@@ -420,6 +420,19 @@ function Raum36Member() {
     onError: (err) => toast.error(err.message),
   });
 
+  // Admin: Inline-Antwort direkt im Forum
+  const [answeringFrageId, setAnsweringFrageId] = useState<number | null>(null);
+  const [inlineAntwortText, setInlineAntwortText] = useState("");
+  const adminAntworte = trpc.raum36.adminAntworte.useMutation({
+    onSuccess: () => {
+      toast.success("Antwort gespeichert!");
+      setAnsweringFrageId(null);
+      setInlineAntwortText("");
+      utils.raum36.getFragen.invalidate();
+    },
+    onError: (e) => toast.error(e.message),
+  });
+
   const pseudonym = statusQuery.data?.pseudonym;
 
   return (
@@ -730,12 +743,67 @@ function Raum36Member() {
                         </div>
                       )}
 
-                      {!frage.antwort && (
-                        <div className="ml-9 mt-3">
-                          <span className="text-zinc-600 text-xs font-mono">
-                            Noch nicht beantwortet
-                          </span>
+                      {/* Admin: Inline-Antwort */}
+                      {isAdmin && answeringFrageId === frage.id ? (
+                        <div className="ml-9 mt-4 border-l-2 border-orange-600 pl-4">
+                          <div className="text-xs font-mono text-orange-500 uppercase tracking-widest mb-2">
+                            Deine Antwort
+                          </div>
+                          <Textarea
+                            value={inlineAntwortText}
+                            onChange={(e) => setInlineAntwortText(e.target.value)}
+                            placeholder="Schreibe deine Antwort…"
+                            rows={4}
+                            className="bg-zinc-900 border-zinc-700 text-white text-sm resize-none mb-3"
+                            autoFocus
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => adminAntworte.mutate({ frageId: frage.id, antwort: inlineAntwortText })}
+                              disabled={!inlineAntwortText.trim() || adminAntworte.isPending}
+                              className="bg-orange-600 hover:bg-orange-500 text-white rounded-none h-8 text-xs"
+                            >
+                              {adminAntworte.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : "Speichern"}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              onClick={() => { setAnsweringFrageId(null); setInlineAntwortText(""); }}
+                              className="text-zinc-500 hover:text-white rounded-none h-8 text-xs"
+                            >
+                              Abbrechen
+                            </Button>
+                          </div>
                         </div>
+                      ) : (
+                        <>
+                          {!frage.antwort && (
+                            <div className="ml-9 mt-3 flex items-center gap-3">
+                              <span className="text-zinc-600 text-xs font-mono">
+                                Noch nicht beantwortet
+                              </span>
+                              {isAdmin && (
+                                <button
+                                  onClick={() => { setAnsweringFrageId(frage.id); setInlineAntwortText(frage.antwort ?? ""); }}
+                                  className="text-orange-500 text-xs font-mono hover:text-orange-400 underline underline-offset-2"
+                                >
+                                  Antworten
+                                </button>
+                              )}
+                            </div>
+                          )}
+                          {frage.antwort && isAdmin && (
+                            <div className="ml-9 mt-2">
+                              <button
+                                onClick={() => { setAnsweringFrageId(frage.id); setInlineAntwortText(frage.antwort ?? ""); }}
+                                className="text-zinc-600 text-xs font-mono hover:text-orange-400 underline underline-offset-2"
+                              >
+                                Antwort bearbeiten
+                              </button>
+                            </div>
+                          )}
+                        </>
                       )}
                     </div>
                   ))}
