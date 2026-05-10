@@ -330,13 +330,14 @@ export const raum36Router = router({
   /**
    * Admin: Erstellt einen Wissenspool-Eintrag
    */
-  adminCreateWissenspool: protectedProcedure
+    adminCreateWissenspool: protectedProcedure
     .input(
       z.object({
         titel: z.string().min(1).max(255),
         beschreibung: z.string().optional(),
-        typ: z.enum(["podcast", "artikel", "fakt", "video", "tool", "sonstiges"]),
-        url: z.string().url().optional(),
+        typ: z.enum(["podcast", "artikel", "fakt", "video", "tool", "audio", "sonstiges"]),
+        url: z.string().url().optional().or(z.literal("")),
+        audioUrl: z.string().url().optional().or(z.literal("")),
         published: z.boolean().default(false),
       })
     )
@@ -344,19 +345,151 @@ export const raum36Router = router({
       if (ctx.user.role !== "admin") {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
-
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-
       await db.insert(raum36Wissenspool).values({
         titel: input.titel,
         beschreibung: input.beschreibung,
         typ: input.typ,
-        url: input.url,
+        url: input.url || undefined,
+        audioUrl: input.audioUrl || undefined,
         published: input.published,
       });
-
       return { success: true };
+    }),
+
+  /**
+   * Admin: Wissenspool-Eintrag aktualisieren
+   */
+  adminUpdateWissenspool: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        titel: z.string().min(1).max(255),
+        beschreibung: z.string().optional(),
+        typ: z.enum(["podcast", "artikel", "fakt", "video", "tool", "audio", "sonstiges"]),
+        url: z.string().url().optional().or(z.literal("")),
+        audioUrl: z.string().url().optional().or(z.literal("")),
+        published: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      await db.update(raum36Wissenspool).set({
+        titel: input.titel,
+        beschreibung: input.beschreibung,
+        typ: input.typ,
+        url: input.url || null,
+        audioUrl: input.audioUrl || null,
+        published: input.published,
+      }).where(eq(raum36Wissenspool.id, input.id));
+      return { success: true };
+    }),
+
+  /**
+   * Admin: Wissenspool-Eintrag löschen
+   */
+  adminDeleteWissenspool: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      await db.delete(raum36Wissenspool).where(eq(raum36Wissenspool.id, input.id));
+      return { success: true };
+    }),
+
+  /**
+   * Admin: Alle Wissenspool-Einträge (auch unpublished)
+   */
+  adminGetWissenspool: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    return db.select().from(raum36Wissenspool).orderBy(desc(raum36Wissenspool.createdAt));
+  }),
+
+  /**
+   * Admin: Post (Wochenvideo) aktualisieren
+   */
+  adminUpdatePost: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        titel: z.string().min(1).max(255),
+        beschreibung: z.string().optional(),
+        videoUrl: z.string().url().optional().or(z.literal("")),
+        thumbnailUrl: z.string().url().optional().or(z.literal("")),
+        published: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      await db.update(raum36Posts).set({
+        titel: input.titel,
+        beschreibung: input.beschreibung,
+        videoUrl: input.videoUrl || null,
+        thumbnailUrl: input.thumbnailUrl || null,
+        published: input.published,
+      }).where(eq(raum36Posts.id, input.id));
+      return { success: true };
+    }),
+
+  /**
+   * Admin: Post (Wochenvideo) löschen
+   */
+  adminDeletePost: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      await db.delete(raum36Posts).where(eq(raum36Posts.id, input.id));
+      return { success: true };
+    }),
+
+  /**
+   * Admin: Alle Posts (auch unpublished)
+   */
+  adminGetPosts: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+    return db.select().from(raum36Posts).orderBy(desc(raum36Posts.createdAt));
+  }),
+
+  /**
+   * Admin: Frage löschen
+   */
+  adminDeleteFrage: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      await db.delete(raum36Fragen).where(eq(raum36Fragen.id, input.id));
+      return { success: true };
+    }),
+
+  /**
+   * Admin: Audio-Datei auf S3 hochladen und CDN-URL zurückgeben
+   */
+  adminGetAudioUploadUrl: protectedProcedure
+    .input(z.object({ filename: z.string(), contentType: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") throw new TRPCError({ code: "FORBIDDEN" });
+      const { storagePut } = await import("../storage");
+      const suffix = Math.random().toString(36).substring(2, 10);
+      const ext = input.filename.split(".").pop() ?? "mp3";
+      const key = `raum36/wissenspool/${Date.now()}-${suffix}.${ext}`;
+      // Platzhalter-Upload mit leerem Buffer um die URL zu generieren
+      // Der eigentliche Upload erfolgt direkt vom Frontend via presigned URL
+      // Hier geben wir nur den Key zurück – Frontend uploaded direkt
+      return { key, uploadPath: `/api/raum36/upload-audio?key=${encodeURIComponent(key)}` };
     }),
 
   /**

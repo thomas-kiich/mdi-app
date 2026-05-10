@@ -1,0 +1,2 @@
+ALTER TABLE `raum36_wissenspool` MODIFY COLUMN `typ` enum('podcast','artikel','fakt','video','tool','audio','sonstiges') NOT NULL DEFAULT 'sonstiges';--> statement-breakpoint
+ALTER TABLE `raum36_wissenspool` ADD `audioUrl` varchar(512);

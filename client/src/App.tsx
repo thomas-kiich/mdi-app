@@ -37,6 +37,7 @@ import { RechtsCheckliste } from "@/pages/RechtsCheckliste";
 import CoachingDashboard from "@/pages/CoachingDashboard";
 import Raum36 from "@/pages/Raum36";
 import AdminZahlungen from "@/pages/AdminZahlungen";
+import AdminRaum36 from "@/pages/AdminRaum36";
 import Stimmklanganalyse from "@/pages/Stimmklanganalyse";
 import { VornameProvider, useVorname } from "@/contexts/VornameContext";
 import { OnboardingNameModal } from "@/components/OnboardingNameModal";
@@ -78,6 +79,7 @@ function Router() {
       <Route path="/rechts-checkliste" component={RechtsCheckliste} />
       <Route path="/admin/coaching" component={CoachingDashboard} />
       <Route path="/admin/zahlungen" component={AdminZahlungen} />
+      <Route path="/admin/raum36" component={AdminRaum36} />
       <Route path="/raum36" component={Raum36} />
       <Route path="/stimmklanganalyse" component={Stimmklanganalyse} />
       <Route path="/404" component={NotFound} />

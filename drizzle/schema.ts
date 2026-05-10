@@ -883,10 +883,12 @@ export const raum36Wissenspool = mysqlTable("raum36_wissenspool", {
   titel: varchar("titel", { length: 255 }).notNull(),
   /** Beschreibung */
   beschreibung: text("beschreibung"),
-  /** Typ: podcast, artikel, fakt, video, tool */
-  typ: mysqlEnum("typ", ["podcast", "artikel", "fakt", "video", "tool", "sonstiges"]).default("sonstiges").notNull(),
-  /** URL zum Inhalt */
+  /** Typ: podcast, artikel, fakt, video, tool, audio */
+  typ: mysqlEnum("typ", ["podcast", "artikel", "fakt", "video", "tool", "audio", "sonstiges"]).default("sonstiges").notNull(),
+  /** URL zum externen Inhalt (optional) */
   url: varchar("url", { length: 512 }),
+  /** S3-CDN-URL der hochgeladenen Audio-Datei (optional) */
+  audioUrl: varchar("audioUrl", { length: 512 }),
   /** Nur sichtbar wenn published=true */
   published: boolean("published").default(false).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
