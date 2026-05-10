@@ -277,20 +277,63 @@ export const raum36Router = router({
   /**
    * Admin: Beantwortet eine Frage (nur Thomas/Admin)
    */
-  adminAntworte: protectedProcedure
+    adminAntworte: protectedProcedure
     .input(z.object({ frageId: z.number(), antwort: z.string().min(1).max(5000) }))
     .mutation(async ({ ctx, input }) => {
       if (ctx.user.role !== "admin") {
         throw new TRPCError({ code: "FORBIDDEN" });
       }
-
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
+      // Frage + User-E-Mail holen
+      const [frage] = await db
+        .select({
+          id: raum36Fragen.id,
+          frage: raum36Fragen.frage,
+          pseudonym: raum36Fragen.pseudonym,
+          userId: raum36Fragen.userId,
+          userEmail: users.email,
+          userName: users.name,
+        })
+        .from(raum36Fragen)
+        .leftJoin(users, eq(raum36Fragen.userId, users.id))
+        .where(eq(raum36Fragen.id, input.frageId));
+
+      // Antwort speichern
       await db
         .update(raum36Fragen)
         .set({ antwort: input.antwort, beantwortetAt: new Date() })
         .where(eq(raum36Fragen.id, input.frageId));
+
+      // E-Mail an Fragesteller senden
+      if (frage?.userEmail) {
+        const { sendEmail } = await import("../_core/email");
+        const frageKurz = frage.frage.length > 120 ? frage.frage.slice(0, 120) + "…" : frage.frage;
+        await sendEmail({
+          to: [{ name: frage.userName ?? frage.pseudonym ?? undefined, email: frage.userEmail }],
+          subject: "Thomas hat deine Frage im RAUM 36 beantwortet",
+          htmlContent: `
+            <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0a0a0a;color:#e5e5e5;padding:32px;">
+              <div style="border-bottom:1px solid #333;padding-bottom:16px;margin-bottom:24px;">
+                <span style="color:#f97316;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-family:monospace;">RAUM 36</span>
+              </div>
+              <h2 style="font-size:20px;font-weight:600;margin:0 0 16px;">Thomas hat deine Frage beantwortet</h2>
+              <div style="background:#1a1a1a;border-left:3px solid #555;padding:12px 16px;margin-bottom:20px;">
+                <p style="color:#999;font-size:12px;margin:0 0 6px;font-family:monospace;">${frage.pseudonym ?? "Du"} fragte:</p>
+                <p style="margin:0;color:#ccc;">${frageKurz}</p>
+              </div>
+              <div style="background:#1a1a1a;border-left:3px solid #f97316;padding:12px 16px;margin-bottom:28px;">
+                <p style="color:#f97316;font-size:12px;margin:0 0 6px;font-family:monospace;">Thomas antwortet:</p>
+                <p style="margin:0;color:#e5e5e5;white-space:pre-line;">${input.antwort}</p>
+              </div>
+              <a href="https://kiich.de/raum36" style="display:inline-block;background:#f97316;color:#fff;text-decoration:none;padding:12px 24px;font-weight:bold;font-size:14px;letter-spacing:1px;">ZUM RAUM 36</a>
+              <p style="color:#555;font-size:12px;margin-top:32px;">Du erhältst diese E-Mail weil du Mitglied im RAUM 36 bist.</p>
+            </div>
+          `,
+          textContent: `Thomas hat deine Frage beantwortet:\n\nDeine Frage: ${frage.frage}\n\nAntwort von Thomas:\n${input.antwort}\n\nZum RAUM 36: https://kiich.de/raum36`,
+        }).catch((e) => console.error("[Raum36] Benachrichtigungs-E-Mail fehlgeschlagen:", e));
+      }
 
       return { success: true };
     }),
