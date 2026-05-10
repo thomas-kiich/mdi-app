@@ -16,6 +16,7 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { sendeVoranmeldungStimmklang } from "../_core/email";
+import { notifyOwner } from "../_core/notification";
 import { getDb } from "../db";
 import { raum36Subscriptions, raum36Fragen, raum36Posts, raum36Wissenspool, stimmklanganalyseOrders, users } from "../../drizzle/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
@@ -138,8 +139,9 @@ export const raum36Router = router({
   setPseudonym: protectedProcedure
     .input(z.object({ pseudonym: z.string().min(2).max(64) }))
     .mutation(async ({ ctx, input }) => {
+      const isAdmin = ctx.user.role === "admin";
       const sub = await getRaum36Sub(ctx.user.id);
-      if (!sub || sub.status !== "active") {
+      if (!isAdmin && (!sub || sub.status !== "active")) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Kein aktives RAUM 36 Abo" });
       }
 
@@ -158,7 +160,8 @@ export const raum36Router = router({
    * Gibt alle sichtbaren Fragen + Antworten zurück (für Mitglieder).
    */
   getFragen: protectedProcedure.query(async ({ ctx }) => {
-    const isActive = await hasActiveRaum36(ctx.user.id);
+    const isAdmin = ctx.user.role === "admin";
+    const isActive = isAdmin || await hasActiveRaum36(ctx.user.id);
     if (!isActive) {
       throw new TRPCError({ code: "FORBIDDEN", message: "Kein aktives RAUM 36 Abo" });
     }
@@ -179,11 +182,14 @@ export const raum36Router = router({
   stelleFrage: protectedProcedure
     .input(z.object({ frage: z.string().min(10).max(2000) }))
     .mutation(async ({ ctx, input }) => {
+      const isAdmin = ctx.user.role === "admin";
       const sub = await getRaum36Sub(ctx.user.id);
-      if (!sub || sub.status !== "active") {
+      if (!isAdmin && (!sub || sub.status !== "active")) {
         throw new TRPCError({ code: "FORBIDDEN", message: "Kein aktives RAUM 36 Abo" });
       }
-      if (!sub.pseudonym) {
+      // Pseudonym: Admin verwendet "Thomas" als Fallback
+      const pseudonym = sub?.pseudonym ?? (isAdmin ? "Thomas" : null);
+      if (!pseudonym) {
         throw new TRPCError({ code: "BAD_REQUEST", message: "Bitte zuerst ein Pseudonym wählen" });
       }
 
@@ -192,10 +198,18 @@ export const raum36Router = router({
 
       await db.insert(raum36Fragen).values({
         userId: ctx.user.id,
-        pseudonym: sub.pseudonym,
+        pseudonym,
         frage: input.frage,
         sichtbar: true,
       });
+
+      // Owner-Benachrichtigung bei neuer Frage (nicht wenn Admin selbst fragt)
+      if (!isAdmin) {
+        await notifyOwner({
+          title: `Neue Frage im RAUM 36 von "${pseudonym}"`,
+          content: `${input.frage.substring(0, 200)}${input.frage.length > 200 ? "..." : ""}`,
+        }).catch(() => {}); // Fehler ignorieren – Frage wurde bereits gespeichert
+      }
 
       return { success: true };
     }),
@@ -204,7 +218,8 @@ export const raum36Router = router({
    * Gibt alle veröffentlichten Wochenvideo-Posts zurück.
    */
   getPosts: protectedProcedure.query(async ({ ctx }) => {
-    const isActive = await hasActiveRaum36(ctx.user.id);
+    const isAdmin = ctx.user.role === "admin";
+    const isActive = isAdmin || await hasActiveRaum36(ctx.user.id);
     if (!isActive) {
       throw new TRPCError({ code: "FORBIDDEN", message: "Kein aktives RAUM 36 Abo" });
     }
@@ -223,7 +238,8 @@ export const raum36Router = router({
    * Gibt alle veröffentlichten Wissenspool-Einträge zurück.
    */
   getWissenspool: protectedProcedure.query(async ({ ctx }) => {
-    const isActive = await hasActiveRaum36(ctx.user.id);
+    const isAdmin = ctx.user.role === "admin";
+    const isActive = isAdmin || await hasActiveRaum36(ctx.user.id);
     if (!isActive) {
       throw new TRPCError({ code: "FORBIDDEN", message: "Kein aktives RAUM 36 Abo" });
     }
