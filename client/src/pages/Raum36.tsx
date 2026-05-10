@@ -75,15 +75,7 @@ function Raum36Landing() {
     },
   });
 
-  // Eröffnung am 14. Mai 2026 – bis dahin kein Checkout
-  const EROEFFNUNG = new Date("2026-05-14T00:00:00");
-  const isBeforeEroeffnung = new Date() < EROEFFNUNG;
-
   const handleJoin = () => {
-    if (isBeforeEroeffnung) {
-      toast.info("RAUM 36 öffnet am 14. Mai 2026. Wir freuen uns auf dich!");
-      return;
-    }
     if (!isAuthenticated) {
       window.location.href = getLoginUrl("/raum36");
       return;
@@ -136,11 +128,11 @@ function Raum36Landing() {
 
           {/* CTA */}
           <div className="space-y-4">
-            {/* Eröffnungs-Badge */}
+            {/* RAUM 36 ist jetzt geöffnet */}
             <div className="inline-flex items-center gap-3 border border-orange-600/40 bg-orange-600/10 px-5 py-3">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
               <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">
-                Eröffnung · 14. Mai 2026
+                RAUM 36 · Jetzt geöffnet
               </span>
             </div>
             <div>
@@ -223,26 +215,14 @@ function Raum36Landing() {
                   <span className="text-xl font-medium text-white">€ 150</span>
                   <span className="text-zinc-500 text-xs">einmalig · inkl. persönlichem Gespräch mit Thomas</span>
                 </div>
-                <div className="flex items-center gap-3 border border-orange-600/40 bg-orange-600/10 px-4 py-3 mb-4 w-fit">
-                  <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-                  <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">
-                    Verfügbar ab · 14. Mai 2026
-                  </span>
-                </div>
                 <div className="flex flex-wrap gap-3">
                   <Button
-                    onClick={() => toast.info("Die Stimmklanganalyse ist ab 14. Mai 2026 in RAUM 36 buchbar.")}
-                    className="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border border-zinc-600"
+                    onClick={handleJoin}
+                    disabled={checkoutMutation.isPending}
+                    className="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border-0"
                   >
-                    <Lock className="w-4 h-4 mr-2" />
-                    Ab 14. Mai buchbar
-                  </Button>
-                  <Button
-                    onClick={() => setShowVoranmeldung(true)}
-                    className="bg-orange-600/20 hover:bg-orange-600/30 text-orange-400 font-semibold py-3 h-auto rounded-none uppercase tracking-wide border border-orange-600/40"
-                  >
-                    <Mic className="w-4 h-4 mr-2" />
-                    Voranmeldung
+                    {checkoutMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
+                    Jetzt buchen
                   </Button>
                 </div>
               </div>
@@ -280,13 +260,7 @@ function Raum36Landing() {
                 </li>
               ))}
             </ul>
-            {/* Eröffnungs-Badge */}
-            <div className="flex items-center gap-3 border border-orange-600/40 bg-orange-600/10 px-4 py-3 mb-4">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">
-                Eröffnung · 14. Mai 2026
-              </span>
-            </div>
+
             <Button
               onClick={handleJoin}
               disabled={checkoutMutation.isPending}
@@ -796,10 +770,10 @@ function Raum36Member() {
                 <div className="border border-red-600/30 p-12 text-center">
                   <HeartPulse className="w-12 h-12 text-red-500/40 mx-auto mb-4" />
                   <div className="flex items-center justify-center gap-3 mb-4">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                    <span className="text-red-400 text-xs font-mono uppercase tracking-widest">Verfügbar ab · 14. Mai 2026</span>
+                    <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+                    <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">Mitgliedschaft erforderlich</span>
                   </div>
-                  <p className="text-zinc-500 text-sm">Der Vital Monitor öffnet am 14. Mai 2026.</p>
+                  <p className="text-zinc-500 text-sm">Der Vital Monitor ist exklusiv für RAUM 36 Mitglieder.</p>
                 </div>
               )}
             </div>
