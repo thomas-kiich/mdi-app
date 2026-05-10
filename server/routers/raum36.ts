@@ -85,7 +85,7 @@ export const raum36Router = router({
 
       const session = await stripe.checkout.sessions.create({
         mode: "subscription",
-        payment_method_types: ["card"],
+        payment_method_types: ["card", "sepa_debit"],
         line_items: [{ price: priceId, quantity: 1 }],
         customer_email: ctx.user.email ?? undefined,
         client_reference_id: ctx.user.id.toString(),
@@ -114,7 +114,7 @@ export const raum36Router = router({
 
       const session = await stripe.checkout.sessions.create({
         mode: "payment",
-        payment_method_types: ["card"],
+        payment_method_types: ["card", "sepa_debit", "klarna"],
         line_items: [{ price: priceId, quantity: 1 }],
         customer_email: ctx.user.email ?? undefined,
         client_reference_id: ctx.user.id.toString(),
