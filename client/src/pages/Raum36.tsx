@@ -382,6 +382,7 @@ function Raum36Member() {
   const [showFrageForm, setShowFrageForm] = useState(false);
   const [pseudonymInput, setPseudonymInput] = useState("");
   const [showPseudonymForm, setShowPseudonymForm] = useState(false);
+  const [inlineNameInput, setInlineNameInput] = useState("");
 
   const statusQuery = trpc.raum36.getStatus.useQuery();
   // Vital Monitor ist für alle aktiven RAUM 36 Mitglieder zugänglich (kein separater Kauf nötig)
@@ -402,8 +403,10 @@ function Raum36Member() {
     onSuccess: () => {
       toast.success("Frage gestellt! Thomas antwortet in Kürze.");
       setNeueFrageText("");
+      setInlineNameInput("");
       setShowFrageForm(false);
       utils.raum36.getFragen.invalidate();
+      utils.raum36.getStatus.invalidate();
     },
     onError: (err) => toast.error(err.message),
   });
@@ -601,14 +604,7 @@ function Raum36Member() {
                 </div>
                 {!showFrageForm && (
                   <Button
-                    onClick={() => {
-                      if (!pseudonym) {
-                        toast.error("Bitte zuerst ein Pseudonym wählen.");
-                        setShowPseudonymForm(true);
-                        return;
-                      }
-                      setShowFrageForm(true);
-                    }}
+                    onClick={() => setShowFrageForm(true)}
                     className="bg-orange-600 hover:bg-orange-500 rounded-none"
                   >
                     Frage stellen
@@ -619,6 +615,24 @@ function Raum36Member() {
               {showFrageForm && (
                 <div className="border border-zinc-700 p-6 mb-8">
                   <h3 className="font-bold mb-4">Neue Frage</h3>
+                  {/* Name/Pseudonym inline – nur anzeigen wenn noch keins gesetzt */}
+                  {!pseudonym && (
+                    <div className="mb-4">
+                      <label className="block text-xs font-mono text-zinc-400 uppercase tracking-widest mb-2">
+                        Dein Name oder Pseudonym
+                      </label>
+                      <Input
+                        value={inlineNameInput}
+                        onChange={(e) => setInlineNameInput(e.target.value)}
+                        placeholder="z.B. Thomas, Wanderer, Klangsucher…"
+                        className="rounded-none border-zinc-700 bg-zinc-900 text-white"
+                        maxLength={64}
+                      />
+                      <p className="text-zinc-600 text-xs mt-1.5">
+                        Wird bei deiner Frage angezeigt und für zukünftige Fragen gespeichert.
+                      </p>
+                    </div>
+                  )}
                   <Textarea
                     value={neueFrageText}
                     onChange={(e) => setNeueFrageText(e.target.value)}
@@ -628,18 +642,41 @@ function Raum36Member() {
                   />
                   <div className="flex gap-3">
                     <Button
-                      onClick={() => stelleFrageMutation.mutate({ frage: neueFrageText })}
-                      disabled={stelleFrageMutation.isPending || neueFrageText.length < 10}
+                      onClick={() => {
+                        // Wenn kein Pseudonym gesetzt: erst speichern, dann Frage stellen
+                        if (!pseudonym) {
+                          if (inlineNameInput.trim().length < 2) {
+                            toast.error("Bitte gib einen Namen oder ein Pseudonym ein (mind. 2 Zeichen).");
+                            return;
+                          }
+                          setPseudonymMutation.mutate(
+                            { pseudonym: inlineNameInput.trim() },
+                            {
+                              onSuccess: () => {
+                                stelleFrageMutation.mutate({ frage: neueFrageText });
+                              },
+                            }
+                          );
+                        } else {
+                          stelleFrageMutation.mutate({ frage: neueFrageText });
+                        }
+                      }}
+                      disabled={
+                        stelleFrageMutation.isPending ||
+                        setPseudonymMutation.isPending ||
+                        neueFrageText.length < 10 ||
+                        (!pseudonym && inlineNameInput.trim().length < 2)
+                      }
                       className="bg-orange-600 hover:bg-orange-500 rounded-none"
                     >
-                      {stelleFrageMutation.isPending ? (
+                      {(stelleFrageMutation.isPending || setPseudonymMutation.isPending) ? (
                         <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       ) : null}
                       Frage senden
                     </Button>
                     <Button
                       variant="outline"
-                      onClick={() => setShowFrageForm(false)}
+                      onClick={() => { setShowFrageForm(false); setInlineNameInput(""); }}
                       className="rounded-none border-zinc-700"
                     >
                       Abbrechen
