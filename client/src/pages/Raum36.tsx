@@ -116,13 +116,12 @@ function Raum36Landing() {
           <div className="inline-block border border-orange-600 px-3 py-1 text-xs font-mono text-orange-500 mb-8 uppercase tracking-widest">
             Exklusiver Mitglieder-Bereich
           </div>
-          <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-none mb-6">
+          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-none mb-6">
             RAUM 36
           </h1>
-
-
-
-
+          <p className="text-base md:text-lg text-zinc-300 max-w-2xl leading-relaxed">
+            WILLKOMMEN! Hier findest du das interaktive Angebot für deine maximale Unterstützung. Erhalte Antworten auf deine persönlichen Anliegen, inspiriere dich durch die gemeinsamen Dialoge der Mitglieder, entwickle deinen individuellen Trainingsplan und verfolge deine Entwicklungen auf deinem eigenen VITALMONITOR.
+          </p>
         </div>
       </section>
 
