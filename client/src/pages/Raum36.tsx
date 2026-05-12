@@ -119,81 +119,12 @@ function Raum36Landing() {
           <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-none mb-6">
             RAUM 36
           </h1>
-          <p className="text-xl md:text-2xl text-zinc-300 max-w-2xl leading-relaxed mb-10">
-            Der direkte Kanal zu Thomas Chochola
-          </p>
 
 
 
-          {/* CTA */}
-          <div className="space-y-4">
-            {/* RAUM 36 ist jetzt geöffnet */}
-            <div className="inline-flex items-center gap-3 border border-orange-600/40 bg-orange-600/10 px-5 py-3">
-              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">
-                RAUM 36 · Jetzt geöffnet
-              </span>
-            </div>
-            <div>
-              <Button
-                onClick={handleJoin}
-                disabled={checkoutMutation.isPending}
-                className="bg-orange-600 hover:bg-orange-500 text-white font-bold text-lg px-10 py-6 h-auto rounded-none border-0 uppercase tracking-wide"
-              >
-                {checkoutMutation.isPending ? (
-                  <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                ) : null}
-                JETZT MITGLIED WERDEN
-              </Button>
-              <p className="text-zinc-500 text-sm mt-3">
-                Werteausgleich: € 4,90 pro Monat · jederzeit kündbar
-              </p>
-            </div>
-          </div>
+
         </div>
       </section>
-
-
-
-      {/* Stimmklanganalyse – exklusiv in RAUM 36 */}
-      <section className="px-6 py-16 border-b border-zinc-800 bg-zinc-900/40">
-        <div className="max-w-4xl mx-auto">
-          <div className="border border-orange-600/30 p-8 md:p-10">
-            <div className="flex items-start gap-6">
-              <div className="w-14 h-14 bg-orange-600/20 flex items-center justify-center text-orange-500 flex-shrink-0">
-                <Mic className="w-7 h-7" />
-              </div>
-              <div className="flex-1">
-                <div className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-2">
-                  Exklusiv in RAUM 36
-                </div>
-                <h3 className="text-lg font-semibold tracking-widest mb-3 text-zinc-100">
-                  STIMMKLANGANALYSE
-                </h3>
-                <p className="text-zinc-400 text-sm leading-relaxed mb-6">
-                  Hier bestimmst du deinen Stimmklang. In drei aufeinanderfolgenden Tagen führst du die Frequenzanalyse deiner Stimme durch – detailgenaue Anleitung mit sofortiger Darstellung deines Klangspektrums. Danach bespricht Thomas das Ergebnis persönlich mit dir und führt die finale Justierung durch.
-                </p>
-                <div className="flex items-baseline gap-2 mb-5">
-                  <span className="text-xl font-medium text-white">€ 150</span>
-                  <span className="text-zinc-500 text-xs">einmalig · inkl. persönlichem Gespräch mit Thomas</span>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={handleBuchenStimmklang}
-                    disabled={stimmklangCheckoutMutation.isPending}
-                    className="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border-0"
-                  >
-                    {stimmklangCheckoutMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
-                    Jetzt buchen
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-
 
       {/* Mitgliedschaft */}
       <section className="px-6 py-20 border-b border-zinc-800">
@@ -235,6 +166,44 @@ function Raum36Landing() {
             <p className="text-zinc-500 text-xs mt-3 text-center">
               Werteausgleich: € 4,90 pro Monat · jederzeit kündbar
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Stimmklanganalyse – exklusiv in RAUM 36 */}
+      <section className="px-6 py-16 border-b border-zinc-800 bg-zinc-900/40">
+        <div className="max-w-4xl mx-auto">
+          <div className="border border-orange-600/30 p-8 md:p-10">
+            <div className="flex items-start gap-6">
+              <div className="w-14 h-14 bg-orange-600/20 flex items-center justify-center text-orange-500 flex-shrink-0">
+                <Mic className="w-7 h-7" />
+              </div>
+              <div className="flex-1">
+                <div className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-2">
+                  Exklusiv in RAUM 36
+                </div>
+                <h3 className="text-lg font-semibold tracking-widest mb-3 text-zinc-100">
+                  STIMMKLANGANALYSE
+                </h3>
+                <p className="text-zinc-400 text-sm leading-relaxed mb-6">
+                  Hier bestimmst du deinen Stimmklang. In drei aufeinanderfolgenden Tagen führst du die Frequenzanalyse deiner Stimme durch – detailgenaue Anleitung mit sofortiger Darstellung deines Klangspektrums. Danach bespricht Thomas das Ergebnis persönlich mit dir und führt die finale Justierung durch.
+                </p>
+                <div className="flex items-baseline gap-2 mb-5">
+                  <span className="text-xl font-medium text-white">€ 150</span>
+                  <span className="text-zinc-500 text-xs">einmalig · inkl. persönlichem Gespräch mit Thomas</span>
+                </div>
+                <div className="flex flex-wrap gap-3">
+                  <Button
+                    onClick={handleBuchenStimmklang}
+                    disabled={stimmklangCheckoutMutation.isPending}
+                    className="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border-0"
+                  >
+                    {stimmklangCheckoutMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
+                    Jetzt buchen
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
