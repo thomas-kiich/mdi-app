@@ -1,0 +1,18 @@
+{
+  "query": "SELECT id, titel, typ, published, audioUrl, createdAt FROM raum36_wissenspool ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, titel, typ, published, audioUrl, createdAt FROM raum36_wissenspool ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "titel": "Atemtechniken an der Reaktion einschätzen lernen...",
+      "typ": "audio",
+      "published": "0",
+      "audioUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/raum36/wissenspool/1778582985387-zfq6ltb5-Warum_extremes_Atmen_Sauerstoffmangel_verursacht.m4a",
+      "createdAt": "2026-05-12 10:49:56"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitel\ttyp\tpublished\taudioUrl\tcreatedAt\n1\tAtemtechniken an der Reaktion einschätzen lernen...\taudio\t0\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/raum36/wissenspool/1778582985387-zfq6ltb5-Warum_extremes_Atmen_Sauerstoffmangel_verursacht.m4a\t2026-05-12 10:49:56\n",
+  "stderr": "",
+  "execution_time_ms": 300
+}

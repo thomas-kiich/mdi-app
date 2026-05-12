@@ -784,7 +784,14 @@ function Raum36Member() {
                           {item.beschreibung}
                         </p>
                       )}
-                      {item.url && (
+                      {(item as any).audioUrl && (
+                        <audio
+                          controls
+                          className="w-full mt-2"
+                          src={(item as any).audioUrl}
+                        />
+                      )}
+                      {item.url && !(item as any).audioUrl && (
                         <a
                           href={item.url}
                           target="_blank"
