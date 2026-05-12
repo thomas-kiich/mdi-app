@@ -503,7 +503,7 @@ export async function sendeRaum36KaufBestaetigung(user: {
               <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 8px 0;">
                 Willkommen in RAUM 36, ${vorname}.
               </p>
-              <p style="font-size:13px;letter-spacing:2px;color:#7c3aed;text-transform:uppercase;font-weight:700;margin:0 0 24px 0;">
+              <p style="font-size:13px;letter-spacing:2px;color:#e85d04;text-transform:uppercase;font-weight:700;margin:0 0 24px 0;">
                 Abo aktiviert
               </p>
 
@@ -515,7 +515,7 @@ export async function sendeRaum36KaufBestaetigung(user: {
               <!-- CTA -->
               <table cellpadding="0" cellspacing="0" style="margin:0 0 32px 0;">
                 <tr>
-                  <td style="background-color:#7c3aed;border-radius:4px;">
+                  <td style="background-color:#e85d04;border-radius:4px;">
                     <a href="https://www.kiich.de/raum36"
                        style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">
                       RAUM 36 betreten →
