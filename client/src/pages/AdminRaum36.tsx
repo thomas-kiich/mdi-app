@@ -156,7 +156,7 @@ function WissenspoolTab() {
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState<any | null>(null);
 
-  const emptyForm: WissenForm = { titel: "", beschreibung: "", typ: "audio", url: "", audioUrl: "", published: false };
+  const emptyForm: WissenForm = { titel: "", beschreibung: "", typ: "audio", url: "", audioUrl: "", published: true };
   const [form, setForm] = useState<WissenForm>(emptyForm);
 
   const openCreate = () => { setForm(emptyForm); setShowForm(true); };
@@ -414,7 +414,7 @@ function VideosTab() {
 
   const [showForm, setShowForm] = useState(false);
   const [editItem, setEditItem] = useState<any | null>(null);
-  const emptyForm: PostForm = { titel: "", beschreibung: "", videoUrl: "", thumbnailUrl: "", published: false };
+  const emptyForm: PostForm = { titel: "", beschreibung: "", videoUrl: "", thumbnailUrl: "", published: true };
   const [form, setForm] = useState<PostForm>(emptyForm);
 
   const openCreate = () => { setForm(emptyForm); setShowForm(true); };
