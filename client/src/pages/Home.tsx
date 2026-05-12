@@ -707,6 +707,12 @@ export default function Home() {
                       </button>
 
                       <button
+                        onClick={() => setLocation('/raum36')}
+                        className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-orange-600/60 text-orange-400 hover:border-orange-500 hover:text-orange-300 transition-all duration-200"
+                      >
+                        RAUM 36
+                      </button>
+                      <button
                         onClick={() => setLocation('/momentaufnahme')}
                         className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-violet-500/60 text-violet-300 hover:border-violet-400 hover:text-violet-200 transition-colors"
                       >
