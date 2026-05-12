@@ -89,38 +89,7 @@ export function Dashboard({
     return (
         <div className="min-h-[80vh] flex flex-col justify-center animate-in fade-in duration-700 py-12 pt-8 relative">
             
-            {/* Obere rechte Ecke: Login-Indikator + Theme Toggle */}
-            <div className="absolute top-4 right-4 md:top-6 md:right-6 flex items-center gap-2">
-                {userName && (
-                    <div className="flex items-center gap-1.5">
-                        {/* Avatar-Kreis mit Initiale */}
-                        <div
-                            className="w-7 h-7 rounded-full bg-orange-500/20 border border-orange-500/40 flex items-center justify-center flex-shrink-0"
-                            title={`Angemeldet als ${userName}`}
-                        >
-                            <span className="text-xs font-bold text-orange-400 leading-none">
-                                {userName.charAt(0).toUpperCase()}
-                            </span>
-                        </div>
-                        {/* Name – nur auf Desktop */}
-                        <span className="hidden md:block text-xs text-zinc-500 max-w-[100px] truncate">
-                            {userName}
-                        </span>
-                        {/* Logout */}
-                        {onLogout && (
-                            <button
-                                onClick={onLogout}
-                                className="text-zinc-600 hover:text-red-400 transition-colors p-1 rounded-md"
-                                title="Abmelden"
-                                aria-label="Abmelden"
-                            >
-                                <LogOut className="w-3.5 h-3.5" />
-                            </button>
-                        )}
-                    </div>
-                )}
-                <ThemeToggle />
-            </div>
+
             
             <div className="text-center mb-12 space-y-4 relative">
                 <motion.div

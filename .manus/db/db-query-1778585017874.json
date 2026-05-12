@@ -1,0 +1,22 @@
+{
+  "query": "SELECT f.id, f.frage, f.antwort, f.pseudonym, f.beantwortetAt, u.email, u.name FROM raum36_fragen f LEFT JOIN users u ON f.userId = u.id ORDER BY f.createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT f.id, f.frage, f.antwort, f.pseudonym, f.beantwortetAt, u.email, u.name FROM raum36_fragen f LEFT JOIN users u ON f.userId = u.id ORDER BY f.createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "frage": "gibt es auch wissenschaftliche hinweise auf mögliche Unterstützung von Atemtechniken im Zusammenhang mit Suchtproblemen im Menschen?",
+      "antwort": "NULL",
+      "pseudonym": "twin",
+      "beantwortetAt": "NULL",
+      "email": "lkrforschung@gmail.com",
+      "name": "Thomas Chochola"
+    }
+  ],
+  "messages": [
+    "2\tIch nutze nun jedes mal wenn ich in einer Stresssituationen bin die Atemtechnikrn und ich merke es geht mir besser mit der Situation.  Allerdings habe ich damnach immer das Gefühl, dass danach immer in ein unkontrolliertunkontrolliertes Einatmen komme. Was mache ich hier falsch. Bin ich mit meinem Rhythmus zu schnell?\thi. im gegenteil du machst sehr vieles richtig. dein system reguliert nach und das ist das zeichen, dass du gut interveniert hast. immerhin war dein system davor im di-stressmodus! stell` es dir vor wie einen wilden seegang mit durcheinanderbrausenden riesenwellen - bedrohliches chaos für dein schiff. durch gezieltes atmen beruhigst du die see und die wellen verbinden sich wieder zu einem harmonischen ganzen - der übergang dahin ist noch von \"ordnenden regulationsaktionen\" begleitet. WAS DEIN THEMA ZU SEIN SCHEINT:  KONTROLLE! --- wenn du Kontrolle abgeben musst bist du irritiert --- bedenke aber: du kontrollierst nur rund 5% dessen was dein verhalten steuert. 95% verlaufen unterbewusst. TIPP: Kümmere dich zu 100% um die 5% deines Verstandes - dann optimierst du dein system --- und noch mehr VERTRAUEN kann in die momente deines seins einströmen. BREATHE WELL! thomas  ",
+    "PS: vielen dank für deine frage - sie betrifft viele von uns ---ich habe eine prägnante information ins WISSENSPOOL gestellt. Sie gibt eine kurze aber klare Darstelllung darüber, ob irritationen nach einer praktizierten Atemtechnik - sinnhaft regulierend oder echt bedrohlich sind. es hängt von der art und qualität der Atemtechnik ab!\tDerWanderndeJo\t2026-05-12 10:17:06\tjederer@gmx.net\tJohannes Ederer"
+  ],
+  "stdout": "id\tfrage\tantwort\tpseudonym\tbeantwortetAt\temail\tname\n2\tIch nutze nun jedes mal wenn ich in einer Stresssituationen bin die Atemtechnikrn und ich merke es geht mir besser mit der Situation.  Allerdings habe ich damnach immer das Gefühl, dass danach immer in ein unkontrolliertunkontrolliertes Einatmen komme. Was mache ich hier falsch. Bin ich mit meinem Rhythmus zu schnell?\thi. im gegenteil du machst sehr vieles richtig. dein system reguliert nach und das ist das zeichen, dass du gut interveniert hast. immerhin war dein system davor im di-stressmodus! stell` es dir vor wie einen wilden seegang mit durcheinanderbrausenden riesenwellen - bedrohliches chaos für dein schiff. durch gezieltes atmen beruhigst du die see und die wellen verbinden sich wieder zu einem harmonischen ganzen - der übergang dahin ist noch von \"ordnenden regulationsaktionen\" begleitet. WAS DEIN THEMA ZU SEIN SCHEINT:  KONTROLLE! --- wenn du Kontrolle abgeben musst bist du irritiert --- bedenke aber: du kontrollierst nur rund 5% dessen was dein verhalten steuert. 95% verlaufen unterbewusst. TIPP: Kümmere dich zu 100% um die 5% deines Verstandes - dann optimierst du dein system --- und noch mehr VERTRAUEN kann in die momente deines seins einströmen. BREATHE WELL! thomas  \nPS: vielen dank für deine frage - sie betrifft viele von uns ---ich habe eine prägnante information ins WISSENSPOOL gestellt. Sie gibt eine kurze aber klare Darstelllung darüber, ob irritationen nach einer praktizierten Atemtechnik - sinnhaft regulierend oder echt bedrohlich sind. es hängt von der art und qualität der Atemtechnik ab!\tDerWanderndeJo\t2026-05-12 10:17:06\tjederer@gmx.net\tJohannes Ederer\n1\tgibt es auch wissenschaftliche hinweise auf mögliche Unterstützung von Atemtechniken im Zusammenhang mit Suchtproblemen im Menschen?\tNULL\ttwin\tNULL\tlkrforschung@gmail.com\tThomas Chochola\n",
+  "stderr": "",
+  "execution_time_ms": 301
+}
