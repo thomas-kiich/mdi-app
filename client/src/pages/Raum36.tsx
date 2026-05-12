@@ -452,10 +452,10 @@ function Raum36Member() {
         <div className="max-w-4xl mx-auto flex">
           {(
             [
-              { id: "videos", label: "Wochenvideos", icon: <Video className="w-4 h-4" /> },
-              { id: "fragen", label: "Fragen", icon: <MessageSquare className="w-4 h-4" /> },
-              { id: "wissenspool", label: "Wissenspool", icon: <Lightbulb className="w-4 h-4" /> },
-              { id: "vital", label: "Vital Monitor", icon: <HeartPulse className="w-4 h-4" /> },
+              { id: "fragen", label: "KOMMUNIKATIONSCENTER", icon: <MessageSquare className="w-4 h-4" /> },
+              { id: "videos", label: "TRAININGSCENTER", icon: <Video className="w-4 h-4" /> },
+              { id: "vital", label: "VITALMONITOR", icon: <HeartPulse className="w-4 h-4" /> },
+              { id: "wissenspool", label: "WISSENSPOOL", icon: <Lightbulb className="w-4 h-4" /> },
             ] as { id: Tab; label: string; icon: React.ReactNode }[]
           ).map((tab) => (
             <button
