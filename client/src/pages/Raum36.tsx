@@ -72,12 +72,30 @@ function Raum36Landing() {
     },
   });
 
+  const stimmklangCheckoutMutation = trpc.raum36.createCheckoutStimmklang.useMutation({
+    onSuccess: (data) => {
+      if (data.url) {
+        toast.info("Du wirst zu Stripe weitergeleitet…");
+        window.open(data.url, "_blank");
+      }
+    },
+    onError: (err) => toast.error(err.message),
+  });
+
   const handleJoin = () => {
     if (!isAuthenticated) {
       window.location.href = getLoginUrl("/raum36");
       return;
     }
     checkoutMutation.mutate({ origin: window.location.origin });
+  };
+
+  const handleBuchenStimmklang = () => {
+    if (!isAuthenticated) {
+      window.location.href = getLoginUrl("/raum36");
+      return;
+    }
+    stimmklangCheckoutMutation.mutate({ origin: window.location.origin });
   };
 
   return (
@@ -214,11 +232,11 @@ function Raum36Landing() {
                 </div>
                 <div className="flex flex-wrap gap-3">
                   <Button
-                    onClick={handleJoin}
-                    disabled={checkoutMutation.isPending}
+                    onClick={handleBuchenStimmklang}
+                    disabled={stimmklangCheckoutMutation.isPending}
                     className="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 h-auto rounded-none uppercase tracking-wide border-0"
                   >
-                    {checkoutMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
+                    {stimmklangCheckoutMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Mic className="w-4 h-4 mr-2" />}
                     Jetzt buchen
                   </Button>
                 </div>
