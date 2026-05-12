@@ -123,23 +123,7 @@ function Raum36Landing() {
             Der direkte Kanal zu Thomas Chochola
           </p>
 
-          {/* 5 Leistungsversprechen */}
-          <ul className="space-y-4 mb-12 max-w-2xl">
-            {[
-              "Stelle deine persönlichen Fragen an Thomas (auch mit Pseudonym möglich).",
-              "Erhalte detailgenaue Trainingsanleitungen zu allen Bereichen der METHODE 36.",
-              "Erhalte Zugang zu den besten Trainingstools wie YOHNATMUNG | VITALMONITOR und dem erweiterten WISSENSPOOL.",
-              "Tausche kontinuierlich Informationen aus, wie du KI mit Vorsicht und Überblick für dein Leben nützen kannst.",
-              "Profitiere von der sich aufbauenden Gruppendynamik und deren Lebenserfahrung.",
-            ].map((text, i) => (
-              <li key={i} className="flex items-start gap-4">
-                <span className="w-5 h-5 mt-0.5 flex-shrink-0 border border-orange-600 flex items-center justify-center">
-                  <CheckCircle className="w-3 h-3 text-orange-500" />
-                </span>
-                <span className="text-zinc-300 leading-relaxed">{text}</span>
-              </li>
-            ))}
-          </ul>
+
 
           {/* CTA */}
           <div className="space-y-4">
@@ -169,44 +153,7 @@ function Raum36Landing() {
         </div>
       </section>
 
-      {/* 4 Feature-Bereiche */}
-      <section className="px-6 py-20 border-b border-zinc-800">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-0 border border-zinc-800">
-            {[
-              {
-                icon: <Video className="w-7 h-7 text-orange-500" />,
-                title: "ERKLÄRVIDEOS",
-                desc: "Thomas führt dich detailgenau und anschaulich durch das umfangreiche System der METHODE 36.",
-              },
-              {
-                icon: <MessageSquare className="w-7 h-7 text-orange-500" />,
-                title: "PERSÖNLICHES FEEDBACK",
-                desc: "Thomas steht dir für deine Fragen zur Verfügung. Du kannst auch anonym im Gruppenprozess teilhaben.",
-              },
-              {
-                icon: <BookOpen className="w-7 h-7 text-orange-500" />,
-                title: "WISSENSPOOL",
-                desc: "Du erhältst weiterführende Informationen zu den im Hörbuch angesprochenen Themen mit Quellenangaben und Detailschärfe.",
-              },
-              {
-                icon: <Lightbulb className="w-7 h-7 text-orange-500" />,
-                title: "KIICH PRAXIS",
-                desc: "Thomas zeigt dir, wie er selbst den ethischen Dialog mit Künstlicher Intelligenz führt. Du kannst deine Ideen, Bedenken und Interessen persönlich formulieren und reflektieren.",
-              },
-            ].map((item, i) => (
-              <div
-                key={i}
-                className="p-8 border-r border-b border-zinc-800 last:border-b-0 md:odd:border-r md:even:border-r-0"
-              >
-                <div className="mb-5">{item.icon}</div>
-                <h3 className="font-semibold text-base mb-3 tracking-widest text-zinc-200">{item.title}</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Stimmklanganalyse – exklusiv in RAUM 36 */}
       <section className="px-6 py-16 border-b border-zinc-800 bg-zinc-900/40">
@@ -263,11 +210,10 @@ function Raum36Landing() {
             <ul className="space-y-3 mb-10">
               {[
                 "Persönliche Fragen an Thomas stellen",
-                "Zugang zu allen Erklärvideos",
-                "Wissenspool mit Quellenangaben",
-                "KIICH Praxis – ethischer KI-Dialog",
-                "Pseudonym für anonyme Teilnahme möglich",
-                "Alle zukünftigen Inhalte inklusive",
+                "Mit deinem gewünschten Namen oder einem Pseudonym im aktiven Informationspool dabei sein",
+                "Das umfangreiche Trainingsangebot der METHODE 36 schrittweise in deinen Alltag integrieren",
+                "Nutze deinen persönlichen VITALMONITOR und erhalte Überblick über deine Trainingsfortschritte",
+                "Lerne und wachse mit KI-Werkzeugen",
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-sm">
                   <CheckCircle className="w-4 h-4 text-orange-500 flex-shrink-0" />
