@@ -111,26 +111,31 @@ function Raum36Landing() {
       </div>
 
       {/* Hero */}
-      <section className="border-b border-zinc-800 px-6 py-20 md:py-32">
+      <section className="border-b border-zinc-800 px-6 py-10 md:py-16">
         <div className="max-w-4xl mx-auto">
-          <div className="inline-block border border-orange-600 px-3 py-1 text-xs font-mono text-orange-500 mb-8 uppercase tracking-widest">
+          <div className="inline-block border border-orange-600 px-3 py-1 text-xs font-mono text-orange-500 mb-6 uppercase tracking-widest">
             Exklusiver Mitglieder-Bereich
           </div>
-          <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-none mb-6">
-            RAUM 36
-          </h1>
+          <div className="flex items-baseline gap-4 mb-4">
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight leading-none">
+              RAUM 36
+            </h1>
+            <span className="text-xl md:text-2xl font-semibold text-orange-400 tracking-tight leading-none">
+              WILLKOMMEN!
+            </span>
+          </div>
           <p className="text-base md:text-lg text-zinc-300 max-w-2xl leading-relaxed">
-            WILLKOMMEN! Hier findest du das interaktive Angebot für deine maximale Unterstützung. Erhalte Antworten auf deine persönlichen Anliegen, inspiriere dich durch die gemeinsamen Dialoge der Mitglieder, entwickle deinen individuellen Trainingsplan und verfolge deine Entwicklungen auf deinem eigenen VITALMONITOR.
+            Hier findest du das interaktive Angebot für deine maximale Unterstützung. Erhalte Antworten auf deine persönlichen Anliegen, inspiriere dich durch die gemeinsamen Dialoge der Mitglieder, entwickle deinen individuellen Trainingsplan und verfolge deine Entwicklungen auf deinem eigenen VITALMONITOR.
           </p>
         </div>
       </section>
 
       {/* Mitgliedschaft */}
-      <section className="px-6 py-20 border-b border-zinc-800">
+      <section className="px-6 py-10 border-b border-zinc-800">
         <div className="max-w-4xl mx-auto">
           <div className="border border-zinc-700 p-8 md:p-12 max-w-lg">
             <div className="text-orange-500 text-sm font-mono uppercase tracking-widest mb-4">
-              Mitgliedschaft
+              HIER ANMELDEN
             </div>
             <div className="flex items-baseline gap-2 mb-1">
               <span className="text-2xl font-medium text-white">€ 4,90</span>
