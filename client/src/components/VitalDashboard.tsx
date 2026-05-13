@@ -922,20 +922,32 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                               )}
                               {/* Freies Minutenfeld für alle anderen Trainingsarten */}
                               {item.subtyp !== 'befindlichkeitstraining' && item.subtyp !== 'yohntrain' && item.subtyp !== 'sonstiges' && (
-                                <div className="flex items-center gap-1.5">
-                                  <input
-                                    type="number"
-                                    min={0}
-                                    max={999}
-                                    value={item.dauerMin ?? ''}
-                                    onChange={e => {
-                                      const val = e.target.value === '' ? undefined : parseInt(e.target.value);
-                                      updateTagesplanItem(item.id, { dauerMin: val });
-                                    }}
-                                    placeholder="min"
-                                    className="w-16 h-6 px-1.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 text-center focus:outline-none focus:border-orange-500"
-                                  />
-                                  <span className="text-xs text-zinc-500">min</span>
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="number"
+                                      min={0}
+                                      max={999}
+                                      value={item.dauerMin ?? ''}
+                                      onChange={e => {
+                                        const val = e.target.value === '' ? undefined : parseInt(e.target.value);
+                                        updateTagesplanItem(item.id, { dauerMin: val });
+                                      }}
+                                      placeholder="min"
+                                      className="w-16 h-6 px-1.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 text-center focus:outline-none focus:border-orange-500"
+                                    />
+                                    <span className="text-xs text-zinc-500">min</span>
+                                  </div>
+                                  {/* Freitext-Notizfeld für Kardio, Kraft, Mobilität */}
+                                  {(item.subtyp === 'kardiotrain' || item.subtyp === 'krafttrain' || item.subtyp === 'mobilitaetstraining') && (
+                                    <input
+                                      type="text"
+                                      value={item.notiz ?? ''}
+                                      onChange={e => updateTagesplanItem(item.id, { notiz: e.target.value || undefined })}
+                                      placeholder="Notiz (z.B. Laufen 5km, Kniebeugen 3×15...)"
+                                      className="w-full h-6 px-1.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 focus:outline-none focus:border-orange-500"
+                                    />
+                                  )}
                                 </div>
                               )}
                             </div>
