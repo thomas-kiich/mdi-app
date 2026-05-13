@@ -8,7 +8,7 @@ const BREVO_API_URL = "https://api.brevo.com/v3/smtp/email";
 const BREVO_API_KEY = process.env.BREVO_API_KEY ?? "";
 
 // Absender – immer KIICH
-const SENDER = { name: "KIICH", email: "noreply@kiich.de" };
+const SENDER = { name: "KIICH", email: "yohn@kiich.de" };
 
 export interface SendEmailOptions {
   to: { name?: string; email: string }[];
