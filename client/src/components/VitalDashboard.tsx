@@ -316,8 +316,8 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
   // ─── Vital-Formular absenden ─────────────────────────────────────────────────
   const handleVitalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!bolt && !temp && !hrv && !ruhepuls && !apnoeAus && !apnoeEin && !gewicht && !notes.trim()) {
-      toast.error('Bitte mindestens einen Wert oder eine Befindlichkeitsnotiz eingeben.');
+    if (!boltMcp && !boltCp && !temp && !hrv && !ruhepuls && !apnoeAus && !apnoeEin && !gewicht && !notes.trim()) {
+      toast.error('Bitte mindestens einen Wert eingeben.');
       return;
     }
     saveEintrag.mutate({
