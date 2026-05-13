@@ -920,9 +920,23 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                                   </div>
                                 </div>
                               )}
-                              {/* Dauer für andere Trainingsarten */}
-                              {item.subtyp !== 'befindlichkeitstraining' && item.subtyp !== 'yohntrain' && item.dauerMin && (
-                                <span className="text-xs text-zinc-500 font-mono">{item.dauerMin} min</span>
+                              {/* Freies Minutenfeld für alle anderen Trainingsarten */}
+                              {item.subtyp !== 'befindlichkeitstraining' && item.subtyp !== 'yohntrain' && item.subtyp !== 'sonstiges' && (
+                                <div className="flex items-center gap-1.5">
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    max={999}
+                                    value={item.dauerMin ?? ''}
+                                    onChange={e => {
+                                      const val = e.target.value === '' ? undefined : parseInt(e.target.value);
+                                      updateTagesplanItem(item.id, { dauerMin: val });
+                                    }}
+                                    placeholder="min"
+                                    className="w-16 h-6 px-1.5 rounded bg-zinc-800 border border-zinc-700 text-xs text-zinc-300 text-center focus:outline-none focus:border-orange-500"
+                                  />
+                                  <span className="text-xs text-zinc-500">min</span>
+                                </div>
                               )}
                             </div>
                             <button onClick={() => toggleDurchgefuehrt(item.id)}
