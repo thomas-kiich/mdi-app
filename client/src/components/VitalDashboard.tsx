@@ -72,6 +72,17 @@ function avg(nums: (number | null | undefined)[]) {
 }
 
 /**
+ * Formatiert Apnoe-Wert aus DB-Format (MMSS) als lesbaren String, z.B. "0245" → "2:45 min".
+ */
+function apnoeDisplay(val: string | null | undefined): string {
+  if (!val) return '–';
+  const s = val.padStart(4, '0');
+  const mins = parseInt(s.slice(0, 2), 10);
+  const secs = parseInt(s.slice(2, 4), 10);
+  return `${mins}:${secs.toString().padStart(2, '0')} min`;
+}
+
+/**
  * Konvertiert Apnoe-Wert aus DB-Format (MMSS, z.B. "0300" = 3:00 min, "0245" = 2:45 min)
  * in Dezimalminuten (z.B. 3.0, 2.75) für Charts.
  */
@@ -530,8 +541,8 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                   { label: 'HRV', value: letzterEintrag.hrv ? `${letzterEintrag.hrv} ms` : '–', color: 'text-red-400' },
                   { label: 'BOLT / MCP', value: letzterEintrag.boltMcp ? `${letzterEintrag.boltMcp} s` : '–', color: 'text-orange-400' },
                   { label: 'CP n. Tr.', value: letzterEintrag.boltCp ? `${letzterEintrag.boltCp} s` : '–', color: 'text-yellow-400' },
-                  { label: 'Apnoe aus', value: letzterEintrag.apnoeAus ? `${letzterEintrag.apnoeAus} min` : '–', color: 'text-cyan-400' },
-                  { label: 'Apnoe ein', value: letzterEintrag.apnoeEin ? `${letzterEintrag.apnoeEin} min` : '–', color: 'text-teal-400' },
+                  { label: 'Apnoe aus', value: apnoeDisplay(letzterEintrag.apnoeAus), color: 'text-cyan-400' },
+                  { label: 'Apnoe ein', value: apnoeDisplay(letzterEintrag.apnoeEin), color: 'text-teal-400' },
                   { label: 'Temp', value: letzterEintrag.temperatur ? `${letzterEintrag.temperatur}°C` : '–', color: 'text-blue-400' },
                 ].map(item => (
                   <div key={item.label} className="bg-white/5 rounded-xl p-3 text-center">
@@ -860,8 +871,8 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                         {entry.hrv       && <span className="text-red-400">HRV: <b>{entry.hrv} ms</b></span>}
                         {entry.boltMcp != null && <span className="text-orange-400">BOLT/MCP: <b>{entry.boltMcp} s</b></span>}
                         {entry.boltCp != null   && <span className="text-yellow-400">CP: <b>{entry.boltCp} s</b></span>}
-                        {entry.apnoeAus  && <span className="text-cyan-400">Apnoe AUS: <b>{entry.apnoeAus} min</b></span>}
-                        {entry.apnoeEin  && <span className="text-teal-400">Apnoe EIN: <b>{entry.apnoeEin} min</b></span>}
+                        {entry.apnoeAus  && <span className="text-cyan-400">Apnoe AUS: <b>{apnoeDisplay(entry.apnoeAus)}</b></span>}
+                        {entry.apnoeEin  && <span className="text-teal-400">Apnoe EIN: <b>{apnoeDisplay(entry.apnoeEin)}</b></span>}
                         {entry.temperatur && <span className="text-blue-400">Temp: <b>{entry.temperatur}°C</b></span>}
                         {entry.gewicht   && <span className="text-green-400">Gewicht: <b>{entry.gewicht} kg</b></span>}
                       </div>
