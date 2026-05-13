@@ -772,24 +772,41 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* BOLT/MCP & CP – Sekunden */}
                 <Card className="bg-white/5 border-white/10">
-                  <CardHeader><CardTitle className="text-sm font-light text-zinc-400">Atemwerte – BOLT/MCP, CP & Apnoe (Ø)</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-sm font-light text-zinc-400">BOLT/MCP & CP (Ø Sekunden)</CardTitle></CardHeader>
                   <CardContent className="h-[260px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={statsData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                         <XAxis dataKey="label" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }} itemStyle={{ color: '#fff' }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} unit=" s" />
+                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }} itemStyle={{ color: '#fff' }} formatter={(v: number) => [`${v} s`]} />
                         <Legend />
-                        <Bar dataKey="boltMcp"  fill="#f97316" name="BOLT/MCP (s)"    radius={[3,3,0,0]} />
-                        <Bar dataKey="boltCp"   fill="#eab308" name="CP (s)"          radius={[3,3,0,0]} />
-                        <Bar dataKey="apnoeAus" fill="#06b6d4" name="Apnoe AUS (min)" radius={[3,3,0,0]} />
-                        <Bar dataKey="apnoeEin" fill="#14b8a6" name="Apnoe EIN (min)" radius={[3,3,0,0]} />
+                        <Bar dataKey="boltMcp" fill="#f97316" name="BOLT/MCP" radius={[3,3,0,0]} />
+                        <Bar dataKey="boltCp"  fill="#eab308" name="CP"       radius={[3,3,0,0]} />
                       </BarChart>
                     </ResponsiveContainer>
                   </CardContent>
                 </Card>
+                {/* Apnoe – Minuten */}
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader><CardTitle className="text-sm font-light text-zinc-400">Apnoe (Ø Minuten)</CardTitle></CardHeader>
+                  <CardContent className="h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={statsData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                        <XAxis dataKey="label" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} unit=" min" />
+                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }} itemStyle={{ color: '#fff' }} formatter={(v: number) => [`${v} min`]} />
+                        <Legend />
+                        <Bar dataKey="apnoeAus" fill="#06b6d4" name="Apnoe AUS" radius={[3,3,0,0]} />
+                        <Bar dataKey="apnoeEin" fill="#14b8a6" name="Apnoe EIN" radius={[3,3,0,0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+                {/* Herzwerte */}
                 <Card className="bg-white/5 border-white/10">
                   <CardHeader><CardTitle className="text-sm font-light text-zinc-400">Herzwerte – HRV & Ruhepuls (Ø)</CardTitle></CardHeader>
                   <CardContent className="h-[260px]">
