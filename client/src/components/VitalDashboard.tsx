@@ -409,7 +409,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
         label: statsZeitraum === 'woche'
           ? `KW ${new Date(key).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}`
           : new Date(key + '-01').toLocaleDateString('de-DE', { month: 'short', year: '2-digit' }),
-        bolt:     avg(vals.map(v => v.bolt)),
+        bolt:     avg(vals.map(v => v.boltMcp)),
         hrv:      avg(vals.map(v => v.hrv)),
         ruhepuls: avg(vals.map(v => v.ruhepuls)),
         apnoeAus: avg(vals.map(v => v.apnoeAus ? parseFloat(v.apnoeAus) : 0)),
@@ -424,7 +424,8 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
       .map(e => ({
         ...e,
         displayDate: new Date(e.datum).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }),
-        boltNum: e.bolt ?? 0,
+        boltNum: e.boltMcp ?? 0,
+        boltCpNum: e.boltCp ?? 0,
         hrvNum: e.hrv ?? 0,
         ruhepulsNum: e.ruhepuls ?? 0,
         apnoeAusNum: e.apnoeAus ? parseFloat(e.apnoeAus) : 0,
@@ -799,7 +800,8 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                         <YAxis stroke="#666" tick={{ fontSize: 11 }} />
                         <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }} itemStyle={{ color: '#fff' }} />
                         <Legend />
-                        <Line type="monotone" dataKey="boltNum"     stroke="#f97316" strokeWidth={2} name="BOLT (s)"        dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="boltNum"   stroke="#f97316" strokeWidth={2} name="BOLT/MCP (s)" dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="boltCpNum" stroke="#eab308" strokeWidth={2} name="CP (s)"       dot={{ r: 3 }} />
                         <Line type="monotone" dataKey="apnoeAusNum" stroke="#06b6d4" strokeWidth={2} name="Apnoe AUS (min)" dot={{ r: 3 }} />
                         <Line type="monotone" dataKey="apnoeEinNum" stroke="#14b8a6" strokeWidth={2} name="Apnoe EIN (min)" dot={{ r: 3 }} />
                       </LineChart>
@@ -841,8 +843,8 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                       <div className="flex flex-wrap gap-3 text-sm">
                         {entry.ruhepuls  && <span className="text-pink-400">Ruhepuls: <b>{entry.ruhepuls} bpm</b></span>}
                         {entry.hrv       && <span className="text-red-400">HRV: <b>{entry.hrv} ms</b></span>}
-                        {entry.boltMcp   && <span className="text-orange-400">BOLT/MCP: <b>{entry.boltMcp} s</b></span>}
-                        {entry.boltCp    && <span className="text-yellow-400">CP: <b>{entry.boltCp} s</b></span>}
+                        {entry.boltMcp != null && <span className="text-orange-400">BOLT/MCP: <b>{entry.boltMcp} s</b></span>}
+                        {entry.boltCp != null   && <span className="text-yellow-400">CP: <b>{entry.boltCp} s</b></span>}
                         {entry.apnoeAus  && <span className="text-cyan-400">Apnoe AUS: <b>{entry.apnoeAus} min</b></span>}
                         {entry.apnoeEin  && <span className="text-teal-400">Apnoe EIN: <b>{entry.apnoeEin} min</b></span>}
                         {entry.temperatur && <span className="text-blue-400">Temp: <b>{entry.temperatur}°C</b></span>}
