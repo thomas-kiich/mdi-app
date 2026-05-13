@@ -458,6 +458,14 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
     saveTagesplanToDB(updated.items);
   };
 
+  const updateTagesplanItem = (itemId: string, patch: Partial<TagesplanItem>) => {
+    setTagesplan(prev => {
+      const updated = { ...prev, items: prev.items.map(i => i.id === itemId ? { ...i, ...patch } : i) };
+      saveTagesplanToDB(updated.items);
+      return updated;
+    });
+  };
+
   // ─── Polar H10 ───────────────────────────────────────────────────────────────
   const connectPolar = async () => {
     try {
@@ -870,17 +878,51 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                               }`} title="Geplant">
                               {item.geplant && <div className="w-2 h-2 rounded-sm bg-zinc-400" />}
                             </button>
-                            <div className="flex-1 min-w-0">
+                            <div className="flex-1 min-w-0 space-y-1.5">
                               <span className={`text-sm ${item.durchgefuehrt ? 'line-through text-zinc-600' : 'text-zinc-200'}`}>
                                 {item.label}
                               </span>
-                              {item.einheitMin && item.anzahl && (
-                                <span className="ml-2 text-xs text-orange-400 font-mono">
-                                  {item.anzahl}×{item.einheitMin}min = {item.anzahl * item.einheitMin}min
-                                </span>
+                              {/* Zeiterfassung für BefindlichkeitsTRAIN und YOHNTRAIN */}
+                              {(item.subtyp === 'befindlichkeitstraining' || item.subtyp === 'yohntrain') && (
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-1 flex-wrap">
+                                    <span className="text-xs text-zinc-500">Dauer:</span>
+                                    {([7, 12, 21] as const).map(min => (
+                                      <button key={min}
+                                        onClick={() => updateTagesplanItem(item.id, { einheitMin: min })}
+                                        className={`px-2 py-0.5 rounded text-xs font-bold transition-colors ${
+                                          item.einheitMin === min
+                                            ? 'bg-orange-500 text-white'
+                                            : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                        }`}>
+                                        {min} min
+                                      </button>
+                                    ))}
+                                  </div>
+                                  <div className="flex items-center gap-1 flex-wrap">
+                                    <span className="text-xs text-zinc-500">Anzahl:</span>
+                                    {[1, 2, 3].map(n => (
+                                      <button key={n}
+                                        onClick={() => updateTagesplanItem(item.id, { anzahl: n })}
+                                        className={`w-8 h-6 rounded text-xs font-bold transition-colors ${
+                                          item.anzahl === n
+                                            ? 'bg-orange-500 text-white'
+                                            : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                        }`}>
+                                        {n}×
+                                      </button>
+                                    ))}
+                                    {item.einheitMin && item.anzahl && (
+                                      <span className="ml-1 text-xs text-orange-400 font-mono">
+                                        = {item.anzahl * item.einheitMin} min
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
                               )}
-                              {item.dauerMin && (
-                                <span className="ml-2 text-xs text-zinc-500 font-mono">{item.dauerMin} min</span>
+                              {/* Dauer für andere Trainingsarten */}
+                              {item.subtyp !== 'befindlichkeitstraining' && item.subtyp !== 'yohntrain' && item.dauerMin && (
+                                <span className="text-xs text-zinc-500 font-mono">{item.dauerMin} min</span>
                               )}
                             </div>
                             <button onClick={() => toggleDurchgefuehrt(item.id)}
