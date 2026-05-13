@@ -64,7 +64,7 @@ export const vitalRouter = router({
       const now = Date.now();
 
       const existing = await db
-        .select({ id: vitalEintraege.id })
+        .select()
         .from(vitalEintraege)
         .where(and(
           eq(vitalEintraege.userId, userId),
@@ -73,20 +73,23 @@ export const vitalRouter = router({
         .limit(1);
 
       if (existing.length > 0) {
+        // Merge: nur Felder überschreiben die im Input einen Wert haben.
+        // Felder die im Formular leer gelassen wurden (undefined) behalten den bestehenden DB-Wert.
+        const prev = existing[0];
         await db
           .update(vitalEintraege)
           .set({
-            ruhepuls: input.ruhepuls ?? null,
-            hrv: input.hrv ?? null,
-            apnoeAus: input.apnoeAus ?? null,
-            apnoeEin: input.apnoeEin ?? null,
-            bolt: input.bolt ?? null,
-            boltMcp: input.boltMcp ?? null,
-            boltCp: input.boltCp ?? null,
-            temperatur: input.temperatur ?? null,
-            gewicht: input.gewicht ?? null,
-            anmerkungen: input.anmerkungen ?? null,
-            tagesplan: input.tagesplan ?? null,
+            ruhepuls:    input.ruhepuls    !== undefined ? (input.ruhepuls    ?? null) : prev.ruhepuls,
+            hrv:         input.hrv         !== undefined ? (input.hrv         ?? null) : prev.hrv,
+            apnoeAus:    input.apnoeAus    !== undefined ? (input.apnoeAus    ?? null) : prev.apnoeAus,
+            apnoeEin:    input.apnoeEin    !== undefined ? (input.apnoeEin    ?? null) : prev.apnoeEin,
+            bolt:        input.bolt        !== undefined ? (input.bolt        ?? null) : prev.bolt,
+            boltMcp:     input.boltMcp     !== undefined ? (input.boltMcp     ?? null) : prev.boltMcp,
+            boltCp:      input.boltCp      !== undefined ? (input.boltCp      ?? null) : prev.boltCp,
+            temperatur:  input.temperatur  !== undefined ? (input.temperatur  ?? null) : prev.temperatur,
+            gewicht:     input.gewicht     !== undefined ? (input.gewicht     ?? null) : prev.gewicht,
+            anmerkungen: input.anmerkungen !== undefined ? (input.anmerkungen ?? null) : prev.anmerkungen,
+            tagesplan:   input.tagesplan   !== undefined ? (input.tagesplan   ?? null) : prev.tagesplan,
           })
           .where(and(
             eq(vitalEintraege.userId, userId),

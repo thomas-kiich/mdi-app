@@ -320,18 +320,19 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
       toast.error('Bitte mindestens einen Wert eingeben.');
       return;
     }
+    // Nur Felder senden die tatsächlich ausgefüllt wurden.
+    // Leere Felder werden als undefined gesendet → Backend behält bestehende Werte (Merge-Logik).
     saveEintrag.mutate({
       datum: heuteDatum,
-      ruhepuls: Number(ruhepuls) || null,
-      hrv: Number(hrv) || null,
-      apnoeAus: apnoeAus || null,
-      apnoeEin: apnoeEin || null,
-      bolt: Number(bolt) || null,
-      boltMcp: Number(boltMcp) || null,
-      boltCp: Number(boltCp) || null,
-      temperatur: temp || null,
-      gewicht: gewicht || null,
-      anmerkungen: notes || null,
+      ...(ruhepuls   ? { ruhepuls:    Number(ruhepuls) }    : {}),
+      ...(hrv        ? { hrv:         Number(hrv) }          : {}),
+      ...(apnoeAus   ? { apnoeAus }                          : {}),
+      ...(apnoeEin   ? { apnoeEin }                          : {}),
+      ...(boltMcp    ? { boltMcp:     Number(boltMcp) }      : {}),
+      ...(boltCp     ? { boltCp:      Number(boltCp) }       : {}),
+      ...(temp       ? { temperatur:  temp }                  : {}),
+      ...(gewicht    ? { gewicht }                            : {}),
+      ...(notes.trim() ? { anmerkungen: notes }               : {}),
       tagesplan: JSON.stringify(tagesplan.items),
     });
   };
