@@ -27,23 +27,40 @@ interface VitalDashboardProps {
 
 // ─── Kategorien-Konfiguration ────────────────────────────────────────────────
 const KATEGORIEN_CONFIG: Record<TagesplanKategorie, { label: string; farbe: string; icon: string }> = {
-  atemtraining:  { label: 'Atemtraining',    farbe: 'text-cyan-400',   icon: '🫁' },
-  kiich_training:{ label: 'KIICH-Training',  farbe: 'text-orange-400', icon: '✨' },
-  bewegung:      { label: 'Bewegung',        farbe: 'text-green-400',  icon: '🏃' },
-  schlaf:        { label: 'Schlaf',          farbe: 'text-indigo-400', icon: '🌙' },
-  coaching:      { label: 'Coaching',        farbe: 'text-yellow-400', icon: '🎯' },
-  sonstiges:     { label: 'Sonstiges',       farbe: 'text-zinc-400',   icon: '📝' },
+  atemtraining:      { label: 'Atemtraining',      farbe: 'text-cyan-400',   icon: '🫁' },
+  bewegungstraining: { label: 'Bewegungstraining', farbe: 'text-green-400',  icon: '🏃' },
+  geisttraining:     { label: 'Geisttraining',     farbe: 'text-violet-400', icon: '🧠' },
+  sonstiges:         { label: 'Sonstiges',         farbe: 'text-zinc-400',   icon: '📝' },
 };
 
-const STANDARD_ITEMS: { kategorie: TagesplanKategorie; label: string }[] = [
-  { kategorie: 'atemtraining',   label: 'BT-Test (morgens)' },
-  { kategorie: 'atemtraining',   label: 'Apnoe-Messung' },
-  { kategorie: 'kiich_training', label: 'BT 3× 7 min' },
-  { kategorie: 'kiich_training', label: 'Befindlichkeitstraining' },
-  { kategorie: 'bewegung',       label: 'Bewegung 1 (frei)' },
-  { kategorie: 'bewegung',       label: 'Bewegung 2 (frei)' },
-  { kategorie: 'bewegung',       label: 'Bewegung 3 (frei)' },
-  { kategorie: 'schlaf',         label: 'HRV-Messung (morgens)' },
+// Untertypen mit Labels und Zeiterfassung-Flag
+const ATEMTRAINING_ITEMS: { subtyp: string; label: string; mitZeit: boolean }[] = [
+  { subtyp: 'befindlichkeitstraining', label: 'BefindlichkeitsTRAIN', mitZeit: true },
+  { subtyp: 'yohntrain',              label: 'YOHNTRAIN',            mitZeit: true },
+  { subtyp: 'enthaltsamkeitstraining',label: 'EnthaltsamkeitsTRAIN', mitZeit: false },
+  { subtyp: 'gaehntrain',             label: 'INHÄRES GÄHNTRAIN',    mitZeit: false },
+  { subtyp: 'apnoetrain',             label: 'APNOETRAIN',           mitZeit: false },
+  { subtyp: 'sonstiges',              label: 'Sonstiges',            mitZeit: false },
+];
+
+const BEWEGUNGSTRAINING_ITEMS: { subtyp: string; label: string }[] = [
+  { subtyp: 'suchttrain',          label: 'SUCHTTRAIN' },
+  { subtyp: 'kardiotrain',         label: 'KARDIOTRAIN' },
+  { subtyp: 'krafttrain',          label: 'KRAFTTRAIN' },
+  { subtyp: 'mobilitaetstraining', label: 'MOBILITÄTSTRAIN' },
+  { subtyp: 'sonstiges',           label: 'Sonstiges' },
+];
+
+const GEISTTRAINING_ITEMS: { subtyp: string; label: string }[] = [
+  { subtyp: 'colourcounting', label: 'COLOURCOUNTING' },
+  { subtyp: 'nidrayoga',      label: 'NIDRAYOGA' },
+  { subtyp: 'sonstiges',      label: 'Sonstiges' },
+];
+
+const STANDARD_ITEMS: { kategorie: TagesplanKategorie; label: string; subtyp?: string }[] = [
+  { kategorie: 'atemtraining',      label: 'BefindlichkeitsTRAIN', subtyp: 'befindlichkeitstraining' },
+  { kategorie: 'atemtraining',      label: 'YOHNTRAIN',            subtyp: 'yohntrain' },
+  { kategorie: 'bewegungstraining', label: 'KARDIOTRAIN',          subtyp: 'kardiotrain' },
 ];
 
 const heute = () => new Date().toISOString().split('T')[0];
@@ -226,8 +243,12 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
   const [notes, setNotes]       = useState('');
 
   // Neues Tagesplan-Item
-  const [newKat, setNewKat]     = useState<TagesplanKategorie>('kiich_training');
-  const [newLabel, setNewLabel] = useState('');
+  const [newKat, setNewKat]       = useState<TagesplanKategorie>('atemtraining');
+  const [newSubtyp, setNewSubtyp] = useState<string>('');
+  const [newLabel, setNewLabel]   = useState('');
+  const [newEinheitMin, setNewEinheitMin] = useState<7 | 12 | 21>(7);
+  const [newAnzahl, setNewAnzahl] = useState<number>(1);
+  const [newDauerMin, setNewDauerMin] = useState<string>('');
 
   // ─── tRPC Queries ───────────────────────────────────────────────────────────
   const { data: eintraege = [], isLoading: isLoadingEintraege } = trpc.vital.getMyEintraege.useQuery(
@@ -378,18 +399,28 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
   }, [saveTagesplanToDB]);
 
   const addTagesplanItem = () => {
-    if (!newLabel.trim()) return;
+    // Für Atemtraining: Subtyp wählen reicht, Label wird automatisch gesetzt
+    const resolvedLabel = newLabel.trim() || newSubtyp || 'Sonstiges';
+    const mitZeit = newKat === 'atemtraining' &&
+      (newSubtyp === 'befindlichkeitstraining' || newSubtyp === 'yohntrain');
     const item: TagesplanItem = {
       id: crypto.randomUUID(),
       kategorie: newKat,
-      label: newLabel.trim(),
+      subtyp: newSubtyp || undefined,
+      label: resolvedLabel,
       geplant: true,
       durchgefuehrt: false,
+      ...(mitZeit ? { einheitMin: newEinheitMin, anzahl: newAnzahl } : {}),
+      ...(!mitZeit && newDauerMin ? { dauerMin: parseInt(newDauerMin) } : {}),
     };
     const updated = { ...tagesplan, items: [...tagesplan.items, item] };
     setTagesplan(updated);
     saveTagesplanToDB(updated.items);
     setNewLabel('');
+    setNewSubtyp('');
+    setNewDauerMin('');
+    setNewAnzahl(1);
+    setNewEinheitMin(7);
     setShowAddItem(false);
   };
 
@@ -684,19 +715,110 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
               <AnimatePresence>
                 {showAddItem && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden mb-3">
-                    <div className="flex gap-2 p-3 bg-white/5 rounded-xl border border-white/10">
-                      <select value={newKat} onChange={e => setNewKat(e.target.value as TagesplanKategorie)}
-                        className="bg-zinc-900 border border-zinc-700 text-zinc-200 rounded-lg px-2 py-1.5 text-sm">
+                    <div className="p-4 bg-white/5 rounded-xl border border-white/10 space-y-3">
+                      {/* Kategorie-Auswahl */}
+                      <div className="flex gap-2 flex-wrap">
                         {Object.entries(KATEGORIEN_CONFIG).map(([k, v]) => (
-                          <option key={k} value={k}>{v.icon} {v.label}</option>
+                          <button key={k} onClick={() => { setNewKat(k as TagesplanKategorie); setNewSubtyp(''); }}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                              newKat === k ? 'bg-orange-500 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                            }`}>
+                            {v.icon} {v.label}
+                          </button>
                         ))}
-                      </select>
-                      <Input value={newLabel} onChange={e => setNewLabel(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && addTagesplanItem()}
-                        placeholder="Beschreibung..." className="bg-black/50 border-white/20 text-white flex-1 h-9" />
-                      <Button size="sm" onClick={addTagesplanItem} className="bg-orange-500 hover:bg-orange-600 text-white">
-                        <Check className="w-4 h-4" />
-                      </Button>
+                      </div>
+
+                      {/* Untertyp-Auswahl je nach Kategorie */}
+                      {newKat === 'atemtraining' && (
+                        <div className="flex gap-2 flex-wrap">
+                          {ATEMTRAINING_ITEMS.map(it => (
+                            <button key={it.subtyp} onClick={() => { setNewSubtyp(it.subtyp); setNewLabel(it.label); }}
+                              className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                                newSubtyp === it.subtyp ? 'bg-cyan-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                              }`}>
+                              {it.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {newKat === 'bewegungstraining' && (
+                        <div className="flex gap-2 flex-wrap">
+                          {BEWEGUNGSTRAINING_ITEMS.map(it => (
+                            <button key={it.subtyp} onClick={() => { setNewSubtyp(it.subtyp); setNewLabel(it.label); }}
+                              className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                                newSubtyp === it.subtyp ? 'bg-green-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                              }`}>
+                              {it.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {newKat === 'geisttraining' && (
+                        <div className="flex gap-2 flex-wrap">
+                          {GEISTTRAINING_ITEMS.map(it => (
+                            <button key={it.subtyp} onClick={() => { setNewSubtyp(it.subtyp); setNewLabel(it.label); }}
+                              className={`px-3 py-1.5 rounded-lg text-xs transition-colors ${
+                                newSubtyp === it.subtyp ? 'bg-violet-600 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                              }`}>
+                              {it.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Zeiterfassung: Befindlichkeits- und Yohntrain */}
+                      {newKat === 'atemtraining' && (newSubtyp === 'befindlichkeitstraining' || newSubtyp === 'yohntrain') && (
+                        <div className="space-y-2">
+                          <div className="text-xs text-zinc-400 font-semibold">Dauer pro Einheit:</div>
+                          <div className="flex gap-2">
+                            {([7, 12, 21] as const).map(min => (
+                              <button key={min} onClick={() => setNewEinheitMin(min)}
+                                className={`px-4 py-2 rounded-lg text-sm font-bold transition-colors ${
+                                  newEinheitMin === min ? 'bg-orange-500 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                }`}>
+                                {min} min
+                              </button>
+                            ))}
+                          </div>
+                          <div className="text-xs text-zinc-400 font-semibold">Anzahl Einheiten heute:</div>
+                          <div className="flex gap-2">
+                            {[1, 2, 3].map(n => (
+                              <button key={n} onClick={() => setNewAnzahl(n)}
+                                className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${
+                                  newAnzahl === n ? 'bg-orange-500 text-white' : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
+                                }`}>
+                                {n}×
+                              </button>
+                            ))}
+                          </div>
+                          <div className="text-xs text-zinc-500">
+                            Gesamt: <span className="text-orange-400 font-bold">{newAnzahl * newEinheitMin} min</span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Zeiterfassung: alle anderen (freie Minuten-Eingabe) */}
+                      {!(newKat === 'atemtraining' && (newSubtyp === 'befindlichkeitstraining' || newSubtyp === 'yohntrain')) && newSubtyp && (
+                        <div className="flex items-center gap-3">
+                          <Input type="number" value={newDauerMin} onChange={e => setNewDauerMin(e.target.value)}
+                            placeholder="Dauer in Minuten (optional)" className="bg-black/50 border-white/20 text-white h-9 w-48" />
+                          <span className="text-xs text-zinc-500">min</span>
+                        </div>
+                      )}
+
+                      {/* Sonstiges: freie Beschreibung */}
+                      {(newSubtyp === 'sonstiges' || newKat === 'sonstiges') && (
+                        <Input value={newLabel} onChange={e => setNewLabel(e.target.value)}
+                          onKeyDown={e => e.key === 'Enter' && addTagesplanItem()}
+                          placeholder="Beschreibung..." className="bg-black/50 border-white/20 text-white h-9" />
+                      )}
+
+                      <div className="flex justify-end">
+                        <Button size="sm" onClick={addTagesplanItem} disabled={!newSubtyp && newKat !== 'sonstiges'}
+                          className="bg-orange-500 hover:bg-orange-600 text-white gap-1">
+                          <Check className="w-4 h-4" /> Hinzufügen
+                        </Button>
+                      </div>
                     </div>
                   </motion.div>
                 )}
@@ -720,9 +842,19 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                               }`} title="Geplant">
                               {item.geplant && <div className="w-2 h-2 rounded-sm bg-zinc-400" />}
                             </button>
-                            <span className={`flex-1 text-sm ${item.durchgefuehrt ? 'line-through text-zinc-600' : 'text-zinc-200'}`}>
-                              {item.label}
-                            </span>
+                            <div className="flex-1 min-w-0">
+                              <span className={`text-sm ${item.durchgefuehrt ? 'line-through text-zinc-600' : 'text-zinc-200'}`}>
+                                {item.label}
+                              </span>
+                              {item.einheitMin && item.anzahl && (
+                                <span className="ml-2 text-xs text-orange-400 font-mono">
+                                  {item.anzahl}×{item.einheitMin}min = {item.anzahl * item.einheitMin}min
+                                </span>
+                              )}
+                              {item.dauerMin && (
+                                <span className="ml-2 text-xs text-zinc-500 font-mono">{item.dauerMin} min</span>
+                              )}
+                            </div>
                             <button onClick={() => toggleDurchgefuehrt(item.id)}
                               className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center transition-all ${
                                 item.durchgefuehrt ? 'bg-green-500 text-white' : 'bg-zinc-800 text-zinc-600 hover:bg-zinc-700'

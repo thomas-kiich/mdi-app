@@ -13,15 +13,47 @@ export interface VitalEntry {
 }
 
 // ─── Tagesplaner ───────────────────────────────────────────────────────────
-export type TagesplanKategorie = 'atemtraining' | 'kiich_training' | 'bewegung' | 'schlaf' | 'coaching' | 'sonstiges';
+export type TagesplanKategorie =
+  | 'atemtraining'
+  | 'bewegungstraining'
+  | 'geisttraining'
+  | 'sonstiges';
+
+// Untertypen für Atemtraining (mit Zeiterfassung)
+export type AtemtrainingTyp =
+  | 'befindlichkeitstraining'
+  | 'yohntrain'
+  | 'enthaltsamkeitstraining'
+  | 'gaehntrain'
+  | 'apnoetrain'
+  | 'sonstiges';
+
+// Untertypen für Bewegungstraining
+export type BewegungstrainingTyp =
+  | 'suchttrain'
+  | 'kardiotrain'
+  | 'krafttrain'
+  | 'mobilitaetstraining'
+  | 'sonstiges';
+
+// Untertypen für Geisttraining
+export type GeisttrainingTyp =
+  | 'colourcounting'
+  | 'nidrayoga'
+  | 'sonstiges';
 
 export interface TagesplanItem {
   id: string;
   kategorie: TagesplanKategorie;
-  label: string;         // z.B. "BT 3× 7 min"
-  geplant: boolean;      // war es geplant?
-  durchgefuehrt: boolean; // wurde es durchgeführt?
+  label: string;           // z.B. "BefindlichkeitsTRAIN"
+  subtyp?: string;         // z.B. 'befindlichkeitstraining'
+  geplant: boolean;
+  durchgefuehrt: boolean;
   notiz?: string;
+  // Zeiterfassung
+  dauerMin?: number;       // Dauer in Minuten (für alle Trainingsarten)
+  anzahl?: number;         // Anzahl Einheiten (1-3, für Befindlichkeits- und Yohntrain)
+  einheitMin?: 7 | 12 | 21; // Fixauswahl Minuten pro Einheit (für Befindlichkeits- und Yohntrain)
 }
 
 export interface Tagesplan {
@@ -55,7 +87,6 @@ const VITALS_STORAGE_KEY = 'mdi_vitals_data';
 export const getVitals = (): VitalEntry[] => {
   const data = localStorage.getItem(VITALS_STORAGE_KEY);
   if (!data) return [];
-  // Rückwärtskompatibilität: fehlende Felder mit 0 befüllen
   const entries: VitalEntry[] = JSON.parse(data);
   return entries.map(e => ({
     ...e,
