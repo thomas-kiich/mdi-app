@@ -71,6 +71,18 @@ function avg(nums: (number | null | undefined)[]) {
   return valid.length ? Math.round(valid.reduce((a, b) => a + b, 0) / valid.length * 10) / 10 : 0;
 }
 
+/**
+ * Konvertiert Apnoe-Wert aus DB-Format (MMSS, z.B. "0300" = 3:00 min, "0245" = 2:45 min)
+ * in Dezimalminuten (z.B. 3.0, 2.75) für Charts.
+ */
+function apnoeToMin(val: string | null | undefined): number {
+  if (!val) return 0;
+  const s = val.padStart(4, '0');
+  const mins = parseInt(s.slice(0, 2), 10);
+  const secs = parseInt(s.slice(2, 4), 10);
+  return Math.round((mins + secs / 60) * 100) / 100;
+}
+
 // ─── Polar H10 Bluetooth ─────────────────────────────────────────────────────
 async function connectPolarH10(onHrv: (ms: number) => void): Promise<() => void> {
   if (!navigator.bluetooth) throw new Error('Web Bluetooth nicht unterstützt');
@@ -414,8 +426,8 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
         boltCp:   avg(vals.map(v => v.boltCp)),
         hrv:      avg(vals.map(v => v.hrv)),
         ruhepuls: avg(vals.map(v => v.ruhepuls)),
-        apnoeAus: avg(vals.map(v => v.apnoeAus ? parseFloat(v.apnoeAus) : 0)),
-        apnoeEin: avg(vals.map(v => v.apnoeEin ? parseFloat(v.apnoeEin) : 0)),
+        apnoeAus: avg(vals.map(v => apnoeToMin(v.apnoeAus))),
+        apnoeEin: avg(vals.map(v => apnoeToMin(v.apnoeEin))),
         anzahl:   vals.length,
       }));
   }, [eintraege, statsZeitraum]);
@@ -430,8 +442,8 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
         boltCpNum: e.boltCp ?? 0,
         hrvNum: e.hrv ?? 0,
         ruhepulsNum: e.ruhepuls ?? 0,
-        apnoeAusNum: e.apnoeAus ? parseFloat(e.apnoeAus) : 0,
-        apnoeEinNum: e.apnoeEin ? parseFloat(e.apnoeEin) : 0,
+        apnoeAusNum: apnoeToMin(e.apnoeAus),
+        apnoeEinNum: apnoeToMin(e.apnoeEin),
       })),
     [eintraege]
   );
