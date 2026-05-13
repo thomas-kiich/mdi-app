@@ -58,9 +58,20 @@ const GEISTTRAINING_ITEMS: { subtyp: string; label: string }[] = [
 ];
 
 const STANDARD_ITEMS: { kategorie: TagesplanKategorie; label: string; subtyp?: string }[] = [
-  { kategorie: 'atemtraining',      label: 'BefindlichkeitsTRAIN', subtyp: 'befindlichkeitstraining' },
-  { kategorie: 'atemtraining',      label: 'YOHNTRAIN',            subtyp: 'yohntrain' },
-  { kategorie: 'bewegungstraining', label: 'KARDIOTRAIN',          subtyp: 'kardiotrain' },
+  // Atemtraining
+  { kategorie: 'atemtraining',      label: 'BefindlichkeitsTRAIN',  subtyp: 'befindlichkeitstraining' },
+  { kategorie: 'atemtraining',      label: 'YOHNTRAIN',             subtyp: 'yohntrain' },
+  { kategorie: 'atemtraining',      label: 'EnthaltsamkeitsTRAIN',  subtyp: 'enthaltsamkeitstraining' },
+  { kategorie: 'atemtraining',      label: 'INHÄRES GÄHNTRAIN',     subtyp: 'gaehntrain' },
+  { kategorie: 'atemtraining',      label: 'APNOETRAIN',            subtyp: 'apnoetrain' },
+  // Bewegungstraining
+  { kategorie: 'bewegungstraining', label: 'SUCHTTRAIN',            subtyp: 'suchttrain' },
+  { kategorie: 'bewegungstraining', label: 'KARDIOTRAIN',           subtyp: 'kardiotrain' },
+  { kategorie: 'bewegungstraining', label: 'KRAFTTRAIN',            subtyp: 'krafttrain' },
+  { kategorie: 'bewegungstraining', label: 'MOBILITÄTSTRAIN',       subtyp: 'mobilitaetstraining' },
+  // Geisttraining
+  { kategorie: 'geisttraining',     label: 'COLOURCOUNTING',        subtyp: 'colourcounting' },
+  { kategorie: 'geisttraining',     label: 'NIDRAYOGA',             subtyp: 'nidrayoga' },
 ];
 
 const heute = () => new Date().toISOString().split('T')[0];
