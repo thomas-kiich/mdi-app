@@ -509,12 +509,11 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
           <div className="space-y-6">
             {/* Schnellübersicht heutige Werte */}
             {letzterEintrag && (
-              <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
+              <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
                 {[
                   { label: 'Ruhepuls', value: letzterEintrag.ruhepuls ? `${letzterEintrag.ruhepuls} bpm` : '–', color: 'text-pink-400' },
                   { label: 'HRV', value: letzterEintrag.hrv ? `${letzterEintrag.hrv} ms` : '–', color: 'text-red-400' },
-                  { label: 'BOLT', value: letzterEintrag.bolt ? `${letzterEintrag.bolt} s` : '–', color: 'text-orange-400' },
-                  { label: 'MCP n. Tr.', value: letzterEintrag.boltMcp ? `${letzterEintrag.boltMcp} s` : '–', color: 'text-amber-400' },
+                  { label: 'BOLT / MCP', value: letzterEintrag.boltMcp ? `${letzterEintrag.boltMcp} s` : '–', color: 'text-orange-400' },
                   { label: 'CP n. Tr.', value: letzterEintrag.boltCp ? `${letzterEintrag.boltCp} s` : '–', color: 'text-yellow-400' },
                   { label: 'Apnoe aus', value: letzterEintrag.apnoeAus ? `${letzterEintrag.apnoeAus} min` : '–', color: 'text-cyan-400' },
                   { label: 'Apnoe ein', value: letzterEintrag.apnoeEin ? `${letzterEintrag.apnoeEin} min` : '–', color: 'text-teal-400' },
@@ -578,17 +577,10 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div className="space-y-1.5">
                               <Label className="flex items-center gap-1.5 text-orange-400 text-xs">
-                                <Wind className="w-3.5 h-3.5" /> BOLT (sek)
-                              </Label>
-                              <Input type="number" step="0.1" value={bolt} onChange={e => setBolt(e.target.value)}
-                                className="bg-black/50 border-white/20 text-white h-9" placeholder="z.B. 25" />
-                            </div>
-                            <div className="space-y-1.5">
-                              <Label className="flex items-center gap-1.5 text-amber-400 text-xs">
-                                <Wind className="w-3.5 h-3.5" /> MCP nach Training (sek)
+                                <Wind className="w-3.5 h-3.5" /> BOLT / MCP (sek)
                               </Label>
                               <Input type="number" step="0.1" value={boltMcp} onChange={e => setBoltMcp(e.target.value)}
-                                className="bg-black/50 border-white/20 text-white h-9" placeholder="z.B. 40" />
+                                className="bg-black/50 border-white/20 text-white h-9" placeholder="z.B. 25" />
                             </div>
                             <div className="space-y-1.5">
                               <Label className="flex items-center gap-1.5 text-yellow-400 text-xs">
@@ -849,8 +841,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                       <div className="flex flex-wrap gap-3 text-sm">
                         {entry.ruhepuls  && <span className="text-pink-400">Ruhepuls: <b>{entry.ruhepuls} bpm</b></span>}
                         {entry.hrv       && <span className="text-red-400">HRV: <b>{entry.hrv} ms</b></span>}
-                        {entry.bolt      && <span className="text-orange-400">BOLT: <b>{entry.bolt} s</b></span>}
-                        {entry.boltMcp   && <span className="text-amber-400">MCP: <b>{entry.boltMcp} s</b></span>}
+                        {entry.boltMcp   && <span className="text-orange-400">BOLT/MCP: <b>{entry.boltMcp} s</b></span>}
                         {entry.boltCp    && <span className="text-yellow-400">CP: <b>{entry.boltCp} s</b></span>}
                         {entry.apnoeAus  && <span className="text-cyan-400">Apnoe AUS: <b>{entry.apnoeAus} min</b></span>}
                         {entry.apnoeEin  && <span className="text-teal-400">Apnoe EIN: <b>{entry.apnoeEin} min</b></span>}
