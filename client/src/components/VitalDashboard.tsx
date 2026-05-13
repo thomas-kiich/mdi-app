@@ -833,24 +833,41 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
           <div className="space-y-6">
             {chartData.length > 1 && (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* BOLT/MCP & CP – Sekunden */}
                 <Card className="bg-white/5 border-white/10">
-                  <CardHeader><CardTitle className="text-sm font-light text-zinc-400">Atemwerte täglich</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="text-sm font-light text-zinc-400">BOLT/MCP & CP täglich (Sekunden)</CardTitle></CardHeader>
                   <CardContent className="h-[260px]">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={chartData}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
                         <XAxis dataKey="displayDate" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} />
-                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }} itemStyle={{ color: '#fff' }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} unit=" s" />
+                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }} itemStyle={{ color: '#fff' }} formatter={(v: number) => [`${v} s`]} />
                         <Legend />
-                        <Line type="monotone" dataKey="boltNum"   stroke="#f97316" strokeWidth={2} name="BOLT/MCP (s)" dot={{ r: 3 }} />
-                        <Line type="monotone" dataKey="boltCpNum" stroke="#eab308" strokeWidth={2} name="CP (s)"       dot={{ r: 3 }} />
-                        <Line type="monotone" dataKey="apnoeAusNum" stroke="#06b6d4" strokeWidth={2} name="Apnoe AUS (min)" dot={{ r: 3 }} />
-                        <Line type="monotone" dataKey="apnoeEinNum" stroke="#14b8a6" strokeWidth={2} name="Apnoe EIN (min)" dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="boltNum"   stroke="#f97316" strokeWidth={2} name="BOLT/MCP" dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="boltCpNum" stroke="#eab308" strokeWidth={2} name="CP"       dot={{ r: 3 }} />
                       </LineChart>
                     </ResponsiveContainer>
                   </CardContent>
                 </Card>
+                {/* Apnoe – Minuten */}
+                <Card className="bg-white/5 border-white/10">
+                  <CardHeader><CardTitle className="text-sm font-light text-zinc-400">Apnoe täglich (Minuten)</CardTitle></CardHeader>
+                  <CardContent className="h-[260px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={chartData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                        <XAxis dataKey="displayDate" stroke="#666" tick={{ fontSize: 11 }} />
+                        <YAxis stroke="#666" tick={{ fontSize: 11 }} unit=" min" />
+                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }} itemStyle={{ color: '#fff' }} formatter={(v: number) => [`${v} min`]} />
+                        <Legend />
+                        <Line type="monotone" dataKey="apnoeAusNum" stroke="#06b6d4" strokeWidth={2} name="Apnoe AUS" dot={{ r: 3 }} />
+                        <Line type="monotone" dataKey="apnoeEinNum" stroke="#14b8a6" strokeWidth={2} name="Apnoe EIN" dot={{ r: 3 }} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </CardContent>
+                </Card>
+                {/* Herzwerte */}
                 <Card className="bg-white/5 border-white/10">
                   <CardHeader><CardTitle className="text-sm font-light text-zinc-400">Herzwerte täglich</CardTitle></CardHeader>
                   <CardContent className="h-[260px]">
