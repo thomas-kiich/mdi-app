@@ -309,11 +309,27 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
   });
 
   // ─── Tagesplan aus heutigem Eintrag laden ───────────────────────────────────
+  // Migration: alte Kategorien auf neue mappen
+  function migrateKategorie(kat: string): TagesplanKategorie {
+    const map: Record<string, TagesplanKategorie> = {
+      kiich_training: 'atemtraining',
+      bewegung:       'bewegungstraining',
+      schlaf:         'atemtraining',
+      coaching:       'sonstiges',
+    };
+    return (map[kat] ?? kat) as TagesplanKategorie;
+  }
+
   useEffect(() => {
     if (heutigerEintrag?.tagesplan) {
       try {
         const parsed = JSON.parse(heutigerEintrag.tagesplan);
-        setTagesplan({ datum: heuteDatum, items: parsed });
+        // Alte Kategorien migrieren
+        const migrated = parsed.map((item: TagesplanItem) => ({
+          ...item,
+          kategorie: migrateKategorie(item.kategorie),
+        }));
+        setTagesplan({ datum: heuteDatum, items: migrated });
       } catch {
         initDefaultTagesplan();
       }
@@ -326,6 +342,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
     const defaults: TagesplanItem[] = STANDARD_ITEMS.map(s => ({
       id: crypto.randomUUID(),
       kategorie: s.kategorie,
+      subtyp: s.subtyp,
       label: s.label,
       geplant: true,
       durchgefuehrt: false,
