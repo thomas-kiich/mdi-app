@@ -1,4 +1,4 @@
-import { bigint, boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar, index } from "drizzle-orm/mysql-core";
+import { bigint, boolean, float, int, mysqlEnum, mysqlTable, text, timestamp, varchar, index } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -726,11 +726,15 @@ export const vitalEintraege = mysqlTable("vital_eintraege", {
   id: int("id").autoincrement().primaryKey(),
   userId: int("userId").notNull(),
   datum: varchar("datum", { length: 10 }).notNull(),
-  ruhepuls: int("ruhepuls"),
-  hrv: int("hrv"),
+  ruhepuls: float("ruhepuls"),
+  hrv: float("hrv"),
   apnoeAus: varchar("apnoeAus", { length: 10 }),
   apnoeEin: varchar("apnoeEin", { length: 10 }),
-  bolt: int("bolt"),
+  bolt: float("bolt"),
+  /** MCP (Maximum Comfortable Pause) nach Training – in Sekunden */
+  boltMcp: float("boltMcp"),
+  /** CP (Control Pause) nach Training – in Sekunden */
+  boltCp: float("boltCp"),
   temperatur: varchar("temperatur", { length: 10 }),
   gewicht: varchar("gewicht", { length: 10 }),
   anmerkungen: text("anmerkungen"),

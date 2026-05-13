@@ -232,6 +232,13 @@
       "when": 1778427648871,
       "tag": "0032_many_white_tiger",
       "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "5",
+      "when": 1778664339709,
+      "tag": "0033_fluffy_thing",
+      "breakpoints": true
     }
   ]
 }
