@@ -338,11 +338,23 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
       try {
         const parsed = JSON.parse(heutigerEintrag.tagesplan);
         // Alte Kategorien migrieren
-        const migrated = parsed.map((item: TagesplanItem) => ({
+        const migrated: TagesplanItem[] = parsed.map((item: TagesplanItem) => ({
           ...item,
           kategorie: migrateKategorie(item.kategorie),
         }));
-        setTagesplan({ datum: heuteDatum, items: migrated });
+        // Fehlende Standard-Items automatisch ergänzen
+        const existingSubtypen = new Set(migrated.map((i: TagesplanItem) => i.subtyp));
+        const missing: TagesplanItem[] = STANDARD_ITEMS
+          .filter(s => s.subtyp && !existingSubtypen.has(s.subtyp))
+          .map(s => ({
+            id: crypto.randomUUID(),
+            kategorie: s.kategorie,
+            subtyp: s.subtyp,
+            label: s.label,
+            geplant: true,
+            durchgefuehrt: false,
+          }));
+        setTagesplan({ datum: heuteDatum, items: [...migrated, ...missing] });
       } catch {
         initDefaultTagesplan();
       }
