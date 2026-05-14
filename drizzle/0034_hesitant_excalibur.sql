@@ -1,1 +1,0 @@
-ALTER TABLE `vital_eintraege` ADD `mahlzeiten` int;

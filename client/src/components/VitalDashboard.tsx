@@ -262,7 +262,6 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
   const [gewicht, setGewicht]   = useState('');
   const [mood, setMood]         = useState(5);
   const [notes, setNotes]       = useState('');
-  const [mahlzeiten, setMahlzeiten] = useState<number | null>(null);
 
   // Neues Tagesplan-Item
   const [newKat, setNewKat]       = useState<TagesplanKategorie>('atemtraining');
@@ -404,7 +403,6 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
       temperatur: heutigerEintrag?.temperatur ?? null,
       gewicht: heutigerEintrag?.gewicht ?? null,
       anmerkungen: heutigerEintrag?.anmerkungen ?? null,
-      mahlzeiten: heutigerEintrag?.mahlzeiten ?? null,
       tagesplan: JSON.stringify(items),
     });
   }, [heuteDatum, heutigerEintrag, saveEintrag]);
@@ -429,7 +427,6 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
       ...(temp       ? { temperatur:  temp }                  : {}),
       ...(gewicht    ? { gewicht }                            : {}),
       ...(notes.trim() ? { anmerkungen: notes }               : {}),
-      ...(mahlzeiten !== null ? { mahlzeiten }                    : {}),
       tagesplan: JSON.stringify(tagesplan.items),
     });
   };
@@ -547,7 +544,6 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
         ruhepulsNum: e.ruhepuls ?? 0,
         apnoeAusNum: apnoeToMin(e.apnoeAus),
         apnoeEinNum: apnoeToMin(e.apnoeEin),
-        mahlzeitenNum: e.mahlzeiten ?? null,
       })),
     [eintraege]
   );
@@ -741,33 +737,6 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                               className="w-full bg-black/50 border border-white/20 rounded-md px-3 py-2 text-sm text-white placeholder:text-zinc-600 resize-none focus:outline-none focus:ring-1 focus:ring-orange-500"
                             />
                           </div>
-                          {/* Essverhalten */}
-                          <div className="space-y-2">
-                            <Label className="text-green-400 text-xs font-semibold uppercase tracking-wider">🍽️ Essverhalten – Mahlzeiten heute</Label>
-                            <div className="flex gap-2 flex-wrap">
-                              {[
-                                { val: 0, label: '0 – Fasten' },
-                                { val: 1, label: '1 – OMAD' },
-                                { val: 2, label: '2 Mahlzeiten' },
-                                { val: 3, label: '3 Mahlzeiten' },
-                                { val: 4, label: '4 Mahlzeiten' },
-                              ].map(({ val, label }) => (
-                                <button
-                                  key={val}
-                                  type="button"
-                                  onClick={() => setMahlzeiten(mahlzeiten === val ? null : val)}
-                                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
-                                    mahlzeiten === val
-                                      ? 'bg-green-600 text-white'
-                                      : 'bg-zinc-800 text-zinc-400 hover:bg-zinc-700'
-                                  }`}
-                                >
-                                  {label}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-
                           <div className="flex justify-end">
                             <Button type="submit" disabled={saveEintrag.isPending} className="bg-white text-black hover:bg-white/90 gap-2">
                               {saveEintrag.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
@@ -1165,23 +1134,6 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                     </ResponsiveContainer>
                   </CardContent>
                 </Card>
-                {/* Essverhalten */}
-                <Card className="bg-white/5 border-white/10">
-                  <CardHeader><CardTitle className="text-sm font-light text-zinc-400">🍽️ Essverhalten (Mahlzeiten/Tag)</CardTitle></CardHeader>
-                  <CardContent className="h-[260px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
-                        <XAxis dataKey="displayDate" stroke="#666" tick={{ fontSize: 11 }} />
-                        <YAxis stroke="#666" tick={{ fontSize: 11 }} domain={[0, 4]} ticks={[0,1,2,3,4]}
-                          tickFormatter={(v: number) => v === 0 ? 'Fasten' : v === 1 ? 'OMAD' : `${v}×`} />
-                        <Tooltip contentStyle={{ backgroundColor: '#111', border: '1px solid #333' }} itemStyle={{ color: '#fff' }}
-                          formatter={(v: number) => [v === 0 ? 'Fasten' : v === 1 ? 'OMAD' : `${v} Mahlzeiten`, 'Mahlzeiten']} />
-                        <Bar dataKey="mahlzeitenNum" fill="#4ade80" name="Mahlzeiten" radius={[4,4,0,0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </CardContent>
-                </Card>
               </div>
             )}
 
@@ -1207,9 +1159,6 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                         {entry.apnoeEin  && <span className="text-teal-400">Apnoe EIN: <b>{apnoeDisplay(entry.apnoeEin)}</b></span>}
                         {entry.temperatur && <span className="text-blue-400">Temp: <b>{entry.temperatur}°C</b></span>}
                         {entry.gewicht   && <span className="text-green-400">Gewicht: <b>{entry.gewicht} kg</b></span>}
-                        {entry.mahlzeiten != null && (
-                          <span className="text-lime-400">Mahlzeiten: <b>{entry.mahlzeiten === 0 ? 'Fasten' : entry.mahlzeiten === 1 ? 'OMAD' : `${entry.mahlzeiten}×`}</b></span>
-                        )}
                       </div>
                       {entry.anmerkungen && (
                         <div className="text-xs text-zinc-500 italic mt-1 border-l-2 border-zinc-700 pl-2">{entry.anmerkungen}</div>
