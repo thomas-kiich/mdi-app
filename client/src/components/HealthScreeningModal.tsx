@@ -149,6 +149,12 @@ export function HealthScreeningModal({
 
         {step === "questions" && (
           <div className="space-y-6">
+            {/* Hinweis für Nutzer */}
+            <div className="bg-amber-900/30 border border-amber-700/50 rounded-lg p-3">
+              <p className="text-xs text-amber-200">
+                ℹ️ Bitte bestätigen Sie beide Punkte durch <span className="font-semibold">Anklicken der grünen Begriffe</span>
+              </p>
+            </div>
             {/* Physische Kontraindikationen */}
             <div className="space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-zinc-700">
@@ -175,7 +181,7 @@ export function HealthScreeningModal({
                     }
                   }}
                 />
-                <Label htmlFor="noPhysical" className="cursor-pointer text-sm font-semibold text-green-400">
+                <Label htmlFor="noPhysical" className="cursor-pointer text-sm font-semibold text-green-400 hover:text-green-300 hover:underline transition-colors">
                   Keine Kontraindikationen
                 </Label>
               </div>
@@ -255,7 +261,7 @@ export function HealthScreeningModal({
                     }
                   }}
                 />
-                <Label htmlFor="noMental" className="cursor-pointer text-sm font-semibold text-green-400">
+                <Label htmlFor="noMental" className="cursor-pointer text-sm font-semibold text-green-400 hover:text-green-300 hover:underline transition-colors">
                   Keine Befindlichkeitsstörungen
                 </Label>
               </div>
