@@ -37,29 +37,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
 
 function PodcastButton() {
-  const podcastQuery = trpc.storage.getPodcastUrl.useQuery();
-  
-  if (podcastQuery.isLoading) {
-    return (
-      <button className="flex items-center gap-2 px-4 py-2 bg-orange-500/50 text-white rounded-lg text-sm font-medium cursor-wait">
-        <Loader2 className="w-4 h-4 animate-spin" />
-        Lädt...
-      </button>
-    );
-  }
-  
-  if (podcastQuery.isError || !podcastQuery.data?.url) {
-    return (
-      <button className="flex items-center gap-2 px-4 py-2 bg-red-500/50 text-white rounded-lg text-sm font-medium cursor-not-allowed">
-        <Mic className="w-4 h-4" />
-        Fehler
-      </button>
-    );
-  }
+  const podcastUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/JePJKOCZiSbQlcdH.mp3';
   
   return (
     <a
-      href={podcastQuery.data.url}
+      href={podcastUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors"
