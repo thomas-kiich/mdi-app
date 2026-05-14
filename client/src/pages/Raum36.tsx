@@ -498,7 +498,7 @@ function Raum36Member() {
               {/* Disclaimer */}
               <div className="mb-8 p-4 bg-amber-900/20 border border-amber-700/50 rounded-lg">
                 <p className="text-xs text-amber-200 leading-relaxed">
-                  <span className="font-semibold">Hinweis:</span> Die Trainingsempfehlungen auf dieser Seite basieren auf wissenschaftlichen Erkenntnissen und dienen zu Informationszwecken. Sie ersetzen keine medizinische Beratung. Bei gesundheitlichen Bedenken oder Erkrankungen konsultieren Sie bitte einen Arzt oder qualifizierten Gesundheitsfachmann.
+                  <span className="font-semibold">Hinweis:</span> Die Trainingsempfehlungen auf dieser Seite basieren auf wissenschaftlichen Erkenntnissen und dienen zu Informationszwecken. Sie ersetzen keine medizinische Beratung. Bei gesundheitlichen Gegebenheiten, Bedenken oder Erkrankungen konsultieren Sie vor Trainingsbeginn <span className="font-semibold">UNBEDINGT</span> einen Arzt oder qualifizierten Gesundheitsfachmann.
                 </p>
               </div>
 
