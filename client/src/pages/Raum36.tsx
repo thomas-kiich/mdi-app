@@ -804,13 +804,30 @@ function Raum36Member() {
                   <Loader2 className="w-5 h-5 animate-spin" />
                   <span>Lade Wissenspool…</span>
                 </div>
-              ) : wissenspoolQuery.data?.length === 0 ? (
-                <div className="border border-zinc-800 p-12 text-center">
-                  <BookOpen className="w-10 h-10 text-zinc-700 mx-auto mb-4" />
-                  <p className="text-zinc-500">Der Wissenspool wird gerade befüllt.</p>
-                </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-0 border border-zinc-800">
+                  {/* BOLT-Podcast Card */}
+                  <div className="border-r border-b border-zinc-800 p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-mono text-orange-500 uppercase tracking-widest border border-orange-900 px-2 py-0.5">
+                        Podcast
+                      </span>
+                    </div>
+                    <h3 className="font-bold mb-2 leading-tight">Der wahre Wert meiner Gesundheit</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed mb-4">
+                      Verstehe die BOLT-Messung: Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.
+                    </p>
+                    <a
+                      href="https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/JePJKOCZiSbQlcdH.mp3"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-orange-500 hover:text-orange-400 text-sm font-medium"
+                    >
+                      <Play className="w-3 h-3" />
+                      Podcast hören
+                    </a>
+                  </div>
+
                   {wissenspoolQuery.data?.map((item) => (
                     <div
                       key={item.id}
