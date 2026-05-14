@@ -6,16 +6,16 @@ export default function WasIstKIICH() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <div className="border-b border-zinc-800 sticky top-0 z-40 bg-background/95 backdrop-blur">
+      <div className="border-b border-zinc-800 sticky top-0 z-40 bg-black/95 backdrop-blur">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Was ist KIICH?</h1>
+          <h1 className="text-2xl font-bold text-orange-400">Was ist KIICH?</h1>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setLocation("/")}
-            className="gap-2"
+            className="gap-2 text-orange-400 hover:text-orange-300"
           >
             <ChevronLeft className="w-4 h-4" />
             Zurück
@@ -24,136 +24,182 @@ export default function WasIstKIICH() {
       </div>
 
       {/* Content */}
-      <div className="max-w-4xl mx-auto px-4 py-12 space-y-12">
-        {/* Intro */}
+      <div className="max-w-4xl mx-auto px-4 py-12 space-y-8 text-zinc-300">
+        {/* Klarstellung */}
         <section className="space-y-4">
-          <h2 className="text-3xl font-bold">Die Plattform für deine Persönlichkeitsentfaltung</h2>
-          <p className="text-lg text-zinc-400">
-            KIICH ist eine digitale Plattform für Atem, Bewegungstraining und Persönlichkeitsentfaltung im Ki-Zeitalter. Das Angebot ist explizit und ausnahmslos <strong>PRIMÄRPRÄVENTIV</strong> ausgerichtet.
+          <h2 className="text-3xl font-bold text-orange-400">Klarstellung zum Angebot</h2>
+          <p className="text-lg">
+            KIICH ist eine digitale Plattform für Atem, Bewegungstraining und Persönlichkeitsentfaltung im Ki-Zeitalter. Das Angebot ist explizit und ausnahmslos <strong>PRIMÄRPRÄVENTIV ausgerichtet.</strong> Wir bieten wissenschaftlich fundierte Atem- und Bewegungstechniken zur Förderung Ihres grundlegenden Wohlbefindens an.
           </p>
         </section>
 
         {/* Was KIICH bietet */}
         <section className="space-y-4">
-          <h3 className="text-2xl font-bold">Was KIICH bietet</h3>
-          <div className="space-y-3 text-zinc-300">
-            <div>
-              <h4 className="font-semibold text-white mb-1">🫁 Atemtraining</h4>
-              <p>Wissenschaftlich fundierte Atemtechniken basierend auf der Buteyko-Methode und dem BOLT-Test zur Verbesserung deiner Atemfähigkeit und Ausdauer.</p>
+          <h2 className="text-3xl font-bold text-orange-400">Was KIICH bietet</h2>
+          
+          <div className="space-y-6">
+            <div className="bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
+              <h3 className="text-xl font-semibold text-orange-300 mb-3">🫁 Atemtraining & Atemqualität</h3>
+              <p className="mb-3">Wir unterstützen Sie durch gezieltes Atemtraining, Ihre Atemqualität zu verbessern und die Atemkontrolle zu optimieren. Unser Training kann fördern:</p>
+              <ul className="list-disc list-inside space-y-1 text-sm text-zinc-400">
+                <li>Entspannungsfähigkeit und Stressregulation</li>
+                <li>Besseres Körpergefühl und Atemwahrnehmung</li>
+                <li>Vitalität und Wohlbefinden</li>
+                <li>Ressourcenerweiterung durch Atem- und Bewegungspädagogik</li>
+              </ul>
             </div>
-            <div>
-              <h4 className="font-semibold text-white mb-1">📊 Vitalmonitor</h4>
-              <p>Persönliches Tracking deiner Vitalwerte, Essverhalten und Trainingsfortschritt – täglich aktualisierbar für kontinuierliche Selbstreflexion.</p>
+
+            <div className="bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
+              <h3 className="text-xl font-semibold text-orange-300 mb-3">📊 Vitalmonitor & Selbsttracking</h3>
+              <p className="mb-3">Mit unserem Vitalmonitor können Sie tägliche Vitalwerte erfassen und Ihren Fortschritt visualisieren:</p>
+              <ul className="list-disc list-inside space-y-1 text-sm text-zinc-400">
+                <li>Atembefindlichkeit und Bewegungsfreude</li>
+                <li>Essverhalten und Ernährungsmanagement</li>
+                <li>Schlafqualität und Regeneration</li>
+                <li>Ganzheitliches Wohlbefinden</li>
+              </ul>
             </div>
-            <div>
-              <h4 className="font-semibold text-white mb-1">🎓 Trainingscenter</h4>
-              <p>Strukturierte Trainingsmodule mit BOLT-Messung, Atemkontrolle und personalisierten Trainingsempfehlungen basierend auf deinem aktuellen Level.</p>
+
+            <div className="bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
+              <h3 className="text-xl font-semibold text-orange-300 mb-3">🎓 Wissenspool & Lernressourcen</h3>
+              <p className="mb-3">Vertiefen Sie Ihr Verständnis durch:</p>
+              <ul className="list-disc list-inside space-y-1 text-sm text-zinc-400">
+                <li>Wissenschaftliche Artikel und Studien</li>
+                <li>Podcast-Inhalte</li>
+                <li>Trainingsempfehlungen und Techniken</li>
+                <li>Hintergrundinformationen zu Atemphysiologie, Bewegungslehre und Bewusstseinsentfaltung</li>
+              </ul>
             </div>
-            <div>
-              <h4 className="font-semibold text-white mb-1">📚 Wissenspool</h4>
-              <p>Kuratierte Ressourcen, Podcasts und Artikel aus Thomas Chocholas Arbeit zur Vertiefung deines Verständnisses.</p>
+
+            <div className="bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
+              <h3 className="text-xl font-semibold text-orange-300 mb-3">🏋️ Trainingscenter & Coaching</h3>
+              <p className="mb-3">Persönlich optimiertes Training mit:</p>
+              <ul className="list-disc list-inside space-y-1 text-sm text-zinc-400">
+                <li>Individualisierten Atem- und Stimmklangpraktiken</li>
+                <li>Personalisierten Trainingsempfehlungen</li>
+                <li>METHODE 36 - YOHNTRAINING (Integriertes Atem- Stimm- Farb- Bewegungskonzept)</li>
+              </ul>
             </div>
           </div>
         </section>
 
         {/* Was KIICH NICHT ist */}
-        <section className="space-y-4">
-          <h3 className="text-2xl font-bold">Was KIICH NICHT ist</h3>
-          <div className="space-y-2 text-zinc-300">
-            <p>❌ <strong>Keine Heilkunde</strong> – KIICH ersetzt keine medizinische Beratung oder Behandlung.</p>
-            <p>❌ <strong>Keine Heilversprechen</strong> – Wir versprechen keine Heilung von Krankheiten.</p>
-            <p>❌ <strong>Keine Diagnose</strong> – KIICH kann keine medizinischen Diagnosen stellen.</p>
-            <p>❌ <strong>Keine Therapie</strong> – Das Angebot ist Gesundheitsförderung und Primärprävention, nicht Therapie.</p>
+        <section className="space-y-4 bg-red-950/30 border border-red-900/50 p-6 rounded-lg">
+          <h2 className="text-3xl font-bold text-red-400">Was KIICH NICHT ist</h2>
+          
+          <div className="space-y-4">
+            <div>
+              <h3 className="text-lg font-semibold text-red-300 mb-2">❌ Keine medizinische Behandlung</h3>
+              <p className="text-sm">KIICH ersetzt <strong>keine ärztliche Beratung oder medizinische Behandlung</strong>. Wir diagnostizieren, heilen oder lindern keine Krankheiten. Bei gesundheitlichen Bedenken oder Erkrankungen konsultieren Sie <strong>vor Trainingsbeginn UNBEDINGT einen Arzt oder qualifizierten Gesundheitsfachmann</strong>.</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-red-300 mb-2">❌ Keine Heilversprechen</h3>
+              <p className="text-sm">Wir machen <strong>keine Heilversprechen</strong> wie \"heilt Asthma\" oder \"beseitigt Angststörungen\". Unser Training ist präventiv ausgerichtet – es fördert Gesundheit und Wohlbefinden, nicht die Behandlung von Krankheiten.</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-red-300 mb-2">❌ Keine Diagnose</h3>
+              <p className="text-sm">KIICH stellt <strong>keine medizinischen Diagnosen</strong>. Der BOLT-Wert ist ein Indikator für Atemqualität – kein diagnostisches Instrument für Krankheiten.</p>
+            </div>
           </div>
         </section>
 
         {/* Wissenschaftliche Grundlagen */}
-        <section className="space-y-4">
-          <h3 className="text-2xl font-bold">Wissenschaftliche Grundlagen</h3>
-          <div className="space-y-3 text-zinc-300">
-            <p>
-              KIICH basiert auf der <strong>Buteyko-Methode</strong>, entwickelt von Dr. Konstantin Buteyko, einem russischen Arzt und Atemphysiologen. Die Methode wurde durch Jahrzehnte von Forschung und praktischer Anwendung validiert.
-            </p>
-            <p>
-              Der <strong>BOLT-Test</strong> (Body Oxygen Level Test) ist ein einfaches Messinstrument, um deine Atemhaltedauer zu bestimmen – ein Indikator für deine Atemeffizienz und Ausdauer.
-            </p>
-            <p>
-              Die Trainingsempfehlungen stammen aus dem Buch <strong>„Erfolgsfaktor Sauerstoff"</strong> von Patrick Keown, der ein Schüler von Dr. Buteyko war.
-            </p>
-          </div>
+        <section className="space-y-4 bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
+          <h2 className="text-3xl font-bold text-orange-400">Wissenschaftliche und empirische Grundlagen</h2>
+          <ul className="list-disc list-inside space-y-2 text-sm text-zinc-400">
+            <li>Atem als Grundlage biologischen Lebens</li>
+            <li>Moderne Atem- und Bewegungsphysiologie – Aktuelle wissenschaftliche Erkenntnisse</li>
+            <li>Jahrzehntelange Erfahrungen als Atemexperte, Musikpädagoge, Klangforscher</li>
+          </ul>
         </section>
 
-        {/* Trainer-Qualifikation */}
+        {/* Über den Trainer */}
         <section className="space-y-4 bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
-          <h3 className="text-2xl font-bold">Der Trainer hinter KIICH</h3>
-          <p className="text-zinc-300">
-            <strong>Ing. Thomas Chochola</strong> ist:
-          </p>
-          <ul className="space-y-2 text-zinc-300 ml-4">
-            <li>✓ Staatlich geprüfter Trainer der Sportakademie Graz – Österreich</li>
-            <li>✓ Zertifizierter BREATHOLOGY Instructor nach Stig Steversinsen</li>
-            <li>✓ Spezialist für Atemtraining und Gesundheitsförderung</li>
+          <h2 className="text-3xl font-bold text-orange-400">Über den Trainer</h2>
+          <p className="mb-3">Ing. Thomas Chochola ist:</p>
+          <ul className="list-disc list-inside space-y-2 text-sm text-zinc-400">
+            <li>Gelernter Bauingenieur für Strassen- und Brückenbau</li>
+            <li>Staatlich geprüfter Trainer der Sportakademie Graz – Österreich</li>
+            <li>Zertifizierter BREATHOLOGY Instructor nach Stig Steversinsen</li>
+            <li>30 Jahre Klangforschung, Produktentwicklung und Unterrichtstätigkeit</li>
+            <li>Spezialist für Atemtraining und Bewusstseinsförderung</li>
           </ul>
         </section>
 
         {/* Wichtiger Hinweis */}
-        <section className="space-y-4 bg-amber-900/20 border border-amber-700/50 p-6 rounded-lg">
-          <h3 className="text-xl font-bold text-amber-300">⚠️ Wichtiger Hinweis</h3>
-          <p className="text-zinc-300">
-            KIICH ist ein Angebot zur Gesundheitsförderung und Primärprävention. Es ist <strong>NICHT</strong> geeignet als Behandlung von Erkrankungen.
-          </p>
-          <p className="text-zinc-300">
-            <strong>Bei gesundheitlichen Bedenken oder Erkrankungen konsultieren Sie UNBEDINGT vor Trainingsbeginn einen Arzt oder Facharzt.</strong>
-          </p>
+        <section className="space-y-4 bg-amber-950/30 border border-amber-900/50 p-6 rounded-lg">
+          <h2 className="text-3xl font-bold text-amber-400">⚠️ Wichtiger Hinweis</h2>
+          <div className="space-y-3 text-sm">
+            <p>
+              Die Trainingsempfehlungen auf dieser Plattform basieren auf wissenschaftlichen Erkenntnissen und dienen zu Informationszwecken. Sie ersetzen <strong>keine medizinische Beratung</strong>.
+            </p>
+            <p>
+              Bei gesundheitlichen Gegebenheiten, Bedenken oder Erkrankungen konsultieren Sie vor Trainingsbeginn <strong>UNBEDINGT einen Arzt oder qualifizierten Gesundheitsfachmann</strong>.
+            </p>
+            <p>
+              KIICH übernimmt keine Haftung für Schäden, die durch unsachgemäße Nutzung oder Nichtbeachtung dieser Hinweise entstehen.
+            </p>
+          </div>
         </section>
 
-        {/* Für wen KIICH geeignet ist */}
+        {/* Für wen geeignet */}
         <section className="space-y-4">
-          <h3 className="text-2xl font-bold">Für wen ist KIICH geeignet?</h3>
+          <h2 className="text-3xl font-bold text-orange-400">Für wen ist KIICH geeignet?</h2>
+          
           <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold text-green-400 mb-2">✓ Geeignet für:</h4>
-              <ul className="space-y-1 text-sm text-zinc-300">
-                <li>• Gesunde Menschen zur Gesundheitsförderung</li>
-                <li>• Sportler zur Leistungsoptimierung</li>
-                <li>• Menschen mit Interesse an Atemtraining</li>
-                <li>• Primärprävention und Wellness</li>
+            <div className="bg-green-950/30 border border-green-900/50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-green-400 mb-3">✅ Geeignet für:</h3>
+              <ul className="list-disc list-inside space-y-1 text-sm text-zinc-400">
+                <li>Menschen, die ihre geistige, emotionale und haptische Konstitution optimieren möchten</li>
+                <li>Personen, die aktiv Atem-, Bewegungs- und Bewusstseinstraining nützen möchten</li>
+                <li>Menschen, die ihre Persönlichkeitsentfaltung im KI Zeitalter unterstützen möchten</li>
               </ul>
             </div>
-            <div>
-              <h4 className="font-semibold text-red-400 mb-2">✗ NICHT geeignet für:</h4>
-              <ul className="space-y-1 text-sm text-zinc-300">
-                <li>• Behandlung von Erkrankungen</li>
-                <li>• Ersatz für medizinische Therapie</li>
-                <li>• Schwangere ohne ärztliche Freigabe</li>
-                <li>• Menschen mit akuten Atemwegserkrankungen</li>
+
+            <div className="bg-red-950/30 border border-red-900/50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-red-400 mb-3">⚠️ Nicht geeignet / Rücksprache mit Arzt erforderlich:</h3>
+              <ul className="list-disc list-inside space-y-1 text-sm text-zinc-400">
+                <li>Bluthochdruck, Herzrhythmusstörungen, Herzkrankheiten</li>
+                <li>Asthma, COPD, Atemwegserkrankungen</li>
+                <li>Psychische Erkrankungen (Angststörungen, Depression)</li>
+                <li>Vegetative Störungen, Schwindel</li>
+                <li>Aktuelle medizinische Behandlung</li>
               </ul>
             </div>
           </div>
         </section>
 
         {/* Datenschutz */}
-        <section className="space-y-4">
-          <h3 className="text-2xl font-bold">Datenschutz & Sicherheit</h3>
-          <p className="text-zinc-300">
-            Deine Daten sind bei uns sicher. KIICH ist vollständig DSGVO-konform und schützt deine Privatsphäre. Alle Daten werden verschlüsselt übertragen und gespeichert.
-          </p>
-          <p className="text-zinc-300">
-            Mehr Informationen findest du in unserer <a href="/datenschutz" className="text-cyan-500 hover:text-cyan-400">Datenschutzerklärung</a>.
+        <section className="space-y-4 bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
+          <h2 className="text-3xl font-bold text-orange-400">Datenschutz & Sicherheit</h2>
+          <div className="space-y-3 text-sm">
+            <p>
+              KIICH verarbeitet Ihre Gesundheitsdaten (BOLT-Werte, Vitalmonitor-Einträge) sicher und DSGVO-konform. Ihre Daten werden:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-zinc-400">
+              <li>Verschlüsselt gespeichert</li>
+              <li>Nicht an Dritte weitergegeben</li>
+              <li>Jederzeit auf Anfrage gelöscht</li>
+              <li>Nach den aktuellen Datenschutzstandards geschützt</li>
+            </ul>
+          </div>
+        </section>
+
+        {/* Kontakt */}
+        <section className="space-y-4 bg-zinc-900/50 p-6 rounded-lg border border-zinc-800">
+          <h2 className="text-3xl font-bold text-orange-400">Kontakt & Support</h2>
+          <p className="text-sm">
+            Haben Sie Fragen zu KIICH oder unserem Angebot? Kontaktieren Sie uns jederzeit unter{" "}
+            <a href="mailto:yohn@kiich.de" className="text-orange-400 hover:text-orange-300 underline">
+              yohn@kiich.de
+            </a>
           </p>
         </section>
 
-        {/* CTA */}
-        <section className="text-center space-y-4 py-8">
-          <h3 className="text-2xl font-bold">Bereit zu starten?</h3>
-          <p className="text-zinc-400">Entdecke dein Potenzial mit KIICH.</p>
-          <Button
-            onClick={() => setLocation("/")}
-            className="bg-cyan-600 hover:bg-cyan-700"
-          >
-            Zur Startseite
-          </Button>
-        </section>
+        {/* Footer */}
+        <div className="text-center text-sm text-zinc-500 pt-8 border-t border-zinc-800">
+          <p>KIICH – Die Plattform für Atem- und Bewegungsvitalität sowie Bewusstseinsentwicklung im Ki-Zeitalter.</p>
+        </div>
       </div>
     </div>
   );
