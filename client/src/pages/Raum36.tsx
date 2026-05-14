@@ -480,6 +480,42 @@ function Raum36Member() {
           {/* Wochenvideos */}
           {activeTab === "videos" && (
             <div>
+              {/* BOLT-Messung */}
+              <div className="mb-8 p-6 bg-gradient-to-br from-cyan-500/10 to-transparent border border-cyan-500/30 rounded-xl">
+                <div className="flex items-start justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1">🫁 BOLT-Messung</h3>
+                    <p className="text-sm text-zinc-400">Atemkontrolle & Konstitution – Der wahre Wert deiner Gesundheit</p>
+                  </div>
+                  <a
+                    href="/manus-storage/DERWAHREWERTMEINERGESUNDHEIT_67a0aff6.mp3"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors"
+                  >
+                    <Mic className="w-4 h-4" />
+                    Podcast hören
+                  </a>
+                </div>
+                <p className="text-zinc-300 mb-4">Messe deine Atemhaltedauer nach normalem Ausatmen. Die BOLT-Messung zeigt deine Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.</p>
+                
+                {/* BOLT Levels */}
+                <div className="space-y-3 mt-4">
+                  {[
+                    { range: '1–10', condition: 'Sehr schwache konstitutionelle Verfassung', color: 'bg-red-900/30 border-red-700' },
+                    { range: '11–20', condition: 'Schwache konstitutionelle Verfassung', color: 'bg-orange-900/30 border-orange-700' },
+                    { range: '21–26', condition: 'Durchschnittliche Konstitution', color: 'bg-yellow-900/30 border-yellow-700' },
+                    { range: '26–35', condition: 'Gute Atemsensitivität und Belastbarkeit', color: 'bg-green-900/30 border-green-700' },
+                    { range: '36+', condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand', color: 'bg-blue-900/30 border-blue-700' },
+                  ].map((level, idx) => (
+                    <div key={idx} className={`p-3 rounded-lg border ${level.color}`}>
+                      <div className="font-semibold text-white">{level.range} Sekunden</div>
+                      <div className="text-sm text-zinc-300">{level.condition}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
               {postsQuery.isLoading ? (
                 <div className="flex items-center gap-3 text-zinc-500">
                   <Loader2 className="w-5 h-5 animate-spin" />
