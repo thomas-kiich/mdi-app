@@ -512,7 +512,6 @@ function Raum36Member() {
                   </div>
                   <PodcastButton />
                 </div>
-                <p className="text-zinc-300 mb-4">Messe deine Atemhaltedauer nach normalem Ausatmen. Die BOLT-Messung zeigt deine Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.</p>
                 
                 {/* BOLT Levels */}
                 <div className="space-y-3 mt-4">
