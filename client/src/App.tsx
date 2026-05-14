@@ -38,6 +38,8 @@ import CoachingDashboard from "@/pages/CoachingDashboard";
 import Raum36 from "@/pages/Raum36";
 import AdminZahlungen from "@/pages/AdminZahlungen";
 import AdminRaum36 from "@/pages/AdminRaum36";
+import WasIstKIICH from "@/pages/WasIstKIICH";
+import KIICHFaq from "@/pages/KIICHFaq";
 import Stimmklanganalyse from "@/pages/Stimmklanganalyse";
 import { VornameProvider, useVorname } from "@/contexts/VornameContext";
 import { OnboardingNameModal } from "@/components/OnboardingNameModal";
@@ -82,6 +84,8 @@ function Router() {
       <Route path="/admin/raum36" component={AdminRaum36} />
       <Route path="/raum36" component={Raum36} />
       <Route path="/stimmklanganalyse" component={Stimmklanganalyse} />
+      <Route path="/was-ist-kiich" component={WasIstKIICH} />
+      <Route path="/kiich-faq" component={KIICHFaq} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

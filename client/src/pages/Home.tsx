@@ -1935,7 +1935,9 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
 
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                   <div>&copy; {new Date().getFullYear()} KIICH. Alle Rechte vorbehalten.</div>
-                  <div className="flex gap-6">
+                  <div className="flex gap-6 flex-wrap">
+                      <Link href="/was-ist-kiich" className="hover:text-white transition-colors">Was ist KIICH?</Link>
+                      <Link href="/kiich-faq" className="hover:text-white transition-colors">KIICH FAQ</Link>
                       <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
                       <Link href="/impressum" className="hover:text-white transition-colors">Impressum</Link>
                       <Link href="/datenschutz" className="hover:text-white transition-colors">Datenschutz</Link>
