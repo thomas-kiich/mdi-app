@@ -528,6 +528,42 @@ function Raum36Member() {
                     </div>
                   ))}
                 </div>
+
+                {/* BOLT-Messung Anleitung */}
+                <div className="mt-8 p-6 bg-zinc-900/50 border border-zinc-800 rounded-lg">
+                  <h4 className="font-bold text-white mb-4">Ablauf der BOLT-Messung</h4>
+                  <p className="text-sm text-zinc-400 mb-4">So machst du deine BOLT-Messung richtig:</p>
+                  <ol className="space-y-3 text-sm text-zinc-300">
+                    <li className="flex gap-3">
+                      <span className="font-semibold text-orange-500 flex-shrink-0">1)</span>
+                      <span>Am Morgen gleich nach dem Aufwachen noch im Bett liegend auf dem Rücken.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold text-orange-500 flex-shrink-0">2)</span>
+                      <span>Eine Uhr bereitstellen mit Sekundenzeiger.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold text-orange-500 flex-shrink-0">3)</span>
+                      <span>Dreimaliges sanftes Atmen durch die Nase.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold text-orange-500 flex-shrink-0">4)</span>
+                      <span>Nach dem dritten Ausatmen deine Nasenflügel sanft mit zwei Fingern schließen und die Startzeit an der Uhr erfassen.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold text-orange-500 flex-shrink-0">5)</span>
+                      <span>Wenn ein erster Reflex zum Einatmen kommt, die vergangenen Sekunden an der Uhr ablesen.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold text-orange-500 flex-shrink-0">6)</span>
+                      <span>Wenn du die Übung richtig gemacht hast, kannst du dein Atmen ganz normal wieder aufnehmen ohne Luftknappheit zu empfinden.</span>
+                    </li>
+                    <li className="flex gap-3">
+                      <span className="font-semibold text-orange-500 flex-shrink-0">7)</span>
+                      <span>Trage deinen Wert am Besten gleich in deinen persönlichen Vitalmonitor in RAUM 36 ein.</span>
+                    </li>
+                  </ol>
+                </div>
               </div>
 
               {postsQuery.isLoading ? (
