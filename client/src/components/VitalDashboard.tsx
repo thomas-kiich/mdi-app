@@ -238,7 +238,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
   const { user } = useAuth();
   const utils = trpc.useUtils();
 
-  const [activeTab, setActiveTab] = useState<'heute' | 'statistik' | 'verlauf' | 'coaching'>('heute');
+  const [activeTab, setActiveTab] = useState<'heute' | 'essverhalten' | 'statistik' | 'verlauf' | 'coaching'>('heute');
   const [statsZeitraum, setStatsZeitraum] = useState<'woche' | 'monat'>('woche');
   const [showVitalForm, setShowVitalForm] = useState(false);
   const vitalFormRef = React.useRef<HTMLDivElement>(null);
@@ -557,6 +557,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
 
   const tabs = [
     { id: 'heute',    icon: <Calendar className="w-4 h-4" />,    label: 'Heute' },
+    { id: 'essverhalten', icon: <span className="text-lg">🍽️</span>, label: 'Essverhalten' },
     { id: 'statistik',icon: <BarChart2 className="w-4 h-4" />,   label: 'Statistik' },
     { id: 'verlauf',  icon: <List className="w-4 h-4" />,         label: 'Verlauf' },
     ...(!isAdmin ? [{ id: 'coaching', icon: <Shield className="w-4 h-4" />, label: 'Coaching' }] : []),
@@ -1027,6 +1028,64 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                     Noch keine Einträge. Füge dein erstes Tagesplan-Item hinzu.
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── TAB: ESSVERHALTEN ─────────────────────────────────────────── */}
+        {activeTab === 'essverhalten' && (
+          <div className="space-y-6">
+            {/* Heutiges Essverhalten */}
+            <div>
+              <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Heute: Mahlzeiten</h3>
+              <div className="flex gap-2 flex-wrap p-4 bg-white/5 rounded-xl border border-white/10">
+                {[
+                  { val: 0, label: '0 – Fasten', color: 'bg-blue-600 border-blue-500' },
+                  { val: 1, label: '1 – OMAD', color: 'bg-purple-600 border-purple-500' },
+                  { val: 2, label: '2×', color: 'bg-green-600 border-green-500' },
+                  { val: 3, label: '3×', color: 'bg-orange-600 border-orange-500' },
+                  { val: 4, label: '4×', color: 'bg-red-600 border-red-500' },
+                ].map(({ val, label, color }) => (
+                  <button
+                    key={val}
+                    onClick={() => saveEintrag.mutate({
+                      datum: new Date().toISOString().split('T')[0],
+                      mahlzeiten: mahlzeiten === val ? null : val
+                    })}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all border ${
+                      mahlzeiten === val
+                        ? `${color} text-white`
+                        : 'bg-black/40 border-white/10 text-zinc-400 hover:border-white/20'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {mahlzeiten !== null && (
+                <div className="mt-3 text-sm text-green-400 text-center">
+                  ✓ Heute: {mahlzeiten === 0 ? 'Fasten' : mahlzeiten === 1 ? 'OMAD' : `${mahlzeiten} Mahlzeiten`}
+                </div>
+              )}
+            </div>
+
+            {/* Verlauf der letzten 14 Tage */}
+            <div>
+              <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">Letzte 14 Tage</h3>
+              <div className="space-y-2">
+                {eintraege.slice(0, 14).map(e => {
+                  const datum = new Date(e.datum);
+                  const label = e.mahlzeiten === null ? '–' : e.mahlzeiten === 0 ? 'Fasten' : e.mahlzeiten === 1 ? 'OMAD' : `${e.mahlzeiten}×`;
+                  const colors = ['bg-blue-900/30', 'bg-purple-900/30', 'bg-green-900/30', 'bg-orange-900/30', 'bg-red-900/30'];
+                  const color = e.mahlzeiten !== null ? colors[e.mahlzeiten] : 'bg-zinc-900/30';
+                  return (
+                    <div key={e.id} className={`flex items-center justify-between p-3 rounded-lg border border-white/10 ${color}`}>
+                      <span className="text-sm text-zinc-400">{datum.toLocaleDateString('de-DE')}</span>
+                      <span className="text-sm font-semibold text-white">{label}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
