@@ -48,6 +48,7 @@ const BEWEGUNGSTRAINING_ITEMS: { subtyp: string; label: string }[] = [
   { subtyp: 'kardiotrain',         label: 'KARDIOTRAIN' },
   { subtyp: 'krafttrain',          label: 'KRAFTTRAIN' },
   { subtyp: 'mobilitaetstraining', label: 'MOBILITÄTSTRAIN' },
+  { subtyp: 'kaeltetraining',      label: 'KÄLTETRAINING' },
   { subtyp: 'sonstiges',           label: 'Sonstiges' },
 ];
 
@@ -69,6 +70,7 @@ const STANDARD_ITEMS: { kategorie: TagesplanKategorie; label: string; subtyp?: s
   { kategorie: 'bewegungstraining', label: 'KARDIOTRAIN',           subtyp: 'kardiotrain' },
   { kategorie: 'bewegungstraining', label: 'KRAFTTRAIN',            subtyp: 'krafttrain' },
   { kategorie: 'bewegungstraining', label: 'MOBILITÄTSTRAIN',       subtyp: 'mobilitaetstraining' },
+  { kategorie: 'bewegungstraining', label: 'KÄLTETRAINING',         subtyp: 'kaeltetraining' },
   // Geisttraining
   { kategorie: 'geisttraining',     label: 'COLOURCOUNTING',        subtyp: 'colourcounting' },
   { kategorie: 'geisttraining',     label: 'NIDRAYOGA',             subtyp: 'nidrayoga' },
@@ -939,7 +941,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                                     <span className="text-xs text-zinc-500">min</span>
                                   </div>
                                   {/* Freitext-Notizfeld für Kardio, Kraft, Mobilität */}
-                                  {(item.subtyp === 'kardiotrain' || item.subtyp === 'krafttrain' || item.subtyp === 'mobilitaetstraining') && (
+                                  {(item.subtyp === 'kardiotrain' || item.subtyp === 'krafttrain' || item.subtyp === 'mobilitaetstraining' || item.subtyp === 'kaeltetraining') && (
                                     <input
                                       type="text"
                                       value={item.notiz ?? ''}
