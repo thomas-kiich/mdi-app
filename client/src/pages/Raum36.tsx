@@ -904,25 +904,6 @@ function Raum36Member() {
                 </div>
               ) : (
                 <div className="grid md:grid-cols-2 gap-0 border border-zinc-800">
-                  {/* Was ist KIICH Card */}
-                  <div className="border-r border-b border-zinc-800 p-6">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs font-mono text-cyan-500 uppercase tracking-widest border border-cyan-900 px-2 py-0.5">
-                        Information
-                      </span>
-                    </div>
-                    <h3 className="font-bold mb-2 leading-tight">Was ist KIICH?</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                      KIICH ist eine digitale Plattform für Atem, Bewegungstraining und Persönlichkeitsentfaltung im Ki-Zeitalter. Das Angebot ist explizit und ausnahmslos PRIMÄRPRÄVENTIV ausgerichtet.
-                    </p>
-                    <a
-                      href="/was-ist-kiich"
-                      className="inline-block mt-4 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white text-sm font-semibold rounded transition"
-                    >
-                      Mehr erfahren →
-                    </a>
-                  </div>
-
                   {/* BOLT-Podcast Card */}
                   <div className="border-r border-b border-zinc-800 p-6">
                     <div className="flex items-center gap-2 mb-3">
