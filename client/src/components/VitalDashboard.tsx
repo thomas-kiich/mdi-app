@@ -29,7 +29,7 @@ interface VitalDashboardProps {
 const KATEGORIEN_CONFIG: Record<TagesplanKategorie, { label: string; farbe: string; icon: string }> = {
   atemtraining:      { label: 'Atemtraining',      farbe: 'text-cyan-400',   icon: '🫁' },
   bewegungstraining: { label: 'Bewegungstraining', farbe: 'text-green-400',  icon: '🏃' },
-  kaeltetraining:    { label: 'Kältetraining',     farbe: 'text-blue-400',   icon: '🧊' },
+  kaeltetraining:    { label: 'Kältetraining',     farbe: 'text-blue-400',   icon: '❄️' },
   geisttraining:     { label: 'Geisttraining',     farbe: 'text-violet-400', icon: '🧠' },
   sonstiges:         { label: 'Sonstiges',         farbe: 'text-zinc-400',   icon: '📝' },
 };
