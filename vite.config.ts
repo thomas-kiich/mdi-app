@@ -156,38 +156,48 @@ const pwaPlugin = VitePWA({
   injectRegister: null,   // Wir registrieren manuell in main.tsx
   strategies: "generateSW",
   workbox: {
-    // Nur kleine Dateien precachen – große JS-Bundles werden via runtimeCaching geladen
+    // Kein Precaching von JS-Bundles – immer frisch vom Netz laden
     globPatterns: ['**/*.{html,css,woff,woff2,ttf,eot,svg,png,jpg,jpeg,webp,ico,json}'],
-    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB – für KaTeX-Fonts und große Assets
-    // Cache-First für statische Assets (JS, CSS, Fonts, Bilder)
+    maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MiB
     runtimeCaching: [
       {
-        urlPattern: /\.(?:js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|webp|ico)$/i,
-        handler: "CacheFirst",
+        // JS-Bundles: NetworkFirst – immer aktuelle Version laden
+        urlPattern: /\.(?:js)$/i,
+        handler: "NetworkFirst",
         options: {
-          cacheName: "mdi-static-v1",
-          expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 }, // 30 Tage
+          cacheName: "mdi-js-v3",
+          expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 }, // 1 Stunde max
+          networkTimeoutSeconds: 5,
         },
       },
       {
-        // Network-First für API-Calls – nie cachen
+        // CSS, Fonts, Bilder: StaleWhileRevalidate – schnell + aktuell
+        urlPattern: /\.(?:css|woff2?|ttf|eot|svg|png|jpg|jpeg|webp|ico)$/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "mdi-assets-v3",
+          expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 }, // 7 Tage
+        },
+      },
+      {
+        // API-Calls: nie cachen
         urlPattern: /^\/api\//,
         handler: "NetworkOnly",
       },
       {
-        // Network-First für HTML (immer frisch)
+        // HTML: NetworkFirst (immer frisch)
         urlPattern: /^\/(?!api)/,
         handler: "NetworkFirst",
         options: {
-          cacheName: "mdi-pages-v1",
+          cacheName: "mdi-pages-v3",
           expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 }, // 1 Tag
           networkTimeoutSeconds: 5,
         },
       },
     ],
-    // Kein Auto-Reload bei neuem SW – verhindert Blink-Schleifen
-    skipWaiting: false,
-    clientsClaim: false,
+    // SW übernimmt sofort – alte Caches werden beim Aktivieren gelöscht
+    skipWaiting: true,
+    clientsClaim: true,
     // Alten /service-worker.js und /wecker-sw.js nicht überschreiben
     navigateFallback: null,
   },
