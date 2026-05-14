@@ -653,9 +653,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                 </Button>
               </div>
 
-              <AnimatePresence>
-                {showVitalForm && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              {showVitalForm && (
                     <Card className="bg-white/5 border-white/10">
                       <CardContent className="pt-5">
                         <form onSubmit={handleVitalSubmit} className="space-y-4">
@@ -775,9 +773,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                         </form>
                       </CardContent>
                     </Card>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              )}
             </div>
 
             {/* Tagesplaner */}
