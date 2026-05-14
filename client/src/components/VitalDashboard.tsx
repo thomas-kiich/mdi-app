@@ -655,7 +655,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
 
               <AnimatePresence>
                 {showVitalForm && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                     <Card className="bg-white/5 border-white/10">
                       <CardContent className="pt-5">
                         <form onSubmit={handleVitalSubmit} className="space-y-4">
