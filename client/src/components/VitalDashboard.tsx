@@ -1088,6 +1088,57 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                 })}
               </div>
             </div>
+
+            {/* Monatsarchiv */}
+            <div>
+              <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider mb-4">📊 Monatsüberblick</h3>
+              <div className="space-y-3">
+                {(() => {
+                  // Gruppiere Eintraege nach Monat
+                  const monthGroups: Record<string, any[]> = {};
+                  eintraege.forEach(e => {
+                    const d = new Date(e.datum);
+                    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                    if (!monthGroups[key]) monthGroups[key] = [];
+                    monthGroups[key].push(e);
+                  });
+
+                  // Sortiere Monate absteigend
+                  return Object.entries(monthGroups)
+                    .sort(([a], [b]) => b.localeCompare(a))
+                    .slice(0, 12) // Letzte 12 Monate
+                    .map(([monthKey, entries]) => {
+                      const [year, month] = monthKey.split('-');
+                      const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleDateString('de-DE', { month: 'long', year: 'numeric' });
+                      
+                      // Zaehle Mahlzeiten-Haeufigkeiten
+                      const counts = { fasten: 0, omad: 0, zwei: 0, drei: 0, vier: 0, keine: 0 };
+                      entries.forEach(e => {
+                        if (e.mahlzeiten === null) counts.keine++;
+                        else if (e.mahlzeiten === 0) counts.fasten++;
+                        else if (e.mahlzeiten === 1) counts.omad++;
+                        else if (e.mahlzeiten === 2) counts.zwei++;
+                        else if (e.mahlzeiten === 3) counts.drei++;
+                        else if (e.mahlzeiten === 4) counts.vier++;
+                      });
+
+                      return (
+                        <div key={monthKey} className="p-4 bg-white/5 rounded-xl border border-white/10">
+                          <div className="font-semibold text-white mb-3 capitalize">{monthName}</div>
+                          <div className="grid grid-cols-3 gap-2 text-xs">
+                            {counts.fasten > 0 && <div className="p-2 bg-blue-900/40 rounded border border-blue-700 text-center"><div className="font-bold text-blue-300">{counts.fasten}×</div><div className="text-blue-400">Fasten</div></div>}
+                            {counts.omad > 0 && <div className="p-2 bg-purple-900/40 rounded border border-purple-700 text-center"><div className="font-bold text-purple-300">{counts.omad}×</div><div className="text-purple-400">OMAD</div></div>}
+                            {counts.zwei > 0 && <div className="p-2 bg-green-900/40 rounded border border-green-700 text-center"><div className="font-bold text-green-300">{counts.zwei}×</div><div className="text-green-400">2 Mahl.</div></div>}
+                            {counts.drei > 0 && <div className="p-2 bg-orange-900/40 rounded border border-orange-700 text-center"><div className="font-bold text-orange-300">{counts.drei}×</div><div className="text-orange-400">3 Mahl.</div></div>}
+                            {counts.vier > 0 && <div className="p-2 bg-red-900/40 rounded border border-red-700 text-center"><div className="font-bold text-red-300">{counts.vier}×</div><div className="text-red-400">4 Mahl.</div></div>}
+                            {counts.keine > 0 && <div className="p-2 bg-zinc-900/40 rounded border border-zinc-700 text-center"><div className="font-bold text-zinc-300">{counts.keine}×</div><div className="text-zinc-400">Keine Angabe</div></div>}
+                          </div>
+                        </div>
+                      );
+                    });
+                })()}
+              </div>
+            </div>
           </div>
         )}
 
