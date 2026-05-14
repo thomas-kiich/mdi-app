@@ -501,7 +501,8 @@ function Raum36Member() {
                   <div>
                     <h3 className="text-xl font-bold text-white mb-1">🫁 BOLT-Messung</h3>
                     <p className="text-sm text-zinc-400">Atemkontrolle & Konstitution – Der wahre Wert deiner Gesundheit</p>
-                    <div className="text-xs text-zinc-500 mt-3 pt-3 border-t border-zinc-700 space-y-1">
+                    <p className="text-xs text-zinc-500 mt-3 pt-3 border-t border-zinc-700 italic">Die nachfolgenden Angaben zu medizinischen Zuordnungen der BOLTWERTE stammen aus dem Buch von P. Keown - Erfolgsfaktor Sauerstoff. Dr. Keown war Schüler des Begründers der Buteykomethode - Dr. Buteyko.</p>
+                    <div className="text-xs text-zinc-500 mt-3 space-y-1">
                       <p className="font-semibold text-zinc-400">Quellenverzeichnis:</p>
                       <p>[1] The Oxygen Advantage Lib/E - Bookey</p>
                       <p>[2] So verbesserst Du optimal Deinen BOLT-Wert - strongmove</p>
