@@ -181,7 +181,21 @@ export function HealthScreeningModal({
                     }
                   }}
                 />
-                <Label htmlFor="noPhysical" className="cursor-pointer text-sm font-semibold text-green-400 hover:text-green-300 hover:underline transition-colors">
+                <Label 
+                  htmlFor="noPhysical" 
+                  className="cursor-pointer text-sm font-semibold text-green-400 hover:text-green-300 hover:underline transition-colors"
+                  onClick={() => {
+                    setNoPhysicalContraindications(!noPhysicalContraindications);
+                    if (!noPhysicalContraindications) {
+                      setHasHighBloodPressure(false);
+                      setHasAsthma(false);
+                      setHasHeartArrhythmia(false);
+                      setHasEpilepsy(false);
+                      setIsPregnant(false);
+                      setHasRecentSurgery(false);
+                    }
+                  }}
+                >
                   Keine Kontraindikationen
                 </Label>
               </div>
@@ -261,7 +275,20 @@ export function HealthScreeningModal({
                     }
                   }}
                 />
-                <Label htmlFor="noMental" className="cursor-pointer text-sm font-semibold text-green-400 hover:text-green-300 hover:underline transition-colors">
+                <Label 
+                  htmlFor="noMental" 
+                  className="cursor-pointer text-sm font-semibold text-green-400 hover:text-green-300 hover:underline transition-colors"
+                  onClick={() => {
+                    setNoMentalHealthConditions(!noMentalHealthConditions);
+                    if (!noMentalHealthConditions) {
+                      setHasAnxietyDisorder(false);
+                      setHasDepression(false);
+                      setHasSleepDisorder(false);
+                      setHasMentalIllness(false);
+                      setHasSubstanceAbuse(false);
+                    }
+                  }}
+                >
                   Keine Befindlichkeitsstörungen
                 </Label>
               </div>
