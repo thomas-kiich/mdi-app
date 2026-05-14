@@ -29,6 +29,7 @@ interface VitalDashboardProps {
 const KATEGORIEN_CONFIG: Record<TagesplanKategorie, { label: string; farbe: string; icon: string }> = {
   atemtraining:      { label: 'Atemtraining',      farbe: 'text-cyan-400',   icon: '🫁' },
   bewegungstraining: { label: 'Bewegungstraining', farbe: 'text-green-400',  icon: '🏃' },
+  kaeltetraining:    { label: 'Kältetraining',     farbe: 'text-blue-400',   icon: '🧊' },
   geisttraining:     { label: 'Geisttraining',     farbe: 'text-violet-400', icon: '🧠' },
   sonstiges:         { label: 'Sonstiges',         farbe: 'text-zinc-400',   icon: '📝' },
 };
@@ -48,8 +49,13 @@ const BEWEGUNGSTRAINING_ITEMS: { subtyp: string; label: string }[] = [
   { subtyp: 'kardiotrain',         label: 'KARDIOTRAIN' },
   { subtyp: 'krafttrain',          label: 'KRAFTTRAIN' },
   { subtyp: 'mobilitaetstraining', label: 'MOBILITÄTSTRAIN' },
-  { subtyp: 'kaeltetraining',      label: 'KÄLTETRAINING' },
   { subtyp: 'sonstiges',           label: 'Sonstiges' },
+];
+
+const KAELTETRAINING_ITEMS: { subtyp: string; label: string }[] = [
+  { subtyp: 'kaeltebad',    label: 'KÄLTEBAD' },
+  { subtyp: 'kaltdusche',   label: 'KALTDUSCHE' },
+  { subtyp: 'sonstiges',    label: 'Sonstiges' },
 ];
 
 const GEISTTRAINING_ITEMS: { subtyp: string; label: string }[] = [
@@ -70,7 +76,9 @@ const STANDARD_ITEMS: { kategorie: TagesplanKategorie; label: string; subtyp?: s
   { kategorie: 'bewegungstraining', label: 'KARDIOTRAIN',           subtyp: 'kardiotrain' },
   { kategorie: 'bewegungstraining', label: 'KRAFTTRAIN',            subtyp: 'krafttrain' },
   { kategorie: 'bewegungstraining', label: 'MOBILITÄTSTRAIN',       subtyp: 'mobilitaetstraining' },
-  { kategorie: 'bewegungstraining', label: 'KÄLTETRAINING',         subtyp: 'kaeltetraining' },
+  // Kältetraining (eigene Kategorie)
+  { kategorie: 'kaeltetraining',    label: 'KÄLTEBAD',              subtyp: 'kaeltebad' },
+  { kategorie: 'kaeltetraining',    label: 'KALTDUSCHE',            subtyp: 'kaltdusche' },
   // Geisttraining
   { kategorie: 'geisttraining',     label: 'COLOURCOUNTING',        subtyp: 'colourcounting' },
   { kategorie: 'geisttraining',     label: 'NIDRAYOGA',             subtyp: 'nidrayoga' },
@@ -953,7 +961,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                                     <span className="text-xs text-zinc-500">min</span>
                                   </div>
                                   {/* Freitext-Notizfeld für Kardio, Kraft, Mobilität */}
-                                  {(item.subtyp === 'kardiotrain' || item.subtyp === 'krafttrain' || item.subtyp === 'mobilitaetstraining' || item.subtyp === 'kaeltetraining') && (
+                                  {(item.subtyp === 'kardiotrain' || item.subtyp === 'krafttrain' || item.subtyp === 'mobilitaetstraining') && (
                                     <input
                                       type="text"
                                       value={item.notiz ?? ''}

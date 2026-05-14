@@ -16,6 +16,7 @@ export interface VitalEntry {
 export type TagesplanKategorie =
   | 'atemtraining'
   | 'bewegungstraining'
+  | 'kaeltetraining'
   | 'geisttraining'
   | 'sonstiges';
 
