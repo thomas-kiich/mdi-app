@@ -241,6 +241,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<'heute' | 'statistik' | 'verlauf' | 'coaching'>('heute');
   const [statsZeitraum, setStatsZeitraum] = useState<'woche' | 'monat'>('woche');
   const [showVitalForm, setShowVitalForm] = useState(false);
+  const vitalFormRef = React.useRef<HTMLDivElement>(null);
   const [showAddItem, setShowAddItem] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
   const [polarConnected, setPolarConnected] = useState(false);
@@ -648,12 +649,18 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-semibold text-zinc-400 uppercase tracking-wider">Vitalwerte erfassen</h3>
-                <Button size="sm" onClick={() => setShowVitalForm(!showVitalForm)} className="bg-orange-500 hover:bg-orange-600 text-white text-xs">
+                <Button size="sm" onClick={() => {
+                  setShowVitalForm(!showVitalForm);
+                  if (!showVitalForm) {
+                    setTimeout(() => vitalFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+                  }
+                }} className="bg-orange-500 hover:bg-orange-600 text-white text-xs">
                   {showVitalForm ? 'Abbrechen' : letzterEintrag ? '✏️ Aktualisieren' : '+ Neuer Eintrag'}
                 </Button>
               </div>
 
               {showVitalForm && (
+                    <div ref={vitalFormRef}>
                     <Card className="bg-white/5 border-white/10">
                       <CardContent className="pt-5">
                         <form onSubmit={handleVitalSubmit} className="space-y-4">
@@ -773,6 +780,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                         </form>
                       </CardContent>
                     </Card>
+                    </div>
               )}
             </div>
 
