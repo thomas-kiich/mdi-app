@@ -522,12 +522,15 @@ export function Datenschutz() {
             </p>
             <div className="bg-zinc-900/60 border border-zinc-800 rounded-xl p-5 space-y-2 text-sm">
               {[
-                ["SSL/TLS-Verschlüsselung", "Alle Datenübertragungen zwischen Ihrem Browser und unseren Servern sind verschlüsselt (HTTPS)."],
-                ["Verschlüsselung in Ruhe", "Alle in der Datenbank gespeicherten Daten werden verschlüsselt gespeichert (AES-256)."],
+                ["SSL/TLS-Verschlüsselung (Transport)", "Alle Datenübertragungen zwischen Ihrem Browser und unseren Servern sind verschlüsselt (HTTPS mit TLS 1.2+)."],
+                ["Field-Level Encryption (Ruhe)", "Sensible Gesundheitsdaten (BOLT-Werte, Vitalmonitor-Einträge) werden mit AES-256-GCM verschlüsselt und mit eindeutigen Initialization Vectors (IV) gespeichert."],
+                ["Audit-Logging", "Alle Zugriffe auf Gesundheitsdaten werden protokolliert (Art. 32 DSGVO). Audit-Logs werden 90 Tage aufbewahrt und dann automatisch gelöscht."],
                 ["JWT-Authentifizierung", "Session-Tokens werden kryptografisch signiert und haben eine begrenzte Laufzeit."],
                 ["Zugriffskontrolle", "Jeder Nutzer kann ausschließlich auf seine eigenen Daten zugreifen. Serverseitige Autorisierung bei jedem API-Aufruf."],
                 ["Keine Passwortspeicherung", "Wir speichern keine Passwörter. Die Authentifizierung erfolgt über Manus OAuth."],
                 ["Datensparsamkeit", "Wir erheben nur die Daten, die für die jeweilige Funktion technisch notwendig sind (Art. 5 Abs. 1 lit. c DSGVO)."],
+                ["Recht auf Vergessenwerden", "Sie können Ihr Konto und alle damit verbundenen Daten jederzeit löschen lassen (Art. 17 DSGVO). Dies ist ein irreversibler Prozess."],
+                ["Datenportabilität", "Sie können alle Ihre Daten in einem maschinenlesbaren Format (JSON) exportieren (Art. 20 DSGVO)."],
               ].map(([title, desc]) => (
                 <div key={title} className="flex gap-3 py-2 border-b border-zinc-800/50 last:border-0">
                   <div className="min-w-[200px]">

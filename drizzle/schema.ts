@@ -923,3 +923,41 @@ export const stimmklanganalyseOrders = mysqlTable("stimmklanganalyse_orders", {
 });
 export type StimmklanganalyseOrder = typeof stimmklanganalyseOrders.$inferSelect;
 export type InsertStimmklanganalyseOrder = typeof stimmklanganalyseOrders.$inferInsert;
+
+
+/**
+ * AUDIT-LOGS – DSGVO Art. 32 Datensicherheit
+ * 
+ * Dokumentiert alle Zugriffe auf sensible Gesundheitsdaten:
+ * - BOLT-Messungen
+ * - Vitalmonitor-Einträge
+ * - Coaching-Einwilligungen
+ * - Datenexporte
+ * 
+ * Retention: 90 Tage (wird regelmäßig bereinigt)
+ */
+export const auditLogs = mysqlTable("audit_logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  action: mysqlEnum("action", ["read", "update", "delete", "export", "access"]).notNull(),
+  dataType: varchar("dataType", { length: 64 }).notNull(), // "vital_eintrag", "bolt_measurement", etc.
+  reason: mysqlEnum("reason", [
+    "user_self_access",
+    "coaching_access",
+    "admin_access",
+    "data_export",
+    "account_deletion",
+    "compliance_check"
+  ]).notNull(),
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  userAgent: text("userAgent"),
+  details: text("details"), // JSON-stringifiziert
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+},
+(table) => ({
+  idxUserIdCreatedAt: index("idx_audit_logs_userId_createdAt").on(table.userId, table.createdAt),
+  idxUserId: index("idx_audit_logs_userId").on(table.userId),
+})
+);
+export type AuditLog = typeof auditLogs.$inferSelect;
+export type InsertAuditLog = typeof auditLogs.$inferInsert;

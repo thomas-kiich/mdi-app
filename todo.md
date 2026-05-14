@@ -1355,3 +1355,13 @@
 ## Vital Monitor & Newsletter-Fix (07.05.2026)
 - [x] Raum36.tsx: Vital Monitor für alle aktiven RAUM 36 Mitglieder freigeschaltet (isVitalUnlocked = isAdmin || statusQuery.data?.isActive)
 - [x] AdminNewsletter.tsx: CTA-Button-Link zeigt auf www.kiich.de/raum36 (war bereits korrekt im Code, Publish war ausstehend)
+
+
+## Datenschutz & Sicherheit (DSGVO-Compliance)
+- [x] Implementiere Field-Level Encryption für BOLT- und Vitalmonitor-Daten
+- [x] Erstelle Datenlöschungs-API (Art. 17 DSGVO - Recht auf Vergessenwerden)
+- [x] Implementiere Audit-Logging für Zugriffe auf Gesundheitsdaten
+- [x] Aktualisiere Datenschutzerklärung mit realistischen Sicherheitsmaßnahmen
+- [x] Implementiere Datenexport-Funktion (Art. 20 DSGVO - Datenportabilität)
+- [x] Erstelle Consent-Management für Coaching-Einwilligungen
+- [x] Implementiere automatische Datenlöschung nach Kontolöschung
