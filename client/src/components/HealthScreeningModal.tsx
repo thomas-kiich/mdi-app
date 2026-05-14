@@ -39,7 +39,7 @@ export function HealthScreeningModal({
   const [loading, setLoading] = useState(false);
 
   // Physische Kontraindikationen
-  const [noPhysicalContraindications, setNoPhysicalContraindications] = useState(true);
+  const [noPhysicalContraindications, setNoPhysicalContraindications] = useState(false);
   const [hasHighBloodPressure, setHasHighBloodPressure] = useState(false);
   const [hasAsthma, setHasAsthma] = useState(false);
   const [hasHeartArrhythmia, setHasHeartArrhythmia] = useState(false);
@@ -48,7 +48,7 @@ export function HealthScreeningModal({
   const [hasRecentSurgery, setHasRecentSurgery] = useState(false);
 
   // Befindlichkeitsstörungen
-  const [noMentalHealthConditions, setNoMentalHealthConditions] = useState(true);
+  const [noMentalHealthConditions, setNoMentalHealthConditions] = useState(false);
   const [hasAnxietyDisorder, setHasAnxietyDisorder] = useState(false);
   const [hasDepression, setHasDepression] = useState(false);
   const [hasSleepDisorder, setHasSleepDisorder] = useState(false);
@@ -175,7 +175,7 @@ export function HealthScreeningModal({
                     }
                   }}
                 />
-                <Label htmlFor="noPhysical" className="cursor-pointer text-sm font-semibold">
+                <Label htmlFor="noPhysical" className="cursor-pointer text-sm font-semibold text-green-400">
                   Keine Kontraindikationen
                 </Label>
               </div>
@@ -255,7 +255,7 @@ export function HealthScreeningModal({
                     }
                   }}
                 />
-                <Label htmlFor="noMental" className="cursor-pointer text-sm font-semibold">
+                <Label htmlFor="noMental" className="cursor-pointer text-sm font-semibold text-green-400">
                   Keine Befindlichkeitsstörungen
                 </Label>
               </div>
