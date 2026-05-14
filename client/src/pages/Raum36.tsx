@@ -132,6 +132,21 @@ function Raum36Landing() {
     stimmklangCheckoutMutation.mutate({ origin: window.location.origin });
   };
 
+  // Überprüfe Checkout-Status beim Laden
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const checkoutStatus = params.get("checkout");
+
+    if (checkoutStatus === "success") {
+      toast.success("✅ Zahlung erfolgreich! Willkommen in RAUM 36!");
+      // Entferne Query-Parameter aus URL
+      window.history.replaceState({}, document.title, "/raum36");
+    } else if (checkoutStatus === "cancelled") {
+      toast.info("Checkout abgebrochen. Du kannst jederzeit erneut versuchen.");
+      window.history.replaceState({}, document.title, "/raum36");
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-white">
       {/* Health Screening Modal */}
