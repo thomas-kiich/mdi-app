@@ -39,6 +39,7 @@ export function HealthScreeningModal({
   const [loading, setLoading] = useState(false);
 
   // Physische Kontraindikationen
+  const [noPhysicalContraindications, setNoPhysicalContraindications] = useState(true);
   const [hasHighBloodPressure, setHasHighBloodPressure] = useState(false);
   const [hasAsthma, setHasAsthma] = useState(false);
   const [hasHeartArrhythmia, setHasHeartArrhythmia] = useState(false);
@@ -47,6 +48,7 @@ export function HealthScreeningModal({
   const [hasRecentSurgery, setHasRecentSurgery] = useState(false);
 
   // Befindlichkeitsstörungen
+  const [noMentalHealthConditions, setNoMentalHealthConditions] = useState(true);
   const [hasAnxietyDisorder, setHasAnxietyDisorder] = useState(false);
   const [hasDepression, setHasDepression] = useState(false);
   const [hasSleepDisorder, setHasSleepDisorder] = useState(false);
@@ -154,6 +156,30 @@ export function HealthScreeningModal({
                 <h3 className="font-semibold text-red-500">Physische Kontraindikationen</h3>
               </div>
 
+              {/* "Keine" Checkbox */}
+              <div className="flex items-center space-x-2 bg-zinc-900/50 p-3 rounded-lg">
+                <Checkbox
+                  id="noPhysical"
+                  checked={noPhysicalContraindications}
+                  onCheckedChange={(checked) => {
+                    const isChecked = checked === true;
+                    setNoPhysicalContraindications(isChecked);
+                    if (isChecked) {
+                      // Setze alle auf false wenn "Keine" aktiviert
+                      setHasHighBloodPressure(false);
+                      setHasAsthma(false);
+                      setHasHeartArrhythmia(false);
+                      setHasEpilepsy(false);
+                      setIsPregnant(false);
+                      setHasRecentSurgery(false);
+                    }
+                  }}
+                />
+                <Label htmlFor="noPhysical" className="cursor-pointer text-sm font-semibold text-green-400">
+                  ✓ Keine Kontraindikationen
+                </Label>
+              </div>
+
               <div className="space-y-3">
                 {[
                   {
@@ -209,6 +235,29 @@ export function HealthScreeningModal({
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
                 <h3 className="font-semibold text-amber-500">Befindlichkeitsstörungen</h3>
                 <span className="text-xs text-zinc-400">(Ärztliches Attest erforderlich)</span>
+              </div>
+
+              {/* "Keine" Checkbox */}
+              <div className="flex items-center space-x-2 bg-zinc-900/50 p-3 rounded-lg">
+                <Checkbox
+                  id="noMental"
+                  checked={noMentalHealthConditions}
+                  onCheckedChange={(checked) => {
+                    const isChecked = checked === true;
+                    setNoMentalHealthConditions(isChecked);
+                    if (isChecked) {
+                      // Setze alle auf false wenn "Keine" aktiviert
+                      setHasAnxietyDisorder(false);
+                      setHasDepression(false);
+                      setHasSleepDisorder(false);
+                      setHasMentalIllness(false);
+                      setHasSubstanceAbuse(false);
+                    }
+                  }}
+                />
+                <Label htmlFor="noMental" className="cursor-pointer text-sm font-semibold text-green-400">
+                  ✓ Keine Befindlichkeitsstörungen
+                </Label>
               </div>
 
               <div className="space-y-3">
@@ -297,8 +346,9 @@ export function HealthScreeningModal({
               </Button>
               <Button
                 onClick={handleSubmit}
-                disabled={loading || !disclaimerAccepted}
+                disabled={loading || !disclaimerAccepted || !noPhysicalContraindications || !noMentalHealthConditions}
                 className="bg-orange-600 hover:bg-orange-700"
+                title={!noPhysicalContraindications || !noMentalHealthConditions ? "Bitte bestätigen Sie, dass keine Kontraindikationen und keine Befindlichkeitsstörungen vorliegen" : ""}
               >
                 {loading ? "Wird verarbeitet..." : "Screening absenden"}
               </Button>
