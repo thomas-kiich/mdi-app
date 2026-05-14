@@ -517,39 +517,39 @@ function Raum36Member() {
                 <div className="space-y-3 mt-4">
                   {[
                     {
-                      range: '1–10',
+                      range: '1-10',
                       condition: 'Sehr schwache konstitutionelle Verfassung',
                       color: 'bg-red-900/30 border-red-700',
-                      befindlichkeiten: ['Chronische Müdigkeit', 'Konzentrationsstörungen', 'Schlafstörungen und Schlafapnoe', 'Angststörungen und Panikattacken', 'Asthma und Atemwegserkrankungen', 'Übergewicht und Stoffwechselstörungen'],
-                      trainingsaufbau: ['Atemübungen 2-3x täglich (5-10 Min)', 'Nasales Atmen trainieren', 'Leichte Spaziergänge (15-20 Min)', 'Atemkontrolle beim Gehen üben', 'Keine intensiven Trainingseinheiten', 'Fokus auf Atemkontrolle und Entspannung']
+                      befindlichkeit: 'Sehr schwache konstitutionelle Verfassung; oft verbunden mit Müdigkeit, eingeschränkter Produktivität und Schlafstörungen. Sehr schlechter Fitnesszustand; Atmung in Ruhe unregelmäßig, tagsüber Schnappen nach Luft oder Gähnen. Atemnot tritt schon bei leichter Belastung oder beim Sprechen auf.',
+                      trainingsempfehlungen: '1) Nasenatmung Tag und Nacht 2) RESONANZTRAINING 3) INHÄRES GÄHNTRAING 4) Langsame Spaziergänge (10-15 Min.) mit geschlossenem Mund. 5) DIRIGENTENSPIEL'
                     },
                     {
-                      range: '11–20',
+                      range: '11-20',
                       condition: 'Schwache konstitutionelle Verfassung',
                       color: 'bg-orange-900/30 border-orange-700',
-                      befindlichkeiten: ['Regelmäßige Müdigkeit', 'Gelegentliche Kopfschmerzen', 'Mäßige Schlafprobleme', 'Leichte Atemwegsempfindlichkeit', 'Stressanfälligkeit'],
-                      trainingsaufbau: ['Atemübungen 1-2x täglich', 'Leichte Ausdaueraktivitäten (20-30 Min)', 'Nasentraining intensivieren', 'Langsame Laufstrecken möglich', 'Atemkontrolle beim Training', 'Progressives Aufbautraining']
+                      befindlichkeit: 'Schwache konstitutionelle Verfassung. Häufiges Gähnen oder Seufzen. Grenzwertig kompensierter Fitnesszustand; Atemfrequenz in Ruhe erhöht (>12 Atem züge pro Minute). Probleme bei mittlerer Belastung im Alltag (z. B. Treppensteigen).',
+                      trainingsempfehlungen: '1) Alles von Ebene I  2) ENTHALTSAMKEITSTRAINING 3) Behutsames Ausdauertraining (65-72% Hmax ). 4) BEFINDLICHKEITSTRAINING 7/12min'
                     },
                     {
-                      range: '21–26',
+                      range: '21-26',
                       condition: 'Durchschnittliche Konstitution',
                       color: 'bg-yellow-900/30 border-yellow-700',
-                      befindlichkeiten: ['Normale Leistungsfähigkeit', 'Gute Stressresistenz', 'Normale Schlafqualität', 'Stabile Atemfunktion', 'Gute allgemeine Gesundheit'],
-                      trainingsaufbau: ['Regelmäßiges Ausdauertraining (30-45 Min)', 'Gemischte Trainingsformen möglich', 'Nasentraining beibehalten', 'Moderate Intensität empfohlen', 'Atemkontrolle beim Sport', 'Kontinuierliches Aufbautraining']
+                      befindlichkeit: 'Durchschnittliche Konstitution. Mittelmäßiger Fitnesszustand. Normale Atmung eher ruhig, gleichmäßig und mühelos. Verbesserte Ausdauer; Leichtes körperliches Training und Alltagsaktivitäten ohne merkliche Probleme machbar.',
+                      trainingsempfehlungen: '1) Alles von den Vorebenen. 2)  Schnelles Gehen oder Joggen (30-60 Min.) bei leichtem Lufthunger. 3) YOHNTRAINING neunstufig 4) MOBILITÄTSTRAINING'
                     },
                     {
-                      range: '26–35',
+                      range: '26-35',
                       condition: 'Gute Atemsensitivität und Belastbarkeit',
                       color: 'bg-green-900/30 border-green-700',
-                      befindlichkeiten: ['Hohe Leistungsfähigkeit', 'Gute Stressresistenz', 'Ausgezeichnete Schlafqualität', 'Optimale Atemfunktion', 'Sehr gute allgemeine Gesundheit'],
-                      trainingsaufbau: ['Intensives Ausdauertraining (45-60 Min)', 'Intervalltraining möglich', 'Nasentraining fortgeschritten', 'Höhere Trainingsintensität', 'Atemkontrolle optimiert', 'Leistungsorientiertes Training']
+                      befindlichkeit: 'Gute Atemsensitivität und Belastbarkeit; guter bis sehr guter Fitnesszustand. Zügige Erholungsphasen nach Anstrengung; Effizientes Herzkreislaufsystem. Gute Sporttauglichkeit. Leistungssteigerungen sind problemlos möglich.',
+                      trainingsempfehlungen: '1) Alles aus den Vorebenen 2) APNOETRAINING morgens 3) YOHNTRAINING intensiv  4) Maximalkrafttraining 5) VO2 max TRAINING'
                     },
                     {
                       range: '36+',
                       condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand',
                       color: 'bg-blue-900/30 border-blue-700',
-                      befindlichkeiten: ['Optimale Leistungsfähigkeit', 'Hervorragende Stressresistenz', 'Perfekte Schlafqualität', 'Maximale Atemeffizienz', 'Ausgezeichnete allgemeine Gesundheit'],
-                      trainingsaufbau: ['Hochintensives Ausdauertraining (60+ Min)', 'Fortgeschrittenes Intervalltraining', 'Nasentraining auf höchstem Niveau', 'Maximale Trainingsintensität', 'Atemkontrolle auf Elite-Niveau', 'Leistungsorientiertes Spitzentraining']
+                      befindlichkeit: 'Ideale Atemphysiologie und exzellenter Fitnesszustand; Zielwert für Athleten. Sportliche Leistungsfähigkeit und effiziente Erholungsphasen.',
+                      trainingsempfehlungen: '1) Hochintensives Training bei reiner Nasenatmung möglich. 2) In Pausenzeiten hochintensiver Intervall-Sessions ausschließlich durch die Nase atmen. 3) Fortgeschrittene Simulation von Höhentraining unter hoher Belastung (längere Atempausen bis zu 40 Schritten beim Laufen).'
                     },
                   ].map((level, idx) => {
                     const [isOpen, setIsOpen] = React.useState(false);
@@ -568,26 +568,12 @@ function Raum36Member() {
                         {isOpen && (
                           <div className="mt-3 pt-3 border-t border-zinc-700 space-y-3">
                             <div>
-                              <p className="text-xs font-semibold text-orange-400 mb-2">Befindlichkeiten:</p>
-                              <ul className="text-xs text-zinc-400 space-y-1">
-                                {level.befindlichkeiten.map((item, i) => (
-                                  <li key={i} className="flex gap-2">
-                                    <span className="text-orange-500">•</span>
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                              <p className="text-xs font-semibold text-orange-400 mb-2">Befindlichkeit:</p>
+                              <p className="text-xs text-zinc-400 leading-relaxed">{level.befindlichkeit}</p>
                             </div>
                             <div>
-                              <p className="text-xs font-semibold text-orange-400 mb-2">Trainingsaufbau:</p>
-                              <ul className="text-xs text-zinc-400 space-y-1">
-                                {level.trainingsaufbau.map((item, i) => (
-                                  <li key={i} className="flex gap-2">
-                                    <span className="text-orange-500">•</span>
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                              <p className="text-xs font-semibold text-orange-400 mb-2">Trainingsempfehlungen:</p>
+                              <p className="text-xs text-zinc-400 leading-relaxed">{level.trainingsempfehlungen}</p>
                             </div>
                           </div>
                         )}
