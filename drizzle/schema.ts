@@ -977,7 +977,7 @@ export type InsertAuditLog = typeof auditLogs.$inferInsert;
  * für Zwecke der Gesundheitsversorgung (Schutz vor Schaden)
  */
 export const healthScreenings = mysqlTable("health_screenings", {
-  id: int("id").autoincrement().primaryKey(),
+  id: varchar("id", { length: 36 }).primaryKey(),
   userId: int("userId").notNull(),
   
   // ─── Physische Kontraindikationen ───────────────────────────────

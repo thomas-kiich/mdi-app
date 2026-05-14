@@ -1,0 +1,1 @@
+ALTER TABLE `health_screenings` MODIFY COLUMN `id` varchar(36) NOT NULL;

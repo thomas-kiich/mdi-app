@@ -144,7 +144,12 @@ export async function saveHealthScreening(
     const expiresAt = new Date();
     expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
+    // Generiere UUID für id
+    const { v4: uuidv4 } = await import('uuid');
+    const id = uuidv4();
+
     const screening = await db.insert(healthScreenings).values({
+      id,
       userId: input.userId,
       hasHighBloodPressure: input.hasHighBloodPressure,
       hasAsthma: input.hasAsthma,
