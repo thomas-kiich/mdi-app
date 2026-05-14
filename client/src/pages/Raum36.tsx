@@ -516,17 +516,84 @@ function Raum36Member() {
                 {/* BOLT Levels */}
                 <div className="space-y-3 mt-4">
                   {[
-                    { range: '1–10', condition: 'Sehr schwache konstitutionelle Verfassung', color: 'bg-red-900/30 border-red-700' },
-                    { range: '11–20', condition: 'Schwache konstitutionelle Verfassung', color: 'bg-orange-900/30 border-orange-700' },
-                    { range: '21–26', condition: 'Durchschnittliche Konstitution', color: 'bg-yellow-900/30 border-yellow-700' },
-                    { range: '26–35', condition: 'Gute Atemsensitivität und Belastbarkeit', color: 'bg-green-900/30 border-green-700' },
-                    { range: '36+', condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand', color: 'bg-blue-900/30 border-blue-700' },
-                  ].map((level, idx) => (
-                    <div key={idx} className={`p-3 rounded-lg border ${level.color}`}>
-                      <div className="font-semibold text-white">{level.range} Sekunden</div>
-                      <div className="text-sm text-zinc-300">{level.condition}</div>
-                    </div>
-                  ))}
+                    {
+                      range: '1–10',
+                      condition: 'Sehr schwache konstitutionelle Verfassung',
+                      color: 'bg-red-900/30 border-red-700',
+                      befindlichkeiten: ['Chronische Müdigkeit', 'Konzentrationsstörungen', 'Schlafstörungen und Schlafapnoe', 'Angststörungen und Panikattacken', 'Asthma und Atemwegserkrankungen', 'Übergewicht und Stoffwechselstörungen'],
+                      trainingsaufbau: ['Atemübungen 2-3x täglich (5-10 Min)', 'Nasales Atmen trainieren', 'Leichte Spaziergänge (15-20 Min)', 'Atemkontrolle beim Gehen üben', 'Keine intensiven Trainingseinheiten', 'Fokus auf Atemkontrolle und Entspannung']
+                    },
+                    {
+                      range: '11–20',
+                      condition: 'Schwache konstitutionelle Verfassung',
+                      color: 'bg-orange-900/30 border-orange-700',
+                      befindlichkeiten: ['Regelmäßige Müdigkeit', 'Gelegentliche Kopfschmerzen', 'Mäßige Schlafprobleme', 'Leichte Atemwegsempfindlichkeit', 'Stressanfälligkeit'],
+                      trainingsaufbau: ['Atemübungen 1-2x täglich', 'Leichte Ausdaueraktivitäten (20-30 Min)', 'Nasentraining intensivieren', 'Langsame Laufstrecken möglich', 'Atemkontrolle beim Training', 'Progressives Aufbautraining']
+                    },
+                    {
+                      range: '21–26',
+                      condition: 'Durchschnittliche Konstitution',
+                      color: 'bg-yellow-900/30 border-yellow-700',
+                      befindlichkeiten: ['Normale Leistungsfähigkeit', 'Gute Stressresistenz', 'Normale Schlafqualität', 'Stabile Atemfunktion', 'Gute allgemeine Gesundheit'],
+                      trainingsaufbau: ['Regelmäßiges Ausdauertraining (30-45 Min)', 'Gemischte Trainingsformen möglich', 'Nasentraining beibehalten', 'Moderate Intensität empfohlen', 'Atemkontrolle beim Sport', 'Kontinuierliches Aufbautraining']
+                    },
+                    {
+                      range: '26–35',
+                      condition: 'Gute Atemsensitivität und Belastbarkeit',
+                      color: 'bg-green-900/30 border-green-700',
+                      befindlichkeiten: ['Hohe Leistungsfähigkeit', 'Gute Stressresistenz', 'Ausgezeichnete Schlafqualität', 'Optimale Atemfunktion', 'Sehr gute allgemeine Gesundheit'],
+                      trainingsaufbau: ['Intensives Ausdauertraining (45-60 Min)', 'Intervalltraining möglich', 'Nasentraining fortgeschritten', 'Höhere Trainingsintensität', 'Atemkontrolle optimiert', 'Leistungsorientiertes Training']
+                    },
+                    {
+                      range: '36+',
+                      condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand',
+                      color: 'bg-blue-900/30 border-blue-700',
+                      befindlichkeiten: ['Optimale Leistungsfähigkeit', 'Hervorragende Stressresistenz', 'Perfekte Schlafqualität', 'Maximale Atemeffizienz', 'Ausgezeichnete allgemeine Gesundheit'],
+                      trainingsaufbau: ['Hochintensives Ausdauertraining (60+ Min)', 'Fortgeschrittenes Intervalltraining', 'Nasentraining auf höchstem Niveau', 'Maximale Trainingsintensität', 'Atemkontrolle auf Elite-Niveau', 'Leistungsorientiertes Spitzentraining']
+                    },
+                  ].map((level, idx) => {
+                    const [isOpen, setIsOpen] = React.useState(false);
+                    return (
+                      <div key={idx} className={`p-3 rounded-lg border ${level.color}`}>
+                        <button
+                          onClick={() => setIsOpen(!isOpen)}
+                          className="w-full text-left flex items-center justify-between hover:opacity-80 transition-opacity"
+                        >
+                          <div>
+                            <div className="font-semibold text-white">{level.range} Sekunden</div>
+                            <div className="text-sm text-zinc-300">{level.condition}</div>
+                          </div>
+                          <ChevronDown className={`w-4 h-4 text-zinc-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        {isOpen && (
+                          <div className="mt-3 pt-3 border-t border-zinc-700 space-y-3">
+                            <div>
+                              <p className="text-xs font-semibold text-orange-400 mb-2">Befindlichkeiten:</p>
+                              <ul className="text-xs text-zinc-400 space-y-1">
+                                {level.befindlichkeiten.map((item, i) => (
+                                  <li key={i} className="flex gap-2">
+                                    <span className="text-orange-500">•</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <p className="text-xs font-semibold text-orange-400 mb-2">Trainingsaufbau:</p>
+                              <ul className="text-xs text-zinc-400 space-y-1">
+                                {level.trainingsaufbau.map((item, i) => (
+                                  <li key={i} className="flex gap-2">
+                                    <span className="text-orange-500">•</span>
+                                    <span>{item}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* BOLT-Messung Anleitung */}
