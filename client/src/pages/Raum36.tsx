@@ -336,9 +336,15 @@ function Raum36Member() {
   const statusQuery = trpc.raum36.getStatus.useQuery();
   // Vital Monitor ist für alle aktiven RAUM 36 Mitglieder zugänglich (kein separater Kauf nötig)
   const isVitalUnlocked = isAdmin || statusQuery.data?.isActive === true;
-  const postsQuery = trpc.raum36.getPosts.useQuery();
-  const fragenQuery = trpc.raum36.getFragen.useQuery();
-  const wissenspoolQuery = trpc.raum36.getWissenspool.useQuery();
+  const postsQuery = trpc.raum36.getPosts.useQuery(undefined, {
+    enabled: activeTab === "videos",
+  });
+  const fragenQuery = trpc.raum36.getFragen.useQuery(undefined, {
+    enabled: activeTab === "fragen",
+  });
+  const wissenspoolQuery = trpc.raum36.getWissenspool.useQuery(undefined, {
+    enabled: activeTab === "wissenspool",
+  });
 
   const utils = trpc.useUtils();
 
