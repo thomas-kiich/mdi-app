@@ -1,0 +1,1 @@
+ALTER TABLE `vital_eintraege` DROP COLUMN `mahlzeiten`;

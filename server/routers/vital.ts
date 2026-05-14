@@ -54,6 +54,7 @@ export const vitalRouter = router({
       boltCp: z.number().min(0).max(600).nullable().optional(),
       temperatur: z.string().max(10).nullable().optional(),
       gewicht: z.string().max(10).nullable().optional(),
+      mahlzeiten: z.number().int().min(0).max(4).nullable().optional(),
       anmerkungen: z.string().max(5000).nullable().optional(),
       tagesplan: z.string().max(20000).nullable().optional(),
     }))
@@ -88,6 +89,7 @@ export const vitalRouter = router({
             boltCp:      input.boltCp      !== undefined ? (input.boltCp      ?? null) : prev.boltCp,
             temperatur:  input.temperatur  !== undefined ? (input.temperatur  ?? null) : prev.temperatur,
             gewicht:     input.gewicht     !== undefined ? (input.gewicht     ?? null) : prev.gewicht,
+            mahlzeiten:  input.mahlzeiten  !== undefined ? (input.mahlzeiten  ?? null) : prev.mahlzeiten,
             anmerkungen: input.anmerkungen !== undefined ? (input.anmerkungen ?? null) : prev.anmerkungen,
             tagesplan:   input.tagesplan   !== undefined ? (input.tagesplan   ?? null) : prev.tagesplan,
           })
@@ -109,6 +111,7 @@ export const vitalRouter = router({
           boltCp: input.boltCp ?? null,
           temperatur: input.temperatur ?? null,
           gewicht: input.gewicht ?? null,
+          mahlzeiten: input.mahlzeiten ?? null,
           anmerkungen: input.anmerkungen ?? null,
           tagesplan: input.tagesplan ?? null,
           createdAtMs: now,

@@ -262,6 +262,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
   const [gewicht, setGewicht]   = useState('');
   const [mood, setMood]         = useState(5);
   const [notes, setNotes]       = useState('');
+  const [mahlzeiten, setMahlzeiten] = useState<number | null>(null);
 
   // Neues Tagesplan-Item
   const [newKat, setNewKat]       = useState<TagesplanKategorie>('atemtraining');
@@ -427,6 +428,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
       ...(temp       ? { temperatur:  temp }                  : {}),
       ...(gewicht    ? { gewicht }                            : {}),
       ...(notes.trim() ? { anmerkungen: notes }               : {}),
+      ...(mahlzeiten !== null ? { mahlzeiten }                    : {}),
       tagesplan: JSON.stringify(tagesplan.items),
     });
   };
@@ -737,6 +739,33 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                               className="w-full bg-black/50 border border-white/20 rounded-md px-3 py-2 text-sm text-white placeholder:text-zinc-600 resize-none focus:outline-none focus:ring-1 focus:ring-orange-500"
                             />
                           </div>
+                          {/* Essverhalten */}
+                          <div className="space-y-2 p-3 bg-green-950/30 border border-green-800/30 rounded-xl">
+                            <Label className="text-green-400 text-xs font-semibold uppercase tracking-wider">🍽️ Essverhalten – Mahlzeiten heute</Label>
+                            <div className="flex gap-2 flex-wrap">
+                              {[
+                                { val: 0, label: '0 – Fasten' },
+                                { val: 1, label: '1 – OMAD' },
+                                { val: 2, label: '2×' },
+                                { val: 3, label: '3×' },
+                                { val: 4, label: '4×' },
+                              ].map(({ val, label }) => (
+                                <button
+                                  key={val}
+                                  type="button"
+                                  onClick={() => setMahlzeiten(mahlzeiten === val ? null : val)}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                                    mahlzeiten === val
+                                      ? 'bg-green-500 border-green-400 text-white'
+                                      : 'bg-black/40 border-white/10 text-zinc-400 hover:border-green-600 hover:text-green-400'
+                                  }`}
+                                >
+                                  {label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
                           <div className="flex justify-end">
                             <Button type="submit" disabled={saveEintrag.isPending} className="bg-white text-black hover:bg-white/90 gap-2">
                               {saveEintrag.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
