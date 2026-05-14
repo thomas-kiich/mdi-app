@@ -1365,3 +1365,15 @@
 - [x] Implementiere Datenexport-Funktion (Art. 20 DSGVO - Datenportabilität)
 - [x] Erstelle Consent-Management für Coaching-Einwilligungen
 - [x] Implementiere automatische Datenlöschung nach Kontolöschung
+
+
+## Health Screening & Sorgfaltspflichten (§ 630e BGB)
+- [x] Erstelle health_screenings Tabelle mit verschlüsselten Feldern
+- [x] Implementiere Standardliste Kontraindikationen (physisch + Befindlichkeiten)
+- [ ] Erstelle Health Screening Modal für RAUM 36 Checkout (UI)
+- [x] Implementiere automatischen Ausschluss bei physischen Kontraindikationen
+- [ ] Erstelle Attest-Upload für Befindlichkeitsstörungen (UI)
+- [x] Implementiere Ärztliche Freigabe Workflow
+- [x] Erstelle Audit-Trail für Health Screening Abfragen
+- [x] Implementiere 1-Jahr-Retention für Screening-Daten
+- [x] Schreibe Unit-Tests für Health Screening Logic

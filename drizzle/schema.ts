@@ -961,3 +961,108 @@ export const auditLogs = mysqlTable("audit_logs", {
 );
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = typeof auditLogs.$inferInsert;
+
+
+/**
+ * HEALTH SCREENING – Sorgfaltspflichten § 630e BGB
+ * 
+ * Dokumentiert die Anamnesebefragung vor RAUM 36 Abo-Aktivierung.
+ * Erfasst Kontraindikationen und ärztliche Freigaben.
+ * 
+ * Kontraindikationen werden in zwei Kategorien eingeteilt:
+ * 1. Physische Kontraindikationen → Automatischer Ausschluss
+ * 2. Befindlichkeitsstörungen → Ärztliches Attest erforderlich
+ * 
+ * DSGVO Art. 9 Abs. 2 lit. h: Verarbeitung von Gesundheitsdaten
+ * für Zwecke der Gesundheitsversorgung (Schutz vor Schaden)
+ */
+export const healthScreenings = mysqlTable("health_screenings", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // ─── Physische Kontraindikationen ───────────────────────────────
+  // Automatischer Ausschluss bei "ja"
+  
+  /** Bluthochdruck (≥ 140/90 mmHg) */
+  hasHighBloodPressure: boolean("hasHighBloodPressure").notNull().default(false),
+  
+  /** Asthma oder chronische Atemwegserkrankungen */
+  hasAsthma: boolean("hasAsthma").notNull().default(false),
+  
+  /** Herzrhythmusstörungen oder Herzerkrankungen */
+  hasHeartArrhythmia: boolean("hasHeartArrhythmia").notNull().default(false),
+  
+  /** Epilepsie oder Anfallsleiden */
+  hasEpilepsy: boolean("hasEpilepsy").notNull().default(false),
+  
+  /** Schwangerschaft */
+  isPregnant: boolean("isPregnant").notNull().default(false),
+  
+  /** Kürzliche Operation oder Verletzung (< 6 Wochen) */
+  hasRecentSurgery: boolean("hasRecentSurgery").notNull().default(false),
+  
+  // ─── Befindlichkeitsstörungen ───────────────────────────────────
+  // Ärztliches Attest erforderlich bei "ja"
+  
+  /** Angststörung, Panikstörung */
+  hasAnxietyDisorder: boolean("hasAnxietyDisorder").notNull().default(false),
+  
+  /** Depression oder depressive Episode */
+  hasDepression: boolean("hasDepression").notNull().default(false),
+  
+  /** Schlafstörungen */
+  hasSleepDisorder: boolean("hasSleepDisorder").notNull().default(false),
+  
+  /** Psychische Erkrankung (allgemein) */
+  hasMentalIllness: boolean("hasMentalIllness").notNull().default(false),
+  
+  /** Substanzmissbrauch oder Suchterkrankung */
+  hasSubstanceAbuse: boolean("hasSubstanceAbuse").notNull().default(false),
+  
+  // ─── Status & Freigabe ───────────────────────────────────────────
+  
+  /** Status: pending | excluded_physical | approved | pending_attestation | approved_with_attestation */
+  status: mysqlEnum("status", [
+    "pending",                    // Screening ausstehend
+    "excluded_physical",          // Ausgeschlossen wegen physischer Kontraindikationen
+    "approved",                   // Genehmigt (keine Kontraindikationen)
+    "pending_attestation",        // Attest erforderlich
+    "approved_with_attestation",  // Genehmigt mit ärztlichem Attest
+    "rejected",                   // Abgelehnt (Attest nicht eingereicht)
+  ]).notNull().default("pending"),
+  
+  /** S3-URL des ärztlichen Attests (PDF/JPG) – verschlüsselt */
+  attestationUrl: varchar("attestationUrl", { length: 512 }),
+  
+  /** Arzt-Name aus Attest (verschlüsselt) */
+  physicianName: varchar("physicianName", { length: 255 }),
+  
+  /** Datum des ärztlichen Attests (verschlüsselt) */
+  attestationDate: varchar("attestationDate", { length: 10 }),
+  
+  /** Freigabedatum (wann Screening genehmigt wurde) */
+  approvedAt: timestamp("approvedAt"),
+  
+  /** Ablaufdatum (1 Jahr nach Genehmigung) */
+  expiresAt: timestamp("expiresAt"),
+  
+  /** Nutzer-Notizen (z.B. "Unter ärztlicher Behandlung") – verschlüsselt */
+  notes: text("notes"),
+  
+  /** IP-Adresse bei Screening (für Audit-Trail) */
+  ipAddress: varchar("ipAddress", { length: 45 }),
+  
+  /** Nutzer hat Haftungsausschluss akzeptiert */
+  disclaimerAccepted: boolean("disclaimerAccepted").notNull().default(false),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+},
+(table) => ({
+  idxUserId: index("idx_health_screenings_userId").on(table.userId),
+  idxStatus: index("idx_health_screenings_status").on(table.status),
+  idxExpiresAt: index("idx_health_screenings_expiresAt").on(table.expiresAt),
+})
+);
+export type HealthScreening = typeof healthScreenings.$inferSelect;
+export type InsertHealthScreening = typeof healthScreenings.$inferInsert;
