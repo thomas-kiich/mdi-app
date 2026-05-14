@@ -1377,3 +1377,6 @@
 - [x] Erstelle Audit-Trail für Health Screening Abfragen
 - [x] Implementiere 1-Jahr-Retention für Screening-Daten
 - [x] Schreibe Unit-Tests für Health Screening Logic
+
+- [x] Erstelle Health Screening Modal für RAUM 36 Checkout
+- [x] Erstelle Attest-Upload Seite unter /account/health-attestation

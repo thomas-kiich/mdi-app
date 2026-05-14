@@ -35,6 +35,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
+import { HealthScreeningModal } from "@/components/HealthScreeningModal";
 
 function PodcastButton() {
   const podcastUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/JePJKOCZiSbQlcdH.mp3';
@@ -57,6 +58,9 @@ function PodcastButton() {
 function Raum36Landing() {
   const { isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+
+  // Health Screening Modal State
+  const [showHealthScreening, setShowHealthScreening] = useState(false);
 
   // Voranmeldungs-Modal State
   const [showVoranmeldung, setShowVoranmeldung] = useState(false);
@@ -102,7 +106,22 @@ function Raum36Landing() {
       window.location.href = getLoginUrl("/raum36");
       return;
     }
+    // Zeige Health Screening Modal vor Checkout
+    setShowHealthScreening(true);
+  };
+
+  const handleHealthScreeningApproved = () => {
+    // Starte Checkout nach Genehmigung
     checkoutMutation.mutate({ origin: window.location.origin });
+  };
+
+  const handleHealthScreeningExcluded = () => {
+    toast.error("Screening nicht genehmigt. Bitte konsultieren Sie einen Arzt.");
+  };
+
+  const handleHealthScreeningPendingAttestation = () => {
+    // Leite zu Attest-Upload Seite weiter
+    window.location.href = "/account/health-attestation";
   };
 
   const handleBuchenStimmklang = () => {
@@ -115,6 +134,14 @@ function Raum36Landing() {
 
   return (
     <div className="min-h-screen bg-black text-white">
+      {/* Health Screening Modal */}
+      <HealthScreeningModal
+        open={showHealthScreening}
+        onOpenChange={setShowHealthScreening}
+        onApproved={handleHealthScreeningApproved}
+        onExcluded={handleHealthScreeningExcluded}
+        onPendingAttestation={handleHealthScreeningPendingAttestation}
+      />
 
       {/* Navigation */}
       <div className="px-6 pt-6">

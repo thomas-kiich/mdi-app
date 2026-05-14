@@ -41,6 +41,7 @@ import AdminRaum36 from "@/pages/AdminRaum36";
 import WasIstKIICH from "@/pages/WasIstKIICH";
 import KIICHFaq from "@/pages/KIICHFaq";
 import Stimmklanganalyse from "@/pages/Stimmklanganalyse";
+import HealthAttestation from "@/pages/HealthAttestation";
 import { VornameProvider, useVorname } from "@/contexts/VornameContext";
 import { OnboardingNameModal } from "@/components/OnboardingNameModal";
 import { UpdateBanner } from "@/components/UpdateBanner";
@@ -86,6 +87,7 @@ function Router() {
       <Route path="/stimmklanganalyse" component={Stimmklanganalyse} />
       <Route path="/was-ist-kiich" component={WasIstKIICH} />
       <Route path="/kiich-faq" component={KIICHFaq} />
+      <Route path="/account/health-attestation" component={HealthAttestation} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
