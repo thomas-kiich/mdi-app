@@ -495,6 +495,13 @@ function Raum36Member() {
           {/* Wochenvideos */}
           {activeTab === "videos" && (
             <div>
+              {/* Disclaimer */}
+              <div className="mb-8 p-4 bg-amber-900/20 border border-amber-700/50 rounded-lg">
+                <p className="text-xs text-amber-200 leading-relaxed">
+                  <span className="font-semibold">Hinweis:</span> Die Trainingsempfehlungen auf dieser Seite basieren auf wissenschaftlichen Erkenntnissen und dienen zu Informationszwecken. Sie ersetzen keine medizinische Beratung. Bei gesundheitlichen Bedenken oder Erkrankungen konsultieren Sie bitte einen Arzt oder qualifizierten Gesundheitsfachmann.
+                </p>
+              </div>
+
               {/* BOLT-Messung */}
               <div className="mb-8 p-6 bg-gradient-to-br from-cyan-500/10 to-transparent border border-cyan-500/30 rounded-xl">
                 <div className="flex items-start justify-between mb-4">
@@ -509,6 +516,7 @@ function Raum36Member() {
                       <p>[3] TEST 1: BOLT TEST = BODY OXYGEN LEVEL TEST - Thiemo Osterhaus</p>
                       <p>[4] From Breathless to Breathe Less: Run smart. Run nasal | Patrick McKeown | Erfolgsfaktor Sauerstoff</p>
                     </div>
+                    <p className="text-xs text-zinc-500 mt-3 pt-3 border-t border-zinc-700 italic">Ing. Thomas Chochola ist staatlich geprüfter Trainer der Sportakademie Graz - Österreich und zertifizierter BREATHOLOGY Instructor nach Stig Steversinsen.</p>
                   </div>
                   <PodcastButton />
                 </div>
