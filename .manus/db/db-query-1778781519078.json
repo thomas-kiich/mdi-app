@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO podcast_episodes (\n  episodeNumber,\n  catchphrase,\n  subtitle,\n  audioUrl,\n  coverImageUrl,\n  description,\n  isLatest,\n  sortOrder,\n  createdAt,\n  updatedAt\n) VALUES (\n  '07',\n  'CHAOS schafft ORDNUNG?!',\n  'Warum es schlau ist, alte Strukturen in dir zu wandeln...',\n  '/manus-storage/EP07_128k_8a694a6d.mp3',\n  'https://d2xsxph8kpxj0f.cloudfront.net/kiich-episode-cover.jpg',\n  'Hast du dich jemals gefragt, warum das Leben manchmal so chaotisch erscheint? In dieser Episode tauchen wir gemeinsam ein in die faszinierende Welt des Chaos – nicht als Bedrohung, sondern als Motor für Wachstum und Veränderung.',\n  1,\n  7,\n  NOW(),\n  NOW()\n);\n\nUPDATE podcast_episodes SET isLatest = 0 WHERE episodeNumber < '07';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute INSERT INTO podcast_episodes (\n  episodeNumber,\n  catchphrase,\n  subtitle,\n  audioUrl,\n  coverImageUrl,\n  description,\n  isLatest,\n  sortOrder,\n  createdAt,\n  updatedAt\n) VALUES (\n  '07',\n  'CHAOS schafft ORDNUNG?!',\n  'Warum es schlau ist, alte Strukturen in dir zu wandeln...',\n  '/manus-storage/EP07_128k_8a694a6d.mp3',\n  'https://d2xsxph8kpxj0f.cloudfront.net/kiich-episode-cover.jpg',\n  'Hast du dich jemals gefragt, warum das Leben manchmal so chaotisch erscheint? In dieser Episode tauchen wir gemeinsam ein in die faszinierende Welt des Chaos – nicht als Bedrohung, sondern als Motor für Wachstum und Veränderung.',\n  1,\n  7,\n  NOW(),\n  NOW()\n);\n\nUPDATE podcast_episodes SET isLatest = 0 WHERE episodeNumber < '07';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 300
+}
