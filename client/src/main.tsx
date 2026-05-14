@@ -61,6 +61,16 @@ createRoot(document.getElementById("root")!).render(
 
 // Service-Worker-Management
 if ('serviceWorker' in navigator) {
+  // 0. AGGRESSIVE: Alle alten Caches loeschen (v1, v2, etc.)
+  caches.keys().then(cacheNames => {
+    cacheNames.forEach(cacheName => {
+      if (cacheName.includes('mdi-') && !cacheName.includes('v3')) {
+        caches.delete(cacheName);
+        console.log('[SW] Alter Cache geloescht:', cacheName);
+      }
+    });
+  });
+
   // 1. Alten /service-worker.js deregistrieren (verhindert Reload-Schleifen)
   navigator.serviceWorker.getRegistrations().then(registrations => {
     for (const reg of registrations) {
