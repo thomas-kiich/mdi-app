@@ -947,7 +947,7 @@ function Raum36Member() {
                     />
                   </div>
 
-                  {wissenspoolQuery.data?.map((item) => (
+                  {wissenspoolQuery.data && wissenspoolQuery.data.map((item) => (
                     <div
                       key={item.id}
                       className="border-r border-b border-zinc-800 p-6 last:border-r-0"
