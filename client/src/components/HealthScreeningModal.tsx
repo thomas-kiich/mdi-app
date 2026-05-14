@@ -18,6 +18,24 @@ interface HealthScreeningModalProps {
   onPendingAttestation: () => void;
 }
 
+// Detaillierte Fragen mit Erklärungen
+const PHYSICAL_QUESTIONS = [
+  { key: "hasHighBloodPressure", label: "Bluthochdruck", description: "Erhöhter Blutdruck kann bei intensiven Atemtechniken problematisch sein" },
+  { key: "hasAsthma", label: "Asthma", description: "Atemwegserkrankungen können durch bestimmte Atemtechniken verschärft werden" },
+  { key: "hasHeartArrhythmia", label: "Herzrhythmusstörungen", description: "Herzprobleme erfordern ärztliche Freigabe vor Atemtraining" },
+  { key: "hasEpilepsy", label: "Epilepsie", description: "Hyperventilation kann Anfälle auslösen" },
+  { key: "isPregnant", label: "Schwangerschaft", description: "Intensive Atemtechniken sind in der Schwangerschaft nicht empfohlen" },
+  { key: "hasRecentSurgery", label: "Kürzliche Operation", description: "Der Körper braucht Zeit zur Genesung nach Eingriffen" },
+];
+
+const MENTAL_QUESTIONS = [
+  { key: "hasAnxietyDisorder", label: "Angststörung", description: "Kann durch intensive Atemtechniken ausgelöst werden" },
+  { key: "hasDepression", label: "Depression", description: "Erfordert ärztliche Begleitung" },
+  { key: "hasSleepDisorder", label: "Schlafstörung", description: "Kann durch Atemtraining beeinflusst werden" },
+  { key: "hasMentalIllness", label: "Psychische Erkrankung", description: "Erfordert ärztliche Freigabe" },
+  { key: "hasSubstanceAbuse", label: "Substanzmissbrauch", description: "Kann mit Atemtechniken interagieren" },
+];
+
 export function HealthScreeningModal({
   open,
   onOpenChange,
@@ -25,41 +43,40 @@ export function HealthScreeningModal({
   onExcluded,
   onPendingAttestation,
 }: HealthScreeningModalProps) {
-  // Master Checkboxes
-  const [noPhysicalContraindications, setNoPhysicalContraindications] = useState(false);
-  const [noMentalHealthConditions, setNoMentalHealthConditions] = useState(false);
+  // Individuelle Fragen
+  const [physicalAnswers, setPhysicalAnswers] = useState<Record<string, boolean>>({});
+  const [mentalAnswers, setMentalAnswers] = useState<Record<string, boolean>>({});
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const submitMutation = trpc.healthScreening.submitScreening.useMutation();
 
-  const canSubmit = noPhysicalContraindications && noMentalHealthConditions && disclaimerAccepted;
+  // Prüfe ob alle Fragen beantwortet wurden
+  const allPhysicalAnswered = PHYSICAL_QUESTIONS.every(q => q.key in physicalAnswers);
+  const allMentalAnswered = MENTAL_QUESTIONS.every(q => q.key in mentalAnswers);
+  const canSubmit = allPhysicalAnswered && allMentalAnswered && disclaimerAccepted;
 
-  const handleTogglePhysical = () => {
-    console.log("Toggle physical:", !noPhysicalContraindications);
-    setNoPhysicalContraindications(!noPhysicalContraindications);
+  const handlePhysicalToggle = (key: string) => {
+    setPhysicalAnswers(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
-  const handleToggleMental = () => {
-    console.log("Toggle mental:", !noMentalHealthConditions);
-    setNoMentalHealthConditions(!noMentalHealthConditions);
+  const handleMentalToggle = (key: string) => {
+    setMentalAnswers(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
   const handleToggleDisclaimer = () => {
-    console.log("Toggle disclaimer:", !disclaimerAccepted);
     setDisclaimerAccepted(!disclaimerAccepted);
   };
 
   const handleSubmit = async () => {
-    console.log("Submit clicked. States:", {
-      noPhysicalContraindications,
-      noMentalHealthConditions,
-      disclaimerAccepted,
-      canSubmit,
-    });
-
     if (!canSubmit) {
-      toast.error("Bitte füllen Sie alle erforderlichen Felder aus");
+      toast.error("Bitte beantworten Sie alle Fragen");
       return;
     }
 
@@ -67,22 +84,20 @@ export function HealthScreeningModal({
 
     try {
       const response = await submitMutation.mutateAsync({
-        hasHighBloodPressure: false,
-        hasAsthma: false,
-        hasHeartArrhythmia: false,
-        hasEpilepsy: false,
-        isPregnant: false,
-        hasRecentSurgery: false,
-        hasAnxietyDisorder: false,
-        hasDepression: false,
-        hasSleepDisorder: false,
-        hasMentalIllness: false,
-        hasSubstanceAbuse: false,
+        hasHighBloodPressure: physicalAnswers.hasHighBloodPressure || false,
+        hasAsthma: physicalAnswers.hasAsthma || false,
+        hasHeartArrhythmia: physicalAnswers.hasHeartArrhythmia || false,
+        hasEpilepsy: physicalAnswers.hasEpilepsy || false,
+        isPregnant: physicalAnswers.isPregnant || false,
+        hasRecentSurgery: physicalAnswers.hasRecentSurgery || false,
+        hasAnxietyDisorder: mentalAnswers.hasAnxietyDisorder || false,
+        hasDepression: mentalAnswers.hasDepression || false,
+        hasSleepDisorder: mentalAnswers.hasSleepDisorder || false,
+        hasMentalIllness: mentalAnswers.hasMentalIllness || false,
+        hasSubstanceAbuse: mentalAnswers.hasSubstanceAbuse || false,
         disclaimerAccepted: true,
         notes: undefined,
       });
-
-      console.log("Response:", response);
 
       if (response.evaluation.approved) {
         toast.success("✅ Screening genehmigt! Sie können RAUM 36 nutzen.");
@@ -119,7 +134,7 @@ export function HealthScreeningModal({
           {/* Hinweis */}
           <div className="bg-amber-900/30 border border-amber-700/50 rounded-lg p-3">
             <p className="text-xs text-amber-200">
-              ℹ️ Bitte bestätigen Sie beide Punkte durch <span className="font-semibold">Anklicken der grünen Begriffe</span>
+              ℹ️ Bitte beantworten Sie alle Fragen ehrlich. Dies ist wichtig für Ihre Sicherheit.
             </p>
           </div>
 
@@ -130,21 +145,22 @@ export function HealthScreeningModal({
               <h3 className="font-semibold text-red-500">Physische Kontraindikationen</h3>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-zinc-900/50 rounded-lg cursor-pointer hover:bg-zinc-900/70 transition-colors" onClick={handleTogglePhysical}>
-              <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                noPhysicalContraindications 
-                  ? "bg-green-500 border-green-500" 
-                  : "border-zinc-600 bg-transparent"
-              }`}>
-                {noPhysicalContraindications && <Check className="w-3 h-3 text-white" />}
-              </div>
-              <span className={`text-sm font-semibold transition-colors ${
-                noPhysicalContraindications 
-                  ? "text-green-400" 
-                  : "text-green-400 hover:text-green-300"
-              }`}>
-                Keine Kontraindikationen
-              </span>
+            <div className="space-y-2">
+              {PHYSICAL_QUESTIONS.map(q => (
+                <div key={q.key} className="flex items-start gap-3 p-3 bg-zinc-900/50 rounded-lg cursor-pointer hover:bg-zinc-900/70 transition-colors" onClick={() => handlePhysicalToggle(q.key)}>
+                  <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${
+                    physicalAnswers[q.key]
+                      ? "bg-red-500 border-red-500"
+                      : "border-zinc-600 bg-transparent"
+                  }`}>
+                    {physicalAnswers[q.key] && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-zinc-200">{q.label}</p>
+                    <p className="text-xs text-zinc-400">{q.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -156,21 +172,22 @@ export function HealthScreeningModal({
               <span className="text-xs text-zinc-400">(Ärztliches Attest erforderlich)</span>
             </div>
 
-            <div className="flex items-center gap-3 p-3 bg-zinc-900/50 rounded-lg cursor-pointer hover:bg-zinc-900/70 transition-colors" onClick={handleToggleMental}>
-              <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                noMentalHealthConditions 
-                  ? "bg-green-500 border-green-500" 
-                  : "border-zinc-600 bg-transparent"
-              }`}>
-                {noMentalHealthConditions && <Check className="w-3 h-3 text-white" />}
-              </div>
-              <span className={`text-sm font-semibold transition-colors ${
-                noMentalHealthConditions 
-                  ? "text-green-400" 
-                  : "text-green-400 hover:text-green-300"
-              }`}>
-                Keine Befindlichkeitsstörungen
-              </span>
+            <div className="space-y-2">
+              {MENTAL_QUESTIONS.map(q => (
+                <div key={q.key} className="flex items-start gap-3 p-3 bg-zinc-900/50 rounded-lg cursor-pointer hover:bg-zinc-900/70 transition-colors" onClick={() => handleMentalToggle(q.key)}>
+                  <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${
+                    mentalAnswers[q.key]
+                      ? "bg-amber-500 border-amber-500"
+                      : "border-zinc-600 bg-transparent"
+                  }`}>
+                    {mentalAnswers[q.key] && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-zinc-200">{q.label}</p>
+                    <p className="text-xs text-zinc-400">{q.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -184,8 +201,8 @@ export function HealthScreeningModal({
             </p>
             <div className="flex items-center gap-3 cursor-pointer" onClick={handleToggleDisclaimer}>
               <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                disclaimerAccepted 
-                  ? "bg-green-500 border-green-500" 
+                disclaimerAccepted
+                  ? "bg-green-500 border-green-500"
                   : "border-zinc-600 bg-transparent"
               }`}>
                 {disclaimerAccepted && <Check className="w-3 h-3 text-white" />}
