@@ -815,17 +815,13 @@ function Raum36Member() {
                     </div>
                     <h3 className="font-bold mb-2 leading-tight">Der wahre Wert meiner Gesundheit</h3>
                     <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                      Verstehe die BOLT-Messung: Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.
+                      Verstehe die BOLTMESSUNG und starte danach im Trainingscenter mit deinen Auswertungen. Die Ergebnisse speicherst du täglich im Vitalmonitor ab.
                     </p>
-                    <a
-                      href="https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/JePJKOCZiSbQlcdH.mp3"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-orange-500 hover:text-orange-400 text-sm font-medium"
-                    >
-                      <Play className="w-3 h-3" />
-                      Podcast hören
-                    </a>
+                    <audio
+                      controls
+                      className="w-full mt-2"
+                      src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/JePJKOCZiSbQlcdH.mp3"
+                    />
                   </div>
 
                   {wissenspoolQuery.data?.map((item) => (
