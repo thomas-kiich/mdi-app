@@ -1,0 +1,164 @@
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { ArrowLeft, Info, Play, BookOpen } from 'lucide-react';
+
+interface BoltMeasurementProps {
+  onClose: () => void;
+}
+
+const BOLT_LEVELS = [
+  {
+    range: '1–10',
+    condition: 'Sehr schwache konstitutionelle Verfassung',
+    details: 'Oft verbunden mit Müdigkeit, eingeschränkter Produktivität und Schlafstörungen. Sehr schlechter Fitnesszustand; Atmung in Ruhe unregelmäßig, tagsüber Schnappen nach Luft oder Gähnen.',
+    training: [
+      'Nasenatemtechnik Tag und Nacht',
+      'Ruheposition oder Bettsprechung',
+      'Häufiges Gähnen-Training',
+      'Langsame Spaziergänge (10–15 Min.) mit geschlossenem Mund',
+      'Dirigentenschlag'
+    ],
+    color: 'bg-red-900/30 border-red-700'
+  },
+  {
+    range: '11–20',
+    condition: 'Schwache konstitutionelle Verfassung',
+    details: 'Häufiges Gähnen oder Seufzen. Grenzwertig kompensierter Fitnesszustand; Atemfrequenz in Ruhe erhöht (>12 Atemzüge pro Minute). Probleme bei mittlerer Belastung im Alltag (z. B. Treppensteigen).',
+    training: [
+      'Alles von Ebene I',
+      'Enthaltsamkeitstraining',
+      'Behutsames Ausdauertraining (65–72% Hmax)',
+      'Befindlichkeitstraining 7/12min'
+    ],
+    color: 'bg-orange-900/30 border-orange-700'
+  },
+  {
+    range: '21–26',
+    condition: 'Durchschnittliche Konstitution',
+    details: 'Mittelmäßiger Fitnesszustand. Normale Atmung eher ruhig, gleichmäßig und mühelos. Verbesserte Ausdauer; leichtes körperliches Training und Alltagsaktivitäten ohne merkliche Probleme machbar.',
+    training: [
+      'Alles von den Vorebenen',
+      'Schnelles Gehen oder Joggen (30–60 Min.) bei leichtem Lufthunger',
+      'YOHNTRAINING neunstufig',
+      'Mobilitätstraining'
+    ],
+    color: 'bg-yellow-900/30 border-yellow-700'
+  },
+  {
+    range: '26–35',
+    condition: 'Gute Atemsensitivität und Belastbarkeit',
+    details: 'Guter bis sehr guter Fitnesszustand. Zügige Erholungsphasen nach Anstrengung; effizientes Herzkreislaufsystem. Gute Sporttauglichkeit. Leistungssteigerungen sind problemlos möglich.',
+    training: [
+      'Alles aus den Vorebenen',
+      'Apnoetraining morgens',
+      'YOHNTRAINING intensiv',
+      'Maximalkrafttraining',
+      'VO2 max Training'
+    ],
+    color: 'bg-green-900/30 border-green-700'
+  },
+  {
+    range: '36+',
+    condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand',
+    details: 'Zielwert für Athleten. Sportliche Leistungsfähigkeit und effiziente Erholungsphasen. Ideale Atemphysiologie und exzellenter Fitnesszustand.',
+    training: [
+      'Hochintensives Training bei reiner Nasenatmung möglich',
+      'In Pausenzeiten hochintensiver Intervall-Sessions ausschließlich durch die Nase atmen',
+      'Fortgeschrittene Simulation von Höhentraining unter hoher Belastung (längere Atempausen bis zu 40 Schritten beim Laufen)'
+    ],
+    color: 'bg-blue-900/30 border-blue-700'
+  }
+];
+
+export function BoltMeasurement({ onClose }: BoltMeasurementProps) {
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black overflow-y-auto p-4 animate-in fade-in duration-300">
+      <div className="w-full max-w-6xl mx-auto pt-24 pb-12">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-12">
+          <Button 
+            variant="ghost" 
+            onClick={onClose}
+            className="text-zinc-400 hover:text-white"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            ZUR HAUPTSEITE
+          </Button>
+          <h2 className="text-2xl font-bold text-white">🫁 BOLT-Messung</h2>
+          <Button 
+            variant="ghost" 
+            onClick={() => window.open('/manus-storage/DERWAHREWERTMEINERGESUNDHEIT_67a0aff6.mp3', '_blank')}
+            className="text-zinc-400 hover:text-white"
+          >
+            <BookOpen className="w-5 h-5 mr-2" />
+            PODCAST
+          </Button>
+        </div>
+
+        {/* Info Card */}
+        <div className="flex items-start gap-2 max-w-2xl mx-auto mb-8 bg-blue-950/30 border border-blue-500/20 rounded-lg px-4 py-3">
+          <Info className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
+          <p className="text-sm text-blue-300/80 leading-relaxed">
+            <strong className="text-blue-200">BOLT-Wert:</strong> Atemhaltedauer nach normalem Ausatmen. Misst deine Atemkontrolle und Konstitution. Gemessen im Vitalmonitor.
+          </p>
+        </div>
+
+        {/* BOLT Levels Grid */}
+        <div className="space-y-4">
+          {BOLT_LEVELS.map((level, idx) => (
+            <div
+              key={idx}
+              onClick={() => setSelectedLevel(selectedLevel === idx ? null : idx)}
+              className={`p-6 rounded-xl border transition-all cursor-pointer ${level.color} hover:border-opacity-100 border-opacity-50`}
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-lg font-bold text-white mb-1">{level.range} Sekunden</div>
+                  <div className="text-sm font-semibold text-zinc-300 mb-2">{level.condition}</div>
+                  <p className="text-sm text-zinc-400 mb-4">{level.details}</p>
+                  
+                  {selectedLevel === idx && (
+                    <div className="mt-4 pt-4 border-t border-white/10">
+                      <div className="text-xs font-mono text-zinc-300 uppercase tracking-wider mb-2">Trainingsempfehlungen:</div>
+                      <ul className="space-y-1">
+                        {level.training.map((item, i) => (
+                          <li key={i} className="text-sm text-zinc-300 flex items-start gap-2">
+                            <span className="text-orange-400 mt-0.5">→</span>
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+                <div className="ml-4 text-2xl">{selectedLevel === idx ? '▼' : '▶'}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Action Card */}
+        <div className="mt-12 max-w-2xl mx-auto">
+          <Card className="bg-gradient-to-br from-orange-500/10 to-transparent border-orange-500/30">
+            <CardContent className="p-8">
+              <h3 className="text-lg font-bold text-white mb-3">Deine BOLT-Messung</h3>
+              <p className="text-zinc-400 mb-6">
+                Messe deinen morgendlichen BOLT-Wert im Vitalmonitor und vergleiche deine Befindlichkeit mit den Trainingsempfehlungen.
+              </p>
+              <Button 
+                className="w-full bg-white text-black hover:bg-zinc-200 h-12 text-lg font-medium"
+                onClick={onClose}
+              >
+                <Play className="w-4 h-4 mr-2 fill-current" />
+                Zum Vitalmonitor
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}

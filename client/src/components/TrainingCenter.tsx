@@ -6,9 +6,10 @@ import { Method36Trainer } from "@/components/Method36Trainer";
 import { MetabolicBreathingTrainer } from "@/components/MetabolicBreathingTrainer";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { TrainingHistory } from "@/components/TrainingHistory";
+import { BoltMeasurement } from "@/components/BoltMeasurement";
 import { TONES } from "@/lib/tones";
 
-type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL' | 'HISTORY';
+type TrainingMode = 'SELECTION' | 'YOHN' | 'METABOLIC' | 'INTERVAL' | 'BOLT' | 'HISTORY';
 
 interface TrainingCenterProps {
     frequency: number;
@@ -60,6 +61,14 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
         return (
             <IntervalTrainer 
                 baseTone={toneObj}
+                onClose={onClose}
+            />
+        );
+    }
+
+    if (mode === 'BOLT') {
+        return (
+            <BoltMeasurement 
                 onClose={onClose}
             />
         );
@@ -267,6 +276,38 @@ export function TrainingCenter({ frequency, toneName, color, onClose, initialMod
                         </CardContent>
                     </Card>
                 </div>
+
+                {/* Option 4: BOLT-Messung */}
+                <Card 
+                    className="bg-zinc-900/50 border-zinc-800 hover:bg-zinc-900 hover:border-cyan-500/50 transition-all cursor-pointer group relative overflow-hidden"
+                >
+                    <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <CardContent className="p-8 flex flex-col h-full relative z-10">
+                        <div className="w-12 h-12 rounded-full bg-cyan-500/20 flex items-center justify-center mb-6 text-cyan-500">
+                            <span className="text-2xl">🫁</span>
+                        </div>
+                        
+                        <h3 className="text-2xl font-bold text-white mb-2">BOLT-Messung</h3>
+                        <div className="flex items-center gap-2 text-xs font-mono text-cyan-400 mb-4 uppercase tracking-wider">
+                            <Activity className="w-3 h-3" />
+                            Atemkontrolle • Konstitution
+                        </div>
+                        
+                        <p className="text-zinc-400 mb-8 flex-grow leading-relaxed">
+                            Messe deine Atemhaltedauer nach normalem Ausatmen. Die BOLT-Messung zeigt deine Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.
+                        </p>
+
+                        <div className="mt-auto">
+                            <Button 
+                                className="w-full bg-white text-black hover:bg-zinc-200 h-12 text-lg font-medium"
+                                onClick={() => setMode('BOLT')}
+                            >
+                                <Play className="w-4 h-4 mr-2 fill-current" />
+                                Zur BOLT-Tabelle
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
                 
                 {/* Coming Soon Teaser */}
                 <div className="mt-12 text-center">
