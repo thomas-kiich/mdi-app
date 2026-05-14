@@ -36,6 +36,39 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
 
+function PodcastButton() {
+  const podcastQuery = trpc.storage.getPodcastUrl.useQuery();
+  
+  if (podcastQuery.isLoading) {
+    return (
+      <button className="flex items-center gap-2 px-4 py-2 bg-orange-500/50 text-white rounded-lg text-sm font-medium cursor-wait">
+        <Loader2 className="w-4 h-4 animate-spin" />
+        Lädt...
+      </button>
+    );
+  }
+  
+  if (podcastQuery.isError || !podcastQuery.data?.url) {
+    return (
+      <button className="flex items-center gap-2 px-4 py-2 bg-red-500/50 text-white rounded-lg text-sm font-medium cursor-not-allowed">
+        <Mic className="w-4 h-4" />
+        Fehler
+      </button>
+    );
+  }
+  
+  return (
+    <a
+      href={podcastQuery.data.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors"
+    >
+      <Mic className="w-4 h-4" />
+      Podcast hören
+    </a>
+  );
+}
 
 // ─── Öffentliche Landing-Page ───────────────────────────────────────────────
 
@@ -487,15 +520,7 @@ function Raum36Member() {
                     <h3 className="text-xl font-bold text-white mb-1">🫁 BOLT-Messung</h3>
                     <p className="text-sm text-zinc-400">Atemkontrolle & Konstitution – Der wahre Wert deiner Gesundheit</p>
                   </div>
-                  <a
-                    href="/manus-storage/DERWAHREWERTMEINERGESUNDHEIT_67a0aff6.mp3"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg text-sm font-medium transition-colors"
-                  >
-                    <Mic className="w-4 h-4" />
-                    Podcast hören
-                  </a>
+                  <PodcastButton />
                 </div>
                 <p className="text-zinc-300 mb-4">Messe deine Atemhaltedauer nach normalem Ausatmen. Die BOLT-Messung zeigt deine Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.</p>
                 
