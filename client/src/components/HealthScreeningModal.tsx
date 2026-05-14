@@ -175,8 +175,8 @@ export function HealthScreeningModal({
                     }
                   }}
                 />
-                <Label htmlFor="noPhysical" className="cursor-pointer text-sm font-semibold text-green-400">
-                  ✓ Keine Kontraindikationen
+                <Label htmlFor="noPhysical" className="cursor-pointer text-sm font-semibold">
+                  Keine Kontraindikationen
                 </Label>
               </div>
 
@@ -255,8 +255,8 @@ export function HealthScreeningModal({
                     }
                   }}
                 />
-                <Label htmlFor="noMental" className="cursor-pointer text-sm font-semibold text-green-400">
-                  ✓ Keine Befindlichkeitsstörungen
+                <Label htmlFor="noMental" className="cursor-pointer text-sm font-semibold">
+                  Keine Befindlichkeitsstörungen
                 </Label>
               </div>
 
