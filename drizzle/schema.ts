@@ -737,6 +737,8 @@ export const vitalEintraege = mysqlTable("vital_eintraege", {
   boltCp: float("boltCp"),
   temperatur: varchar("temperatur", { length: 10 }),
   gewicht: varchar("gewicht", { length: 10 }),
+  /** Essverhalten: Anzahl Mahlzeiten pro Tag (0=Fasten, 1=OMAD, 2-4=Mahlzeiten) */
+  mahlzeiten: int("mahlzeiten"),
   anmerkungen: text("anmerkungen"),
   tagesplan: text("tagesplan"),
   createdAtMs: bigint("createdAtMs", { mode: "number" }).notNull(),
