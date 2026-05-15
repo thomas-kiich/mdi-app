@@ -560,7 +560,7 @@ function Raum36Member() {
                 
                 {/* BOLT Levels - Direkt sichtbar */}
                 <div className="mt-4">
-                  <BoltMeasurement onClose={() => {}} />
+                  <BoltMeasurement onClose={() => setActiveTab("videos")} />
                 </div>
 
                 {/* BOLT-Messung Anleitung */}
