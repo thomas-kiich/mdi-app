@@ -36,6 +36,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { HealthScreeningModal } from "@/components/HealthScreeningModal";
+import { BoltMeasurement } from "@/components/BoltMeasurement";
 
 function PodcastButton() {
   const podcastUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/JePJKOCZiSbQlcdH.mp3';
@@ -369,6 +370,7 @@ function Raum36Member() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [activeTab, setActiveTab] = useState<Tab>("videos");
+  const [showBoltMeasurement, setShowBoltMeasurement] = useState(false);
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
   const [pseudonymInput, setPseudonymInput] = useState("");
@@ -556,8 +558,18 @@ function Raum36Member() {
                 </div>
                 <p className="text-zinc-300 mb-4">Messe deine Atemhaltedauer nach normalem Ausatmen. Die BOLT-Messung zeigt deine Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.</p>
                 
-                {/* BOLT Levels */}
-                <div className="space-y-3 mt-4">
+                {/* BOLT Levels - Klickbar */}
+                <div className="mt-4">
+                  <Button
+                    onClick={() => setShowBoltMeasurement(true)}
+                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold py-3 rounded-lg transition-all"
+                  >
+                    📊 BOLT-Stufen & Trainingsempfehlungen anzeigen
+                  </Button>
+                </div>
+
+                {/* Fallback: Statische BOLT Levels */}
+                <div className="space-y-3 mt-4 opacity-50">
                   {[
                     { range: '1–10', condition: 'Sehr schwache konstitutionelle Verfassung', color: 'bg-red-900/30 border-red-700' },
                     { range: '11–20', condition: 'Schwache konstitutionelle Verfassung', color: 'bg-orange-900/30 border-orange-700' },
@@ -969,7 +981,10 @@ function Raum36Member() {
         </div>
       </div>
 
-
+      {/* BOLT-Messung Modal */}
+      {showBoltMeasurement && (
+        <BoltMeasurement onClose={() => setShowBoltMeasurement(false)} />
+      )}
     </div>
   );
 }
