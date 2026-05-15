@@ -558,10 +558,20 @@ function Raum36Member() {
                   <PodcastButton />
                 </div>
                 
-                {/* BOLT Levels - Direkt sichtbar */}
+                {/* BOLT Levels - Button zum Öffnen */}
                 <div className="mt-4">
-                  <BoltMeasurement onClose={() => setActiveTab("videos")} />
+                  <button
+                    onClick={() => setShowBoltMeasurement(true)}
+                    className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
+                  >
+                    BOLT-Messung anzeigen
+                  </button>
                 </div>
+
+                {/* BOLT Measurement Modal */}
+                {showBoltMeasurement && (
+                  <BoltMeasurement onClose={() => setShowBoltMeasurement(false)} />
+                )}
 
                 {/* BOLT-Messung Anleitung */}
                 <div className="mt-8 p-6 bg-zinc-900/50 border border-zinc-800 rounded-lg">
