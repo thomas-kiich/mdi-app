@@ -552,6 +552,7 @@ function Raum36Member() {
                       <p>[2] So verbesserst Du optimal Deinen BOLT-Wert - strongmove</p>
                       <p>[3] TEST 1: BOLT TEST = BODY OXYGEN LEVEL TEST - Thiemo Osterhaus</p>
                       <p>[4] From Breathless to Breathe Less: Run smart. Run nasal | Patrick McKeown | Erfolgsfaktor Sauerstoff</p>
+                      <p className="mt-3 pt-3 border-t border-zinc-700 text-zinc-400">Ing. Thomas Chochola ist staatlich geprüfter Trainer der Sportakademie Graz - Österreich und zertifizierter BREATHOLOGY Instructor von Stig Severinsen.</p>
                     </div>
                   </div>
                   <PodcastButton />
