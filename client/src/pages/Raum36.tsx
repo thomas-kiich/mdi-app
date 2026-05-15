@@ -558,30 +558,9 @@ function Raum36Member() {
                   <PodcastButton />
                 </div>
                 
-                {/* BOLT Levels - Klickbar */}
+                {/* BOLT Levels - Direkt sichtbar */}
                 <div className="mt-4">
-                  <Button
-                    onClick={() => setShowBoltMeasurement(true)}
-                    className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold py-3 rounded-lg transition-all"
-                  >
-                    📊 BOLT-Stufen & Trainingsempfehlungen anzeigen
-                  </Button>
-                </div>
-
-                {/* Fallback: Statische BOLT Levels */}
-                <div className="space-y-3 mt-4 opacity-50">
-                  {[
-                    { range: '1–10', condition: 'Sehr schwache konstitutionelle Verfassung', color: 'bg-red-900/30 border-red-700' },
-                    { range: '11–20', condition: 'Schwache konstitutionelle Verfassung', color: 'bg-orange-900/30 border-orange-700' },
-                    { range: '21–26', condition: 'Durchschnittliche Konstitution', color: 'bg-yellow-900/30 border-yellow-700' },
-                    { range: '26–35', condition: 'Gute Atemsensitivität und Belastbarkeit', color: 'bg-green-900/30 border-green-700' },
-                    { range: '36+', condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand', color: 'bg-blue-900/30 border-blue-700' },
-                  ].map((level, idx) => (
-                    <div key={idx} className={`p-3 rounded-lg border ${level.color}`}>
-                      <div className="font-semibold text-white">{level.range} Sekunden</div>
-                      <div className="text-sm text-zinc-300">{level.condition}</div>
-                    </div>
-                  ))}
+                  <BoltMeasurement onClose={() => {}} />
                 </div>
 
                 {/* BOLT-Messung Anleitung */}
