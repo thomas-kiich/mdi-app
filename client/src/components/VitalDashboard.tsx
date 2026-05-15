@@ -1293,15 +1293,15 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                   <div key={entry.id} className="flex items-start justify-between p-4 bg-white/5 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
                     <div className="space-y-2">
                       <div className="text-zinc-500 font-mono text-xs">{entry.datum}</div>
-                      <div className="grid grid-cols-2 gap-3 text-xs">
-                        {entry.ruhepuls  && <div className="text-pink-400"><span className="text-zinc-500">Ruhepuls:</span> <b>{entry.ruhepuls} bpm</b> <span className="text-zinc-600 text-xs">(Herzschlag in Ruhe)</span></div>}
-                        {entry.hrv       && <div className="text-red-400"><span className="text-zinc-500">HRV:</span> <b>{entry.hrv} ms</b> <span className="text-zinc-600 text-xs">(Herzratenvariabilität)</span></div>}
-                        {entry.boltMcp != null && <div className="text-orange-400"><span className="text-zinc-500">BOLT/MCP:</span> <b>{entry.boltMcp} s</b> <span className="text-zinc-600 text-xs">(Atemhaltung nach Ausatmung)</span></div>}
-                        {entry.boltCp != null   && <div className="text-yellow-400"><span className="text-zinc-500">CP:</span> <b>{entry.boltCp} s</b> <span className="text-zinc-600 text-xs">(Kontrollpause)</span></div>}
-                        {entry.apnoeAus  && <div className="text-cyan-400"><span className="text-zinc-500">Apnoe AUS:</span> <b>{apnoeDisplay(entry.apnoeAus)}</b> <span className="text-zinc-600 text-xs">(nach Ausatmung)</span></div>}
-                        {entry.apnoeEin  && <div className="text-teal-400"><span className="text-zinc-500">Apnoe EIN:</span> <b>{apnoeDisplay(entry.apnoeEin)}</b> <span className="text-zinc-600 text-xs">(nach Einatmung)</span></div>}
-                        {entry.temperatur && <div className="text-blue-400"><span className="text-zinc-500">Temp:</span> <b>{entry.temperatur}°C</b> <span className="text-zinc-600 text-xs">(Körpertemperatur)</span></div>}
-                        {entry.gewicht   && <div className="text-green-400"><span className="text-zinc-500">Gewicht:</span> <b>{entry.gewicht} kg</b> <span className="text-zinc-600 text-xs">(Körpergewicht)</span></div>}
+                      <div className="space-y-2">
+                        {entry.ruhepuls  && <div className="text-sm"><span className="text-pink-400 font-semibold">Ruhepuls:</span> <b className="text-pink-300">{entry.ruhepuls} bpm</b> <span className="text-zinc-400 text-xs ml-1">– Herzschlag in Ruhe</span></div>}
+                        {entry.hrv       && <div className="text-sm"><span className="text-red-400 font-semibold">HRV:</span> <b className="text-red-300">{entry.hrv} ms</b> <span className="text-zinc-400 text-xs ml-1">– Herzratenvariabilität</span></div>}
+                        {entry.boltMcp != null && <div className="text-sm"><span className="text-orange-400 font-semibold">BOLT/MCP:</span> <b className="text-orange-300">{entry.boltMcp} s</b> <span className="text-zinc-400 text-xs ml-1">– Atemhaltung nach Ausatmung</span></div>}
+                        {entry.boltCp != null   && <div className="text-sm"><span className="text-yellow-400 font-semibold">CP:</span> <b className="text-yellow-300">{entry.boltCp} s</b> <span className="text-zinc-400 text-xs ml-1">– Kontrollpause</span></div>}
+                        {entry.apnoeAus  && <div className="text-sm"><span className="text-cyan-400 font-semibold">Apnoe AUS:</span> <b className="text-cyan-300">{apnoeDisplay(entry.apnoeAus)}</b> <span className="text-zinc-400 text-xs ml-1">– nach Ausatmung</span></div>}
+                        {entry.apnoeEin  && <div className="text-sm"><span className="text-teal-400 font-semibold">Apnoe EIN:</span> <b className="text-teal-300">{apnoeDisplay(entry.apnoeEin)}</b> <span className="text-zinc-400 text-xs ml-1">– nach Einatmung</span></div>}
+                        {entry.temperatur && <div className="text-sm"><span className="text-blue-400 font-semibold">Temp:</span> <b className="text-blue-300">{entry.temperatur}°C</b> <span className="text-zinc-400 text-xs ml-1">– Körpertemperatur</span></div>}
+                        {entry.gewicht   && <div className="text-sm"><span className="text-green-400 font-semibold">Gewicht:</span> <b className="text-green-300">{entry.gewicht} kg</b> <span className="text-zinc-400 text-xs ml-1">– Körpergewicht</span></div>}
                       </div>
                       {entry.anmerkungen && (
                         <div className="text-xs text-zinc-500 italic mt-1 border-l-2 border-zinc-700 pl-2">{entry.anmerkungen}</div>
