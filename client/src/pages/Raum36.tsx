@@ -564,7 +564,7 @@ function Raum36Member() {
                     onClick={() => setShowBoltMeasurement(true)}
                     className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
                   >
-                    BOLT-Messung anzeigen
+                    BOLTWERTTABELLE anzeigen
                   </button>
                 </div>
 
