@@ -36,7 +36,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { HealthScreeningModal } from "@/components/HealthScreeningModal";
-import { BoltMeasurement } from "@/components/BoltMeasurement";
 
 function PodcastButton() {
   const podcastUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/JePJKOCZiSbQlcdH.mp3';
@@ -370,7 +369,6 @@ function Raum36Member() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
   const [activeTab, setActiveTab] = useState<Tab>("videos");
-  const [showBoltMeasurement, setShowBoltMeasurement] = useState(false);
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
   const [pseudonymInput, setPseudonymInput] = useState("");
@@ -552,26 +550,27 @@ function Raum36Member() {
                       <p>[2] So verbesserst Du optimal Deinen BOLT-Wert - strongmove</p>
                       <p>[3] TEST 1: BOLT TEST = BODY OXYGEN LEVEL TEST - Thiemo Osterhaus</p>
                       <p>[4] From Breathless to Breathe Less: Run smart. Run nasal | Patrick McKeown | Erfolgsfaktor Sauerstoff</p>
-                      <p className="mt-3 pt-3 border-t border-zinc-700 text-zinc-400">Ing. Thomas Chochola ist staatlich geprüfter Trainer der Sportakademie Graz - Österreich und zertifizierter BREATHOLOGY Instructor von Stig Severinsen.</p>
                     </div>
                   </div>
                   <PodcastButton />
                 </div>
+                <p className="text-zinc-300 mb-4">Messe deine Atemhaltedauer nach normalem Ausatmen. Die BOLT-Messung zeigt deine Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.</p>
                 
-                {/* BOLT Levels - Button zum Öffnen */}
-                <div className="mt-4">
-                  <button
-                    onClick={() => setShowBoltMeasurement(true)}
-                    className="px-6 py-3 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg font-medium transition-colors"
-                  >
-                    BOLTWERTTABELLE anzeigen
-                  </button>
+                {/* BOLT Levels */}
+                <div className="space-y-3 mt-4">
+                  {[
+                    { range: '1–10', condition: 'Sehr schwache konstitutionelle Verfassung', color: 'bg-red-900/30 border-red-700' },
+                    { range: '11–20', condition: 'Schwache konstitutionelle Verfassung', color: 'bg-orange-900/30 border-orange-700' },
+                    { range: '21–26', condition: 'Durchschnittliche Konstitution', color: 'bg-yellow-900/30 border-yellow-700' },
+                    { range: '26–35', condition: 'Gute Atemsensitivität und Belastbarkeit', color: 'bg-green-900/30 border-green-700' },
+                    { range: '36+', condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand', color: 'bg-blue-900/30 border-blue-700' },
+                  ].map((level, idx) => (
+                    <div key={idx} className={`p-3 rounded-lg border ${level.color}`}>
+                      <div className="font-semibold text-white">{level.range} Sekunden</div>
+                      <div className="text-sm text-zinc-300">{level.condition}</div>
+                    </div>
+                  ))}
                 </div>
-
-                {/* BOLT Measurement Modal */}
-                {showBoltMeasurement && (
-                  <BoltMeasurement onClose={() => setShowBoltMeasurement(false)} />
-                )}
 
                 {/* BOLT-Messung Anleitung */}
                 <div className="mt-8 p-6 bg-zinc-900/50 border border-zinc-800 rounded-lg">
@@ -970,10 +969,7 @@ function Raum36Member() {
         </div>
       </div>
 
-      {/* BOLT-Messung Modal */}
-      {showBoltMeasurement && (
-        <BoltMeasurement onClose={() => setShowBoltMeasurement(false)} />
-      )}
+
     </div>
   );
 }

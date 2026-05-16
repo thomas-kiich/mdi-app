@@ -43,22 +43,31 @@ export function HealthScreeningModal({
   onExcluded,
   onPendingAttestation,
 }: HealthScreeningModalProps) {
-  // Master Checkboxes
-  const [noPhysicalContraindications, setNoPhysicalContraindications] = useState(false);
-  const [noMentalHealthConditions, setNoMentalHealthConditions] = useState(false);
+  // Individuelle Fragen
+  const [physicalAnswers, setPhysicalAnswers] = useState<Record<string, boolean>>({});
+  const [mentalAnswers, setMentalAnswers] = useState<Record<string, boolean>>({});
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const submitMutation = trpc.healthScreening.submitScreening.useMutation();
 
-  const canSubmit = noPhysicalContraindications && noMentalHealthConditions && disclaimerAccepted;
+  // Prüfe ob alle Fragen beantwortet wurden
+  const allPhysicalAnswered = PHYSICAL_QUESTIONS.every(q => q.key in physicalAnswers);
+  const allMentalAnswered = MENTAL_QUESTIONS.every(q => q.key in mentalAnswers);
+  const canSubmit = allPhysicalAnswered && allMentalAnswered && disclaimerAccepted;
 
-  const handleTogglePhysical = () => {
-    setNoPhysicalContraindications(!noPhysicalContraindications);
+  const handlePhysicalToggle = (key: string) => {
+    setPhysicalAnswers(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
-  const handleToggleMental = () => {
-    setNoMentalHealthConditions(!noMentalHealthConditions);
+  const handleMentalToggle = (key: string) => {
+    setMentalAnswers(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }));
   };
 
   const handleToggleDisclaimer = () => {
@@ -67,7 +76,7 @@ export function HealthScreeningModal({
 
   const handleSubmit = async () => {
     if (!canSubmit) {
-      toast.error("Bitte füllen Sie alle erforderlichen Felder aus");
+      toast.error("Bitte beantworten Sie alle Fragen");
       return;
     }
 
@@ -75,17 +84,17 @@ export function HealthScreeningModal({
 
     try {
       const response = await submitMutation.mutateAsync({
-        hasHighBloodPressure: false,
-        hasAsthma: false,
-        hasHeartArrhythmia: false,
-        hasEpilepsy: false,
-        isPregnant: false,
-        hasRecentSurgery: false,
-        hasAnxietyDisorder: false,
-        hasDepression: false,
-        hasSleepDisorder: false,
-        hasMentalIllness: false,
-        hasSubstanceAbuse: false,
+        hasHighBloodPressure: physicalAnswers.hasHighBloodPressure || false,
+        hasAsthma: physicalAnswers.hasAsthma || false,
+        hasHeartArrhythmia: physicalAnswers.hasHeartArrhythmia || false,
+        hasEpilepsy: physicalAnswers.hasEpilepsy || false,
+        isPregnant: physicalAnswers.isPregnant || false,
+        hasRecentSurgery: physicalAnswers.hasRecentSurgery || false,
+        hasAnxietyDisorder: mentalAnswers.hasAnxietyDisorder || false,
+        hasDepression: mentalAnswers.hasDepression || false,
+        hasSleepDisorder: mentalAnswers.hasSleepDisorder || false,
+        hasMentalIllness: mentalAnswers.hasMentalIllness || false,
+        hasSubstanceAbuse: mentalAnswers.hasSubstanceAbuse || false,
         disclaimerAccepted: true,
         notes: undefined,
       });
@@ -125,7 +134,7 @@ export function HealthScreeningModal({
           {/* Hinweis */}
           <div className="bg-amber-900/30 border border-amber-700/50 rounded-lg p-3">
             <p className="text-xs text-amber-200">
-              ℹ️ Bitte bestätigen Sie beide Punkte durch <span className="font-semibold">Anklicken der grünen Begriffe</span>
+              ℹ️ Bitte beantworten Sie alle Fragen ehrlich. Dies ist wichtig für Ihre Sicherheit.
             </p>
           </div>
 
@@ -136,30 +145,20 @@ export function HealthScreeningModal({
               <h3 className="font-semibold text-red-500">Physische Kontraindikationen</h3>
             </div>
 
-            {/* Master Checkbox */}
-            <div className="flex items-center gap-3 p-3 bg-zinc-900/50 rounded-lg cursor-pointer hover:bg-zinc-900/70 transition-colors" onClick={handleTogglePhysical}>
-              <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                noPhysicalContraindications 
-                  ? "bg-green-500 border-green-500" 
-                  : "border-zinc-600 bg-transparent"
-              }`}>
-                {noPhysicalContraindications && <Check className="w-3 h-3 text-white" />}
-              </div>
-              <span className={`text-sm font-semibold transition-colors ${
-                noPhysicalContraindications 
-                  ? "text-green-400" 
-                  : "text-green-400 hover:text-green-300"
-              }`}>
-                Keine Kontraindikationen
-              </span>
-            </div>
-
-            {/* Detail-Erklärungen (nur Text, keine Checkboxes) */}
-            <div className="space-y-2 pl-8 text-xs text-zinc-400">
+            <div className="space-y-2">
               {PHYSICAL_QUESTIONS.map(q => (
-                <div key={q.key} className="border-l border-zinc-700 pl-3 py-1">
-                  <p className="font-semibold text-zinc-300">{q.label}</p>
-                  <p>{q.description}</p>
+                <div key={q.key} className="flex items-start gap-3 p-3 bg-zinc-900/50 rounded-lg cursor-pointer hover:bg-zinc-900/70 transition-colors" onClick={() => handlePhysicalToggle(q.key)}>
+                  <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${
+                    physicalAnswers[q.key]
+                      ? "bg-red-500 border-red-500"
+                      : "border-zinc-600 bg-transparent"
+                  }`}>
+                    {physicalAnswers[q.key] && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-zinc-200">{q.label}</p>
+                    <p className="text-xs text-zinc-400">{q.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -173,30 +172,20 @@ export function HealthScreeningModal({
               <span className="text-xs text-zinc-400">(Ärztliches Attest erforderlich)</span>
             </div>
 
-            {/* Master Checkbox */}
-            <div className="flex items-center gap-3 p-3 bg-zinc-900/50 rounded-lg cursor-pointer hover:bg-zinc-900/70 transition-colors" onClick={handleToggleMental}>
-              <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                noMentalHealthConditions 
-                  ? "bg-green-500 border-green-500" 
-                  : "border-zinc-600 bg-transparent"
-              }`}>
-                {noMentalHealthConditions && <Check className="w-3 h-3 text-white" />}
-              </div>
-              <span className={`text-sm font-semibold transition-colors ${
-                noMentalHealthConditions 
-                  ? "text-green-400" 
-                  : "text-green-400 hover:text-green-300"
-              }`}>
-                Keine Befindlichkeitsstörungen
-              </span>
-            </div>
-
-            {/* Detail-Erklärungen (nur Text, keine Checkboxes) */}
-            <div className="space-y-2 pl-8 text-xs text-zinc-400">
+            <div className="space-y-2">
               {MENTAL_QUESTIONS.map(q => (
-                <div key={q.key} className="border-l border-zinc-700 pl-3 py-1">
-                  <p className="font-semibold text-zinc-300">{q.label}</p>
-                  <p>{q.description}</p>
+                <div key={q.key} className="flex items-start gap-3 p-3 bg-zinc-900/50 rounded-lg cursor-pointer hover:bg-zinc-900/70 transition-colors" onClick={() => handleMentalToggle(q.key)}>
+                  <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${
+                    mentalAnswers[q.key]
+                      ? "bg-amber-500 border-amber-500"
+                      : "border-zinc-600 bg-transparent"
+                  }`}>
+                    {mentalAnswers[q.key] && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-zinc-200">{q.label}</p>
+                    <p className="text-xs text-zinc-400">{q.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -212,8 +201,8 @@ export function HealthScreeningModal({
             </p>
             <div className="flex items-center gap-3 cursor-pointer" onClick={handleToggleDisclaimer}>
               <div className={`w-5 h-5 border-2 rounded flex items-center justify-center transition-all ${
-                disclaimerAccepted 
-                  ? "bg-green-500 border-green-500" 
+                disclaimerAccepted
+                  ? "bg-green-500 border-green-500"
                   : "border-zinc-600 bg-transparent"
               }`}>
                 {disclaimerAccepted && <Check className="w-3 h-3 text-white" />}
