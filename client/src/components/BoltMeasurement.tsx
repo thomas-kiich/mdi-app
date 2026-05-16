@@ -140,24 +140,7 @@ export function BoltMeasurement({ onClose }: BoltMeasurementProps) {
           ))}
         </div>
 
-        {/* Action Card */}
-        <div className="mt-12 max-w-2xl mx-auto">
-          <Card className="bg-gradient-to-br from-orange-500/10 to-transparent border-orange-500/30">
-            <CardContent className="p-8">
-              <h3 className="text-lg font-bold text-white mb-3">Deine BOLT-Messung</h3>
-              <p className="text-zinc-400 mb-6">
-                Messe deinen morgendlichen BOLT-Wert im Vitalmonitor und vergleiche deine Befindlichkeit mit den Trainingsempfehlungen.
-              </p>
-              <Button 
-                className="w-full bg-white text-black hover:bg-zinc-200 h-12 text-lg font-medium"
-                onClick={onClose}
-              >
-                <Play className="w-4 h-4 mr-2 fill-current" />
-                Zum Vitalmonitor
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+
       </div>
     </div>
   );
