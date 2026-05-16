@@ -103,7 +103,7 @@ export function PodcastFeature({
               style={{ height: '48px' }}
             >
               <source
-                src={`${audioUrl}?v=11`}
+                src={`${audioUrl}?v=12`}
                 type="audio/mpeg"
               />
               Dein Browser unterstützt das Audio-Element nicht.
