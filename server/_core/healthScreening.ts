@@ -170,19 +170,24 @@ export async function saveHealthScreening(
       expiresAt: evaluation.approved ? expiresAt : null,
     });
 
-    // Protokolliere Screening
-    await logAudit({
-      userId: input.userId,
-      action: "access",
-      dataType: "health_screening",
-      reason: "user_self_access",
-      ipAddress: input.ipAddress,
-      details: {
-        status: evaluation.status,
-        approved: evaluation.approved,
-        excludedReasons: evaluation.excludedReasons,
-      },
-    });
+    // Protokolliere Screening (mit Error-Handling für fehlende audit_logs Tabelle)
+    try {
+      await logAudit({
+        userId: input.userId,
+        action: "access",
+        dataType: "health_screening",
+        reason: "user_self_access",
+        ipAddress: input.ipAddress,
+        details: {
+          status: evaluation.status,
+          approved: evaluation.approved,
+          excludedReasons: evaluation.excludedReasons,
+        },
+      });
+    } catch (auditError) {
+      // Audit-Fehler sollten die Hauptoperation nicht blockieren
+      console.warn("[HealthScreening] Audit logging failed (table may not exist):", auditError);
+    }
 
     console.log(`[HealthScreening] Screening saved for user ${input.userId}: ${evaluation.status}`);
     return screening;
