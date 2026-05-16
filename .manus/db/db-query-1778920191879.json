@@ -1,0 +1,9 @@
+{
+  "query": "SELECT id, episodeNumber, catchphrase, subtitle FROM podcast_episodes WHERE episodeNumber = '01'",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, episodeNumber, catchphrase, subtitle FROM podcast_episodes WHERE episodeNumber = '01'",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 255
+}

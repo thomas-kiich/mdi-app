@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO podcast_episodes (episodeNumber, catchphrase, subtitle, audioUrl, coverImageUrl) VALUES ('01', 'Dein AGENT wartet auf dich!', 'JETZT musst du dich entscheiden...', 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/jiotQKgLDjTtFRIn.mp3', '')",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute INSERT INTO podcast_episodes (episodeNumber, catchphrase, subtitle, audioUrl, coverImageUrl) VALUES ('01', 'Dein AGENT wartet auf dich!', 'JETZT musst du dich entscheiden...', 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/jiotQKgLDjTtFRIn.mp3', '')",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 260
+}
