@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO podcast_episodes (episodeNumber, catchphrase, subtitle, audioUrl, coverImageUrl, description, isLatest, sortOrder, createdAt, updatedAt) \nVALUES ('01', 'Maschinen atmen nicht', 'Das interaktive Hörbuch von Thomas Chochola', 'https://d2xsxph8kpxj0f.cloudfront.net/EP01_128k_401587a1.mp3', 'https://d2xsxph8kpxj0f.cloudfront.net/default-podcast-cover.jpg', 'Episode 01 - Die erste Episode der Hörbuchserie', false, 1, NOW(), NOW())",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute INSERT INTO podcast_episodes (episodeNumber, catchphrase, subtitle, audioUrl, coverImageUrl, description, isLatest, sortOrder, createdAt, updatedAt) \nVALUES ('01', 'Maschinen atmen nicht', 'Das interaktive Hörbuch von Thomas Chochola', 'https://d2xsxph8kpxj0f.cloudfront.net/EP01_128k_401587a1.mp3', 'https://d2xsxph8kpxj0f.cloudfront.net/default-podcast-cover.jpg', 'Episode 01 - Die erste Episode der Hörbuchserie', false, 1, NOW(), NOW())",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 270
+}
