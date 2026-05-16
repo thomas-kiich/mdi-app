@@ -98,14 +98,6 @@ export function BoltMeasurement({ onClose }: BoltMeasurementProps) {
           </Button>
         </div>
 
-        {/* Info Card */}
-        <div className="flex items-start gap-2 max-w-2xl mx-auto mb-8 bg-blue-950/30 border border-blue-500/20 rounded-lg px-4 py-3">
-          <Info className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
-          <p className="text-sm text-blue-300/80 leading-relaxed">
-            <strong className="text-blue-200">BOLT-Wert:</strong> Atemhaltedauer nach normalem Ausatmen. Misst deine Atemkontrolle und Konstitution. Gemessen im Vitalmonitor.
-          </p>
-        </div>
-
         {/* BOLT Levels Grid */}
         <div className="space-y-4">
           {BOLT_LEVELS.map((level, idx) => (
