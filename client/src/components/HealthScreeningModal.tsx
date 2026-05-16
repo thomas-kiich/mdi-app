@@ -92,10 +92,10 @@ export function HealthScreeningModal({
 
       if (response.evaluation.approved) {
         toast.success("✅ Screening genehmigt! Sie können RAUM 36 nutzen.");
-        setTimeout(() => {
-          onApproved();
-          onOpenChange(false);
-        }, 2000);
+        // Rufe onApproved auf (startet Checkout-Mutation)
+        // Schließe Modal NICHT sofort - warte bis Mutation fertig ist
+        onApproved();
+        // Modal wird geschlossen, wenn Checkout erfolgreich ist (in Raum36.tsx)
       } else if (response.evaluation.status === "pending_attestation") {
         toast.info("📋 Ärztliches Attest erforderlich");
         setTimeout(() => {

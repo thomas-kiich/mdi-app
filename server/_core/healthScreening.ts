@@ -136,65 +136,60 @@ export async function saveHealthScreening(
     throw new Error("Database not available");
   }
 
+  // Verschlüssele sensible Felder
+  const encryptedNotes = input.notes ? encryptField(input.notes) : null;
+
+  // Berechne Ablaufdatum (1 Jahr)
+  const expiresAt = new Date();
+  expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+
+  // Generiere UUID für id
+  const { v4: uuidv4 } = await import('uuid');
+  const id = uuidv4();
+
+  const screening = await db.insert(healthScreenings).values({
+    id,
+    userId: input.userId,
+    hasHighBloodPressure: input.hasHighBloodPressure,
+    hasAsthma: input.hasAsthma,
+    hasHeartArrhythmia: input.hasHeartArrhythmia,
+    hasEpilepsy: input.hasEpilepsy,
+    isPregnant: input.isPregnant,
+    hasRecentSurgery: input.hasRecentSurgery,
+    hasAnxietyDisorder: input.hasAnxietyDisorder,
+    hasDepression: input.hasDepression,
+    hasSleepDisorder: input.hasSleepDisorder,
+    hasMentalIllness: input.hasMentalIllness,
+    hasSubstanceAbuse: input.hasSubstanceAbuse,
+    status: evaluation.status,
+    disclaimerAccepted: input.disclaimerAccepted,
+    notes: encryptedNotes,
+    ipAddress: input.ipAddress,
+    approvedAt: evaluation.approved ? new Date() : null,
+    expiresAt: evaluation.approved ? expiresAt : null,
+  });
+
+  // Protokolliere Screening (mit Error-Handling für fehlende audit_logs Tabelle)
   try {
-    // Verschlüssele sensible Felder
-    const encryptedNotes = input.notes ? encryptField(input.notes) : null;
-
-    // Berechne Ablaufdatum (1 Jahr)
-    const expiresAt = new Date();
-    expiresAt.setFullYear(expiresAt.getFullYear() + 1);
-
-    // Generiere UUID für id
-    const { v4: uuidv4 } = await import('uuid');
-    const id = uuidv4();
-
-    const screening = await db.insert(healthScreenings).values({
-      id,
+    await logAudit({
       userId: input.userId,
-      hasHighBloodPressure: input.hasHighBloodPressure,
-      hasAsthma: input.hasAsthma,
-      hasHeartArrhythmia: input.hasHeartArrhythmia,
-      hasEpilepsy: input.hasEpilepsy,
-      isPregnant: input.isPregnant,
-      hasRecentSurgery: input.hasRecentSurgery,
-      hasAnxietyDisorder: input.hasAnxietyDisorder,
-      hasDepression: input.hasDepression,
-      hasSleepDisorder: input.hasSleepDisorder,
-      hasMentalIllness: input.hasMentalIllness,
-      hasSubstanceAbuse: input.hasSubstanceAbuse,
-      status: evaluation.status,
-      disclaimerAccepted: input.disclaimerAccepted,
-      notes: encryptedNotes,
+      action: "access",
+      dataType: "health_screening",
+      reason: "user_self_access",
       ipAddress: input.ipAddress,
-      approvedAt: evaluation.approved ? new Date() : null,
-      expiresAt: evaluation.approved ? expiresAt : null,
+      details: {
+        status: evaluation.status,
+        approved: evaluation.approved,
+        excludedReasons: evaluation.excludedReasons,
+      },
     });
-
-    // Protokolliere Screening (mit Error-Handling für fehlende audit_logs Tabelle)
-    try {
-      await logAudit({
-        userId: input.userId,
-        action: "access",
-        dataType: "health_screening",
-        reason: "user_self_access",
-        ipAddress: input.ipAddress,
-        details: {
-          status: evaluation.status,
-          approved: evaluation.approved,
-          excludedReasons: evaluation.excludedReasons,
-        },
-      });
-    } catch (auditError) {
-      // Audit-Fehler sollten die Hauptoperation nicht blockieren
-      console.warn("[HealthScreening] Audit logging failed (table may not exist):", auditError);
-    }
-
-    console.log(`[HealthScreening] Screening saved for user ${input.userId}: ${evaluation.status}`);
-    return screening;
-  } catch (error) {
-    console.error("[HealthScreening] Error saving screening:", error);
-    throw error;
+  } catch (auditError) {
+    // Audit-Fehler sollten die Hauptoperation nicht blockieren
+    console.warn("[HealthScreening] Audit logging failed (table may not exist):", auditError);
   }
+
+  console.log(`[HealthScreening] Screening saved for user ${input.userId}: ${evaluation.status}`);
+  return screening;
 }
 
 /**

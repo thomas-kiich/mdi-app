@@ -83,11 +83,13 @@ function Raum36Landing() {
     onSuccess: (data) => {
       if (data.url) {
         toast.info("Du wirst zu Stripe weitergeleitet…");
+        setShowHealthScreening(false);
         window.open(data.url, "_blank");
       }
     },
     onError: (err) => {
       toast.error(err.message);
+      setShowHealthScreening(false);
     },
   });
 
