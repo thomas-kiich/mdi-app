@@ -11,24 +11,24 @@ const BOLT_LEVELS = [
   {
     range: '1–10',
     condition: 'Sehr schwache konstitutionelle Verfassung',
-    details: 'Oft verbunden mit Müdigkeit, eingeschränkter Produktivität und Schlafstörungen. Sehr schlechter Fitnesszustand; Atmung in Ruhe unregelmäßig, tagsüber Schnappen nach Luft oder Gähnen.',
+    details: 'Sehr schwache konstitutionelle Verfassung; oft verbunden mit Müdigkeit, eingeschränkter Produktivität und Schlafstörungen. Sehr schlechter Fitnesszustand; Atmung in Ruhe unregelmäßig, tagsüber Schnappen nach Luft oder Gähnen. Atemnot tritt schon bei leichter Belastung oder beim Sprechen auf.',
     training: [
-      'Nasenatemtechnik Tag und Nacht',
-      'Ruheposition oder Bettsprechung',
-      'Häufiges Gähnen-Training',
-      'Langsame Spaziergänge (10–15 Min.) mit geschlossenem Mund',
-      'Dirigentenschlag'
+      'Nasenatmung Tag und Nacht',
+      'Resonanztraining',
+      'Inhärentes Gähntraining',
+      'Langsame Spaziergänge (10-15 Min.) mit geschlossenem Mund',
+      'Dirigentenspiel'
     ],
     color: 'bg-red-900/30 border-red-700'
   },
   {
     range: '11–20',
     condition: 'Schwache konstitutionelle Verfassung',
-    details: 'Häufiges Gähnen oder Seufzen. Grenzwertig kompensierter Fitnesszustand; Atemfrequenz in Ruhe erhöht (>12 Atemzüge pro Minute). Probleme bei mittlerer Belastung im Alltag (z. B. Treppensteigen).',
+    details: 'Schwache konstitutionelle Verfassung. Häufiges Gähnen oder Seufzen. Grenzwertig kompensierter Fitnesszustand; Atemfrequenz in Ruhe erhöht (>12 Atemzüge pro Minute). Probleme bei mittlerer Belastung im Alltag (z. B. Treppensteigen).',
     training: [
       'Alles von Ebene I',
       'Enthaltsamkeitstraining',
-      'Behutsames Ausdauertraining (65–72% Hmax)',
+      'Behutsames Ausdauertraining (65-72% Hmax)',
       'Befindlichkeitstraining 7/12min'
     ],
     color: 'bg-orange-900/30 border-orange-700'
@@ -36,11 +36,11 @@ const BOLT_LEVELS = [
   {
     range: '21–26',
     condition: 'Durchschnittliche Konstitution',
-    details: 'Mittelmäßiger Fitnesszustand. Normale Atmung eher ruhig, gleichmäßig und mühelos. Verbesserte Ausdauer; leichtes körperliches Training und Alltagsaktivitäten ohne merkliche Probleme machbar.',
+    details: 'Durchschnittliche Konstitution. Mittelmäßiger Fitnesszustand. Normale Atmung eher ruhig, gleichmäßig und mühelos. Verbesserte Ausdauer; leichtes körperliches Training und Alltagsaktivitäten ohne merkliche Probleme machbar.',
     training: [
       'Alles von den Vorebenen',
-      'Schnelles Gehen oder Joggen (30–60 Min.) bei leichtem Lufthunger',
-      'YOHNTRAINING neunstufig',
+      'Schnelles Gehen oder Joggen (30-60 Min.) bei leichtem Lufthunger',
+      'Yohntraining neunstufig',
       'Mobilitätstraining'
     ],
     color: 'bg-yellow-900/30 border-yellow-700'
@@ -48,11 +48,11 @@ const BOLT_LEVELS = [
   {
     range: '26–35',
     condition: 'Gute Atemsensitivität und Belastbarkeit',
-    details: 'Guter bis sehr guter Fitnesszustand. Zügige Erholungsphasen nach Anstrengung; effizientes Herzkreislaufsystem. Gute Sporttauglichkeit. Leistungssteigerungen sind problemlos möglich.',
+    details: 'Gute Atemsensitivität und Belastbarkeit; guter bis sehr guter Fitnesszustand. Zügige Erholungsphasen nach Anstrengung; effizientes Herzkreislaufsystem. Gute Sporttauglichkeit. Leistungssteigerungen sind problemlos möglich.',
     training: [
       'Alles aus den Vorebenen',
       'Apnoetraining morgens',
-      'YOHNTRAINING intensiv',
+      'Yohntraining intensiv',
       'Maximalkrafttraining',
       'VO2 max Training'
     ],
@@ -61,7 +61,7 @@ const BOLT_LEVELS = [
   {
     range: '36+',
     condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand',
-    details: 'Zielwert für Athleten. Sportliche Leistungsfähigkeit und effiziente Erholungsphasen. Ideale Atemphysiologie und exzellenter Fitnesszustand.',
+    details: 'Ideale Atemphysiologie und exzellenter Fitnesszustand; Zielwert für Athleten. Sportliche Leistungsfähigkeit und effiziente Erholungsphasen.',
     training: [
       'Hochintensives Training bei reiner Nasenatmung möglich',
       'In Pausenzeiten hochintensiver Intervall-Sessions ausschließlich durch die Nase atmen',
