@@ -13,9 +13,10 @@ import { useLocation } from 'wouter';
 interface ToneColorExplorerProps {
   mdiDistribution?: Record<string, number>;
   liveFrequency?: number;
+  onStartTraining?: (data: { freq: number; tone: string; color: string; typeId: number }) => void;
 }
 
-export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorExplorerProps) {
+export function ToneColorExplorer({ mdiDistribution, liveFrequency, onStartTraining }: ToneColorExplorerProps) {
   const [hoveredSegment, setHoveredSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number, metaphor: string } | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<{ id: number, intensity: number, color: string, toneName: string, freq: number, metaphor: string } | null>(null);
   const [trainingMode, setTrainingMode] = useState<{ freq: number, tone: string, color: string, typeId?: number, duration?: number } | null>(null);
@@ -394,7 +395,18 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
               <Button 
                 size="lg" 
                 className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold h-12 text-xs"
-                onClick={() => { window.location.href = '/raum36'; }}
+                onClick={() => {
+                  if (onStartTraining && selectedSegment) {
+                    onStartTraining({
+                      freq: selectedSegment.freq,
+                      tone: selectedSegment.toneName,
+                      color: selectedSegment.color,
+                      typeId: selectedSegment.id,
+                    });
+                  } else {
+                    window.location.href = '/raum36';
+                  }
+                }}
               >
                 <Zap className="mr-2 h-4 w-4 fill-current shrink-0" />
                 YOHNTRAINING in RAUM 36 →

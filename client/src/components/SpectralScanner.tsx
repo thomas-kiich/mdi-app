@@ -29,9 +29,10 @@ const frequencyData = frequencyDataRaw as unknown as FrequencyDataItem[];
 interface SpectralScannerProps {
     onClose: () => void;
     forcedFrequency?: number;
+    onStartTraining?: (data: { freq: number; tone: string; color: string; typeId: number }) => void;
 }
 
-export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerProps) {
+export function SpectralScanner({ onClose, forcedFrequency, onStartTraining }: SpectralScannerProps) {
   const [isListening, setIsListening] = useState(false);
   const isListeningRef = useRef(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -250,7 +251,17 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
   const [showDurationSelect, setShowDurationSelect] = useState(false);
 
   const handleOpenTrainingCenter = () => {
-      setLocation('/raum36');
+      const info = selectedInfo || hoverInfo?.item;
+      if (onStartTraining && info) {
+          onStartTraining({
+              freq: info.frequency,
+              tone: info.toneRange,
+              color: info.hex,
+              typeId: info.id,
+          });
+      } else {
+          setLocation('/raum36');
+      }
   };
 
   const handleStartTraining = (duration: number) => {

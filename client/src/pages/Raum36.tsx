@@ -40,6 +40,8 @@ import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructur
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
+import { SpectralScanner } from "@/components/SpectralScanner";
+import { ToneColorExplorer } from "@/components/ToneColorExplorer";
 
 const BOLT_LEVELS = [
   {
@@ -466,7 +468,7 @@ function Raum36Landing() {
 }
 
 // ─── Mitglieder-Bereich ──────────────────────────────────────────────────────
-type Tab = "methode36" | "fragen" | "videos" | "vital" | "wissenspool";
+type Tab = "methode36" | "fragen" | "videos" | "vital" | "wissenspool" | "frequenzlabor";
 
 // Freischaltungsdatum für neue Features (Vital Monitor)
 const FEATURE_UNLOCK = new Date("2026-05-14T00:00:00");
@@ -486,6 +488,10 @@ function Raum36Member() {
   const [m36TrainingItem, setM36TrainingItem] = useState<{ id: string; name: string; description: string; type: string } | null>(null);
   const [m36Duration, setM36Duration] = useState<number>(0);
   const [m36BasicData, setM36BasicData] = useState<{ freq: number; tone: string; color: string; typeId: number } | null>(null);
+
+  // Frequenz-Labor State
+  const [flShowScanner, setFlShowScanner] = useState(false);
+  const [flTrainerData, setFlTrainerData] = useState<{ freq: number; tone: string; color: string; typeId: number } | null>(null);
 
   const statusQuery = trpc.raum36.getStatus.useQuery();
   // Vital Monitor ist für alle aktiven RAUM 36 Mitglieder zugänglich (kein separater Kauf nötig)
@@ -626,6 +632,7 @@ function Raum36Member() {
               { id: "videos", label: "TRAININGSCENTER", icon: <Video className="w-4 h-4" /> },
               { id: "vital", label: "VITALMONITOR", icon: <HeartPulse className="w-4 h-4" /> },
               { id: "wissenspool", label: "WISSENSPOOL", icon: <Lightbulb className="w-4 h-4" /> },
+              { id: "frequenzlabor", label: "FREQUENZ-LABOR", icon: <span className="text-base">🔬</span> },
             ] as { id: Tab; label: string; icon: React.ReactNode }[]
           ).map((tab) => (
             <button
@@ -1137,6 +1144,69 @@ function Raum36Member() {
                     <span className="text-orange-400 text-xs font-mono uppercase tracking-widest">Mitgliedschaft erforderlich</span>
                   </div>
                   <p className="text-zinc-500 text-sm">Der Vital Monitor ist exklusiv für RAUM 36 Mitglieder.</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Frequenz-Labor */}
+          {activeTab === "frequenzlabor" && (
+            <div>
+              {flTrainerData ? (
+                /* Direkt ins YOHNTRAINING wenn Farbe gewählt */
+                <Method36Trainer
+                  frequency={flTrainerData.freq}
+                  toneName={flTrainerData.tone}
+                  color={flTrainerData.color}
+                  typeId={flTrainerData.typeId}
+                  duration={7}
+                  onClose={() => setFlTrainerData(null)}
+                />
+              ) : flShowScanner ? (
+                /* Spektral-Scanner (Mikrofon-Analyse) */
+                <SpectralScanner
+                  onClose={() => setFlShowScanner(false)}
+                  onStartTraining={(data) => {
+                    setFlShowScanner(false);
+                    setFlTrainerData(data);
+                  }}
+                />
+              ) : (
+                /* Übersicht: Auswahl zwischen Scanner und Farbmatrix */
+                <div className="space-y-8">
+                  <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white mb-2">🔬 Frequenz-Labor</h2>
+                    <p className="text-zinc-400 text-sm max-w-xl mx-auto">
+                      Erforsche den Zusammenhang von Klang und Lichtfarbe. Analysiere deine Stimme oder wähle direkt eine Farbe – und steige dann ins YOHNTRAINING ein.
+                    </p>
+                  </div>
+
+                  {/* Spektral-Scanner */}
+                  <div className="border border-zinc-800 rounded-xl p-6 hover:border-orange-500/40 transition-colors cursor-pointer" onClick={() => setFlShowScanner(true)}>
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-full bg-orange-500/10 flex items-center justify-center shrink-0">
+                        <Mic className="w-6 h-6 text-orange-400" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-white font-semibold mb-1">Spektral-Scanner</h3>
+                        <p className="text-zinc-400 text-sm">Summe einen Ton ins Mikrofon – die App erkennt deine Frequenz und zeigt dir die zugehörige Lichtfarbe. Danach kannst du direkt ins YOHNTRAINING wechseln.</p>
+                        <Button size="sm" className="mt-4 bg-orange-600 hover:bg-orange-500 text-white" onClick={(e) => { e.stopPropagation(); setFlShowScanner(true); }}>
+                          Scanner starten
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Farbmatrix */}
+                  <div className="border border-zinc-800 rounded-xl p-6">
+                    <div className="mb-4">
+                      <h3 className="text-white font-semibold mb-1">Lichtklang-Matrix</h3>
+                      <p className="text-zinc-400 text-sm">Wähle eine Farbe die du gerade brauchst – du hörst den zugehörigen Ton und kannst direkt ins YOHNTRAINING einsteigen.</p>
+                    </div>
+                    <ToneColorExplorer
+                      onStartTraining={(data) => setFlTrainerData(data)}
+                    />
+                  </div>
                 </div>
               )}
             </div>
