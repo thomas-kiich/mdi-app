@@ -1311,7 +1311,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                       onClick={() => setLocation('/raum36')}
                     >
                       <Music2 className="mr-2 h-4 w-4 shrink-0" />
-                      HIER KLICKEN - zum YOHNTRAINING mit deinem LEBENSKLANG
+                      YOHNTRAINING in RAUM 36 →
                     </Button>
                   </div>
                   

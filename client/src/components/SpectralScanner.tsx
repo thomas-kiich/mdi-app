@@ -536,7 +536,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
                                   onClick={handleOpenTrainingCenter}
                                 >
                                   <Zap className="mr-2 h-4 w-4 fill-current shrink-0" />
-                                  HIER KLICKEN - zum YOHNTRAINING mit deinem LEBENSKLANG
+                                  YOHNTRAINING in RAUM 36 →
                                 </Button>
                           </div>
                           
