@@ -11,24 +11,24 @@ const BOLT_LEVELS = [
   {
     range: '1–10',
     condition: 'Sehr schwache konstitutionelle Verfassung',
-    details: 'Oft verbunden mit Müdigkeit, eingeschränkter Produktivität und Schlafstörungen. Sehr schlechter Fitnesszustand; Atmung in Ruhe unregelmäßig, tagsüber Schnappen nach Luft oder Gähnen.',
+    details: 'Sehr schwache konstitutionelle Verfassung; oft verbunden mit Müdigkeit, eingeschränkter Produktivität und Schlafstörungen. Sehr schlechter Fitnesszustand; Atmung in Ruhe unregelmäßig, tagsüber Schnappen nach Luft oder Gähnen. Atemnot tritt schon bei leichter Belastung oder beim Sprechen auf.',
     training: [
-      'Nasenatemtechnik Tag und Nacht',
-      'Ruheposition oder Bettsprechung',
-      'Häufiges Gähnen-Training',
-      'Langsame Spaziergänge (10–15 Min.) mit geschlossenem Mund',
-      'Dirigentenschlag'
+      'Nasenatmung Tag und Nacht',
+      'Resonanztraining',
+      'Inhärentes Gähntraining',
+      'Langsame Spaziergänge (10-15 Min.) mit geschlossenem Mund',
+      'Dirigentenspiel'
     ],
     color: 'bg-red-900/30 border-red-700'
   },
   {
     range: '11–20',
     condition: 'Schwache konstitutionelle Verfassung',
-    details: 'Häufiges Gähnen oder Seufzen. Grenzwertig kompensierter Fitnesszustand; Atemfrequenz in Ruhe erhöht (>12 Atemzüge pro Minute). Probleme bei mittlerer Belastung im Alltag (z. B. Treppensteigen).',
+    details: 'Schwache konstitutionelle Verfassung. Häufiges Gähnen oder Seufzen. Grenzwertig kompensierter Fitnesszustand; Atemfrequenz in Ruhe erhöht (>12 Atemzüge pro Minute). Probleme bei mittlerer Belastung im Alltag (z. B. Treppensteigen).',
     training: [
       'Alles von Ebene I',
       'Enthaltsamkeitstraining',
-      'Behutsames Ausdauertraining (65–72% Hmax)',
+      'Behutsames Ausdauertraining (65-72% Hmax)',
       'Befindlichkeitstraining 7/12min'
     ],
     color: 'bg-orange-900/30 border-orange-700'
@@ -36,11 +36,11 @@ const BOLT_LEVELS = [
   {
     range: '21–26',
     condition: 'Durchschnittliche Konstitution',
-    details: 'Mittelmäßiger Fitnesszustand. Normale Atmung eher ruhig, gleichmäßig und mühelos. Verbesserte Ausdauer; leichtes körperliches Training und Alltagsaktivitäten ohne merkliche Probleme machbar.',
+    details: 'Durchschnittliche Konstitution. Mittelmäßiger Fitnesszustand. Normale Atmung eher ruhig, gleichmäßig und mühelos. Verbesserte Ausdauer; leichtes körperliches Training und Alltagsaktivitäten ohne merkliche Probleme machbar.',
     training: [
       'Alles von den Vorebenen',
-      'Schnelles Gehen oder Joggen (30–60 Min.) bei leichtem Lufthunger',
-      'YOHNTRAINING neunstufig',
+      'Schnelles Gehen oder Joggen (30-60 Min.) bei leichtem Lufthunger',
+      'Yohntraining neunstufig',
       'Mobilitätstraining'
     ],
     color: 'bg-yellow-900/30 border-yellow-700'
@@ -48,11 +48,11 @@ const BOLT_LEVELS = [
   {
     range: '26–35',
     condition: 'Gute Atemsensitivität und Belastbarkeit',
-    details: 'Guter bis sehr guter Fitnesszustand. Zügige Erholungsphasen nach Anstrengung; effizientes Herzkreislaufsystem. Gute Sporttauglichkeit. Leistungssteigerungen sind problemlos möglich.',
+    details: 'Gute Atemsensitivität und Belastbarkeit; guter bis sehr guter Fitnesszustand. Zügige Erholungsphasen nach Anstrengung; effizientes Herzkreislaufsystem. Gute Sporttauglichkeit. Leistungssteigerungen sind problemlos möglich.',
     training: [
       'Alles aus den Vorebenen',
       'Apnoetraining morgens',
-      'YOHNTRAINING intensiv',
+      'Yohntraining intensiv',
       'Maximalkrafttraining',
       'VO2 max Training'
     ],
@@ -61,7 +61,7 @@ const BOLT_LEVELS = [
   {
     range: '36+',
     condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand',
-    details: 'Zielwert für Athleten. Sportliche Leistungsfähigkeit und effiziente Erholungsphasen. Ideale Atemphysiologie und exzellenter Fitnesszustand.',
+    details: 'Ideale Atemphysiologie und exzellenter Fitnesszustand; Zielwert für Athleten. Sportliche Leistungsfähigkeit und effiziente Erholungsphasen.',
     training: [
       'Hochintensives Training bei reiner Nasenatmung möglich',
       'In Pausenzeiten hochintensiver Intervall-Sessions ausschließlich durch die Nase atmen',
@@ -98,14 +98,6 @@ export function BoltMeasurement({ onClose }: BoltMeasurementProps) {
           </Button>
         </div>
 
-        {/* Info Card */}
-        <div className="flex items-start gap-2 max-w-2xl mx-auto mb-8 bg-blue-950/30 border border-blue-500/20 rounded-lg px-4 py-3">
-          <Info className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" />
-          <p className="text-sm text-blue-300/80 leading-relaxed">
-            <strong className="text-blue-200">BOLT-Wert:</strong> Atemhaltedauer nach normalem Ausatmen. Misst deine Atemkontrolle und Konstitution. Gemessen im Vitalmonitor.
-          </p>
-        </div>
-
         {/* BOLT Levels Grid */}
         <div className="space-y-4">
           {BOLT_LEVELS.map((level, idx) => (
@@ -140,24 +132,7 @@ export function BoltMeasurement({ onClose }: BoltMeasurementProps) {
           ))}
         </div>
 
-        {/* Action Card */}
-        <div className="mt-12 max-w-2xl mx-auto">
-          <Card className="bg-gradient-to-br from-orange-500/10 to-transparent border-orange-500/30">
-            <CardContent className="p-8">
-              <h3 className="text-lg font-bold text-white mb-3">Deine BOLT-Messung</h3>
-              <p className="text-zinc-400 mb-6">
-                Messe deinen morgendlichen BOLT-Wert im Vitalmonitor und vergleiche deine Befindlichkeit mit den Trainingsempfehlungen.
-              </p>
-              <Button 
-                className="w-full bg-white text-black hover:bg-zinc-200 h-12 text-lg font-medium"
-                onClick={onClose}
-              >
-                <Play className="w-4 h-4 mr-2 fill-current" />
-                Zum Vitalmonitor
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+
       </div>
     </div>
   );
