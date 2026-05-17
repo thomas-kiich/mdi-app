@@ -37,6 +37,106 @@ import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { HealthScreeningModal } from "@/components/HealthScreeningModal";
 
+const BOLT_LEVELS = [
+  {
+    range: '1–10',
+    condition: 'Sehr schwache konstitutionelle Verfassung',
+    details: 'Sehr schwache konstitutionelle Verfassung. Sehr häufiges Gähnen oder Seufzen. Atemfrequenz in Ruhe stark erhöht (>15 Atemzüge pro Minute). Probleme bei leichter Belastung im Alltag.',
+    training: [
+      'Ausschließlich sanfte Atemtechniken',
+      'Befindlichkeitstraining 7min',
+      'Leichte Spaziergänge (max. 20 Min.)',
+      'Entspannungsübungen'
+    ],
+    color: 'bg-red-900/30 border-red-700'
+  },
+  {
+    range: '11–20',
+    condition: 'Schwache konstitutionelle Verfassung',
+    details: 'Schwache konstitutionelle Verfassung. Häufiges Gähnen oder Seufzen. Grenzwertig kompensierter Fitnesszustand; Atemfrequenz in Ruhe erhöht (>12 Atemzüge pro Minute). Probleme bei mittlerer Belastung im Alltag (z. B. Treppensteigen).',
+    training: [
+      'Alles von Ebene I',
+      'Enthaltsamkeitstraining',
+      'Behutsames Ausdauertraining (65–72% Hmax)',
+      'Befindlichkeitstraining 7/12min'
+    ],
+    color: 'bg-orange-900/30 border-orange-700'
+  },
+  {
+    range: '21–26',
+    condition: 'Durchschnittliche Konstitution',
+    details: 'Durchschnittliche Konstitution. Mittlermäßiger Fitnesszustand. Normale Atmung eher ruhig, gleichmäßig und mühelos. Verbesserte Ausdauer; leichtes körperliches Training und Alltagsaktivitäten ohne merkliche Probleme machbar.',
+    training: [
+      'Alles von den Vorebenen',
+      'Schnelles Gehen oder Joggen (30–60 Min.) bei leichtem Lufthunger',
+      'Yohntraining neunstufig',
+      'Mobilitätstraining'
+    ],
+    color: 'bg-yellow-900/30 border-yellow-700'
+  },
+  {
+    range: '26–35',
+    condition: 'Gute Atemsensitivität und Belastbarkeit',
+    details: 'Gute Atemsensitivität und Belastbarkeit; guter bis sehr guter Fitnesszustand. Zügige Erholungsphasen nach Anstrengung; effizientes Herzkreislaufsystem. Gute Sporttauglichkeit. Leistungssteigerungen sind problemlos möglich.',
+    training: [
+      'Alles aus den Vorebenen',
+      'Apnoetraining morgens',
+      'Yohntraining intensiv',
+      'Maximalkrafttraining',
+      'VO2 max Training'
+    ],
+    color: 'bg-green-900/30 border-green-700'
+  },
+  {
+    range: '36+',
+    condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand',
+    details: 'Ideale Atemphysiologie und exzellenter Fitnesszustand; Zielwert für Athleten. Sportliche Leistungsfähigkeit und effiziente Erholungsphasen.',
+    training: [
+      'Hochintensives Training bei reiner Nasenatmung möglich',
+      'In Pausenzeiten hochintensiver Intervall-Sessions ausschließlich durch die Nase atmen',
+      'Fortgeschrittene Simulation von Höhentraining unter hoher Belastung'
+    ],
+    color: 'bg-blue-900/30 border-blue-700'
+  }
+];
+
+function BoltLevels() {
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
+  return (
+    <div className="space-y-3 mt-4">
+      {BOLT_LEVELS.map((level, idx) => (
+        <div
+          key={idx}
+          onClick={() => setSelectedLevel(selectedLevel === idx ? null : idx)}
+          className={`p-4 rounded-lg border cursor-pointer transition-all ${level.color} hover:border-opacity-100`}
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <div className="font-semibold text-white">{level.range} Sekunden</div>
+              <div className="text-sm text-zinc-300 mt-1">{level.condition}</div>
+              <p className="text-xs text-zinc-400 mt-2">{level.details}</p>
+              {selectedLevel === idx && (
+                <div className="mt-3 pt-3 border-t border-white/10">
+                  <div className="text-xs font-mono text-zinc-300 uppercase tracking-wider mb-2">Trainingsempfehlungen:</div>
+                  <ul className="space-y-1">
+                    {level.training.map((item, i) => (
+                      <li key={i} className="text-sm text-zinc-300 flex items-start gap-2">
+                        <span className="text-orange-400 mt-0.5">→</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+            <div className="ml-4 text-xl flex-shrink-0">{selectedLevel === idx ? '▼' : '▶'}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function PodcastButton() {
   const podcastUrl = 'https://files.manuscdn.com/user_upload_by_module/session_file/310519663036873684/JePJKOCZiSbQlcdH.mp3';
   
@@ -558,21 +658,8 @@ function Raum36Member() {
                 </div>
                 <p className="text-zinc-300 mb-4">Messe deine Atemhaltedauer nach normalem Ausatmen. Die BOLT-Messung zeigt deine Atemkontrolle, Konstitution und personalisierte Trainingsempfehlungen.</p>
                 
-                {/* BOLT Levels */}
-                <div className="space-y-3 mt-4">
-                  {[
-                    { range: '1–10', condition: 'Sehr schwache konstitutionelle Verfassung', color: 'bg-red-900/30 border-red-700' },
-                    { range: '11–20', condition: 'Schwache konstitutionelle Verfassung', color: 'bg-orange-900/30 border-orange-700' },
-                    { range: '21–26', condition: 'Durchschnittliche Konstitution', color: 'bg-yellow-900/30 border-yellow-700' },
-                    { range: '26–35', condition: 'Gute Atemsensitivität und Belastbarkeit', color: 'bg-green-900/30 border-green-700' },
-                    { range: '36+', condition: 'Ideale Atemphysiologie und exzellenter Fitnesszustand', color: 'bg-blue-900/30 border-blue-700' },
-                  ].map((level, idx) => (
-                    <div key={idx} className={`p-3 rounded-lg border ${level.color}`}>
-                      <div className="font-semibold text-white">{level.range} Sekunden</div>
-                      <div className="text-sm text-zinc-300">{level.condition}</div>
-                    </div>
-                  ))}
-                </div>
+                {/* BOLT Levels – interaktiv klappbar */}
+                <BoltLevels />
 
                 {/* BOLT-Messung Anleitung */}
                 <div className="mt-8 p-6 bg-zinc-900/50 border border-zinc-800 rounded-lg">
