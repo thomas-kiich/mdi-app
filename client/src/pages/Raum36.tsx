@@ -39,6 +39,7 @@ import { HealthScreeningModal } from "@/components/HealthScreeningModal";
 import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
+import { IntervalTrainer } from "@/components/IntervalTrainer";
 
 const BOLT_LEVELS = [
   {
@@ -650,16 +651,32 @@ function Raum36Member() {
           {/* METHODE 36 */}
           {activeTab === "methode36" && (
             <div>
-              {m36ActiveTrainer === "yohn" && m36BasicData ? (
+              {m36ActiveTrainer === "yohn" ? (
                 <Method36Trainer
-                  frequency={m36BasicData.freq}
-                  toneName={m36BasicData.tone}
-                  color={m36BasicData.color}
-                  typeId={m36BasicData.typeId}
-                  duration={m36Duration || undefined}
+                  frequency={m36BasicData?.freq || 97.2}
+                  toneName={m36BasicData?.tone || "G"}
+                  color={m36BasicData?.color || "#ff5757"}
+                  typeId={m36BasicData?.typeId || 19}
+                  duration={m36Duration || 7}
                   onClose={() => {
                     setM36ActiveTrainer(null);
                     setM36BasicData(null);
+                  }}
+                />
+              ) : m36ActiveTrainer === "interval" ? (
+                <IntervalTrainer
+                  baseTone={{
+                    name: m36BasicData?.tone || "G",
+                    frequency: m36BasicData?.freq || 97.2,
+                    color: m36BasicData?.color || "#ff5757",
+                    meaning: "",
+                    geometry: "",
+                    minFreq: (m36BasicData?.freq || 97.2) * 0.95,
+                    maxFreq: (m36BasicData?.freq || 97.2) * 1.05,
+                  }}
+                  onClose={() => {
+                    setM36ActiveTrainer(null);
+                    setM36TrainingItem(null);
                   }}
                 />
               ) : m36ActiveTrainer === "metabolic" ? (
@@ -690,6 +707,10 @@ function Raum36Member() {
                     setM36TrainingItem(item as any);
                     if (item.id === "metabolic" || item.id === "mayerwelle") {
                       setM36ActiveTrainer(item.id);
+                    } else if (item.id === "yohn") {
+                      setM36ActiveTrainer("yohn");
+                    } else if (item.id === "interval") {
+                      setM36ActiveTrainer("interval");
                     }
                   }}
                   onStartBasicTraining={(freq, tone, color, typeId) => {
