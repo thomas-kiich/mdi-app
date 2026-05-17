@@ -36,6 +36,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { HealthScreeningModal } from "@/components/HealthScreeningModal";
+import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
+import { Method36Trainer } from "@/components/Method36Trainer";
+import { AmbientTrainer } from "@/components/AmbientTrainer";
 
 const BOLT_LEVELS = [
   {
@@ -462,7 +465,7 @@ function Raum36Landing() {
 }
 
 // ─── Mitglieder-Bereich ──────────────────────────────────────────────────────
-type Tab = "videos" | "fragen" | "wissenspool" | "vital";
+type Tab = "methode36" | "fragen" | "videos" | "vital" | "wissenspool";
 
 // Freischaltungsdatum für neue Features (Vital Monitor)
 const FEATURE_UNLOCK = new Date("2026-05-14T00:00:00");
@@ -470,12 +473,18 @@ const FEATURE_UNLOCK = new Date("2026-05-14T00:00:00");
 function Raum36Member() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  const [activeTab, setActiveTab] = useState<Tab>("videos");
+  const [activeTab, setActiveTab] = useState<Tab>("methode36");
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
   const [pseudonymInput, setPseudonymInput] = useState("");
   const [showPseudonymForm, setShowPseudonymForm] = useState(false);
   const [inlineNameInput, setInlineNameInput] = useState("");
+
+  // Methode 36 Trainer State
+  const [m36ActiveTrainer, setM36ActiveTrainer] = useState<string | null>(null);
+  const [m36TrainingItem, setM36TrainingItem] = useState<{ id: string; name: string; description: string; type: string } | null>(null);
+  const [m36Duration, setM36Duration] = useState<number>(0);
+  const [m36BasicData, setM36BasicData] = useState<{ freq: number; tone: string; color: string; typeId: number } | null>(null);
 
   const statusQuery = trpc.raum36.getStatus.useQuery();
   // Vital Monitor ist für alle aktiven RAUM 36 Mitglieder zugänglich (kein separater Kauf nötig)
@@ -611,6 +620,7 @@ function Raum36Member() {
         <div className="max-w-4xl mx-auto flex">
           {(
             [
+              { id: "methode36", label: "METHODE 36", icon: <span className="text-base">⚡</span> },
               { id: "fragen", label: "KOMMUNIKATIONSCENTER", icon: <MessageSquare className="w-4 h-4" /> },
               { id: "videos", label: "TRAININGSCENTER", icon: <Video className="w-4 h-4" /> },
               { id: "vital", label: "VITALMONITOR", icon: <HeartPulse className="w-4 h-4" /> },
@@ -636,6 +646,61 @@ function Raum36Member() {
       {/* Content */}
       <div className="px-6 py-10">
         <div className="max-w-4xl mx-auto">
+
+          {/* METHODE 36 */}
+          {activeTab === "methode36" && (
+            <div>
+              {m36ActiveTrainer === "yohn" && m36BasicData ? (
+                <Method36Trainer
+                  frequency={m36BasicData.freq}
+                  toneName={m36BasicData.tone}
+                  color={m36BasicData.color}
+                  typeId={m36BasicData.typeId}
+                  duration={m36Duration || undefined}
+                  onClose={() => {
+                    setM36ActiveTrainer(null);
+                    setM36BasicData(null);
+                  }}
+                />
+              ) : m36ActiveTrainer === "metabolic" ? (
+                <AmbientTrainer
+                  trainingId="metabolic"
+                  duration={m36Duration || 0}
+                  audioUrls={{ 0: "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/RESONSANZausdemRAUM_434eee24.mp3" }}
+                  onClose={() => {
+                    setM36ActiveTrainer(null);
+                    setM36TrainingItem(null);
+                  }}
+                />
+              ) : m36ActiveTrainer === "mayerwelle" ? (
+                <AmbientTrainer
+                  trainingId="mayerwelle"
+                  duration={m36Duration || 0}
+                  audioUrls={{ 45: "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/ambient-extra_262fb71f.mp3" }}
+                  onClose={() => {
+                    setM36ActiveTrainer(null);
+                    setM36TrainingItem(null);
+                  }}
+                />
+              ) : (
+                <TrainingCategoryStructure
+                  isPremium={isAdmin || statusQuery.data?.isActive === true}
+                  onStartTraining={(item, duration) => {
+                    setM36Duration(duration);
+                    setM36TrainingItem(item as any);
+                    if (item.id === "metabolic" || item.id === "mayerwelle") {
+                      setM36ActiveTrainer(item.id);
+                    }
+                  }}
+                  onStartBasicTraining={(freq, tone, color, typeId) => {
+                    setM36BasicData({ freq, tone, color, typeId });
+                    setM36ActiveTrainer("yohn");
+                  }}
+                />
+              )}
+            </div>
+          )}
+
           {/* Wochenvideos */}
           {activeTab === "videos" && (
             <div>

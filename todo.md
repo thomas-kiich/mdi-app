@@ -1387,3 +1387,12 @@
 - [x] FAQ.tsx zeigt jetzt ausschließlich DB-Daten (kein Duplikat-Risiko mehr)
 - [x] Kategorisierung in FAQ.tsx: "KIICH Grundlagen" vs. "App & Features" bleibt erhalten (via Titel-Filter)
 - [x] Alle FAQs über Admin-Panel (/admin/faq) verwaltbar
+
+## METHODE 36 → RAUM 36 Migration
+- [x] METHODE-36-Button von der KIICH-Startseite entfernen (Hero-Buttons-Bereich)
+- [x] METHODE-36-Karte aus dem Dashboard-Bereich der Startseite entfernen
+- [x] BEFINDLICHKEITSTRAINING-Karte aus dem Dashboard-Bereich entfernen (war auch TrainingCenter-Link)
+- [x] Tab-Typ in Raum36.tsx um "methode36" erweitern
+- [x] METHODE 36 als 5. Tab in RAUM 36 einbauen (nach KOMMUNIKATIONSCENTER, vor TRAININGSCENTER)
+- [x] TrainingCategoryStructure-Komponente in den neuen METHODE-36-Tab einbetten
+- [x] Startseite: showTrainingCenter-State und zugehörige Logik bereinigen (wenn nicht mehr benötigt)

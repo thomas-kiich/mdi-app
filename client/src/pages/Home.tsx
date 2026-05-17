@@ -346,7 +346,6 @@ export default function Home() {
   const [showFrequencyTable, setShowFrequencyTable] = useState(false);
   const [showDirectTrainer, setShowDirectTrainer] = useState(false);
   const [showTrainingDurationSelect, setShowTrainingDurationSelect] = useState(false);
-  const [showTrainingCenter, setShowTrainingCenter] = useState(false);
   const [showWurzelklangVerification, setShowWurzelklangVerification] = useState(false);
   const [wurzelklangVerified, setWurzelklangVerified] = useState(false);
   const [selectedTrainingDuration, setSelectedTrainingDuration] = useState<number>(7);
@@ -693,12 +692,6 @@ export default function Home() {
                     {/* 4 Buttons */}
                     <div className="flex flex-wrap justify-center gap-3 mt-2">
                       <button
-                        onClick={() => setShowTrainingCenter(true)}
-                        className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-600 hover:border-white text-zinc-300 hover:text-white transition-all duration-200"
-                      >
-                        METHODE 36
-                      </button>
-                      <button
                         onClick={() => setShowPodcast(true)}
                         className="px-6 py-2.5 text-sm font-semibold tracking-widest uppercase text-black transition-all duration-200 hover:opacity-90"
                         style={{background: 'linear-gradient(135deg, #e63329, #f5a623)'}}
@@ -842,32 +835,26 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* TRAININGSCENTER / METHODE 36 */}
-                    <div className="relative bg-zinc-900/60 border border-orange-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-400/60 transition-all group"
-                      onClick={() => setShowTrainingCenter(true)}
+                    {/* RAUM 36 – Einstieg */}
+                    <div className="relative bg-zinc-900/60 border border-orange-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-400/60 transition-all group col-span-2"
+                      onClick={() => setLocation('/raum36')}
                     >
-                      <div className="mb-4">
-                        <span className="text-2xl">⚡</span>
+                      <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-3">
+                            <span className="text-2xl">⚡</span>
+                            <div>
+                              <h3 className="text-white font-bold tracking-wider text-base">RAUM 36</h3>
+                              <p className="text-orange-400 text-xs font-mono uppercase tracking-widest">Mitglieder-Bereich</p>
+                            </div>
+                          </div>
+                          <p className="text-zinc-400 text-sm leading-relaxed">
+                            METHODE 36 · KOMMUNIKATIONSCENTER · TRAININGSCENTER · VITALMONITOR · WISSENSPOOL — alles an einem Ort.
+                          </p>
+                        </div>
+                        <ChevronRight className="w-5 h-5 text-orange-400/50 group-hover:text-orange-400 transition-colors flex-shrink-0 mt-1" />
                       </div>
-                      <h3 className="text-white font-bold tracking-wider text-base mb-1">METHODE 36</h3>
-                      <h4 className="text-orange-400 text-sm font-medium mb-3">36 Tage. Dein Rhythmus. Dein Leben.</h4>
-                      <p className="text-zinc-400 text-sm leading-relaxed">
-                        Ein wissenschaftlich fundiertes Trainingsprogramm, das auf deinem persönlichen Klangprofil aufbaut. Keine Einheitsformel — sondern ein System, das sich deinem einzigartigen Lebenspuls anpasst. Wer seinen Rhythmus kennt, kann ihn gestalten.
-                      </p>
-                    </div>
-
-                    {/* BEFINDLICHKEITSTRAINING */}
-                    <div className="relative bg-zinc-900/60 border border-red-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-red-400/60 transition-all group"
-                      onClick={() => setShowTrainingCenter(true)}
-                    >
-                      <div className="mb-4">
-                        <span className="text-2xl">🎯</span>
-                      </div>
-                      <h3 className="text-white font-bold tracking-wider text-base mb-1">BEFINDLICHKEITSTRAINING</h3>
-                      <h4 className="text-red-400 text-sm font-medium mb-3">7 Minuten. Täglich. Selbstbestimmt.</h4>
-                      <p className="text-zinc-400 text-sm leading-relaxed">
-                        Das kürzeste und wirksamste Training, das du je gemacht hast. Du bestimmst wann, wo und wie — und dein Körper gibt dir sofort Rückmeldung. So empfindungsfähig für deine wahren Bedürfnisse warst du noch nie.
-                      </p>
                     </div>
 
                   </div>
@@ -912,7 +899,7 @@ export default function Home() {
               <div className="container max-w-6xl mx-auto px-4">
                 <Dashboard 
                   onStartAnalysis={() => setCurrentStep("preparation")}
-                  onOpenTraining={() => setShowTrainingCenter(true)}
+                  onOpenTraining={() => setLocation('/raum36')}
                   onOpenScanner={() => setShowSpectralScanner(true)}
                   onOpenKnowledge={() => setShowKnowledgePool(true)}
                   onOpenTable={() => setShowFrequencyTable(true)}
@@ -1329,7 +1316,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                           });
                           return;
                         }
-                        setShowTrainingCenter(false);
                         setSelectedTrainingItem("yohn");
                         setSelectedTrainingDuration(12);
                         setShowDirectTrainer(true);
@@ -1694,7 +1680,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 duration={selectedTrainingDuration || 7}
                 onClose={() => {
                   setShowDirectTrainer(false);
-                  setShowTrainingCenter(false);
                   setSelectedTrainingItem(null);
                   setBasicTrainingData(null);
                 }}
@@ -1704,7 +1689,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                 baseTone={finalResult?.tone || { name: "F", frequency: 95 }}
                 onClose={() => {
                   setShowDirectTrainer(false);
-                  setShowTrainingCenter(false);
                   setSelectedTrainingItem(null);
                 }}
              />
@@ -1718,7 +1702,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                baseTone={finalResult?.tone}
                onClose={() => {
                  setShowDirectTrainer(false);
-                 setShowTrainingCenter(false);
                  setSelectedTrainingItem(null);
                }}
              />
@@ -1732,38 +1715,9 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                baseTone={finalResult?.tone}
                onClose={() => {
                  setShowDirectTrainer(false);
-                 setShowTrainingCenter(false);
                  setSelectedTrainingItem(null);
                }}
              />
-          ) : showTrainingCenter ? (
-            <div className="fixed inset-0 z-50 bg-black overflow-y-auto">
-              <TrainingCategoryStructure
-                isPremium={isPremium}
-                onClose={() => setShowTrainingCenter(false)}
-                onStartTraining={(item, duration) => {
-                  setSelectedTrainingDuration(duration);
-                  setSelectedTrainingItem(item.id);
-                  setShowTrainingDurationSelect(false);
-                  if (item.id === "yohn" || item.id === "interval") {
-                    setShowDirectTrainer(true);
-                  } else if (item.id === "metabolic" || item.id === "mayerwelle") {
-                    // Ambient trainings - show ambient trainer
-                    setShowDirectTrainer(true);
-                  }
-                }}
-                onStartBasicTraining={(freq, tone, color, typeId) => {
-                  setBasicTrainingData({freq, tone, color, typeId});
-                  setSelectedTrainingItem("yohn");
-                  setSelectedTrainingDuration(7);
-                  setShowDirectTrainer(true);
-                }}
-                onOpenKnowledge={() => {
-                  setShowKnowledgePool(true);
-                  setKnowledgePoolInitialTab("method");
-                }}
-              />
-            </div>
           ) : showTrainingDurationSelect ? (
              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                  <div className="bg-zinc-900 border border-zinc-800 p-8 rounded-2xl max-w-md w-full space-y-8">
@@ -1884,7 +1838,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
         </main>
         
         {/* Footer */}
-        {!showStory && !showSpectralScanner && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showTrainingCenter && !showVisionsraum && currentStep === 'dashboard' && (
+        {!showStory && !showSpectralScanner && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showVisionsraum && currentStep === 'dashboard' && (
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col gap-6 text-xs text-zinc-600">
                 {/* Disclaimer */}
                 <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg px-5 py-4 text-zinc-400 text-xs leading-relaxed">
