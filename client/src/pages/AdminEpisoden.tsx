@@ -197,10 +197,10 @@ export default function AdminEpisoden() {
     <div className="min-h-screen bg-black text-white p-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-4 mb-8">
-        <Link href="/">
+        <Link href="/admin">
           <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Zurück
+            Admin
           </Button>
         </Link>
         <div>

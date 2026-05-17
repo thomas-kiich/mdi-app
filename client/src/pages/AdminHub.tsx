@@ -174,9 +174,9 @@ export default function AdminHub() {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 text-zinc-500">
         <p className="text-sm">Kein Zugriff.</p>
-        <Link href="/">
+        <Link href="/admin">
           <button className="text-xs text-orange-400 border border-orange-500/40 rounded px-4 py-2 hover:bg-orange-500/10 transition-colors">
-            Zur Startseite
+            Zum Admin-Bereich
           </button>
         </Link>
       </div>
@@ -189,11 +189,6 @@ export default function AdminHub() {
 
         {/* Header */}
         <div className="space-y-1">
-          <Link href="/">
-            <button className="flex items-center gap-1.5 text-zinc-500 hover:text-white text-xs transition-colors mb-2">
-              <ArrowLeft className="w-3 h-3" /> STARTSEITE
-            </button>
-          </Link>
           <h1 className="text-3xl font-light text-white tracking-tight">Admin-Zentrale</h1>
           <p className="text-zinc-500 text-sm">Alle Verwaltungstools · {adminSections.reduce((a, s) => a + s.tools.length, 0)} Bereiche</p>
         </div>

@@ -307,7 +307,7 @@ export default function AdminNewsletter() {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 text-white">
         <p className="text-zinc-400">Zugang verweigert. Nur Admins dürfen diese Seite sehen.</p>
-        <Link href="/"><Button variant="outline" className="border-zinc-700">Zur Startseite</Button></Link>
+        <Link href="/admin"><Button variant="outline" className="border-zinc-700">Zum Admin-Bereich</Button></Link>
       </div>
     );
   }
@@ -405,9 +405,9 @@ export default function AdminNewsletter() {
 
         {/* Header */}
         <div className="space-y-1">
-          <Link href="/">
+          <Link href="/admin">
             <Button variant="ghost" className="text-zinc-500 hover:text-white pl-0 gap-2 text-xs">
-              <ArrowLeft className="w-3 h-3" /> STARTSEITE
+              <ArrowLeft className="w-3 h-3" /> ADMIN
             </Button>
           </Link>
           <h1 className="text-3xl font-light text-white tracking-tight">Newsletter-Agent</h1>

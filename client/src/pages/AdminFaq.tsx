@@ -58,8 +58,8 @@ export default function AdminFaq() {
       <div className="min-h-screen bg-[#0a0a10] flex items-center justify-center">
         <div className="text-center">
           <p className="text-zinc-400 mb-4">Kein Zugriff. Diese Seite ist nur für Administratoren.</p>
-          <Link href="/">
-            <Button variant="outline" className="border-zinc-700 text-zinc-300">Zurück zur Startseite</Button>
+          <Link href="/admin">
+            <Button variant="outline" className="border-zinc-700 text-zinc-300">Zum Admin-Bereich</Button>
           </Link>
         </div>
       </div>
@@ -212,8 +212,8 @@ export default function AdminFaq() {
       <div className="border-b border-zinc-800 bg-[#0d0d14]">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/momentaufnahme">
-              <button className="text-zinc-500 hover:text-zinc-300 transition-colors text-sm">← Zurück</button>
+            <Link href="/admin">
+              <button className="text-zinc-500 hover:text-zinc-300 transition-colors text-sm">← Admin</button>
             </Link>
             <span className="text-zinc-700">|</span>
             <h1 className="text-white font-bold tracking-wide">FAQ-Verwaltung</h1>

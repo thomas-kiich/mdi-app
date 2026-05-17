@@ -130,7 +130,7 @@ export default function AdminBacklog() {
     return (
       <div className="min-h-screen bg-black flex flex-col items-center justify-center gap-4 text-zinc-500">
         <p className="text-sm">Kein Zugriff.</p>
-        <Link href="/"><button className="text-xs text-orange-400 border border-orange-500/40 rounded px-4 py-2 hover:bg-orange-500/10 transition-colors">Zur Startseite</button></Link>
+        <Link href="/admin"><button className="text-xs text-orange-400 border border-orange-500/40 rounded px-4 py-2 hover:bg-orange-500/10 transition-colors">Zum Admin-Bereich</button></Link>
       </div>
     );
   }
