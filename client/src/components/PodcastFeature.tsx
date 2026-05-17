@@ -19,6 +19,16 @@ interface PodcastFeatureProps {
   underCoverContent?: React.ReactNode;
 }
 
+function getProxiedAudioUrl(url?: string): string | undefined {
+  if (!url) return undefined;
+  // Lokale Pfade direkt verwenden
+  if (url.startsWith('/') && !url.startsWith('/api/audio-proxy')) return url;
+  // Bereits geproxied
+  if (url.startsWith('/api/audio-proxy')) return url;
+  // Externe URLs durch Proxy leiten (setzt korrekten Content-Type: audio/mpeg)
+  return `/api/audio-proxy?url=${encodeURIComponent(url)}`;
+}
+
 export function PodcastFeature({
   youtubeUrl,
   spotifyUrl,
@@ -31,6 +41,7 @@ export function PodcastFeature({
   titleClassName = "text-3xl md:text-4xl font-bold mb-2",
 }: PodcastFeatureProps) {
   const [descOpen, setDescOpen] = useState(false);
+  const proxiedAudioUrl = getProxiedAudioUrl(audioUrl);
 
   return (
     <Card className="bg-gradient-to-r from-red-900/20 to-orange-900/20 border-red-800/50 overflow-hidden">
@@ -93,17 +104,17 @@ export function PodcastFeature({
         </div>
 
         {/* Embedded Audio Player */}
-        {audioUrl && (
+        {proxiedAudioUrl && (
           <div className="pt-2">
             <audio
-              key={audioUrl}
+              key={proxiedAudioUrl}
               controls
               preload="metadata"
               className="w-full rounded-md bg-zinc-900/50"
               style={{ height: '48px' }}
             >
               <source
-                src={`${audioUrl}?v=9`}
+                src={proxiedAudioUrl}
                 type="audio/mpeg"
               />
               Dein Browser unterstützt das Audio-Element nicht.
