@@ -81,6 +81,7 @@ export const raum36Router = router({
   createCheckoutRaum36: protectedProcedure
     .input(z.object({ origin: z.string().url() }))
     .mutation(async ({ ctx, input }) => {
+      try {
       const stripe = getStripe();
       const priceId = await getRaum36PriceId();
 
@@ -102,6 +103,14 @@ export const raum36Router = router({
       });
 
       return { url: session.url };
+      } catch (error: any) {
+        // Fehler-Monitoring: Owner sofort benachrichtigen
+        await notifyOwner({
+          title: "🚨 RAUM 36 Checkout Fehler",
+          content: `User ${ctx.user.id} (${ctx.user.email}) konnte nicht zu Stripe weitergeleitet werden.\n\nFehler: ${error?.message ?? String(error)}\n\nZeitpunkt: ${new Date().toISOString()}`,
+        }).catch(() => {}); // Notification-Fehler nicht weiterwerfen
+        throw error;
+      }
     }),
 
   /**

@@ -1,0 +1,9 @@
+{
+  "query": "\nCREATE TABLE IF NOT EXISTS `audit_logs` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `userId` int NOT NULL,\n  `action` enum('read','update','delete','export','access') NOT NULL,\n  `dataType` varchar(64) NOT NULL,\n  `reason` enum('user_self_access','coaching_access','admin_access','data_export','account_deletion','compliance_check') NOT NULL,\n  `ipAddress` varchar(45),\n  `userAgent` text,\n  `details` text,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_audit_logs_userId_createdAt` (`userId`, `createdAt`),\n  KEY `idx_audit_logs_userId` (`userId`)\n);\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute \nCREATE TABLE IF NOT EXISTS `audit_logs` (\n  `id` int NOT NULL AUTO_INCREMENT,\n  `userId` int NOT NULL,\n  `action` enum('read','update','delete','export','access') NOT NULL,\n  `dataType` varchar(64) NOT NULL,\n  `reason` enum('user_self_access','coaching_access','admin_access','data_export','account_deletion','compliance_check') NOT NULL,\n  `ipAddress` varchar(45),\n  `userAgent` text,\n  `details` text,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  PRIMARY KEY (`id`),\n  KEY `idx_audit_logs_userId_createdAt` (`userId`, `createdAt`),\n  KEY `idx_audit_logs_userId` (`userId`)\n);\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 372
+}

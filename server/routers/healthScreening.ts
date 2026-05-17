@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
+import { notifyOwner } from "../_core/notification";
 import {
   evaluateHealthScreening,
   saveHealthScreening,
@@ -57,8 +58,13 @@ export const healthScreeningRouter = router({
           success: true,
           evaluation,
         };
-      } catch (error) {
+      } catch (error: any) {
         console.error("[HealthScreening] Error submitting screening:", error);
+        // Fehler-Monitoring: Owner sofort benachrichtigen
+        await notifyOwner({
+          title: "🚨 Health Screening Fehler",
+          content: `User ${ctx.user.id} konnte Health Screening nicht abschließen.\n\nFehler: ${error?.message ?? String(error)}\n\nZeitpunkt: ${new Date().toISOString()}`,
+        }).catch(() => {});
         throw new TRPCError({
           code: "INTERNAL_SERVER_ERROR",
           message: "Failed to submit health screening",
