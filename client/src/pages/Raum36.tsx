@@ -629,7 +629,7 @@ function Raum36Member() {
             [
               { id: "methode36", label: "METHODE 36", icon: <span className="text-base">⚡</span> },
               { id: "fragen", label: "KOMMUNIKATIONSCENTER", icon: <MessageSquare className="w-4 h-4" /> },
-              { id: "videos", label: "TRAININGSCENTER", icon: <Video className="w-4 h-4" /> },
+              { id: "videos", label: "TRAININGSAUFBAU", icon: <Video className="w-4 h-4" /> },
               { id: "vital", label: "VITALMONITOR", icon: <HeartPulse className="w-4 h-4" /> },
               { id: "wissenspool", label: "WISSENSPOOL", icon: <Lightbulb className="w-4 h-4" /> },
               { id: "frequenzlabor", label: "FREQUENZ-LABOR", icon: <span className="text-base">🔬</span> },
