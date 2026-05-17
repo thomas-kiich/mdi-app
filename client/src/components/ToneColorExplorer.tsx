@@ -8,6 +8,7 @@ import { Volume2, Info, Zap } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { AnimatePresence } from 'framer-motion';
+import { useLocation } from 'wouter';
 
 interface ToneColorExplorerProps {
   mdiDistribution?: Record<string, number>;
@@ -393,15 +394,7 @@ export function ToneColorExplorer({ mdiDistribution, liveFrequency }: ToneColorE
               <Button 
                 size="lg" 
                 className="w-full bg-orange-600 hover:bg-orange-500 text-white font-bold h-12 text-xs"
-                onClick={() => {
-                  setTrainingMode({
-                    freq: selectedSegment.freq,
-                    tone: selectedSegment.toneName,
-                    color: selectedSegment.color,
-                    typeId: selectedSegment.id
-                  });
-                  setSelectedSegment(null);
-                }}
+                onClick={() => { window.location.href = '/raum36'; }}
               >
                 <Zap className="mr-2 h-4 w-4 fill-current shrink-0" />
                 HIER KLICKEN - zum YOHNTRAINING mit deinem LEBENSKLANG

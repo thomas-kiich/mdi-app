@@ -250,10 +250,7 @@ export function SpectralScanner({ onClose, forcedFrequency }: SpectralScannerPro
   const [showDurationSelect, setShowDurationSelect] = useState(false);
 
   const handleOpenTrainingCenter = () => {
-      const info = selectedInfo || hoverInfo?.item;
-      if (info) {
-          setShowDurationSelect(true);
-      }
+      setLocation('/raum36');
   };
 
   const handleStartTraining = (duration: number) => {
