@@ -281,45 +281,6 @@ export function Dashboard({
                     </Card>
                 </motion.div>
 
-                 {/* Pillar 6: Sleep & Theta */}
-                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 }}
-                >
-                    <Card 
-                        className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-purple-500/50 transition-all group h-full relative overflow-hidden"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <CardContent className="p-6 flex flex-col h-full relative z-10">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center text-purple-500 group-hover:scale-110 transition-transform">
-                                    <Moon className="w-6 h-6" />
-                                </div>
-                                {!isFreigegeben('schlafoptimierung') && (
-                                    <div className="flex items-center gap-1.5 bg-orange-500/10 text-orange-500 px-3 py-1 rounded-full text-xs font-semibold border border-orange-500/20">
-                                        <Lock className="w-3 h-3" />
-                                        <span>Premium</span>
-                                    </div>
-                                )}
-                            </div>
-                            
-                            <h2 className="text-xl font-bold text-white mb-2 leading-tight">
-                                Schlaf -<br/>Optimierung
-                            </h2>
-                            <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
-                                Affirmationen & Umprogrammierung im Theta-Zustand. Schlaf mit Intention.
-                            </p>
-
-                            <div className="mt-auto">
-                                <button onClick={() => handlePremiumClick(onOpenSleep, "Schlaf-Optimierung", 'schlafoptimierung')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
-                                    Session starten <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                </button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-
                  {/* Pillar 8: Visionsraum */}
                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
