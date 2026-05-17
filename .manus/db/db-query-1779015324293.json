@@ -1,0 +1,106 @@
+{
+  "query": "SELECT id, frage, oeffentlich, status FROM faq_fragen ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, frage, oeffentlich, status FROM faq_fragen ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "frage": "momentaufnahme detailgenau erklärt",
+      "oeffentlich": "0",
+      "status": "offen"
+    },
+    {
+      "id": "30001",
+      "frage": "Das ist eine Testfrage mit mehr als 10 Zeichen",
+      "oeffentlich": "0",
+      "status": "offen"
+    },
+    {
+      "id": "30002",
+      "frage": "wer bin ich?",
+      "oeffentlich": "0",
+      "status": "offen"
+    },
+    {
+      "id": "60001",
+      "frage": "Was ist KIICH?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60002",
+      "frage": "Was ist die METHODE 36?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60003",
+      "frage": "Was ist der Unterschied zwischen Mensch und Maschine?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60004",
+      "frage": "Für wen ist KIICH geeignet?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60005",
+      "frage": "Wie oft erscheinen neue Episoden und wie kann ich informiert bleiben?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60006",
+      "frage": "Wer ist Thomas Chochola?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60007",
+      "frage": "Was ist MOMENTAUFNAHME und für wen ist es gedacht?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60008",
+      "frage": "Wie funktioniert die Sprachaufnahme?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60009",
+      "frage": "Was macht MA mit meinen Aufnahmen?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60010",
+      "frage": "Wie funktioniert die Einschlaf-Bibliothek?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60011",
+      "frage": "Sind meine Aufnahmen privat und sicher?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60012",
+      "frage": "Wie kann ich die App auf meinem Handy installieren?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    },
+    {
+      "id": "60013",
+      "frage": "Was ist eine PWA (Progressive Web App)?",
+      "oeffentlich": "1",
+      "status": "beantwortet"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfrage\toeffentlich\tstatus\n1\tmomentaufnahme detailgenau erklärt\t0\toffen\n30001\tDas ist eine Testfrage mit mehr als 10 Zeichen\t0\toffen\n30002\twer bin ich?\t0\toffen\n60001\tWas ist KIICH?\t1\tbeantwortet\n60002\tWas ist die METHODE 36?\t1\tbeantwortet\n60003\tWas ist der Unterschied zwischen Mensch und Maschine?\t1\tbeantwortet\n60004\tFür wen ist KIICH geeignet?\t1\tbeantwortet\n60005\tWie oft erscheinen neue Episoden und wie kann ich informiert bleiben?\t1\tbeantwortet\n60006\tWer ist Thomas Chochola?\t1\tbeantwortet\n60007\tWas ist MOMENTAUFNAHME und für wen ist es gedacht?\t1\tbeantwortet\n60008\tWie funktioniert die Sprachaufnahme?\t1\tbeantwortet\n60009\tWas macht MA mit meinen Aufnahmen?\t1\tbeantwortet\n60010\tWie funktioniert die Einschlaf-Bibliothek?\t1\tbeantwortet\n60011\tSind meine Aufnahmen privat und sicher?\t1\tbeantwortet\n60012\tWie kann ich die App auf meinem Handy installieren?\t1\tbeantwortet\n60013\tWas ist eine PWA (Progressive Web App)?\t1\tbeantwortet\n",
+  "stderr": "",
+  "execution_time_ms": 259
+}

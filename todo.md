@@ -1380,3 +1380,10 @@
 
 - [x] Erstelle Health Screening Modal für RAUM 36 Checkout
 - [x] Erstelle Attest-Upload Seite unter /account/health-attestation
+
+## FAQ-Migration (Session Mai 2026)
+- [x] 13 hardcodierte FAQs in die Datenbank migriert (IDs 60001–60013)
+- [x] Hardcodierte Arrays KIICH_GRUNDLAGEN_FAQS, STATISCHE_FAQS, MOMENTAUFNAHME_UNTERFRAGEN aus FAQ.tsx entfernt
+- [x] FAQ.tsx zeigt jetzt ausschließlich DB-Daten (kein Duplikat-Risiko mehr)
+- [x] Kategorisierung in FAQ.tsx: "KIICH Grundlagen" vs. "App & Features" bleibt erhalten (via Titel-Filter)
+- [x] Alle FAQs über Admin-Panel (/admin/faq) verwaltbar

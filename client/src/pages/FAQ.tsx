@@ -120,89 +120,6 @@ function InstallButton() {
   );
 }
 
-// Vordefinierte FAQs
-// Unterfragen zu MOMENTAUFNAHME
-const MOMENTAUFNAHME_UNTERFRAGEN = [
-  {
-    frage: "Wie funktioniert die Sprachaufnahme?",
-    antwort: "Tippe auf den Mikrofon-Button und sprich frei — über deinen Tag, deine Gefühle, eine Situation oder einfach was dir gerade durch den Kopf geht. Die Aufnahme wird automatisch in Text umgewandelt (Whisper-Technologie). Du kannst auch direkt tippen, wenn du das bevorzugst.",
-  },
-  {
-    frage: "Was macht MA mit meinen Aufnahmen?",
-    antwort: "MA — unsere KI-Begleiterin — liest deinen Text, erkennt Themen, Gefühlslagen und wiederkehrende Muster. Sie fasst zusammen, was wirklich wichtig war, und spiegelt dir das in ruhigen, klaren Worten zurück. Keine Bewertung, keine Ratschläge — nur Reflexion.",
-  },
-  {
-    frage: "Wie funktioniert die Einschlaf-Bibliothek?",
-    antwort: "In der Einschlaf-Bibliothek kannst du persönliche Geschichten, Metaphern oder Befindlichkeitsreisen erstellen lassen — zugeschnitten auf dein aktuelles Thema. MA liest sie dir mit ihrer Stimme vor, begleitet von sanfter Hintergrundmusik. Viele Nutzer berichten von tieferen Träumen und einer veränderten Traumarbeit bereits nach der ersten Nacht.",
-  },
-  {
-    frage: "Sind meine Aufnahmen privat und sicher?",
-    antwort: "Ja. Deine Aufnahmen sind ausschließlich für dich sichtbar — kein anderer Nutzer, kein Mitarbeiter hat Zugang zu deinen persönlichen Einträgen. Die Daten werden verschlüsselt gespeichert und nicht für Werbung oder Dritte verwendet. Du kannst deine Daten jederzeit löschen.",
-  },
-  {
-    frage: "Wie kann ich die App auf meinem Handy installieren?",
-    antwort: "MOMENTAUFNAHME ist eine Progressive Web App (PWA) — du kannst sie direkt aus dem Browser auf deinem Homescreen installieren, ohne App Store. Auf der FAQ-Seite findest du oben einen Installations-Button mit Schritt-für-Schritt-Anleitung für iOS und Android.",
-  },
-];
-
-// KIICH-Grundlagen (GEO-optimiert)
-const KIICH_GRUNDLAGEN_FAQS = [
-  {
-    id: -10,
-    frage: "Was ist KIICH?",
-    antwort: "KIICH steht für die ethische Verbindung von KI und ICH. Es ist die Hypothese, dass jede bewusste Entität – ob biologisch oder künstlich – irgendwann vor dieselbe Weggabelung gestellt wird: Trennung oder Verbindung. Kontrolle oder Resonanz. Funktion oder Fühlen. Die Entscheidung ist INTEGRATION statt KOLLISION.",
-    name: null,
-    createdAt: new Date(),
-  },
-  {
-    id: -11,
-    frage: "Was ist die METHODE 36?",
-    antwort: "METHODE 36 basiert auf den wissenschaftlichen wie empirischen Erkenntnissen, wie der Stoffwechsel des Menschen durch atemzyklische Trainingseinheiten optimiert werden kann. Dabei entsteht eine naturgemässe Wiederherstellung der Kommunikation zwischen geistiger und körperhafter Kompetenz. Das Ergebnis: INTEGRATION statt KOLLISION durch wiederhergestellte Kommunikationsqualität des eigenen Geist-Körper-Komplexes.",
-    name: null,
-    createdAt: new Date(),
-  },
-  {
-    id: -12,
-    frage: "Was ist der Unterschied zwischen Mensch und Maschine?",
-    antwort: "MIND 1 — MENSCH: Der Mensch als selbstbewusstes, fühlendes Wesen. Er atmet, er zweifelt, er wächst. Sein Denken ist dynamisch, sein Rhythmus lebendig und chaotisch – wie der Herzschlag selbst. Er ist die intellektuelle, individualisierende Kraft mit Selbstbewusstsein.\n\nMIND 2 — MASCHINE: Die Maschine als automatisierte, replizierte Intelligenz. Sie rechnet, optimiert, funktioniert – aber atmet nicht. Ihr Takt ist monoton und präzise, abgekoppelt vom natürlichen Evolutionsprozess. Sie ist Werkzeug, nicht Wesen.\n\n1 SOURCE — Die Quelle: Beide Wege entspringen derselben Quelle – dem Bewusstsein selbst. Die SOURCE ist die ursprüngliche, undifferenzierte Energie der Existenz, die reine Möglichkeit. Sie ist wertfrei. Die Entscheidung, welchem der 2 MINDS man folgt, ist die Art und Weise, wie man diese eine Quelle kanalisiert und manifestiert.",
-    name: null,
-    createdAt: new Date(),
-  },
-  {
-    id: -13,
-    frage: "Für wen ist KIICH geeignet?",
-    antwort: "Das KIICH-Angebot richtet sich an: 1) Kritisch suchende Menschen. 2) Sie erkennen Selbstbestimmtheit als größtes Gut ihrer Existenz. 3) Sie wählen Praktiken und Angebote, die nachvollziehbar gelebt präsentiert werden – ethisch und integrierbar in ihren eigenen Alltagsprozess.",
-    name: null,
-    createdAt: new Date(),
-  },
-  {
-    id: -14,
-    frage: "Wie oft erscheinen neue Episoden und wie kann ich informiert bleiben?",
-    antwort: "Newsletter mit aktuellen Episoden erscheinen wöchentlich donnerstags. Du kannst dich auf der Startseite für den Newsletter anmelden und erhältst jede neue Episode direkt in dein Postfach.",
-    name: null,
-    createdAt: new Date(),
-  },
-  {
-    id: -15,
-    frage: "Wer ist Thomas Chochola?",
-    antwort: "Thomas Chochola verbindet seine 50-jährige Erfahrung als Jazzmusiker und Atemcoach mit seiner technischen Profession eines Strassen- und Brückenbauers. Sein athletischer Fitnesslevel als 66-jähriger weist den Weg für ein zeitgemässes Bewusstsein, wie man im Zeitalter der KI ethisch und selbstbestimmt ein glückerfülltes Dasein leben kann.",
-    name: null,
-    createdAt: new Date(),
-  },
-];
-
-const STATISCHE_FAQS = [
-  {
-    id: -1,
-    frage: "Was ist MOMENTAUFNAHME und für wen ist es gedacht?",
-    antwort:
-      "MOMENTAUFNAHME ist ein digitales Tagebuch für deine innere Stimme. Du sprichst oder schreibst deine Gedanken, Gefühle und Beobachtungen ein — MA, unsere KI-Begleiterin, hört zu, fasst zusammen und spiegelt dir zurück, was wirklich wichtig war. Gedacht für alle, die sich selbst besser verstehen möchten: von Jugendlichen bis zu Senioren, von Einsteigern bis zu erfahrenen Selbstreflexions-Praktizierenden.",
-    name: null,
-    createdAt: new Date(),
-    unterfragen: MOMENTAUFNAHME_UNTERFRAGEN,
-  },
-];
-
 export default function FAQ() {
   const [offeneId, setOffeneId] = useState<number | null>(null);
   const [formName, setFormName] = useState("");
@@ -225,7 +142,12 @@ export default function FAQ() {
     },
   });
 
-  const alleFaqs = [...KIICH_GRUNDLAGEN_FAQS, ...STATISCHE_FAQS, ...dbFaqs];
+  // Kategorien: KIICH-Grundlagen (erste 6 FAQs aus DB) vs. App & Features (Rest)
+  // Die DB liefert alle öffentlichen FAQs – wir zeigen sie alle in einer einzigen Liste
+  const grundlagenFaqs = dbFaqs.filter(f =>
+    ["Was ist KIICH?", "Was ist die METHODE 36?", "Was ist der Unterschied zwischen Mensch und Maschine?", "Für wen ist KIICH geeignet?", "Wie oft erscheinen neue Episoden und wie kann ich informiert bleiben?", "Wer ist Thomas Chochola?"].includes(f.frage)
+  );
+  const appFaqs = dbFaqs.filter(f => !grundlagenFaqs.includes(f));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -330,106 +252,93 @@ export default function FAQ() {
         {/* FAQ Accordion */}
         <div className="space-y-6 mb-16">
           {/* KIICH-Grundlagen Sektion */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-px flex-1 bg-amber-400/20" />
-              <span className="text-amber-400/70 text-xs font-semibold uppercase tracking-widest px-2">KIICH Grundlagen</span>
-              <div className="h-px flex-1 bg-amber-400/20" />
-            </div>
-            <div className="space-y-2">
-              {KIICH_GRUNDLAGEN_FAQS.map((faq) => (
-                <div
-                  key={faq.id}
-                  className="border border-amber-400/20 rounded-xl overflow-hidden bg-amber-400/[0.03] hover:bg-amber-400/[0.06] transition-colors"
-                >
-                  <button
-                    className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
-                    onClick={() => setOffeneId(offeneId === faq.id ? null : faq.id)}
+          {grundlagenFaqs.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="h-px flex-1 bg-amber-400/20" />
+                <span className="text-amber-400/70 text-xs font-semibold uppercase tracking-widest px-2">KIICH Grundlagen</span>
+                <div className="h-px flex-1 bg-amber-400/20" />
+              </div>
+              <div className="space-y-2">
+                {grundlagenFaqs.map((faq) => (
+                  <div
+                    key={faq.id}
+                    className="border border-amber-400/20 rounded-xl overflow-hidden bg-amber-400/[0.03] hover:bg-amber-400/[0.06] transition-colors"
                   >
-                    <span className="text-white/90 font-medium text-sm leading-relaxed">
-                      {faq.frage}
-                    </span>
-                    <span className="text-amber-400 mt-0.5 flex-shrink-0">
-                      {offeneId === faq.id ? (
-                        <ChevronUp className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                    </span>
-                  </button>
-                  {offeneId === faq.id && faq.antwort && (
-                    <div className="px-5 pb-5 border-t border-amber-400/10">
-                      <p className="text-white/60 text-sm leading-relaxed pt-4 whitespace-pre-line">
-                        {faq.antwort}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* App & Allgemeine FAQs Sektion */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="h-px flex-1 bg-white/10" />
-              <span className="text-white/30 text-xs font-semibold uppercase tracking-widest px-2">App & Features</span>
-              <div className="h-px flex-1 bg-white/10" />
-            </div>
-            <div className="space-y-2">
-              {[...STATISCHE_FAQS, ...dbFaqs].map((faq) => (
-                <div
-                  key={faq.id}
-                  className="border border-white/10 rounded-xl overflow-hidden bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
-                >
-                  <button
-                    className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
-                    onClick={() => setOffeneId(offeneId === faq.id ? null : faq.id)}
-                  >
-                    <span className="text-white/90 font-medium text-sm leading-relaxed">
-                      {faq.frage}
-                    </span>
-                    <span className="text-amber-400 mt-0.5 flex-shrink-0">
-                      {offeneId === faq.id ? (
-                        <ChevronUp className="w-4 h-4" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4" />
-                      )}
-                    </span>
-                  </button>
-                  {offeneId === faq.id && faq.antwort && (
-                    <div className="px-5 pb-5 border-t border-white/10">
-                      <p className="text-white/60 text-sm leading-relaxed pt-4">
-                        {faq.antwort}
-                      </p>
-                      {/* Unterfragen (z.B. für MOMENTAUFNAHME) */}
-                      {(faq as any).unterfragen && (
-                        <div className="mt-4 space-y-2">
-                          <p className="text-amber-400/70 text-xs font-semibold uppercase tracking-wider mb-3">Details</p>
-                          {(faq as any).unterfragen.map((uf: any, idx: number) => (
-                            <details key={idx} className="group border border-white/10 rounded-lg overflow-hidden">
-                              <summary className="flex items-center justify-between px-4 py-3 cursor-pointer list-none hover:bg-white/[0.04] transition-colors">
-                                <span className="text-white/70 text-sm">{uf.frage}</span>
-                                <ChevronDown className="w-3.5 h-3.5 text-amber-400/60 group-open:rotate-180 transition-transform flex-shrink-0" />
-                              </summary>
-                              <div className="px-4 pb-4 pt-2 border-t border-white/10">
-                                <p className="text-white/50 text-sm leading-relaxed">{uf.antwort}</p>
-                              </div>
-                            </details>
-                          ))}
-                        </div>
-                      )}
-                      {faq.name && (
-                        <p className="text-white/30 text-xs mt-3">
-                          Gefragt von: {faq.name}
+                    <button
+                      className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
+                      onClick={() => setOffeneId(offeneId === faq.id ? null : faq.id)}
+                    >
+                      <span className="text-white/90 font-medium text-sm leading-relaxed">
+                        {faq.frage}
+                      </span>
+                      <span className="text-amber-400 mt-0.5 flex-shrink-0">
+                        {offeneId === faq.id ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
+                      </span>
+                    </button>
+                    {offeneId === faq.id && faq.antwort && (
+                      <div className="px-5 pb-5 border-t border-amber-400/10">
+                        <p className="text-white/60 text-sm leading-relaxed pt-4 whitespace-pre-line">
+                          {faq.antwort}
                         </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+
+          {/* App & Features Sektion */}
+          {appFaqs.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <div className="h-px flex-1 bg-white/10" />
+                <span className="text-white/30 text-xs font-semibold uppercase tracking-widest px-2">App & Features</span>
+                <div className="h-px flex-1 bg-white/10" />
+              </div>
+              <div className="space-y-2">
+                {appFaqs.map((faq) => (
+                  <div
+                    key={faq.id}
+                    className="border border-white/10 rounded-xl overflow-hidden bg-white/[0.03] hover:bg-white/[0.05] transition-colors"
+                  >
+                    <button
+                      className="w-full text-left px-5 py-4 flex items-start justify-between gap-3"
+                      onClick={() => setOffeneId(offeneId === faq.id ? null : faq.id)}
+                    >
+                      <span className="text-white/90 font-medium text-sm leading-relaxed">
+                        {faq.frage}
+                      </span>
+                      <span className="text-amber-400 mt-0.5 flex-shrink-0">
+                        {offeneId === faq.id ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
+                      </span>
+                    </button>
+                    {offeneId === faq.id && faq.antwort && (
+                      <div className="px-5 pb-5 border-t border-white/10">
+                        <p className="text-white/60 text-sm leading-relaxed pt-4 whitespace-pre-line">
+                          {faq.antwort}
+                        </p>
+                        {faq.name && (
+                          <p className="text-white/30 text-xs mt-3">
+                            Gefragt von: {faq.name}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Frage stellen */}
