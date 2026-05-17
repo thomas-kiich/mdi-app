@@ -1308,18 +1308,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
                     <Button 
                       variant="outline" 
                       className="border-zinc-800 hover:bg-zinc-800 hover:border-zinc-600 cursor-pointer transition-all text-xs"
-                      onClick={() => {
-                        if (user?.role !== "admin" && !isPremium) {
-                          toast({
-                            title: "Premium-Feature",
-                            description: "Das YOHN-Training ist Teil des Premium-Angebots. Upgrade erforderlich.",
-                          });
-                          return;
-                        }
-                        setSelectedTrainingItem("yohn");
-                        setSelectedTrainingDuration(12);
-                        setShowDirectTrainer(true);
-                      }}
+                      onClick={() => setLocation('/raum36')}
                     >
                       <Music2 className="mr-2 h-4 w-4 shrink-0" />
                       HIER KLICKEN - zum YOHNTRAINING mit deinem LEBENSKLANG
