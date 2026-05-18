@@ -705,12 +705,7 @@ export default function Home() {
                       >
                         RAUM 36
                       </button>
-                      <button
-                        onClick={() => setLocation('/momentaufnahme')}
-                        className="relative px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-violet-500/60 text-violet-300 hover:border-violet-400 hover:text-violet-200 transition-colors"
-                      >
-                        MOMENTAUFNAHME
-                      </button>
+
                       <button
                         onClick={() => setShowAppInstallGuide(true)}
                         className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold tracking-widest uppercase border border-zinc-600 hover:border-orange-500/60 text-zinc-400 hover:text-orange-300 transition-all duration-200 group"
@@ -810,30 +805,6 @@ export default function Home() {
                   </div>
 
                   <div className="grid md:grid-cols-3 gap-6">
-
-                    {/* MOMENTAUFNAHME - navigiert zur echten Momentaufnahme-Seite */}
-                    <div
-                      className="relative bg-zinc-900/60 border border-violet-500/40 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-violet-400/70 transition-all duration-200 group"
-                      onClick={() => setLocation('/momentaufnahme')}
-                    >
-                      {/* Violetter Glanz oben */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                      <div className="mb-4 flex items-center justify-between">
-                        <span className="text-2xl">📸</span>
-                        <span className="inline-flex items-center gap-1 bg-violet-500/15 border border-violet-500/30 text-violet-300 text-[10px] font-black px-2.5 py-1 rounded-full tracking-wider">
-                          <Lock className="w-3 h-3" /> BALD FREI
-                        </span>
-                      </div>
-                      <h3 className="text-white font-bold tracking-wider text-base mb-1">MOMENTAUFNAHME</h3>
-                      <h4 className="text-violet-400 text-sm font-medium mb-3">Wo stehe ich gerade wirklich?</h4>
-                      <p className="text-zinc-400 text-sm leading-relaxed">
-                        Ein strukturierter Selbst-Check, der dir in wenigen Minuten ein klares Bild deiner aktuellen Lebenssituation gibt. Nicht als Bewertung — sondern als ehrlicher Kompass. Weil Klarheit der erste Schritt zur Veränderung ist.
-                      </p>
-                      <div className="mt-4 text-violet-400 text-xs font-medium flex items-center gap-1 group-hover:text-violet-300 transition-colors">
-                        <span>Einführung lesen</span>
-                        <ChevronRight className="w-3 h-3" />
-                      </div>
-                    </div>
 
                     {/* RAUM 36 – Einstieg */}
                     <div className="relative bg-zinc-900/60 border border-orange-500/20 rounded-2xl p-6 overflow-hidden cursor-pointer hover:border-orange-400/60 transition-all group col-span-2"
