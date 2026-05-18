@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import {
   ArrowLeft, Mail, Crown, Mic, Headphones, HelpCircle,
   BookOpen, Users, BarChart3, TrendingUp, Loader2, Activity,
-  Bot, CreditCard, DoorOpen
+  Bot, CreditCard, DoorOpen, Camera
 } from "lucide-react";
 
 const adminSections = [
@@ -121,6 +121,15 @@ const adminSections = [
         bg: "bg-zinc-500/5 hover:bg-zinc-500/10",
         title: "FAQ",
         desc: "Häufige Fragen verwalten und aktualisieren",
+      },
+      {
+        href: "/momentaufnahme/app",
+        icon: Camera,
+        color: "text-sky-400",
+        border: "border-sky-500/30 hover:border-sky-400/60 border-dashed",
+        bg: "bg-sky-500/5 hover:bg-sky-500/10",
+        title: "MOMENTAUFNAHME ↗",
+        desc: "In Entwicklung · Nur für Admins · devkiich.de",
       },
     ],
   },
