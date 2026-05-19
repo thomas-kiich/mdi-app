@@ -732,6 +732,32 @@ function Raum36Member() {
           {/* Wochenvideos */}
           {activeTab === "videos" && (
             <div>
+              {/* TRAININGSAUFBAU Einführungstext */}
+              <div className="mb-8 p-6 bg-gradient-to-br from-orange-500/10 to-transparent border border-orange-500/30 rounded-xl">
+                <h2 className="text-2xl font-bold text-white mb-4 tracking-wide">TRAININGSAUFBAU</h2>
+                <p className="text-zinc-300 leading-relaxed mb-4">
+                  In diesem Segment findest du die empfohlene Herangehensweise, wie du ausgehend von deinem Befindlichkeitsstatus (BOLTWERT am Morgen) deine Vitalität erhöhst. Je höher dein BOLTlevel am Morgen, umso höher ist der Resilienzfaktor deines Systems. Das bedeutet, dass der Wirkungsgrad deines Stoffwechsels und die gesamte Kommunikation der drei Gehirne in deinem Körper (Kopf, Herz, Bauchgehirn) auf hohem Niveau agieren.
+                </p>
+                <div className="mb-4 p-4 bg-zinc-900/50 border border-zinc-700 rounded-lg">
+                  <p className="text-sm font-semibold text-orange-400 mb-2">Messe täglich folgende Werte am Morgen und trage sie anschliessend in deinen persönlichen VITALMONITOR in RAUM 36 ein:</p>
+                  <ul className="text-sm text-zinc-300 space-y-1 ml-2">
+                    <li className="flex items-start gap-2"><span className="text-orange-400 mt-0.5">→</span><span>BOLTWERT</span></li>
+                    <li className="flex items-start gap-2"><span className="text-orange-400 mt-0.5">→</span><span>RUHEPULS</span></li>
+                    <li className="flex items-start gap-2 mt-2"><span className="text-zinc-500 text-xs mt-0.5">ab BOLTlevel 26–35:</span></li>
+                    <li className="flex items-start gap-2"><span className="text-orange-400 mt-0.5">→</span><span>APNOEWERTE</span></li>
+                  </ul>
+                </div>
+                <p className="text-zinc-300 leading-relaxed mb-4">
+                  Setze die Trainingsempfehlungen deines jeweilig aktuellen BOLTwerts um und trage die Ergebnisse immer gleich in deinen persönlichen VITALMONITOR ein. Du wirst merken, wie motivierend es ist, die sofort einsehbaren Steigerungen deiner Formkurven zu verfolgen. Im Kontext mit Eintragungen aus deinem Essverhalten und den persönlichen Erlebnisfaktoren (die du ebenso eintragen kannst) erhältst du in kurzer Zeit ein vollkommen neues, tiefes Erfahrungsbild der Zusammenhänge deiner Aktivitäten.
+                </p>
+                <p className="text-zinc-300 leading-relaxed mb-4">
+                  Stelle jederzeit Fragen an Thomas im <span className="text-orange-400 font-semibold">KOMMUNIKATIONSCENTER</span>, wenn etwas unklar ist, du weiterführende Fragen hast oder Ideen und Empfehlungen.
+                </p>
+                <p className="text-zinc-400 text-sm leading-relaxed italic">
+                  Es kommen ständig neue Trainingsangebote in RAUM 36 – halte dich also auf dem Laufenden und nütze die vielfältigen Möglichkeiten, aber immer auf deinem abgestimmten Level der Befindlichkeit.
+                </p>
+              </div>
+
               {/* BOLT-Messung */}
               <div className="mb-8 p-6 bg-gradient-to-br from-cyan-500/10 to-transparent border border-cyan-500/30 rounded-xl">
                 <div className="flex items-start justify-between mb-4">
