@@ -1317,14 +1317,16 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
         {/* ─── TAB: COACHING ──────────────────────────────────────────────── */}
         {activeTab === 'coaching' && !isAdmin && (
           <div className="space-y-6 max-w-2xl">
-            <div className="space-y-2">
+            <div className="space-y-3">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <Shield className="w-5 h-5 text-orange-400" />
-                Coaching-Modus
+                Coaching-Freigabe für Thomas
               </h3>
-              <p className="text-sm text-zinc-400">
-                Wenn du den Coaching-Modus aktivierst, kann dein Coach Thomas Chochola deine Vitalwerte im Coaching-Dashboard einsehen.
-                Dies ist die Grundlage für datenbasiertes Einzelcoaching.
+              <p className="text-sm text-zinc-300 leading-relaxed">
+                Deine Vitalwerte im VITALMONITOR sind <span className="text-white font-semibold">ausschließlich für dich sichtbar</span> – niemand sonst hat Zugriff darauf.
+              </p>
+              <p className="text-sm text-zinc-400 leading-relaxed">
+                Wenn du möchtest, dass Thomas deine Werte im Rahmen eines persönlichen Einzelcoachings einsehen und kommentieren kann, kannst du hier eine <span className="text-orange-400">freiwillige Freigabe</span> erteilen. Diese Freigabe kannst du jederzeit mit einem Klick widerrufen – Thomas verliert dann sofort den Zugriff.
               </p>
             </div>
 
@@ -1336,7 +1338,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                   <div className="flex items-center gap-3">
                     <ShieldCheck className="w-6 h-6 text-green-400" />
                     <div>
-                      <p className="text-sm font-semibold text-green-400">Coaching-Modus aktiv</p>
+                      <p className="text-sm font-semibold text-green-400">Freigabe für Thomas aktiv</p>
                       <p className="text-xs text-zinc-400">
                         Eingewilligt am {coachingStatus.einwilligung
                           ? new Date(coachingStatus.einwilligung.eingewilligtAtMs).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
@@ -1345,7 +1347,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                     </div>
                   </div>
                   <p className="text-xs text-zinc-500">
-                    Thomas Chochola hat Zugriff auf deine Vitalwerte. Du kannst die Einwilligung jederzeit widerrufen.
+                    Thomas kann deine Vitalwerte einsehen. Du kannst die Freigabe jederzeit widerrufen – Thomas verliert dann sofort den Zugriff.
                   </p>
                   <Button
                     variant="outline"
@@ -1356,7 +1358,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                   >
                     {revokeCoaching.isPending && <Loader2 className="w-3 h-3 animate-spin" />}
                     <ShieldOff className="w-3.5 h-3.5" />
-                    Einwilligung widerrufen
+                    Freigabe widerrufen
                   </Button>
                 </CardContent>
               </Card>
@@ -1366,14 +1368,14 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                   <div className="flex items-center gap-3">
                     <Shield className="w-6 h-6 text-zinc-500" />
                     <div>
-                      <p className="text-sm font-semibold text-zinc-300">Coaching-Modus inaktiv</p>
-                      <p className="text-xs text-zinc-500">Deine Daten sind privat und nur für dich sichtbar.</p>
+                      <p className="text-sm font-semibold text-zinc-300">Keine Freigabe aktiv</p>
+                      <p className="text-xs text-zinc-500">Deine Daten sind privat – nur du kannst sie sehen.</p>
                     </div>
                   </div>
 
                   <div className="bg-zinc-800/50 rounded-xl p-4 space-y-2">
                     <p className="text-xs font-semibold text-orange-400 uppercase tracking-wider flex items-center gap-1.5">
-                      <Info className="w-3.5 h-3.5" /> Was wird geteilt?
+                      <Info className="w-3.5 h-3.5" /> Was würde Thomas sehen?
                     </p>
                     <ul className="text-xs text-zinc-400 space-y-1 list-disc list-inside">
                       <li>Ruhepuls, HRV, BOLT-Score</li>
@@ -1389,10 +1391,10 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
                     className="bg-orange-500 hover:bg-orange-600 text-white gap-2"
                   >
                     <ShieldCheck className="w-4 h-4" />
-                    Coaching-Modus aktivieren
+                    Freigabe für Thomas erteilen
                   </Button>
                   <p className="text-xs text-zinc-600">
-                    Durch Aktivierung erteilst du eine explizite Einwilligung gemäß DSGVO Art. 9 Abs. 2 lit. a.
+                    Freiwillig · jederzeit widerrufbar · DSGVO Art. 9 Abs. 2 lit. a
                   </p>
                 </CardContent>
               </Card>
