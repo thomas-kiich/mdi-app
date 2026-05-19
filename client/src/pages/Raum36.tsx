@@ -751,7 +751,14 @@ function Raum36Member() {
                   Setze die Trainingsempfehlungen deines jeweilig aktuellen BOLTwerts um und trage die Ergebnisse immer gleich in deinen persönlichen VITALMONITOR ein. Du wirst merken, wie motivierend es ist, die sofort einsehbaren Steigerungen deiner Formkurven zu verfolgen. Im Kontext mit Eintragungen aus deinem Essverhalten und den persönlichen Erlebnisfaktoren (die du ebenso eintragen kannst) erhältst du in kurzer Zeit ein vollkommen neues, tiefes Erfahrungsbild der Zusammenhänge deiner Aktivitäten.
                 </p>
                 <p className="text-zinc-300 leading-relaxed mb-4">
-                  Stelle jederzeit Fragen an Thomas im <span className="text-orange-400 font-semibold">KOMMUNIKATIONSCENTER</span>, wenn etwas unklar ist, du weiterführende Fragen hast oder Ideen und Empfehlungen.
+                  Stelle jederzeit Fragen an Thomas im{" "}
+                  <button
+                    onClick={() => setActiveTab("fragen")}
+                    className="text-orange-400 font-semibold underline underline-offset-2 hover:text-orange-300 transition-colors cursor-pointer"
+                  >
+                    KOMMUNIKATIONSCENTER
+                  </button>
+                  , wenn etwas unklar ist, du weiterführende Fragen hast oder Ideen und Empfehlungen.
                 </p>
                 <p className="text-zinc-400 text-sm leading-relaxed italic">
                   Es kommen ständig neue Trainingsangebote in RAUM 36 – halte dich also auf dem Laufenden und nütze die vielfältigen Möglichkeiten, aber immer auf deinem abgestimmten Level der Befindlichkeit.
