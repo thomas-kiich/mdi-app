@@ -727,6 +727,13 @@ function Raum36Member() {
                   }}
                 />
               )}
+              {/* NEUE TRAININGSEINHEITEN (vom Admin verwaltet) */}
+              {!m36ActiveTrainer && (
+                <div className="mt-8">
+                  <h3 className="text-base font-bold text-white mb-4 tracking-wider border-b border-zinc-800 pb-2">NEUE TRAININGSEINHEITEN</h3>
+                  <TrainingEinheitenView />
+                </div>
+              )}
             </div>
           )}
 
@@ -771,12 +778,6 @@ function Raum36Member() {
                 <p className="text-zinc-400 text-sm leading-relaxed italic">
                   Es kommen ständig neue Trainingsangebote in RAUM 36 – halte dich also auf dem Laufenden und nütze die vielfältigen Möglichkeiten, aber immer auf deinem abgestimmten Level der Befindlichkeit.
                 </p>
-              </div>
-
-              {/* NEUE TRAININGSEINHEITEN (vom Admin verwaltet) */}
-              <div className="mb-8">
-                <h3 className="text-base font-bold text-white mb-4 tracking-wider border-b border-zinc-800 pb-2">TRAININGSEINHEITEN</h3>
-                <TrainingEinheitenView />
               </div>
 
               {/* BOLT-Messung */}
