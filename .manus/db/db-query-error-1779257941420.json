@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, episode_number, catchphrase, audio_url, is_latest FROM podcast_episodes ORDER BY sort_order ASC;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, episode_number, catchphrase, audio_url, is_latest FROM podcast_episodes ORDER BY sort_order ASC;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'sort_order' in 'order clause'"
+  ]
+}
