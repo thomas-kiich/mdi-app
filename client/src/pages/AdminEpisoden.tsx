@@ -317,7 +317,7 @@ export default function AdminEpisoden() {
                     style={{ height: "40px" }}
                   >
                     <source
-                      src={`/api/audio-proxy?url=${encodeURIComponent(form.audioUrl)}&v=2`}
+                      src={form.audioUrl.startsWith('http') ? `/api/audio-proxy?url=${encodeURIComponent(form.audioUrl)}&v=2` : form.audioUrl}
                       type="audio/mpeg"
                     />
                   </audio>
@@ -438,7 +438,7 @@ export default function AdminEpisoden() {
                           style={{ height: "36px" }}
                         >
                           <source
-                            src={`/api/audio-proxy?url=${encodeURIComponent(ep.audioUrl)}&v=2`}
+                            src={ep.audioUrl.startsWith('http') ? `/api/audio-proxy?url=${encodeURIComponent(ep.audioUrl)}&v=2` : ep.audioUrl}
                             type="audio/mpeg"
                           />
                         </audio>

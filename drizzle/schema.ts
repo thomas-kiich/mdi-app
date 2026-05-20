@@ -1066,3 +1066,47 @@ export const healthScreenings = mysqlTable("health_screenings", {
 );
 export type HealthScreening = typeof healthScreenings.$inferSelect;
 export type InsertHealthScreening = typeof healthScreenings.$inferInsert;
+
+/**
+ * TRAINING EINHEITEN – Vom Admin verwaltete Trainings-Inhalte
+ * Jede Einheit gehört zu einer der 5 Kategorien im Trainingscenter.
+ * Thomas kann neue Trainings über das Admin-Panel anlegen, bearbeiten und veröffentlichen.
+ *
+ * Kategorien:
+ *   befindlichkeit | atemtraining | stimmklangtraining | bewegungstraining | umfeldaktivierung
+ */
+export const trainingEinheiten = mysqlTable('training_einheiten', {
+  id: int('id').autoincrement().primaryKey(),
+  /** Kategorie: eine der 5 Trainingsbereiche */
+  kategorie: mysqlEnum('kategorie', [
+    'befindlichkeit',
+    'atemtraining',
+    'stimmklangtraining',
+    'bewegungstraining',
+    'umfeldaktivierung',
+  ]).notNull(),
+  /** Titel der Kachel, z.B. "ATEMÜBUNG MORGEN" */
+  titel: varchar('titel', { length: 200 }).notNull(),
+  /** Kurzbeschreibung für die Kachel (max. 2 Sätze) */
+  kurzbeschreibung: text('kurzbeschreibung').notNull(),
+  /** Detaillierte Beschreibung im Hauptfenster */
+  beschreibung: text('beschreibung'),
+  /** Verfügbare Dauern in Minuten, kommagetrennt, z.B. "7,12,21" */
+  dauern: varchar('dauern', { length: 50 }).notNull().default('7,12,21'),
+  /** CDN-URL der Haupt-Audio-Datei */
+  audioUrl: text('audioUrl'),
+  /** CDN-URL des Videos (YouTube-Embed oder direkte URL) */
+  videoUrl: text('videoUrl'),
+  /** CDN-URL der Infografik (Bild) */
+  infografikUrl: text('infografikUrl'),
+  /** CDN-URL der Audiobeschreibung / Podcast-Audio */
+  audioBeschreibungUrl: text('audioBeschreibungUrl'),
+  /** Sortierreihenfolge innerhalb der Kategorie (niedrig = zuerst) */
+  sortOrder: int('sortOrder').notNull().default(0),
+  /** Ob diese Einheit für Nutzer sichtbar ist */
+  aktiv: boolean('aktiv').notNull().default(false),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().onUpdateNow().notNull(),
+});
+export type TrainingEinheit = typeof trainingEinheiten.$inferSelect;
+export type InsertTrainingEinheit = typeof trainingEinheiten.$inferInsert;

@@ -50,8 +50,30 @@ async function startServer() {
   // Audio-Proxy: liefert CDN-Audiodateien mit korrektem Content-Type und CORS
   // Audio-Proxy: HEAD + GET handler
   const audioProxyHandler = async (req: any, res: any) => {
-    const url = req.query.url as string;
-    if (!url || !url.startsWith('https://d2xsxph8kpxj0f.cloudfront.net/')) {
+    let url = req.query.url as string;
+    if (!url) return res.status(400).send('Invalid URL');
+
+    // Relative /manus-storage/ Pfade in absolute storageGet-URL auflösen
+    if (url.startsWith('/manus-storage/')) {
+      try {
+        const { storageGet } = await import('../storage');
+        const relKey = url.replace('/manus-storage/', '');
+        const { url: resolvedUrl } = await storageGet(relKey);
+        url = resolvedUrl;
+      } catch (e) {
+        return res.status(500).send('Storage resolve error');
+      }
+    }
+
+    // Nur bekannte CDN-Hosts erlauben
+    const allowedHosts = [
+      'https://d2xsxph8kpxj0f.cloudfront.net/',
+      'https://d36hbw14aib5lz.cloudfront.net/',
+      'https://d2xsxph8kpxj0f.cloudfront.net/',
+    ];
+    const isAllowed = allowedHosts.some(h => url.startsWith(h)) ||
+      /^https:\/\/[a-z0-9]+\.cloudfront\.net\//.test(url);
+    if (!isAllowed) {
       return res.status(400).send('Invalid URL');
     }
     const isHead = req.method === 'HEAD';

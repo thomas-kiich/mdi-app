@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id, episodeNumber, catchphrase, audioUrl FROM podcast_episodes WHERE episodeNumber IN ('04', '07') ORDER BY episodeNumber;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, episodeNumber, catchphrase, audioUrl FROM podcast_episodes WHERE episodeNumber IN ('04', '07') ORDER BY episodeNumber;",
+  "rows": [
+    {
+      "id": "30012",
+      "episodeNumber": "04",
+      "catchphrase": "ECHT KRASS!",
+      "audioUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EP04_7c0bf4f5.mp3"
+    },
+    {
+      "id": "90001",
+      "episodeNumber": "07",
+      "catchphrase": "CHAOS schafft ORDNUNG?!",
+      "audioUrl": "https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast-audio/1779261409381_EPISODE07.mp3"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tepisodeNumber\tcatchphrase\taudioUrl\n30012\t04\tECHT KRASS!\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/EP04_7c0bf4f5.mp3\n90001\t07\tCHAOS schafft ORDNUNG?!\thttps://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/podcast-audio/1779261409381_EPISODE07.mp3\n",
+  "stderr": "",
+  "execution_time_ms": 273
+}

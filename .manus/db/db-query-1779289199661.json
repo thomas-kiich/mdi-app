@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `training_einheiten` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`kategorie` enum('befindlichkeit','atemtraining','stimmklangtraining','bewegungstraining','umfeldaktivierung') NOT NULL,\n\t`titel` varchar(200) NOT NULL,\n\t`kurzbeschreibung` text NOT NULL,\n\t`beschreibung` text,\n\t`dauern` varchar(50) NOT NULL DEFAULT '7,12,21',\n\t`audioUrl` text,\n\t`videoUrl` text,\n\t`infografikUrl` text,\n\t`audioBeschreibungUrl` text,\n\t`sortOrder` int NOT NULL DEFAULT 0,\n\t`aktiv` boolean NOT NULL DEFAULT false,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `training_einheiten_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute CREATE TABLE IF NOT EXISTS `training_einheiten` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`kategorie` enum('befindlichkeit','atemtraining','stimmklangtraining','bewegungstraining','umfeldaktivierung') NOT NULL,\n\t`titel` varchar(200) NOT NULL,\n\t`kurzbeschreibung` text NOT NULL,\n\t`beschreibung` text,\n\t`dauern` varchar(50) NOT NULL DEFAULT '7,12,21',\n\t`audioUrl` text,\n\t`videoUrl` text,\n\t`infografikUrl` text,\n\t`audioBeschreibungUrl` text,\n\t`sortOrder` int NOT NULL DEFAULT 0,\n\t`aktiv` boolean NOT NULL DEFAULT false,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\t`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n\tCONSTRAINT `training_einheiten_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 329
+}

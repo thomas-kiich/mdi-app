@@ -20,6 +20,7 @@ import ObsidianVerbinden from "@/pages/ObsidianVerbinden";
 import Episoden from "@/pages/Episoden";
 import AdminPremium from "@/pages/AdminPremium";
 import AdminTraining from "@/pages/AdminTraining";
+import AdminTrainingEinheiten from "@/pages/AdminTrainingEinheiten";
 import EinschlafBibliothek from "@/pages/EinschlafBibliothek";
 import AdminTts from "@/pages/AdminTts";
 import FAQ from "@/pages/FAQ";
@@ -66,6 +67,7 @@ function Router() {
       <Route path="/episoden" component={Episoden} />
       <Route path="/admin/premium" component={AdminPremium} />
       <Route path="/admin/training" component={AdminTraining} />
+      <Route path="/admin/training-einheiten" component={AdminTrainingEinheiten} />
       <Route path="/admin/tts" component={AdminTts} />
       <Route path="/einschlafen" component={EinschlafBibliothek} />
       <Route path="/faq" component={FAQ} />

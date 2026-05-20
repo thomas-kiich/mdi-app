@@ -37,6 +37,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { HealthScreeningModal } from "@/components/HealthScreeningModal";
 import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
+import { TrainingEinheitenView } from "@/components/TrainingEinheitenView";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
@@ -770,6 +771,12 @@ function Raum36Member() {
                 <p className="text-zinc-400 text-sm leading-relaxed italic">
                   Es kommen ständig neue Trainingsangebote in RAUM 36 – halte dich also auf dem Laufenden und nütze die vielfältigen Möglichkeiten, aber immer auf deinem abgestimmten Level der Befindlichkeit.
                 </p>
+              </div>
+
+              {/* NEUE TRAININGSEINHEITEN (vom Admin verwaltet) */}
+              <div className="mb-8">
+                <h3 className="text-base font-bold text-white mb-4 tracking-wider border-b border-zinc-800 pb-2">TRAININGSEINHEITEN</h3>
+                <TrainingEinheitenView />
               </div>
 
               {/* BOLT-Messung */}

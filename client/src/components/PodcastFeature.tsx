@@ -21,7 +21,9 @@ interface PodcastFeatureProps {
 
 function getProxiedAudioUrl(url?: string): string | undefined {
   if (!url) return undefined;
-  // Lokale Pfade direkt verwenden
+  // /manus-storage/ Pfade: Server-seitig auflösen via Proxy
+  if (url.startsWith('/manus-storage/')) return `/api/audio-proxy?url=${encodeURIComponent(url)}`;
+  // Andere lokale Pfade direkt verwenden
   if (url.startsWith('/') && !url.startsWith('/api/audio-proxy')) return url;
   // Bereits geproxied
   if (url.startsWith('/api/audio-proxy')) return url;

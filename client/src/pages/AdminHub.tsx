@@ -114,6 +114,15 @@ const adminSections = [
         desc: "Trainingsmodule und Inhalte konfigurieren",
       },
       {
+        href: "/admin/training-einheiten",
+        icon: BarChart3,
+        color: "text-emerald-400",
+        border: "border-emerald-500/30 hover:border-emerald-400/60",
+        bg: "bg-emerald-500/5 hover:bg-emerald-500/10",
+        title: "NEUES TRAINING",
+        desc: "Neue Trainingseinheiten anlegen, bearbeiten und veröffentlichen",
+      },
+      {
         href: "/admin/faq",
         icon: HelpCircle,
         color: "text-zinc-400",
