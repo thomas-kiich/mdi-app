@@ -71,7 +71,13 @@ export const podcastEpisodesRouter = router({
         }
       }
       
-      const [result] = await db.insert(podcastEpisodes).values(input);
+      const insertData = {
+        ...input,
+        coverImageUrl: input.coverImageUrl ?? "",
+        youtubeUrl: input.youtubeUrl ?? null,
+        spotifyUrl: input.spotifyUrl ?? null,
+      };
+      const [result] = await db.insert(podcastEpisodes).values(insertData);
       return { id: (result as any).insertId };
     }),
 
