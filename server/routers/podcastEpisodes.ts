@@ -43,13 +43,13 @@ export const podcastEpisodesRouter = router({
         episodeNumber: z.string().max(10),
         catchphrase: z.string().max(100),
         subtitle: z.string(),
-        audioUrl: z.string().url(),
-        coverImageUrl: z.string().url(),
+        audioUrl: z.string().url().or(z.literal("")),
+        coverImageUrl: z.string().url().optional().or(z.literal("")),
         description: z.string().optional(),
         isLatest: z.boolean().default(false),
         sortOrder: z.number().int().default(0),
-        youtubeUrl: z.string().url().optional(),
-        spotifyUrl: z.string().url().optional(),
+        youtubeUrl: z.string().url().nullish().or(z.literal("")),
+        spotifyUrl: z.string().url().nullish().or(z.literal("")),
       })
     )
     .mutation(async ({ input }) => {
