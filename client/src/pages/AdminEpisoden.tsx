@@ -18,8 +18,26 @@ import {
   Star,
   StarOff,
   Music,
+  Mail,
 } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
+
+const NL_STORAGE_KEY = "kiich_nl_draft_v1";
+
+function prefillNewsletterDraft(ep: Episode) {
+  try {
+    const existing = JSON.parse(localStorage.getItem(NL_STORAGE_KEY) ?? "{}");
+    const updated = {
+      ...existing,
+      episodeNumber: ep.episodeNumber,
+      episodeTitle: ep.catchphrase,
+      episodeDescription: ep.description ?? ep.subtitle ?? "",
+      subject: `KIICH EPISODE ${ep.episodeNumber} – ${ep.catchphrase}`,
+      draft: "",
+    };
+    localStorage.setItem(NL_STORAGE_KEY, JSON.stringify(updated));
+  } catch {}
+}
 
 type Episode = {
   id: number;
@@ -56,6 +74,7 @@ export default function AdminEpisoden() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [uploading, setUploading] = useState(false);
+  const [, navigate] = useLocation();
 
   const { data: episodes, isLoading } = trpc.podcastEpisodes.list.useQuery(undefined, {
     enabled: isAuthenticated && user?.role === "admin",
@@ -446,6 +465,18 @@ export default function AdminEpisoden() {
                     )}
                   </div>
                   <div className="flex gap-2 shrink-0">
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      title="Newsletter für diese Episode erstellen"
+                      onClick={() => {
+                        prefillNewsletterDraft(ep as Episode);
+                        navigate("/admin/newsletter");
+                      }}
+                      className="text-zinc-400 hover:text-orange-400"
+                    >
+                      <Mail className="w-4 h-4" />
+                    </Button>
                     <Button
                       size="sm"
                       variant="ghost"
