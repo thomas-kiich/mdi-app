@@ -136,4 +136,40 @@ router.post(
   }
 );
 
+// Training-Bild-Upload (nur Admin, bis 20 MB)
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
+});
+
+router.post(
+  "/api/training/upload-image",
+  imageUpload.single("image"),
+  async (req: Request, res: Response) => {
+    try {
+      let user;
+      try {
+        user = await sdk.authenticateRequest(req);
+      } catch {
+        return res.status(401).json({ error: "Nicht angemeldet" });
+      }
+      if (!user || (user as any).role !== "admin") {
+        return res.status(403).json({ error: "Nur Admins erlaubt" });
+      }
+      if (!req.file) {
+        return res.status(400).json({ error: "Kein Bild empfangen" });
+      }
+      const suffix = Math.random().toString(36).substring(2, 10);
+      const safeName = req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const mimeType = req.file.mimetype || "image/jpeg";
+      const fileKey = `training/infografiken/${Date.now()}-${suffix}-${safeName}`;
+      const { url } = await storagePut(fileKey, req.file.buffer, mimeType);
+      return res.json({ url, fileKey });
+    } catch (err) {
+      console.error("[TrainingImageUpload] Fehler:", err);
+      return res.status(500).json({ error: "Upload fehlgeschlagen" });
+    }
+  }
+);
+
 export default router;

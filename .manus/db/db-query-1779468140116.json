@@ -1,0 +1,20 @@
+{
+  "query": "SELECT id, titel, kategorie, aktiv, audioUrl, videoUrl, infografikUrl, audioBeschreibungUrl FROM training_einheiten WHERE id = 1;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, titel, kategorie, aktiv, audioUrl, videoUrl, infografikUrl, audioBeschreibungUrl FROM training_einheiten WHERE id = 1;",
+  "rows": [
+    {
+      "id": "1",
+      "titel": "FASZIENATMUNG - INHÄRES GÄHNEN",
+      "kategorie": "befindlichkeit",
+      "aktiv": "1",
+      "audioUrl": "NULL",
+      "videoUrl": "NULL",
+      "infografikUrl": "NULL",
+      "audioBeschreibungUrl": "NULL"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitel\tkategorie\taktiv\taudioUrl\tvideoUrl\tinfografikUrl\taudioBeschreibungUrl\n1\tFASZIENATMUNG - INHÄRES GÄHNEN\tbefindlichkeit\t1\tNULL\tNULL\tNULL\tNULL\n",
+  "stderr": "",
+  "execution_time_ms": 269
+}

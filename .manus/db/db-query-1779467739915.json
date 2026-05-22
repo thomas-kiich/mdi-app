@@ -1,0 +1,17 @@
+{
+  "query": "SELECT id, titel, kategorie, aktiv, sortOrder FROM training_einheiten ORDER BY id DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, titel, kategorie, aktiv, sortOrder FROM training_einheiten ORDER BY id DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "titel": "FASZIENATMUNG - INHÄRES GÄHNEN",
+      "kategorie": "befindlichkeit",
+      "aktiv": "0",
+      "sortOrder": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitel\tkategorie\taktiv\tsortOrder\n1\tFASZIENATMUNG - INHÄRES GÄHNEN\tbefindlichkeit\t0\t0\n",
+  "stderr": "",
+  "execution_time_ms": 314
+}

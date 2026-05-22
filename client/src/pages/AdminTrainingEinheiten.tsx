@@ -139,6 +139,7 @@ export default function AdminTrainingEinheiten() {
   };
 
   // Upload Funktion mit Fortschrittsanzeige
+  // Wählt je nach Dateityp die richtige Upload-Route
   const handleFileUpload = (field: keyof typeof EMPTY_FORM, accept: string) => {
     const input = document.createElement("input");
     input.type = "file";
@@ -150,12 +151,16 @@ export default function AdminTrainingEinheiten() {
       setUploadProgress(0);
       setUploadSuccess(null);
       try {
+        const isImage = accept.startsWith("image");
+        // Audio → /api/podcast/upload, Bild → /api/training/upload-image
+        const uploadUrl = isImage ? "/api/training/upload-image" : "/api/podcast/upload";
+        const fieldName = isImage ? "image" : "audio";
         const formData = new FormData();
-        formData.append("audio", file);
+        formData.append(fieldName, file);
         // XHR für Fortschrittsanzeige
         await new Promise<void>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
-          xhr.open("POST", "/api/podcast/upload-audio");
+          xhr.open("POST", uploadUrl);
           xhr.withCredentials = true;
           xhr.upload.onprogress = (ev) => {
             if (ev.lengthComputable) setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
@@ -163,14 +168,18 @@ export default function AdminTrainingEinheiten() {
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
               const data = JSON.parse(xhr.responseText);
-              setForm((f) => ({ ...f, [field]: data.url }));
+              // Beide Routen geben { url } zurück
+              const url = data.url || data.audioUrl;
+              setForm((f) => ({ ...f, [field]: url }));
               setUploadSuccess(field);
               setUploadProgress(100);
               toast({ title: "✓ Hochgeladen", description: `${file.name} wurde erfolgreich hochgeladen.` });
               setTimeout(() => setUploadSuccess(null), 3000);
               resolve();
             } else {
-              reject(new Error("Upload fehlgeschlagen (" + xhr.status + ")"));
+              let errMsg = "Upload fehlgeschlagen (" + xhr.status + ")";
+              try { errMsg = JSON.parse(xhr.responseText)?.error || errMsg; } catch {}
+              reject(new Error(errMsg));
             }
           };
           xhr.onerror = () => reject(new Error("Netzwerkfehler beim Upload"));
