@@ -23,7 +23,6 @@ import AdminTraining from "@/pages/AdminTraining";
 import AdminTrainingEinheiten from "@/pages/AdminTrainingEinheiten";
 import EinschlafBibliothek from "@/pages/EinschlafBibliothek";
 import AdminTts from "@/pages/AdminTts";
-import AdminMaStimme from "@/pages/AdminMaStimme";
 import FAQ from "@/pages/FAQ";
 import Abo from "@/pages/Abo";
 import AdminFaq from "@/pages/AdminFaq";
@@ -70,7 +69,6 @@ function Router() {
       <Route path="/admin/training" component={AdminTraining} />
       <Route path="/admin/training-einheiten" component={AdminTrainingEinheiten} />
       <Route path="/admin/tts" component={AdminTts} />
-      <Route path="/admin/ma-stimme" component={AdminMaStimme} />
       <Route path="/einschlafen" component={EinschlafBibliothek} />
       <Route path="/faq" component={FAQ} />
       <Route path="/abo" component={Abo} />

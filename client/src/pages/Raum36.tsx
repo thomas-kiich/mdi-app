@@ -31,6 +31,7 @@ import {
   X,
   ArrowLeft,
   HeartPulse,
+  Settings,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -727,6 +728,18 @@ function Raum36Member() {
                   }}
                 />
               )}
+              {/* Admin-Button: METHODE 36 bearbeiten */}
+              {isAdmin && !m36ActiveTrainer && (
+                <div className="flex justify-end mb-4">
+                  <a
+                    href="/admin/training-einheiten"
+                    className="flex items-center gap-2 text-xs text-orange-400 border border-orange-500/30 hover:border-orange-400/60 bg-orange-500/5 hover:bg-orange-500/10 px-3 py-1.5 rounded transition-colors"
+                  >
+                    <Settings className="w-3 h-3" />
+                    METHODE 36 bearbeiten
+                  </a>
+                </div>
+              )}
               {/* NEUE TRAININGSEINHEITEN (vom Admin verwaltet) */}
               {!m36ActiveTrainer && (
                 <div className="mt-8">
@@ -1182,6 +1195,18 @@ function Raum36Member() {
           {/* Vital Monitor */}
           {activeTab === "vital" && (
             <div>
+              {/* Admin-Button: VITALMONITOR bearbeiten */}
+              {isAdmin && (
+                <div className="flex justify-end mb-4">
+                  <a
+                    href="/admin/raum36"
+                    className="flex items-center gap-2 text-xs text-orange-400 border border-orange-500/30 hover:border-orange-400/60 bg-orange-500/5 hover:bg-orange-500/10 px-3 py-1.5 rounded transition-colors"
+                  >
+                    <Settings className="w-3 h-3" />
+                    VITALMONITOR bearbeiten
+                  </a>
+                </div>
+              )}
               {isVitalUnlocked ? (
                 <VitalDashboard onClose={() => setActiveTab("videos")} />
               ) : (

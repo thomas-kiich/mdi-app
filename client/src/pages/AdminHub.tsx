@@ -96,13 +96,13 @@ const adminSections = [
         desc: "Podcast-Episoden verwalten und veröffentlichen",
       },
       {
-        href: "/admin/ma-stimme",
+        href: "/admin/tts",
         icon: Mic,
         color: "text-green-400",
         border: "border-green-500/30 hover:border-green-400/60",
         bg: "bg-green-500/5 hover:bg-green-500/10",
-        title: "MA-STIMMGENERIERUNG",
-        desc: "Texte mit MA-Stimme vertonen · Anhören · Herunterladen · Auf S3 speichern",
+        title: "TTS · Sprachsynthese",
+        desc: "MA-Stimme generieren und Audio-Dateien erstellen",
       },
       {
         href: "/admin/training",
