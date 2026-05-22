@@ -49,6 +49,8 @@ export default function AdminTrainingEinheiten() {
   const [editId, setEditId] = useState<number | null>(null);
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [uploadingField, setUploadingField] = useState<string | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [filterKat, setFilterKat] = useState<string>("alle");
 
   const createMutation = trpc.trainingEinheiten.create.useMutation({
@@ -136,8 +138,8 @@ export default function AdminTrainingEinheiten() {
     setForm({ ...EMPTY_FORM });
   };
 
-  // Audio-Upload Funktion
-  const handleFileUpload = async (field: keyof typeof EMPTY_FORM, accept: string) => {
+  // Upload Funktion mit Fortschrittsanzeige
+  const handleFileUpload = (field: keyof typeof EMPTY_FORM, accept: string) => {
     const input = document.createElement("input");
     input.type = "file";
     input.accept = accept;
@@ -145,14 +147,35 @@ export default function AdminTrainingEinheiten() {
       const file = e.target.files?.[0];
       if (!file) return;
       setUploadingField(field);
+      setUploadProgress(0);
+      setUploadSuccess(null);
       try {
         const formData = new FormData();
         formData.append("audio", file);
-        const res = await fetch("/api/podcast/upload-audio", { method: "POST", body: formData, credentials: "include" });
-        if (!res.ok) throw new Error("Upload fehlgeschlagen");
-        const data = await res.json();
-        setForm((f) => ({ ...f, [field]: data.url }));
-        toast({ title: "Hochgeladen", description: "Datei erfolgreich hochgeladen." });
+        // XHR für Fortschrittsanzeige
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("POST", "/api/podcast/upload-audio");
+          xhr.withCredentials = true;
+          xhr.upload.onprogress = (ev) => {
+            if (ev.lengthComputable) setUploadProgress(Math.round((ev.loaded / ev.total) * 100));
+          };
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              const data = JSON.parse(xhr.responseText);
+              setForm((f) => ({ ...f, [field]: data.url }));
+              setUploadSuccess(field);
+              setUploadProgress(100);
+              toast({ title: "✓ Hochgeladen", description: `${file.name} wurde erfolgreich hochgeladen.` });
+              setTimeout(() => setUploadSuccess(null), 3000);
+              resolve();
+            } else {
+              reject(new Error("Upload fehlgeschlagen (" + xhr.status + ")"));
+            }
+          };
+          xhr.onerror = () => reject(new Error("Netzwerkfehler beim Upload"));
+          xhr.send(formData);
+        });
       } catch (err: any) {
         toast({ title: "Upload-Fehler", description: err.message });
       } finally {
