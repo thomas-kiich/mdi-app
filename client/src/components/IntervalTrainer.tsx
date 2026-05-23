@@ -328,7 +328,35 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
             </div>
           )}
 
-          {/* SCHRITT 2: Intervall-Auswahl */}
+          {/* SCHRITT 2: Stimmebene wählen */}
+          <div className="space-y-2 bg-zinc-900/60 rounded-xl p-4 border border-zinc-700">
+            <p className="text-xs font-bold text-zinc-400 tracking-widest">STIMMEBENE</p>
+            <div className="flex gap-2">
+              {([[-1, 'Männlich', '♂'], [0, 'Normal', '◎'], [1, 'Weiblich', '♀']] as [number, string, string][]).map(([shift, label, icon]) => (
+                <button
+                  key={shift}
+                  onClick={() => setOctaveShift(shift)}
+                  disabled={isPlaying}
+                  className={`flex-1 py-2 px-3 rounded-lg border text-sm font-semibold transition-all flex items-center justify-center gap-1 ${
+                    octaveShift === shift
+                      ? 'bg-orange-500/20 border-orange-500/60 text-orange-400'
+                      : 'bg-zinc-900/50 border-zinc-700 text-zinc-400 hover:border-zinc-500'
+                  } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <span>{icon}</span>
+                  <span>{label}</span>
+                </button>
+              ))}
+            </div>
+            {activeTone && (
+              <p className="text-[10px] text-zinc-500 text-center">
+                Grundton: {Math.round(activeTone.frequency * Math.pow(2, octaveShift))} Hz
+                {octaveShift === -1 ? ' (eine Oktave tiefer)' : octaveShift === 1 ? ' (eine Oktave höher)' : ''}
+              </p>
+            )}
+          </div>
+
+          {/* SCHRITT 3: Intervall-Auswahl */}
           <div className="grid grid-cols-1 gap-2">
             <p className="text-xs font-bold text-zinc-400 tracking-widest">INTERVALL WÄHLEN</p>
             {MDI_INTERVALS.map((interval) => {
@@ -479,16 +507,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                 >
                   {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-1" />}
                 </Button>
-                <div className="flex gap-1">
-                  {[[-1, 'Tief (M)'], [0, 'Normal'], [1, 'Hoch (W)']] .map(([shift, label]) => (
-                    <Button key={shift}
-                      variant={octaveShift === shift ? "default" : "outline"}
-                      onClick={() => setOctaveShift(shift as number)}
-                      className={`h-9 px-3 text-xs ${octaveShift === shift ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}`}
-                      disabled={isPlaying}
-                    >{label}</Button>
-                  ))}
-                </div>
+
               </div>
 
               {/* Tempo-Slider */}
