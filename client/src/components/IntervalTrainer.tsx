@@ -68,7 +68,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
   const [selectedInterval, setSelectedInterval] = useState(MDI_INTERVALS[0]);
   const [duration, setDuration] = useState<number[]>([10]);
   const [octaveShift, setOctaveShift] = useState(0);
-  const [phase, setPhase] = useState<'idle' | 'pre-hold' | 'glissando' | 'sustain'>('idle');
+  const [phase, setPhase] = useState<'idle' | 'preview' | 'pre-hold' | 'glissando' | 'sustain'>('idle');
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -134,38 +134,54 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     const startFreq = activeTone.frequency * multiplier;
     const endFreq = activeTone.frequency * selectedInterval.ratio * multiplier;
 
-    const preHoldDur = 3.0;
+    const previewDur = 1.5;  // Zielton-Vorschau
+    const preHoldDur = 3.0;  // Einschwingen Grundton
     const glissandoDur = duration[0];
     const sustainDur = 3.0;
-    const totalDuration = preHoldDur + glissandoDur + sustainDur;
+    const totalDuration = previewDur + preHoldDur + glissandoDur + sustainDur;
+
+    // --- Zielton-Vorschau: kurz den Zielton anspielen ---
+    const previewOsc = ctx.createOscillator();
+    const previewGain = ctx.createGain();
+    previewOsc.type = 'sine';
+    previewOsc.frequency.setValueAtTime(endFreq, ctx.currentTime);
+    previewGain.gain.setValueAtTime(0, ctx.currentTime);
+    previewGain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.2);
+    previewGain.gain.setValueAtTime(0.25, ctx.currentTime + previewDur - 0.3);
+    previewGain.gain.linearRampToValueAtTime(0, ctx.currentTime + previewDur);
+    previewOsc.connect(previewGain);
+    previewGain.connect(ctx.destination);
+    previewOsc.start(ctx.currentTime);
+    previewOsc.stop(ctx.currentTime + previewDur);
 
     osc.type = 'sine';
-    // Einschwingen: Grundton halten
-    osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
-    osc.frequency.setValueAtTime(startFreq, ctx.currentTime + preHoldDur);
+    // Einschwingen: Grundton halten (nach Vorschau)
+    osc.frequency.setValueAtTime(startFreq, ctx.currentTime + previewDur);
+    osc.frequency.setValueAtTime(startFreq, ctx.currentTime + previewDur + preHoldDur);
 
     // Glissando: gleichmäßige logarithmische Interpolation (perceptuell linear)
-    // Menschliches Gehör nimmt Tonhöhe logarithmisch wahr – daher log-Interpolation
     const steps = Math.ceil(glissandoDur * 20); // alle 50ms ein Schritt
     const logStart = Math.log(startFreq);
     const logEnd = Math.log(endFreq);
+    const glissStart = ctx.currentTime + previewDur + preHoldDur;
     for (let i = 0; i <= steps; i++) {
       const t = i / steps;
       const freq = Math.exp(logStart + (logEnd - logStart) * t);
-      osc.frequency.setValueAtTime(freq, ctx.currentTime + preHoldDur + (glissandoDur * i / steps));
+      osc.frequency.setValueAtTime(freq, glissStart + (glissandoDur * i / steps));
     }
 
     // Zielton halten
-    osc.frequency.setValueAtTime(endFreq, ctx.currentTime + preHoldDur + glissandoDur);
+    osc.frequency.setValueAtTime(endFreq, glissStart + glissandoDur);
 
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1);
+    // Hauptoszillator: startet nach Vorschau
+    gain.gain.setValueAtTime(0, ctx.currentTime + previewDur);
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + previewDur + 1);
     gain.gain.setValueAtTime(0.3, ctx.currentTime + totalDuration - 1);
     gain.gain.linearRampToValueAtTime(0, ctx.currentTime + totalDuration);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
-    osc.start();
+    osc.start(ctx.currentTime + previewDur);
     osc.stop(ctx.currentTime + totalDuration);
 
     oscillatorRef.current = osc;
@@ -175,15 +191,18 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
 
     const animate = () => {
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      if (elapsed < preHoldDur) {
+      if (elapsed < previewDur) {
+        setPhase('preview');
+        setProgress((elapsed / previewDur) * 100);
+      } else if (elapsed < previewDur + preHoldDur) {
         setPhase('pre-hold');
-        setProgress((elapsed / preHoldDur) * 100);
-      } else if (elapsed < preHoldDur + glissandoDur) {
+        setProgress(((elapsed - previewDur) / preHoldDur) * 100);
+      } else if (elapsed < previewDur + preHoldDur + glissandoDur) {
         setPhase('glissando');
-        setProgress(((elapsed - preHoldDur) / glissandoDur) * 100);
+        setProgress(((elapsed - previewDur - preHoldDur) / glissandoDur) * 100);
       } else if (elapsed < totalDuration) {
         setPhase('sustain');
-        setProgress(((elapsed - (preHoldDur + glissandoDur)) / sustainDur) * 100);
+        setProgress(((elapsed - previewDur - preHoldDur - glissandoDur) / sustainDur) * 100);
       } else {
         setPhase('idle');
         setIsPlaying(false);
@@ -388,12 +407,18 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                 {/* Status-Text */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                   <AnimatePresence mode="wait">
-                    {phase === 'pre-hold' && (
-                      <motion.div key="pre" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                        className="bg-black/60 px-4 py-2 rounded-full border border-zinc-700 text-orange-400 font-bold text-sm">
-                        Einschwingen...
-                      </motion.div>
-                    )}
+                  {phase === 'preview' && (
+                    <motion.div key="preview" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                      className={`bg-black/60 px-4 py-2 rounded-full border font-bold text-sm ${selectedInterval.borderColor} ${selectedInterval.color}`}>
+                      Zielton: {selectedInterval.label}
+                    </motion.div>
+                  )}
+                  {phase === 'pre-hold' && (
+                    <motion.div key="pre" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                      className="bg-black/60 px-4 py-2 rounded-full border border-zinc-700 text-orange-400 font-bold text-sm">
+                      Einschwingen...
+                    </motion.div>
+                  )}
                     {phase === 'glissando' && (
                       <motion.div key="gli" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
                         className="bg-black/60 px-4 py-2 rounded-full border border-zinc-700 text-white font-bold text-sm">
@@ -426,6 +451,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
               <div className="relative w-full h-7 bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700">
                 <motion.div
                   className={`absolute left-0 top-0 bottom-0 ${
+                    phase === 'preview' ? `${selectedInterval.bgColor}` :
                     phase === 'pre-hold' ? 'bg-orange-500/50' :
                     phase === 'glissando' ? 'bg-white/30' :
                     phase === 'sustain' ? `${selectedInterval.bgColor}` : 'bg-transparent'
@@ -433,6 +459,7 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                   style={{ width: `${progress}%` }}
                 />
                 <div className="relative z-10 flex w-full justify-between px-3 h-full items-center text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  <span className={phase === 'preview' ? 'text-white' : ''}>Zielton</span>
                   <span className={phase === 'pre-hold' ? 'text-white' : ''}>Einschwingen</span>
                   <span className={phase === 'glissando' ? 'text-white' : ''}>Gleiten</span>
                   <span className={phase === 'sustain' ? 'text-white' : ''}>Halten</span>
