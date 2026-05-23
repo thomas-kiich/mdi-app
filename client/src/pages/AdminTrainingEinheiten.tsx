@@ -478,6 +478,15 @@ export default function AdminTrainingEinheiten() {
                           <span className="text-xs text-zinc-500 flex items-center gap-1"><EyeOff className="w-3 h-3" /> Entwurf</span>
                         )}
                         <span className="text-xs text-zinc-500">Dauer: {e.dauern} min</span>
+                        <span
+                          className="text-xs font-mono bg-zinc-800 border border-zinc-600 text-orange-400 px-2 py-0.5 rounded cursor-pointer hover:bg-zinc-700 select-all"
+                          title="Deeplink kopieren"
+                          onClick={() => {
+                            navigator.clipboard.writeText(`/raum36?tab=methode&training=${e.id}`);
+                          }}
+                        >
+                          #{e.id} — /raum36?tab=methode&training={e.id}
+                        </span>
                       </div>
                       <h3 className="text-white font-bold text-sm">{e.titel}</h3>
                       <p className="text-zinc-400 text-xs mt-0.5 line-clamp-2">{e.kurzbeschreibung}</p>
