@@ -479,7 +479,30 @@ const FEATURE_UNLOCK = new Date("2026-05-14T00:00:00");
 function Raum36Member() {
   const { user } = useAuth();
   const isAdmin = user?.role === "admin";
-  const [activeTab, setActiveTab] = useState<Tab>("methode36");
+
+  // URL-Parameter auswerten: ?tab=methode&kategorie=befindlichkeit&training=3
+  const [location] = useLocation();
+  const urlParams = new URLSearchParams(window.location.search);
+  const tabParam = urlParams.get("tab");
+  const kategorieParam = urlParams.get("kategorie") || undefined;
+  const trainingParam = urlParams.get("training") ? parseInt(urlParams.get("training")!) : undefined;
+
+  // Tab-Mapping: URL-Param → interner Tab-Name
+  const tabMap: Record<string, Tab> = {
+    methode: "methode36",
+    methode36: "methode36",
+    fragen: "fragen",
+    kommunikation: "fragen",
+    videos: "videos",
+    trainingsaufbau: "videos",
+    vital: "vital",
+    vitalmonitor: "vital",
+    wissenspool: "wissenspool",
+    frequenzlabor: "frequenzlabor",
+  };
+  const initialTab: Tab = (tabParam && tabMap[tabParam]) ? tabMap[tabParam] : "methode36";
+
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
   const [pseudonymInput, setPseudonymInput] = useState("");
@@ -745,7 +768,10 @@ function Raum36Member() {
               {!m36ActiveTrainer && (
                 <div className="mt-8">
                   <h3 className="text-base font-bold text-white mb-4 tracking-wider border-b border-zinc-800 pb-2">NEUE TRAININGSEINHEITEN</h3>
-                  <TrainingEinheitenView />
+                  <TrainingEinheitenView
+                    initialKategorie={kategorieParam}
+                    initialTrainingId={trainingParam}
+                  />
                 </div>
               )}
             </div>

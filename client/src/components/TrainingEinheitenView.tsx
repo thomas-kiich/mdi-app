@@ -4,7 +4,7 @@
  * Beim Anklicken einer Kachel öffnet sich das Detailfenster mit Dauer-Auswahl,
  * Beschreibung, Audio, Video, Infografik und Audiobeschreibung.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { RichTextDisplay } from "@/components/RichTextEditor";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -164,10 +164,27 @@ function DetailView({ einheit, onBack }: { einheit: Einheit; onBack: () => void 
   );
 }
 
-export function TrainingEinheitenView() {
+interface TrainingEinheitenViewProps {
+  initialKategorie?: string;
+  initialTrainingId?: number;
+}
+
+export function TrainingEinheitenView({ initialKategorie, initialTrainingId }: TrainingEinheitenViewProps = {}) {
   const { data: einheiten, isLoading } = trpc.trainingEinheiten.getAll.useQuery();
   const [selectedEinheit, setSelectedEinheit] = useState<Einheit | null>(null);
-  const [filterKat, setFilterKat] = useState<string>("alle");
+  const [filterKat, setFilterKat] = useState<string>(initialKategorie || "alle");
+  const [deepLinkHandled, setDeepLinkHandled] = useState(false);
+
+  // Deeplink: Training direkt aufklappen wenn initialTrainingId gesetzt
+  useEffect(() => {
+    if (!deepLinkHandled && einheiten && initialTrainingId) {
+      const target = einheiten.find((e) => e.id === initialTrainingId);
+      if (target) {
+        setSelectedEinheit(target);
+        setDeepLinkHandled(true);
+      }
+    }
+  }, [einheiten, initialTrainingId, deepLinkHandled]);
 
   if (isLoading) {
     return (
