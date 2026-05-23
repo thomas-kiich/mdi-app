@@ -377,13 +377,7 @@ export function TrainingCategoryStructure({
             ))}
           </div>
 
-          {category.items.length === 0 && (
-            <div className="text-center py-12">
-              <p className="text-zinc-500">
-                In dieser Kategorie sind noch keine Trainings verfügbar.
-              </p>
-            </div>
-          )}
+          {/* Kein Leertext mehr – neue Trainings kommen aus der DB (TrainingEinheitenView) */}
         </div>
       </div>
     );
@@ -437,7 +431,7 @@ export function TrainingCategoryStructure({
 
         {/* Category Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {TRAINING_CATEGORIES.map((cat) => {
+          {TRAINING_CATEGORIES.filter((cat) => cat.items.length > 0).map((cat) => {
             const freigeschaltet = istFreigeschaltet(freigaben, isAdmin, cat.id);
             return (
               <Card
