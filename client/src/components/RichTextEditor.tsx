@@ -11,7 +11,8 @@ import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
-import { useEffect, useRef } from "react";
+import Link from "@tiptap/extension-link";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 
 // Farb-Palette für KIICH
@@ -44,6 +45,8 @@ export function RichTextEditor({
   minHeight = "200px",
 }: RichTextEditorProps) {
   const isInternalChange = useRef(false);
+  const [showLinkInput, setShowLinkInput] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
 
   const editor = useEditor({
     extensions: [
@@ -53,6 +56,14 @@ export function RichTextEditor({
       Color,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Highlight.configure({ multicolor: true }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: "text-orange-400 underline cursor-pointer hover:text-orange-300",
+          target: "_blank",
+          rel: "noopener noreferrer",
+        },
+      }),
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
@@ -236,6 +247,75 @@ export function RichTextEditor({
           <span className="bg-orange-500/40 px-1 rounded">Mark</span>
         </ToolbarButton>
 
+        {/* Link */}
+        <div className="relative">
+          <ToolbarButton
+            onClick={() => {
+              if (editor.isActive("link")) {
+                editor.chain().focus().unsetLink().run();
+              } else {
+                const previousUrl = editor.getAttributes("link").href || "";
+                setLinkUrl(previousUrl);
+                setShowLinkInput((v) => !v);
+              }
+            }}
+            active={editor.isActive("link")}
+            title={editor.isActive("link") ? "Link entfernen" : "Link einfügen"}
+          >
+            🔗 Link
+          </ToolbarButton>
+          {showLinkInput && (
+            <div className="absolute top-full left-0 mt-1 z-50 bg-gray-900 border border-white/20 rounded-lg p-2 shadow-xl flex gap-2 min-w-[280px]">
+              <input
+                type="url"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (linkUrl) {
+                      editor.chain().focus().setLink({ href: linkUrl }).run();
+                    } else {
+                      editor.chain().focus().unsetLink().run();
+                    }
+                    setShowLinkInput(false);
+                    setLinkUrl("");
+                  }
+                  if (e.key === "Escape") {
+                    setShowLinkInput(false);
+                    setLinkUrl("");
+                  }
+                }}
+                placeholder="https://..."
+                className="flex-1 bg-black/40 border border-white/20 rounded px-2 py-1 text-xs text-white placeholder-white/30 outline-none focus:border-orange-500"
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (linkUrl) {
+                    editor.chain().focus().setLink({ href: linkUrl }).run();
+                  } else {
+                    editor.chain().focus().unsetLink().run();
+                  }
+                  setShowLinkInput(false);
+                  setLinkUrl("");
+                }}
+                className="px-2 py-1 bg-orange-500 text-white text-xs rounded hover:bg-orange-600"
+              >
+                OK
+              </button>
+              <button
+                type="button"
+                onClick={() => { setShowLinkInput(false); setLinkUrl(""); }}
+                className="px-2 py-1 bg-white/10 text-white/70 text-xs rounded hover:bg-white/20"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+        </div>
+
         {/* Alles löschen */}
         <ToolbarButton
           onClick={() => editor.chain().focus().clearNodes().unsetAllMarks().run()}
@@ -283,6 +363,7 @@ export function RichTextDisplay({
         "[&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5",
         "[&_li]:mb-1 [&_p]:mb-2 [&_strong]:text-white [&_em]:text-white/80",
         "[&_mark]:rounded [&_mark]:px-0.5",
+        "[&_a]:text-orange-400 [&_a]:underline [&_a]:cursor-pointer hover:[&_a]:text-orange-300",
         className
       )}
       dangerouslySetInnerHTML={{ __html: html }}
