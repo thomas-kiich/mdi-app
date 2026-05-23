@@ -194,8 +194,19 @@ export function TrainingEinheitenView({ initialKategorie, initialTrainingId }: T
 
   if (isLoading) {
     return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-orange-400" />
+      <div className="space-y-3 py-2">
+        {[1, 2].map((i) => (
+          <div key={i} className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 animate-pulse">
+            <div className="flex items-start gap-3">
+              <div className="flex-1 space-y-2">
+                <div className="h-3 bg-zinc-800 rounded w-1/4" />
+                <div className="h-4 bg-zinc-800 rounded w-2/3" />
+                <div className="h-3 bg-zinc-800 rounded w-full" />
+              </div>
+              <div className="w-8 h-8 bg-zinc-800 rounded-lg shrink-0" />
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

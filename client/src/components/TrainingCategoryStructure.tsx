@@ -431,7 +431,7 @@ export function TrainingCategoryStructure({
 
         {/* Category Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {TRAINING_CATEGORIES.filter((cat) => cat.items.length > 0).map((cat) => {
+          {TRAINING_CATEGORIES.map((cat) => {
             const freigeschaltet = istFreigeschaltet(freigaben, isAdmin, cat.id);
             return (
               <Card
