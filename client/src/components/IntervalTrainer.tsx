@@ -27,7 +27,7 @@ const MDI_INTERVALS = [
     borderColor: "border-amber-500/40",
     bgColor: "bg-amber-500/10",
     description: "Gleite nach unten zum Wurzelklang. Verankert und erdet die tiefsten Schichten deines Systems.",
-    bodyTarget: "32%", // Steissbein
+    bodyTarget: "12%", // Unterhalb Grundton (Wurzel/Erde)
   },
   {
     id: "quinte-up",
@@ -424,12 +424,23 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
 
                 {/* Verbindungslinie */}
                 {phase === 'glissando' && (
-                  <motion.div
-                    className="absolute w-0.5 bg-white/40"
-                    style={{ bottom: '37%', height: '0%' }}
-                    animate={{ height: '28%' }}
-                    transition={{ duration: duration[0], ease: "linear" }}
-                  />
+                  selectedInterval.direction === 'down' ? (
+                    // Wurzelklang: Linie nach unten (von Grundton zu 12%)
+                    <motion.div
+                      className="absolute w-0.5 bg-amber-400/40"
+                      style={{ bottom: '32%', height: '0%', transformOrigin: 'top' }}
+                      animate={{ height: '20%', bottom: '12%' }}
+                      transition={{ duration: duration[0], ease: "linear" }}
+                    />
+                  ) : (
+                    // Herzklang / Zirbeldrüse: Linie nach oben
+                    <motion.div
+                      className="absolute w-0.5 bg-white/40"
+                      style={{ bottom: '37%', height: '0%' }}
+                      animate={{ height: selectedInterval.id === 'oktave-up' ? '48%' : '28%' }}
+                      transition={{ duration: duration[0], ease: "linear" }}
+                    />
+                  )
                 )}
 
                 {/* Status-Text */}
