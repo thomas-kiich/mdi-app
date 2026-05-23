@@ -752,6 +752,15 @@ function Raum36Member() {
                   }}
                 />
               )}
+              {/* TRAININGSEINHEITEN (vom Admin verwaltet) – erscheinen zuerst */}
+              {!m36ActiveTrainer && (
+                <div className="mb-8">
+                  <TrainingEinheitenView
+                    initialKategorie={kategorieParam}
+                    initialTrainingId={trainingParam}
+                  />
+                </div>
+              )}
               {/* Admin-Button: METHODE 36 bearbeiten */}
               {isAdmin && !m36ActiveTrainer && (
                 <div className="flex justify-end mb-4">
@@ -762,16 +771,6 @@ function Raum36Member() {
                     <Settings className="w-3 h-3" />
                     METHODE 36 bearbeiten
                   </a>
-                </div>
-              )}
-              {/* NEUE TRAININGSEINHEITEN (vom Admin verwaltet) */}
-              {!m36ActiveTrainer && (
-                <div className="mt-8">
-                  <h3 className="text-base font-bold text-white mb-4 tracking-wider border-b border-zinc-800 pb-2">NEUE TRAININGSEINHEITEN</h3>
-                  <TrainingEinheitenView
-                    initialKategorie={kategorieParam}
-                    initialTrainingId={trainingParam}
-                  />
                 </div>
               )}
             </div>

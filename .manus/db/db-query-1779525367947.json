@@ -1,0 +1,16 @@
+{
+  "query": "SELECT id, titel, kategorie, aktiv FROM training_einheiten ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, titel, kategorie, aktiv FROM training_einheiten ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "titel": "FASZIENATMUNG - INHÄRES GÄHNEN",
+      "kategorie": "befindlichkeit",
+      "aktiv": "1"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitel\tkategorie\taktiv\n1\tFASZIENATMUNG - INHÄRES GÄHNEN\tbefindlichkeit\t1\n",
+  "stderr": "",
+  "execution_time_ms": 292
+}
