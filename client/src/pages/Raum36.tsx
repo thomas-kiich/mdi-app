@@ -774,8 +774,13 @@ function Raum36Member() {
                       setM36Duration(payload.duration);
                       setM36ActiveTrainer(payload.trainer);
                       if (payload.trainer === "yohn") {
-                        // YOHN benötigt BasicData – Standardwerte setzen
-                        setM36BasicData({ freq: 97.2, tone: "G", color: "#ff5757", typeId: 19 });
+                        // YOHN: Lichtfarbe aus Auswahl übernehmen (oder Fallback)
+                        setM36BasicData({
+                          freq: payload.freq ?? 97.2,
+                          tone: payload.tone ?? "G",
+                          color: payload.color ?? "#ff5757",
+                          typeId: payload.typeId ?? 19,
+                        });
                       }
                     }}
                   />

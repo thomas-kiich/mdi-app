@@ -8,7 +8,9 @@ import { useState, useEffect } from "react";
 import { RichTextDisplay } from "@/components/RichTextEditor";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Loader2, ArrowLeft, Play, Pause, Music2, Video, Image, Headphones, Clock } from "lucide-react";
+import { Loader2, ArrowLeft, Play, Pause, Music2, Video, Image, Headphones, Clock, ChevronDown, ChevronUp } from "lucide-react";
+import frequencyData from "@/lib/frequencyData.json";
+import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 
 const KATEGORIEN = [
   {
@@ -79,14 +81,69 @@ function getYoutubeEmbedUrl(url: string): string | null {
   return null;
 }
 
+// 12 Grundtypen (ungerade 1-23) für YOHN-Lichtfarben-Auswahl
+const YOHN_BASIC_TYPES = (frequencyData as Array<{id:number;hex:string;colorName:string;metaphor:string;description:string;talent:string;frequency:number;tone:string;nutzung:string[]}>).filter(item => item.id % 2 !== 0 && item.id <= 23);
+
+function YohnColorPicker({ selectedDauer, onStart }: {
+  selectedDauer: number;
+  onStart: (freq: number, tone: string, color: string, typeId: number) => void;
+}) {
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const { playTone, stopAllSounds } = useSoundGenerator();
+  const selectedItem = YOHN_BASIC_TYPES.find(item => item.id === selectedId);
+
+  return (
+    <div className="space-y-4 bg-zinc-900/60 rounded-xl p-4 border border-zinc-700">
+      <p className="text-xs font-bold text-zinc-400 tracking-widest">LICHTFARBE WÄHLEN</p>
+      <div className="grid grid-cols-6 gap-3">
+        {YOHN_BASIC_TYPES.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => { setSelectedId(item.id); playTone(item.frequency); }}
+            onMouseEnter={() => playTone(item.frequency)}
+            onMouseLeave={() => stopAllSounds()}
+            className={`aspect-square rounded-full transition-all ${
+              selectedId === item.id
+                ? 'ring-4 ring-white ring-offset-2 ring-offset-zinc-900 scale-110'
+                : 'hover:ring-2 hover:ring-white/50 hover:ring-offset-1 hover:ring-offset-zinc-900'
+            }`}
+            style={{ backgroundColor: item.hex }}
+            title={item.colorName}
+          />
+        ))}
+      </div>
+      {selectedItem && (
+        <div className="rounded-xl p-4 border border-zinc-700 bg-zinc-800/40 space-y-3">
+          <div>
+            <h3 className="font-bold text-base tracking-wide uppercase" style={{ color: selectedItem.hex }}>{selectedItem.metaphor}</h3>
+            <p className="text-sm text-zinc-300">{selectedItem.description}</p>
+          </div>
+          <p className="text-xs text-zinc-400 leading-relaxed">{selectedItem.talent.split(' | ').slice(0, 4).join(' • ')}</p>
+          <button
+            onClick={() => onStart(selectedItem.frequency, selectedItem.tone, selectedItem.hex, selectedItem.id)}
+            className="w-full py-3 rounded-xl font-bold text-sm border border-white/20 bg-white/10 text-white hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+          >
+            <Play className="w-4 h-4" />
+            YOHN STARTEN – {selectedDauer} min
+          </button>
+        </div>
+      )}
+      {!selectedItem && (
+        <p className="text-xs text-zinc-500 text-center py-2">Wähle eine Farbe um das Training zu starten</p>
+      )}
+    </div>
+  );
+}
+
 function DetailView({ einheit, onBack, onStartTrainer }: { einheit: Einheit; onBack: () => void; onStartTrainer?: (payload: TrainerStartPayload) => void }) {
   const dauernList = einheit.dauern.split(",").map((d) => parseInt(d.trim())).filter(Boolean);
   const [selectedDauer, setSelectedDauer] = useState(dauernList[0] || 7);
   const [audioPlaying, setAudioPlaying] = useState(false);
   const [audioBeschrPlaying, setAudioBeschrPlaying] = useState(false);
-
   const kat = KATEGORIEN.find((k) => k.id === einheit.kategorie) || KATEGORIEN[0];
   const youtubeEmbed = einheit.videoUrl ? getYoutubeEmbedUrl(einheit.videoUrl) : null;
+  const trainerType = getTrainerType(einheit.titel);
+  const isYohn = trainerType === "yohn";
 
   return (
     <div className="space-y-5">
@@ -123,11 +180,17 @@ function DetailView({ einheit, onBack, onStartTrainer }: { einheit: Einheit; onB
         </div>
       </div>
 
-      {/* Trainer-Start-Button (wenn Trainer-Komponente verfügbar) */}
-      {onStartTrainer && (() => {
-        const trainerType = getTrainerType(einheit.titel);
-        if (!trainerType) return null;
-        return (
+      {/* Trainer-Start-Bereich */}
+      {onStartTrainer && trainerType && (
+        isYohn ? (
+          // YOHN: Lichtfarben-Auswahl
+          <YohnColorPicker
+            selectedDauer={selectedDauer}
+            onStart={(freq, tone, color, typeId) =>
+              onStartTrainer({ trainer: "yohn", duration: selectedDauer, freq, tone, color, typeId })
+            }
+          />
+        ) : (
           <button
             onClick={() => onStartTrainer({ trainer: trainerType, duration: selectedDauer, audioUrl: einheit.audioUrl ?? undefined })}
             className={`w-full py-3 rounded-xl font-bold text-sm border transition-all hover:brightness-110 active:scale-[0.99] flex items-center justify-center gap-2 ${kat.bg} ${kat.border} ${kat.color}`}
@@ -135,8 +198,8 @@ function DetailView({ einheit, onBack, onStartTrainer }: { einheit: Einheit; onB
             <Play className="w-4 h-4" />
             TRAINING STARTEN – {selectedDauer} min
           </button>
-        );
-      })()}
+        )
+      )}
 
       {/* Beschreibung */}
       {einheit.beschreibung && (
@@ -226,6 +289,11 @@ export interface TrainerStartPayload {
   trainer: TrainerType;
   duration: number;
   audioUrl?: string;
+  // Für YOHN: Lichtfarbe-Auswahl
+  freq?: number;
+  tone?: string;
+  color?: string;
+  typeId?: number;
 }
 
 interface TrainingEinheitenViewProps {
