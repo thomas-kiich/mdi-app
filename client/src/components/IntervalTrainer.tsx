@@ -140,10 +140,23 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     const totalDuration = preHoldDur + glissandoDur + sustainDur;
 
     osc.type = 'sine';
+    // Einschwingen: Grundton halten
     osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
     osc.frequency.setValueAtTime(startFreq, ctx.currentTime + preHoldDur);
-    osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + preHoldDur + glissandoDur);
-    osc.frequency.setValueAtTime(endFreq, ctx.currentTime + totalDuration);
+
+    // Glissando: gleichmäßige logarithmische Interpolation (perceptuell linear)
+    // Menschliches Gehör nimmt Tonhöhe logarithmisch wahr – daher log-Interpolation
+    const steps = Math.ceil(glissandoDur * 20); // alle 50ms ein Schritt
+    const logStart = Math.log(startFreq);
+    const logEnd = Math.log(endFreq);
+    for (let i = 0; i <= steps; i++) {
+      const t = i / steps;
+      const freq = Math.exp(logStart + (logEnd - logStart) * t);
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + preHoldDur + (glissandoDur * i / steps));
+    }
+
+    // Zielton halten
+    osc.frequency.setValueAtTime(endFreq, ctx.currentTime + preHoldDur + glissandoDur);
 
     gain.gain.setValueAtTime(0, ctx.currentTime);
     gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1);
