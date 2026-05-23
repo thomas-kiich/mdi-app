@@ -267,7 +267,7 @@ export function RichTextEditor({
           {showLinkInput && (
             <div className="absolute top-full left-0 mt-1 z-50 bg-gray-900 border border-white/20 rounded-lg p-2 shadow-xl flex gap-2 min-w-[280px]">
               <input
-                type="url"
+                type="text"
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
                 onKeyDown={(e) => {
@@ -286,7 +286,7 @@ export function RichTextEditor({
                     setLinkUrl("");
                   }
                 }}
-                placeholder="https://..."
+                placeholder="https://... oder /raum36"
                 className="flex-1 bg-black/40 border border-white/20 rounded px-2 py-1 text-xs text-white placeholder-white/30 outline-none focus:border-orange-500"
                 autoFocus
               />
