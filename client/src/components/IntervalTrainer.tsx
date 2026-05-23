@@ -306,8 +306,8 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
                 {BASIC_TYPES.map((item) => (
                   <button
                     key={item.id}
-                    onClick={() => { setSelectedTypeId(item.id); playTone(item.frequency); }}
-                    onMouseEnter={() => playTone(item.frequency)}
+                    onClick={() => { setSelectedTypeId(item.id); playTone(item.frequency * Math.pow(2, octaveShift)); }}
+                    onMouseEnter={() => playTone(item.frequency * Math.pow(2, octaveShift))}
                     onMouseLeave={() => stopAllSounds()}
                     className={`aspect-square rounded-full transition-all ${
                       selectedTypeId === item.id
