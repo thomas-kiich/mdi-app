@@ -167,13 +167,22 @@ function DetailView({ einheit, onBack }: { einheit: Einheit; onBack: () => void 
 interface TrainingEinheitenViewProps {
   initialKategorie?: string;
   initialTrainingId?: number;
+  /** Externer Filter – wird gesetzt wenn eine leere Kategorie im alten System angeklickt wird */
+  externalFilterKat?: string;
 }
 
-export function TrainingEinheitenView({ initialKategorie, initialTrainingId }: TrainingEinheitenViewProps = {}) {
+export function TrainingEinheitenView({ initialKategorie, initialTrainingId, externalFilterKat }: TrainingEinheitenViewProps = {}) {
   const { data: einheiten, isLoading } = trpc.trainingEinheiten.getAll.useQuery();
   const [selectedEinheit, setSelectedEinheit] = useState<Einheit | null>(null);
   const [filterKat, setFilterKat] = useState<string>(initialKategorie || "alle");
   const [deepLinkHandled, setDeepLinkHandled] = useState(false);
+
+  // Externer Filter: wenn eine leere Kategorie im alten System angeklickt wird
+  useEffect(() => {
+    if (externalFilterKat) {
+      setFilterKat(externalFilterKat);
+    }
+  }, [externalFilterKat]);
 
   // Deeplink: Training direkt aufklappen wenn initialTrainingId gesetzt
   // Bei Änderung der initialTrainingId (z.B. interner Link-Klick) deepLinkHandled zurücksetzen

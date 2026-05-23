@@ -30,6 +30,8 @@ interface TrainingCategoryStructureProps {
   onOpenKnowledge?: () => void;
   onClose?: () => void;
   isPremium?: boolean;
+  /** Wird aufgerufen wenn eine Kategorie ohne Items angeklickt wird – z.B. um zur DB-Ansicht zu scrollen */
+  onEmptyCategory?: (categoryId: string) => void;
 }
 
 /** Prüft ob eine Kategorie oder ein Item freigeschaltet ist */
@@ -126,7 +128,8 @@ export function TrainingCategoryStructure({
   onStartBasicTraining,
   onOpenKnowledge,
   onClose,
-  isPremium
+  isPremium,
+  onEmptyCategory
 }: TrainingCategoryStructureProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { toast } = useToast();
@@ -444,7 +447,12 @@ export function TrainingCategoryStructure({
                 )}
                 onClick={() => {
                   if (freigeschaltet) {
-                    setSelectedCategory(cat.id);
+                    if (cat.items.length === 0 && onEmptyCategory) {
+                      // Leere Kategorie: zur DB-Ansicht weiterleiten statt Layer 2 zu öffnen
+                      onEmptyCategory(cat.id);
+                    } else {
+                      setSelectedCategory(cat.id);
+                    }
                   } else {
                     toast({
                       title: "Bald verfügbar",

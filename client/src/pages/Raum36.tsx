@@ -506,6 +506,16 @@ function Raum36Member() {
 
   const [activeTab, setActiveTab] = useState<Tab>(resolvedTab);
   const trainingViewRef = useRef<HTMLDivElement>(null);
+  const [externalFilterKat, setExternalFilterKat] = useState<string | undefined>(undefined);
+
+  // Mapping: alte Kategorie-IDs -> neue DB-Kategorie-IDs
+  const OLD_TO_NEW_KAT: Record<string, string> = {
+    befindlichkeit: "befindlichkeit",
+    breathing: "atemtraining",
+    voice: "stimmklangtraining",
+    movement: "bewegungstraining",
+    ambient: "umfeldaktivierung",
+  };
 
   // Reagiert auf Query-String-Änderungen (z.B. interner Link-Klick im Kommunikationscenter)
   useEffect(() => {
@@ -754,6 +764,13 @@ function Raum36Member() {
               ) : (
                 <TrainingCategoryStructure
                   isPremium={isAdmin || statusQuery.data?.isActive === true}
+                  onEmptyCategory={(catId) => {
+                    const newKat = OLD_TO_NEW_KAT[catId] || catId;
+                    setExternalFilterKat(newKat);
+                    setTimeout(() => {
+                      trainingViewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }, 100);
+                  }}
                   onStartTraining={(item, duration) => {
                     setM36Duration(duration);
                     setM36TrainingItem(item as any);
@@ -777,6 +794,7 @@ function Raum36Member() {
                   <TrainingEinheitenView
                     initialKategorie={kategorieParam}
                     initialTrainingId={trainingParam}
+                    externalFilterKat={externalFilterKat}
                   />
                 </div>
               )}
