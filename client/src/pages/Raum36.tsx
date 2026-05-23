@@ -5,7 +5,7 @@
  * Mitglieder-Bereich: Wochenvideos, Fragen an Thomas, Wissenspool
  */
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import React from "react";
 import { Link, useLocation, useSearch } from "wouter";
 import { trpc } from "@/lib/trpc";
@@ -505,12 +505,23 @@ function Raum36Member() {
   const resolvedTab: Tab = (tabParam && tabMap[tabParam]) ? tabMap[tabParam] as Tab : "methode36" as Tab;
 
   const [activeTab, setActiveTab] = useState<Tab>(resolvedTab);
+  const trainingViewRef = useRef<HTMLDivElement>(null);
 
   // Reagiert auf Query-String-Änderungen (z.B. interner Link-Klick im Kommunikationscenter)
   useEffect(() => {
     setActiveTab(resolvedTab);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
+
+  // Scrollt automatisch zur TrainingEinheitenView wenn ein training-Parameter gesetzt ist
+  useEffect(() => {
+    if (trainingParam && trainingViewRef.current) {
+      setTimeout(() => {
+        trainingViewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 300);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [trainingParam, activeTab]);
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
   const [pseudonymInput, setPseudonymInput] = useState("");
@@ -762,7 +773,7 @@ function Raum36Member() {
               )}
               {/* TRAININGSEINHEITEN (vom Admin verwaltet) – erscheinen zuerst */}
               {!m36ActiveTrainer && (
-                <div className="mb-8">
+                <div className="mb-8" ref={trainingViewRef}>
                   <TrainingEinheitenView
                     initialKategorie={kategorieParam}
                     initialTrainingId={trainingParam}
