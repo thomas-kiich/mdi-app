@@ -1339,10 +1339,15 @@ export default function Raum36() {
     const params = new URLSearchParams(window.location.search);
     if (params.get("checkout") === "success") {
       toast.success("Willkommen im RAUM 36! Dein Abo ist aktiv.");
-      window.history.replaceState({}, "", "/raum36");
+      // Nur checkout-Parameter entfernen, tab/kategorie/training behalten
+      params.delete("checkout");
+      const rest = params.toString();
+      window.history.replaceState({}, "", rest ? `/raum36?${rest}` : "/raum36");
     } else if (params.get("checkout") === "cancelled") {
       toast.info("Checkout abgebrochen.");
-      window.history.replaceState({}, "", "/raum36");
+      params.delete("checkout");
+      const rest = params.toString();
+      window.history.replaceState({}, "", rest ? `/raum36?${rest}` : "/raum36");
     }
   }, []);
 
@@ -1379,7 +1384,7 @@ export default function Raum36() {
   }
 
   // Mitglied (oder Admin) → Member-Bereich mit Admin-Link zur Landing-Vorschau
-  if (isAuthenticated && statusQuery.data?.isActive) {
+  if (isAuthenticated && (statusQuery.data?.isActive || isAdmin)) {
     return (
       <div className="relative">
         {isAdmin && (
