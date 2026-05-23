@@ -361,12 +361,15 @@ export function RichTextDisplay({
   // Interne Links (beginnen mit /) werden über den Router navigiert (kein Reload).
   // Externe Links öffnen in neuem Tab.
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement;
-    const anchor = target.closest("a");
+    const eventTarget = e.target as HTMLElement;
+    const anchor = eventTarget.closest("a");
     if (!anchor) return;
     const href = anchor.getAttribute("href") || "";
     if (href.startsWith("/")) {
       e.preventDefault();
+      e.stopPropagation();
+      // target=_blank entfernen damit kein neuer Tab öffnet
+      anchor.removeAttribute("target");
       navigate(href);
     }
     // Externe Links: Browser-Standard (target=_blank) greift

@@ -7,7 +7,7 @@
 
 import { useState, useEffect } from "react";
 import React from "react";
-import { Link, useLocation } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
@@ -481,7 +481,8 @@ function Raum36Member() {
   const isAdmin = user?.role === "admin";
 
   // URL-Parameter auswerten: ?tab=methode&kategorie=befindlichkeit&training=3
-  const [location] = useLocation();
+  // useSearch() von Wouter reagiert reaktiv auf Query-String-Änderungen (auch ohne Reload)
+  const search = useSearch();
 
   // Tab-Mapping: URL-Param → interner Tab-Name
   const tabMap: Record<string, Tab> = {
@@ -497,30 +498,19 @@ function Raum36Member() {
     frequenzlabor: "frequenzlabor",
   };
 
-  const parseUrlParams = () => {
-    const p = new URLSearchParams(window.location.search);
-    const tab = p.get("tab");
-    return {
-      tabParam: tab,
-      kategorieParam: p.get("kategorie") || undefined,
-      trainingParam: p.get("training") ? parseInt(p.get("training")!) : undefined,
-      resolvedTab: (tab && tabMap[tab]) ? tabMap[tab] as Tab : "methode36" as Tab,
-    };
-  };
+  const urlParams = new URLSearchParams(search);
+  const tabParam = urlParams.get("tab");
+  const kategorieParam = urlParams.get("kategorie") || undefined;
+  const trainingParam = urlParams.get("training") ? parseInt(urlParams.get("training")!) : undefined;
+  const resolvedTab: Tab = (tabParam && tabMap[tabParam]) ? tabMap[tabParam] as Tab : "methode36" as Tab;
 
-  const initialParsed = parseUrlParams();
-  const [activeTab, setActiveTab] = useState<Tab>(initialParsed.resolvedTab);
-  const [kategorieParam, setKategorieParam] = useState<string | undefined>(initialParsed.kategorieParam);
-  const [trainingParam, setTrainingParam] = useState<number | undefined>(initialParsed.trainingParam);
+  const [activeTab, setActiveTab] = useState<Tab>(resolvedTab);
 
-  // Reagiert auf URL-Änderungen durch interne Navigation (z.B. Links im Kommunikationscenter)
+  // Reagiert auf Query-String-Änderungen (z.B. interner Link-Klick im Kommunikationscenter)
   useEffect(() => {
-    const parsed = parseUrlParams();
-    setActiveTab(parsed.resolvedTab);
-    setKategorieParam(parsed.kategorieParam);
-    setTrainingParam(parsed.trainingParam);
+    setActiveTab(resolvedTab);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
+  }, [search]);
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
   const [pseudonymInput, setPseudonymInput] = useState("");
