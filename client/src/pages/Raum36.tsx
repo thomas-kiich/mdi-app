@@ -38,7 +38,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { RichTextEditor, RichTextDisplay } from "@/components/RichTextEditor";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { HealthScreeningModal } from "@/components/HealthScreeningModal";
-import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
 import { TrainingEinheitenView } from "@/components/TrainingEinheitenView";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { AmbientTrainer } from "@/components/AmbientTrainer";
@@ -509,7 +508,9 @@ function Raum36Member() {
   const [externalFilterKat, setExternalFilterKat] = useState<string | undefined>(undefined);
 
   // Mapping: alte Kategorie-IDs -> neue DB-Kategorie-IDs
-  const OLD_TO_NEW_KAT: Record<string, string> = {
+  // OLD_TO_NEW_KAT entfernt (TrainingCategoryStructure nicht mehr verwendet)
+  // Platzhalter für zukünftige Kategorie-Mappings
+  const _OLD_TO_NEW_KAT: Record<string, string> = {
     befindlichkeit: "befindlichkeit",
     breathing: "atemtraining",
     voice: "stimmklangtraining",
@@ -761,33 +762,7 @@ function Raum36Member() {
                     setM36TrainingItem(null);
                   }}
                 />
-              ) : (
-                <TrainingCategoryStructure
-                  isPremium={isAdmin || statusQuery.data?.isActive === true}
-                  onEmptyCategory={(catId) => {
-                    const newKat = OLD_TO_NEW_KAT[catId] || catId;
-                    setExternalFilterKat(newKat);
-                    setTimeout(() => {
-                      trainingViewRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-                    }, 100);
-                  }}
-                  onStartTraining={(item, duration) => {
-                    setM36Duration(duration);
-                    setM36TrainingItem(item as any);
-                    if (item.id === "metabolic" || item.id === "mayerwelle") {
-                      setM36ActiveTrainer(item.id);
-                    } else if (item.id === "yohn") {
-                      setM36ActiveTrainer("yohn");
-                    } else if (item.id === "interval") {
-                      setM36ActiveTrainer("interval");
-                    }
-                  }}
-                  onStartBasicTraining={(freq, tone, color, typeId) => {
-                    setM36BasicData({ freq, tone, color, typeId });
-                    setM36ActiveTrainer("yohn");
-                  }}
-                />
-              )}
+              ) : null}
               {/* TRAININGSEINHEITEN (vom Admin verwaltet) – erscheinen zuerst */}
               {!m36ActiveTrainer && (
                 <div className="mb-8" ref={trainingViewRef}>
@@ -795,6 +770,14 @@ function Raum36Member() {
                     initialKategorie={kategorieParam}
                     initialTrainingId={trainingParam}
                     externalFilterKat={externalFilterKat}
+                    onStartTrainer={(payload) => {
+                      setM36Duration(payload.duration);
+                      setM36ActiveTrainer(payload.trainer);
+                      if (payload.trainer === "yohn") {
+                        // YOHN benötigt BasicData – Standardwerte setzen
+                        setM36BasicData({ freq: 97.2, tone: "G", color: "#ff5757", typeId: 19 });
+                      }
+                    }}
                   />
                 </div>
               )}

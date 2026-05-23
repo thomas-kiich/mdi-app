@@ -11,11 +11,51 @@ import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, Play, Pause, Music2, Video, Image, Headphones, Clock } from "lucide-react";
 
 const KATEGORIEN = [
-  { id: "befindlichkeit", label: "BEFINDLICHKEITSTRAINING", color: "text-rose-300", border: "border-rose-500/30", bg: "bg-rose-500/10", dot: "bg-rose-400" },
-  { id: "atemtraining", label: "ATEMTRAINING", color: "text-blue-300", border: "border-blue-500/30", bg: "bg-blue-500/10", dot: "bg-blue-400" },
-  { id: "stimmklangtraining", label: "STIMMKLANGTRAINING", color: "text-purple-300", border: "border-purple-500/30", bg: "bg-purple-500/10", dot: "bg-purple-400" },
-  { id: "bewegungstraining", label: "BEWEGUNGSTRAINING", color: "text-green-300", border: "border-green-500/30", bg: "bg-green-500/10", dot: "bg-green-400" },
-  { id: "umfeldaktivierung", label: "UMFELDAKTIVIERUNG", color: "text-amber-300", border: "border-amber-500/30", bg: "bg-amber-500/10", dot: "bg-amber-400" },
+  {
+    id: "befindlichkeit",
+    label: "BEFINDLICHKEITSTRAINING",
+    color: "text-rose-300",
+    border: "border-rose-500/30",
+    bg: "bg-rose-500/10",
+    dot: "bg-rose-400",
+    description: "Wähle intuitiv deine momentane Stimmung und aktiviere dein Potential.",
+  },
+  {
+    id: "atemtraining",
+    label: "1 – ATEMTRAINING",
+    color: "text-blue-300",
+    border: "border-blue-500/30",
+    bg: "bg-blue-500/10",
+    dot: "bg-blue-400",
+    description: "Übungen in diesem Segment konzentrieren sich auf die Stärkung der Atemkompetenz mit all ihren positiven Auswirkungen auf das ganzheitliche Wohlbefinden.",
+  },
+  {
+    id: "stimmklangtraining",
+    label: "2 – STIMMKLANGTRAINING",
+    color: "text-purple-300",
+    border: "border-purple-500/30",
+    bg: "bg-purple-500/10",
+    dot: "bg-purple-400",
+    description: "Übungen in diesem Segment konzentrieren sich auf die Nutzung und die Stärkung der eigenen Stimmqualität.",
+  },
+  {
+    id: "bewegungstraining",
+    label: "3 – BEWEGUNGSTRAINING",
+    color: "text-green-300",
+    border: "border-green-500/30",
+    bg: "bg-green-500/10",
+    dot: "bg-green-400",
+    description: "Übungen in diesem Segment konzentrieren sich auf körperliche Bewegungsübungen in Abstimmung mit rhythmisch koordinierten Atemzyklen. Sie dienen der optimalen Aktivierung von Muskelketten – gesteuert durch gezielte Atemrhythmik.",
+  },
+  {
+    id: "umfeldaktivierung",
+    label: "4 – UMFELDAKTIVIERUNG",
+    color: "text-amber-300",
+    border: "border-amber-500/30",
+    bg: "bg-amber-500/10",
+    dot: "bg-amber-400",
+    description: "Übungen in diesem Segment dienen der Regulation des Umfelds durch sanfte Hintergrundkompositionen. Zudem motivieren die eingearbeiteten Pulsationen zu einem optimalen Atemrhythmus.",
+  },
 ] as const;
 
 type Einheit = {
@@ -39,7 +79,7 @@ function getYoutubeEmbedUrl(url: string): string | null {
   return null;
 }
 
-function DetailView({ einheit, onBack }: { einheit: Einheit; onBack: () => void }) {
+function DetailView({ einheit, onBack, onStartTrainer }: { einheit: Einheit; onBack: () => void; onStartTrainer?: (payload: TrainerStartPayload) => void }) {
   const dauernList = einheit.dauern.split(",").map((d) => parseInt(d.trim())).filter(Boolean);
   const [selectedDauer, setSelectedDauer] = useState(dauernList[0] || 7);
   const [audioPlaying, setAudioPlaying] = useState(false);
@@ -82,6 +122,21 @@ function DetailView({ einheit, onBack }: { einheit: Einheit; onBack: () => void 
           ))}
         </div>
       </div>
+
+      {/* Trainer-Start-Button (wenn Trainer-Komponente verfügbar) */}
+      {onStartTrainer && (() => {
+        const trainerType = getTrainerType(einheit.titel);
+        if (!trainerType) return null;
+        return (
+          <button
+            onClick={() => onStartTrainer({ trainer: trainerType, duration: selectedDauer, audioUrl: einheit.audioUrl ?? undefined })}
+            className={`w-full py-3 rounded-xl font-bold text-sm border transition-all hover:brightness-110 active:scale-[0.99] flex items-center justify-center gap-2 ${kat.bg} ${kat.border} ${kat.color}`}
+          >
+            <Play className="w-4 h-4" />
+            TRAINING STARTEN – {selectedDauer} min
+          </button>
+        );
+      })()}
 
       {/* Beschreibung */}
       {einheit.beschreibung && (
@@ -164,14 +219,37 @@ function DetailView({ einheit, onBack }: { einheit: Einheit; onBack: () => void 
   );
 }
 
+/** Trainer-Typ für die Verbindung mit den Trainer-Komponenten */
+export type TrainerType = "yohn" | "interval" | "metabolic" | "mayerwelle";
+
+export interface TrainerStartPayload {
+  trainer: TrainerType;
+  duration: number;
+  audioUrl?: string;
+}
+
 interface TrainingEinheitenViewProps {
   initialKategorie?: string;
   initialTrainingId?: number;
   /** Externer Filter – wird gesetzt wenn eine leere Kategorie im alten System angeklickt wird */
   externalFilterKat?: string;
+  /** Callback wenn ein Training mit Trainer-Komponente gestartet werden soll */
+  onStartTrainer?: (payload: TrainerStartPayload) => void;
 }
 
-export function TrainingEinheitenView({ initialKategorie, initialTrainingId, externalFilterKat }: TrainingEinheitenViewProps = {}) {
+// Mapping: Titel -> TrainerType (case-insensitive)
+const TRAINER_MAP: Record<string, TrainerType> = {
+  "yohn-atmung": "yohn",
+  "intervall-training": "interval",
+  "resonanz aus dem raum": "metabolic",
+  "mayerwelle 5,5 / mw": "mayerwelle",
+};
+
+function getTrainerType(titel: string): TrainerType | null {
+  return TRAINER_MAP[titel.toLowerCase()] ?? null;
+}
+
+export function TrainingEinheitenView({ initialKategorie, initialTrainingId, externalFilterKat, onStartTrainer }: TrainingEinheitenViewProps = {}) {
   const { data: einheiten, isLoading } = trpc.trainingEinheiten.getAll.useQuery();
   const [selectedEinheit, setSelectedEinheit] = useState<Einheit | null>(null);
   const [filterKat, setFilterKat] = useState<string>(initialKategorie || "alle");
@@ -230,7 +308,7 @@ export function TrainingEinheitenView({ initialKategorie, initialTrainingId, ext
   }
 
   if (selectedEinheit) {
-    return <DetailView einheit={selectedEinheit} onBack={() => setSelectedEinheit(null)} />;
+    return <DetailView einheit={selectedEinheit} onBack={() => setSelectedEinheit(null)} onStartTrainer={onStartTrainer} />;
   }
 
   // Welche Kategorien haben Einheiten?
@@ -267,6 +345,18 @@ export function TrainingEinheitenView({ initialKategorie, initialTrainingId, ext
           ))}
         </div>
       )}
+
+      {/* Kategorie-Header mit Beschreibung (Option A) */}
+      {filterKat !== "alle" && (() => {
+        const aktKat = KATEGORIEN.find((k) => k.id === filterKat);
+        if (!aktKat) return null;
+        return (
+          <div className={`rounded-xl p-4 border ${aktKat.border} ${aktKat.bg} mb-2`}>
+            <h2 className={`text-base font-bold tracking-wide mb-1 ${aktKat.color}`}>{aktKat.label}</h2>
+            <p className="text-zinc-300 text-sm leading-relaxed">{aktKat.description}</p>
+          </div>
+        );
+      })()}
 
       {/* Kacheln */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
