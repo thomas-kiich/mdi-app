@@ -728,15 +728,11 @@ function Raum36Member() {
                 />
               ) : m36ActiveTrainer === "interval" ? (
                 <IntervalTrainer
-                  baseTone={{
-                    name: m36BasicData?.tone || "G",
-                    frequency: m36BasicData?.freq || 97.2,
-                    color: m36BasicData?.color || "#ff5757",
-                    meaning: "",
-                    geometry: "",
-                    minFreq: (m36BasicData?.freq || 97.2) * 0.95,
-                    maxFreq: (m36BasicData?.freq || 97.2) * 1.05,
-                  }}
+                  baseTone={m36BasicData ? {
+                    name: m36BasicData.tone,
+                    frequency: m36BasicData.freq,
+                    color: m36BasicData.color,
+                  } : undefined}
                   onClose={() => {
                     setM36ActiveTrainer(null);
                     setM36TrainingItem(null);

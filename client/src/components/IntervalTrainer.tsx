@@ -2,46 +2,77 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Play, Pause, X, Music2, Info, User, Mic, ArrowLeft } from "lucide-react";
+import { Play, Pause, X, Music2, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TONES, ToneData } from "@/lib/tones";
 import { useAudioAnalyzer } from "@/hooks/useAudioAnalyzer";
 import { saveTrainingSession } from "@/lib/training";
+import frequencyData from "@/lib/frequencyData.json";
+import { useSoundGenerator } from "@/hooks/useSoundGenerator";
 
-interface IntervalTrainerProps {
-  baseTone: ToneData;
-  onClose: () => void;
-}
+// 12 Grundtypen (ungerade 1-23)
+const BASIC_TYPES = (frequencyData as Array<{
+  id: number; hex: string; colorName: string; metaphor: string;
+  description: string; talent: string; frequency: number; tone: string; nutzung: string[];
+}>).filter(item => item.id % 2 !== 0 && item.id <= 23);
 
-const INTERVALS = [
-  { 
-    name: "Reine Quinte", 
-    ratio: 1.5, 
-    description: "Verbindung Nabel (Ich-Kraft) zu Herz (Verbundenheit). Harmonisiert und öffnet.",
-    infoText: "Die Quinte ist eine der mächtigsten Harmonien. Sie verbindet deine Willenskraft (Nabel-Chakra) mit deiner Herzöffnung. Ideal für: Selbstermächtigung, emotionale Heilung, innere Stabilität. Beste Zeit: Morgens oder mittags. Dauer: 7-10 Min täglich für tiefe Wirkung."
+// MDI-Intervalle
+const MDI_INTERVALS = [
+  {
+    id: "quarte-down",
+    name: "Reine Quarte ↓",
+    label: "WURZELKLANG",
+    ratio: 3 / 4,
+    direction: "down" as const,
+    color: "text-amber-400",
+    borderColor: "border-amber-500/40",
+    bgColor: "bg-amber-500/10",
+    description: "Gleite nach unten zum Wurzelklang. Verankert und erdet die tiefsten Schichten deines Systems.",
+    bodyTarget: "32%", // Steissbein
   },
-  { 
-    name: "Oktave", 
-    ratio: 2.0, 
-    description: "Die Vollendung. Der gleiche Ton auf einer höheren Ebene. Transformation.",
-    infoText: "Die Oktave ist die Vollkommenheit. Derselbe Ton, aber auf einer höheren Frequenz-Ebene. Sie aktiviert Transformation und Bewusstseinserweiterung. Ideal für: Spirituelle Entwicklung, innere Klarheit, Übergang. Beste Zeit: Abends zur Reflexion. Dauer: 5-15 Min, je nach Empfindung."
+  {
+    id: "quinte-up",
+    name: "Reine Quinte ↑",
+    label: "HERZKLANG",
+    ratio: 3 / 2,
+    direction: "up" as const,
+    color: "text-rose-400",
+    borderColor: "border-rose-500/40",
+    bgColor: "bg-rose-500/10",
+    description: "Gleite nach oben zum Herzklang. Verbindet Willenskraft mit Herzöffnung und Verbundenheit.",
+    bodyTarget: "65%", // Herz
   },
-  { 
-    name: "Große Terz", 
-    ratio: 1.25, 
-    description: "Helle, freudige Ausdehnung. Schafft Raum und Zuversicht.",
-    infoText: "Die Große Terz strahlt Freude und Optimismus aus. Sie öffnet Raum für Kreativität und positive Emotionen. Ideal für: Motivation, Kreativität, emotionale Leichtigkeit. Beste Zeit: Tagsüber für Energie-Boost. Dauer: 5-7 Min, um die Stimmung zu heben."
+  {
+    id: "oktave-up",
+    name: "Oktave ↑",
+    label: "ZIRBELDRÜSENAKTIVIERUNG",
+    ratio: 2.0,
+    direction: "up" as const,
+    color: "text-violet-400",
+    borderColor: "border-violet-500/40",
+    bgColor: "bg-violet-500/10",
+    description: "Gleite zur Oktave. Aktiviert Transformation und Bewusstseinserweiterung – Zirbeldrüse.",
+    bodyTarget: "85%", // Kopf
   },
 ];
 
+interface IntervalTrainerProps {
+  baseTone?: { name: string; frequency: number; color: string };
+  onClose: () => void;
+}
+
 export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedInterval, setSelectedInterval] = useState(INTERVALS[0]);
-  const [duration, setDuration] = useState<number[]>([10]); // Glissando duration
-  const [octaveShift, setOctaveShift] = useState(0); // 0 = normal, -1 = lower octave (male), 1 = higher octave (female)
+  // Schritt 1: Lichtfarbe wählen (wenn kein baseTone übergeben)
+  const [selectedTypeId, setSelectedTypeId] = useState<number | null>(
+    baseTone ? -1 : null // -1 = extern übergeben
+  );
+  const [selectedInterval, setSelectedInterval] = useState(MDI_INTERVALS[0]);
+  const [duration, setDuration] = useState<number[]>([10]);
+  const [octaveShift, setOctaveShift] = useState(0);
   const [phase, setPhase] = useState<'idle' | 'pre-hold' | 'glissando' | 'sustain'>('idle');
-  
-  // Microphone Analyzer Hook
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const { playTone, stopAllSounds } = useSoundGenerator();
   const { startRecording, stopRecording, result, isRecording } = useAudioAnalyzer();
 
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -49,86 +80,78 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
   const gainNodeRef = useRef<GainNode | null>(null);
   const animationFrameRef = useRef<number | undefined>(undefined);
   const startTimeRef = useRef<number>(0);
-  const [progress, setProgress] = useState(0);
-  
-  // Track session stats
   const sessionStartRef = useRef<number>(Date.now());
   const completedIntervalsRef = useRef<number>(0);
 
+  // Aktiver Grundton: extern übergeben oder aus Lichtfarben-Auswahl
+  const activeType = selectedTypeId === -1
+    ? null
+    : BASIC_TYPES.find(t => t.id === selectedTypeId) ?? null;
+
+  const activeTone = baseTone ?? (activeType ? {
+    name: activeType.tone,
+    frequency: activeType.frequency,
+    color: activeType.hex,
+  } : null);
+
+  const isReady = activeTone !== null;
+
   useEffect(() => {
-    // Initialize Audio Context
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
     audioCtxRef.current = new AudioContextClass();
-
     return () => {
       stopSound();
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close();
-      }
-      
-      // Save session on unmount if any intervals were completed
-      if (completedIntervalsRef.current > 0) {
-          const durationMinutes = Math.max(1, Math.round((Date.now() - sessionStartRef.current) / 60000));
-          saveTrainingSession({
-              type: 'interval',
-              duration: durationMinutes,
-              tone: baseTone.name,
-              frequency: baseTone.frequency,
-              notes: `Intervall-Training: ${completedIntervalsRef.current} Durchgänge`
-          });
+      audioCtxRef.current?.close();
+      if (completedIntervalsRef.current > 0 && activeTone) {
+        const durationMinutes = Math.max(1, Math.round((Date.now() - sessionStartRef.current) / 60000));
+        saveTrainingSession({
+          type: 'interval',
+          duration: durationMinutes,
+          tone: activeTone.name,
+          frequency: activeTone.frequency,
+          notes: `Intervall-Training: ${completedIntervalsRef.current} Durchgänge`,
+        });
       }
     };
   }, []);
 
-  // Stop microphone when component unmounts or training stops
   useEffect(() => {
-    if (!isPlaying && isRecording) {
-      stopRecording();
-    }
+    if (!isPlaying && isRecording) stopRecording();
   }, [isPlaying, isRecording, stopRecording]);
 
   const startSequence = async () => {
-    if (!audioCtxRef.current) return;
-    if (audioCtxRef.current.state === 'suspended') {
-      await audioCtxRef.current.resume();
-    }
+    if (!audioCtxRef.current || !activeTone) return;
+    if (audioCtxRef.current.state === 'suspended') await audioCtxRef.current.resume();
 
-    stopSound(); // Ensure clean slate
-    startRecording(); // Start microphone
+    stopSound();
+    startRecording();
 
     const ctx = audioCtxRef.current;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
     const multiplier = Math.pow(2, octaveShift);
-    const startFreq = baseTone.frequency * multiplier;
-    const endFreq = (baseTone.frequency * selectedInterval.ratio) * multiplier;
-    
-    const preHoldDur = 3.0; // 3 seconds pre-hold
+    const startFreq = activeTone.frequency * multiplier;
+    const endFreq = activeTone.frequency * selectedInterval.ratio * multiplier;
+
+    const preHoldDur = 3.0;
     const glissandoDur = duration[0];
-    const sustainDur = 3.0; // 3 seconds sustain
+    const sustainDur = 3.0;
     const totalDuration = preHoldDur + glissandoDur + sustainDur;
 
     osc.type = 'sine';
     osc.frequency.setValueAtTime(startFreq, ctx.currentTime);
-    
-    // Schedule Frequencies
-    // 0 -> preHoldDur: Hold start frequency
     osc.frequency.setValueAtTime(startFreq, ctx.currentTime + preHoldDur);
-    // preHoldDur -> preHoldDur + glissandoDur: Glissando
     osc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + preHoldDur + glissandoDur);
-    // preHoldDur + glissandoDur -> totalDuration: Sustain end frequency
     osc.frequency.setValueAtTime(endFreq, ctx.currentTime + totalDuration);
 
-    // Schedule Volume Envelope
     gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1); // Fade in start
-    gain.gain.setValueAtTime(0.3, ctx.currentTime + totalDuration - 1); // Sustain volume
-    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + totalDuration); // Fade out end
+    gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + 1);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime + totalDuration - 1);
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + totalDuration);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
-
     osc.start();
     osc.stop(ctx.currentTime + totalDuration);
 
@@ -137,11 +160,8 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
     setIsPlaying(true);
     startTimeRef.current = Date.now();
 
-    // Animation Loop
     const animate = () => {
       const elapsed = (Date.now() - startTimeRef.current) / 1000;
-      
-      // Determine Phase
       if (elapsed < preHoldDur) {
         setPhase('pre-hold');
         setProgress((elapsed / preHoldDur) * 100);
@@ -154,12 +174,11 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
       } else {
         setPhase('idle');
         setIsPlaying(false);
-        stopRecording(); // Stop mic when finished
+        stopRecording();
         setProgress(0);
-        completedIntervalsRef.current += 1; // Increment completed count
-        return; // Stop animation
+        completedIntervalsRef.current += 1;
+        return;
       }
-
       animationFrameRef.current = requestAnimationFrame(animate);
     };
     animationFrameRef.current = requestAnimationFrame(animate);
@@ -167,52 +186,30 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
 
   const stopSound = () => {
     if (oscillatorRef.current) {
-      try {
-        oscillatorRef.current.stop();
-        oscillatorRef.current.disconnect();
-      } catch (e) {}
+      try { oscillatorRef.current.stop(); oscillatorRef.current.disconnect(); } catch (e) {}
       oscillatorRef.current = null;
     }
-    if (gainNodeRef.current) {
-      gainNodeRef.current.disconnect();
-      gainNodeRef.current = null;
-    }
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
+    gainNodeRef.current?.disconnect();
+    gainNodeRef.current = null;
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     setIsPlaying(false);
     setPhase('idle');
     setProgress(0);
     stopRecording();
   };
 
-  const togglePlay = () => {
-    if (isPlaying) {
-      stopSound();
-    } else {
-      startSequence();
-    }
-  };
+  const togglePlay = () => isPlaying ? stopSound() : startSequence();
 
-  // Intonation Check Logic
+  // Intonation Check
   const getIntonationStatus = () => {
-    if (!result || !isPlaying) return null;
-
+    if (!result || !isPlaying || !activeTone) return null;
     const multiplier = Math.pow(2, octaveShift);
     let targetFreq = 0;
-
-    if (phase === 'pre-hold') {
-      targetFreq = baseTone.frequency * multiplier;
-    } else if (phase === 'sustain') {
-      targetFreq = (baseTone.frequency * selectedInterval.ratio) * multiplier;
-    } else {
-      return null; // Don't check during glissando
-    }
-
-    // Allow 5% deviation
+    if (phase === 'pre-hold') targetFreq = activeTone.frequency * multiplier;
+    else if (phase === 'sustain') targetFreq = activeTone.frequency * selectedInterval.ratio * multiplier;
+    else return null;
     const deviation = Math.abs(result.fundamentalFreq - targetFreq);
     const tolerance = targetFreq * 0.05;
-
     if (deviation < tolerance) return 'match';
     if (result.fundamentalFreq < targetFreq) return 'low';
     return 'high';
@@ -220,262 +217,267 @@ export function IntervalTrainer({ baseTone, onClose }: IntervalTrainerProps) {
 
   const intonation = getIntonationStatus();
 
+  // Zielton-Beschriftung
+  const getTargetLabel = () => {
+    if (!activeTone) return '';
+    const multiplier = Math.pow(2, octaveShift);
+    const endHz = Math.round(activeTone.frequency * selectedInterval.ratio * multiplier);
+    return `${selectedInterval.label} – ${endHz} Hz`;
+  };
+
   return (
     <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-zinc-900 border-zinc-800 text-white shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
-        
+
         {/* Navigation Header */}
         <div className="absolute top-4 left-4 z-20">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={onClose}
-            className="text-zinc-400 hover:text-white p-0 hover:bg-transparent"
-          >
+          <Button variant="ghost" size="sm" onClick={onClose}
+            className="text-zinc-400 hover:text-white p-0 hover:bg-transparent">
             <ArrowLeft className="mr-1 h-5 w-5" />
             ZUR HAUPTSEITE
           </Button>
         </div>
-
-        {/* Close Button (Redundant but good for UX) */}
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors z-10"
-        >
+        <button onClick={onClose} className="absolute top-4 right-4 text-zinc-400 hover:text-white transition-colors z-10">
           <X size={24} />
         </button>
 
-          {/* Background Gradient Animation */}
-        <div 
+        {/* Background Gradient */}
+        <div
           className="absolute inset-0 opacity-10 pointer-events-none"
           style={{
-            background: `radial-gradient(circle at 50% 50%, ${baseTone.color}, transparent 70%)`,
+            background: `radial-gradient(circle at 50% 50%, ${activeTone?.color ?? '#888'}, transparent 70%)`,
             transform: `scale(${1 + (progress / 100) * 0.5})`,
-            transition: 'transform 0.1s linear'
+            transition: 'transform 0.1s linear',
           }}
         />
 
         <CardHeader className="relative z-10 text-center pb-2 shrink-0 pt-12">
-          <div className="mx-auto w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center mb-2" style={{ color: baseTone.color }}>
+          <div className="mx-auto w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center mb-2"
+            style={{ color: activeTone?.color ?? '#888' }}>
             <Music2 size={20} />
           </div>
           <CardTitle className="text-xl font-bold text-white">Intervall-Trainer</CardTitle>
           <CardDescription className="text-zinc-400 text-xs">
-            Gleite von deinem Grundton (<span style={{ color: baseTone.color, textShadow: '0 0 10px rgba(0,0,0,0.5)' }} className="font-bold">{baseTone.name}</span>) zur Harmonie.
+            {isReady
+              ? <>Grundton: <span style={{ color: activeTone!.color }} className="font-bold">{activeTone!.name} ({Math.round(activeTone!.frequency)} Hz)</span></>
+              : "Wähle zuerst deine Lichtfarbe (Grundton)"}
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-4 relative z-10 overflow-y-auto pb-6">
-          
-          {/* Body Visualization Area */}
-          <div className="relative h-48 w-full bg-zinc-950/50 rounded-xl border border-zinc-800 flex items-center justify-center overflow-hidden">
-             {/* Simple Body Silhouette (Abstract) */}
-             <svg viewBox="0 0 100 200" className="h-full opacity-40">
-                <path d="M50 10 C 60 10 70 20 70 35 C 70 50 85 55 90 70 C 95 100 80 140 80 190 L 20 190 C 20 140 5 100 10 70 C 15 55 30 50 30 35 C 30 20 40 10 50 10" fill="currentColor" />
-             </svg>
-             
-             {/* Energy Nodes */}
-             {/* Nabel (Root/Start) */}
-             <motion.div 
-               className="absolute w-6 h-6 rounded-full border-2"
-               style={{ 
-                 bottom: '32%', 
-                 backgroundColor: baseTone.color,
-                 borderColor: baseTone.color,
-                 boxShadow: phase === 'pre-hold' || phase === 'glissando' ? `0 0 25px ${baseTone.color}, inset 0 0 10px ${baseTone.color}` : `0 0 15px ${baseTone.color}`
-               }}
-               animate={{ scale: phase === 'pre-hold' ? [1, 1.5, 1] : 1 }}
-               transition={{ repeat: Infinity, duration: 1.5 }}
-             />
-             
-             {/* Herz (Heart/End) */}
-             <motion.div 
-               className="absolute w-4 h-4 rounded-full bg-white"
-               style={{ 
-                 bottom: '65%',
-                 opacity: phase === 'sustain' || phase === 'glissando' ? 1 : 0.3,
-                 boxShadow: phase === 'sustain' ? `0 0 30px white` : 'none'
-               }}
-               animate={{ scale: phase === 'sustain' ? [1, 1.3, 1] : 1 }}
-               transition={{ repeat: Infinity, duration: 1.5 }}
-             />
 
-             {/* Connection Line */}
-             {phase === 'glissando' && (
-                <motion.div 
-                  className="absolute w-1 bg-white/50"
-                  style={{ bottom: '40%', height: '0%' }}
-                  animate={{ height: '25%' }}
-                  transition={{ duration: duration[0], ease: "linear" }}
-                />
-             )}
-             
-             {/* Status Text Overlay */}
-             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <AnimatePresence mode="wait">
-                  {phase === 'pre-hold' && (
-                    <motion.div 
-                      key="pre-hold"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-zinc-700 text-orange-400 font-bold"
-                    >
-                      Einschwingen...
-                    </motion.div>
-                  )}
-                  {phase === 'glissando' && (
-                    <motion.div 
-                      key="glissando"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-zinc-700 text-white font-bold"
-                    >
-                      Gleiten...
-                    </motion.div>
-                  )}
-                  {phase === 'sustain' && (
-                    <motion.div 
-                      key="sustain"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-black/60 px-4 py-2 rounded-full backdrop-blur-md border border-zinc-700 text-green-400 font-bold"
-                    >
-                      Halten & Spüren
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-             </div>
-             
-             {/* Intonation Feedback Overlay */}
-             {intonation && (
-                <div className="absolute top-4 left-0 right-0 flex justify-center pointer-events-none">
-                   <div className={`px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md border ${
-                      intonation === 'match' ? 'bg-green-500/20 border-green-500 text-green-400' :
-                      intonation === 'low' ? 'bg-red-500/20 border-red-500 text-red-400' :
-                      'bg-red-500/20 border-red-500 text-red-400'
-                   }`}>
-                      {intonation === 'match' ? 'Perfekte Resonanz' :
-                       intonation === 'low' ? 'Zu tief ↑' : 'Zu hoch ↓'}
-                   </div>
-                </div>
-             )}
-          </div>
-
-          {/* Rhythm Bar (Reintroduced) */}
-          <div className="relative w-full h-8 bg-zinc-800 rounded-lg overflow-hidden mx-auto flex items-center justify-center border border-zinc-700">
-              {/* Background Progress */}
-              <motion.div 
-                className={`absolute left-0 top-0 bottom-0 ${
-                  phase === 'pre-hold' ? 'bg-orange-500/50' :
-                  phase === 'glissando' ? 'bg-white/30' :
-                  phase === 'sustain' ? 'bg-green-500/50' : 'bg-transparent'
-                }`}
-                style={{ width: `${progress}%` }}
-              />
-              
-              {/* Phase Labels */}
-              <div className="relative z-10 flex w-full justify-between px-4 text-[10px] font-bold uppercase tracking-wider text-zinc-300">
-                  <span className={phase === 'pre-hold' ? 'text-white' : ''}>1. Einschwingen</span>
-                  <span className={phase === 'glissando' ? 'text-white' : ''}>2. Gleiten</span>
-                  <span className={phase === 'sustain' ? 'text-white' : ''}>3. Halten</span>
+          {/* SCHRITT 1: Lichtfarben-Auswahl (nur wenn kein externer baseTone) */}
+          {!baseTone && (
+            <div className="space-y-3 bg-zinc-900/60 rounded-xl p-4 border border-zinc-700">
+              <p className="text-xs font-bold text-zinc-400 tracking-widest">LICHTFARBE WÄHLEN (GRUNDTON)</p>
+              <div className="grid grid-cols-6 gap-3">
+                {BASIC_TYPES.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => { setSelectedTypeId(item.id); playTone(item.frequency); }}
+                    onMouseEnter={() => playTone(item.frequency)}
+                    onMouseLeave={() => stopAllSounds()}
+                    className={`aspect-square rounded-full transition-all ${
+                      selectedTypeId === item.id
+                        ? 'ring-4 ring-white ring-offset-2 ring-offset-zinc-900 scale-110'
+                        : 'hover:ring-2 hover:ring-white/50 hover:ring-offset-1 hover:ring-offset-zinc-900'
+                    }`}
+                    style={{ backgroundColor: item.hex }}
+                    title={`${item.colorName} – ${item.tone} (${Math.round(item.frequency)} Hz)`}
+                  />
+                ))}
               </div>
-          </div>
-
-          {/* Controls Row: Play Button + Octave Selection */}
-          <div className="flex items-center justify-between gap-4 px-2">
-             {/* Play Button */}
-             <Button
-              size="lg"
-              onClick={togglePlay}
-              className={`w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center transition-all shadow-lg ${
-                isPlaying 
-                  ? 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700' 
-                  : 'bg-orange-500 hover:bg-orange-600 text-white hover:scale-105 shadow-orange-500/20'
-              }`}
-            >
-              {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-1" />}
-            </Button>
-
-            {/* Octave Selection */}
-            <div className="flex gap-1">
-              <Button
-                variant={octaveShift === -1 ? "default" : "outline"}
-                onClick={() => setOctaveShift(-1)}
-                className={`h-10 px-3 text-xs ${octaveShift === -1 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}`}
-                disabled={isPlaying}
-              >
-                Tief (M)
-              </Button>
-              <Button
-                variant={octaveShift === 0 ? "default" : "outline"}
-                onClick={() => setOctaveShift(0)}
-                className={`h-10 px-3 text-xs ${octaveShift === 0 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}`}
-                disabled={isPlaying}
-              >
-                Normal
-              </Button>
-              <Button
-                variant={octaveShift === 1 ? "default" : "outline"}
-                onClick={() => setOctaveShift(1)}
-                className={`h-10 px-3 text-xs ${octaveShift === 1 ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}`}
-                disabled={isPlaying}
-              >
-                Hoch (W)
-              </Button>
+              {activeType && (
+                <div className="text-center pt-1">
+                  <span className="text-sm font-bold" style={{ color: activeType.hex }}>{activeType.metaphor}</span>
+                  <span className="text-zinc-500 text-xs ml-2">{activeType.tone} · {Math.round(activeType.frequency)} Hz</span>
+                </div>
+              )}
             </div>
-          </div>
+          )}
 
-          {/* Interval Selection */}
+          {/* SCHRITT 2: Intervall-Auswahl */}
           <div className="grid grid-cols-1 gap-2">
-            {INTERVALS.map((interval) => {
-               const multiplier = Math.pow(2, octaveShift);
-               const startHz = Math.round(baseTone.frequency * multiplier);
-               const endHz = Math.round((baseTone.frequency * interval.ratio) * multiplier);
-               
-               return (
+            <p className="text-xs font-bold text-zinc-400 tracking-widest">INTERVALL WÄHLEN</p>
+            {MDI_INTERVALS.map((interval) => {
+              const multiplier = Math.pow(2, octaveShift);
+              const startHz = activeTone ? Math.round(activeTone.frequency * multiplier) : '–';
+              const endHz = activeTone ? Math.round(activeTone.frequency * interval.ratio * multiplier) : '–';
+              return (
                 <button
-                  key={interval.name}
+                  key={interval.id}
                   onClick={() => !isPlaying && setSelectedInterval(interval)}
+                  disabled={isPlaying}
                   className={`p-3 rounded-xl border text-left transition-all ${
-                    selectedInterval.name === interval.name
-                      ? 'bg-zinc-800 border-orange-500/50 ring-1 ring-orange-500/20'
+                    selectedInterval.id === interval.id
+                      ? `${interval.bgColor} ${interval.borderColor} ring-1 ring-white/10`
                       : 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 opacity-70'
                   } ${isPlaying ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  disabled={isPlaying}
                 >
                   <div className="flex justify-between items-center mb-1">
-                    <span className="font-semibold text-white">{interval.name}</span>
-                    <span className="text-xs font-mono text-zinc-500">
-                      {startHz} Hz → {endHz} Hz
-                    </span>
+                    <div>
+                      <span className={`font-semibold text-sm ${interval.color}`}>{interval.label}</span>
+                      <span className="text-zinc-500 text-xs ml-2">{interval.name}</span>
+                    </div>
+                    <span className="text-xs font-mono text-zinc-500">{startHz} → {endHz} Hz</span>
                   </div>
-                  <p className="text-[10px] text-zinc-400 leading-relaxed">
-                    {interval.description}
-                  </p>
+                  <p className="text-[10px] text-zinc-400 leading-relaxed">{interval.description}</p>
                 </button>
               );
             })}
           </div>
 
-          {/* Duration Slider */}
-          <div className="space-y-2 pt-2 border-t border-zinc-800">
-            <div className="flex justify-between text-xs">
-              <span className="text-zinc-400">Dauer des Glissando</span>
-              <span className="text-white font-mono">{duration[0]} Sek.</span>
-            </div>
-            <Slider
-              value={duration}
-              onValueChange={setDuration}
-              min={5}
-              max={30}
-              step={1}
-              disabled={isPlaying}
-              className="cursor-pointer"
-            />
-          </div>
+          {/* Glissando-Visualisierung (nur wenn bereit) */}
+          {isReady && (
+            <>
+              <div className="relative h-44 w-full bg-zinc-950/50 rounded-xl border border-zinc-800 flex items-center justify-center overflow-hidden">
+                <svg viewBox="0 0 100 200" className="h-full opacity-30">
+                  <path d="M50 10 C 60 10 70 20 70 35 C 70 50 85 55 90 70 C 95 100 80 140 80 190 L 20 190 C 20 140 5 100 10 70 C 15 55 30 50 30 35 C 30 20 40 10 50 10" fill="currentColor" />
+                </svg>
+
+                {/* Grundton-Punkt */}
+                <motion.div
+                  className="absolute w-5 h-5 rounded-full border-2"
+                  style={{
+                    bottom: '32%',
+                    backgroundColor: activeTone!.color,
+                    borderColor: activeTone!.color,
+                    boxShadow: phase === 'pre-hold' || phase === 'glissando' ? `0 0 20px ${activeTone!.color}` : `0 0 10px ${activeTone!.color}`,
+                  }}
+                  animate={{ scale: phase === 'pre-hold' ? [1, 1.5, 1] : 1 }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                />
+
+                {/* Zielton-Punkt */}
+                <motion.div
+                  className="absolute w-4 h-4 rounded-full"
+                  style={{
+                    bottom: selectedInterval.bodyTarget,
+                    backgroundColor: selectedInterval.id === 'quarte-down' ? '#f59e0b' :
+                      selectedInterval.id === 'quinte-up' ? '#f43f5e' : '#8b5cf6',
+                    opacity: phase === 'sustain' || phase === 'glissando' ? 1 : 0.3,
+                    boxShadow: phase === 'sustain' ? `0 0 25px currentColor` : 'none',
+                  }}
+                  animate={{ scale: phase === 'sustain' ? [1, 1.3, 1] : 1 }}
+                  transition={{ repeat: Infinity, duration: 1.5 }}
+                />
+
+                {/* Verbindungslinie */}
+                {phase === 'glissando' && (
+                  <motion.div
+                    className="absolute w-0.5 bg-white/40"
+                    style={{ bottom: '37%', height: '0%' }}
+                    animate={{ height: '28%' }}
+                    transition={{ duration: duration[0], ease: "linear" }}
+                  />
+                )}
+
+                {/* Status-Text */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <AnimatePresence mode="wait">
+                    {phase === 'pre-hold' && (
+                      <motion.div key="pre" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                        className="bg-black/60 px-4 py-2 rounded-full border border-zinc-700 text-orange-400 font-bold text-sm">
+                        Einschwingen...
+                      </motion.div>
+                    )}
+                    {phase === 'glissando' && (
+                      <motion.div key="gli" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                        className="bg-black/60 px-4 py-2 rounded-full border border-zinc-700 text-white font-bold text-sm">
+                        Gleiten {selectedInterval.direction === 'down' ? '↓' : '↑'}
+                      </motion.div>
+                    )}
+                    {phase === 'sustain' && (
+                      <motion.div key="sus" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                        className={`bg-black/60 px-4 py-2 rounded-full border font-bold text-sm ${selectedInterval.borderColor} ${selectedInterval.color}`}>
+                        {selectedInterval.label} – Halten
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                {/* Intonation-Feedback */}
+                {intonation && (
+                  <div className="absolute top-3 left-0 right-0 flex justify-center pointer-events-none">
+                    <div className={`px-3 py-1 rounded-full text-xs font-bold border ${
+                      intonation === 'match' ? 'bg-green-500/20 border-green-500 text-green-400' :
+                      'bg-red-500/20 border-red-500 text-red-400'
+                    }`}>
+                      {intonation === 'match' ? 'Perfekte Resonanz' : intonation === 'low' ? 'Zu tief ↑' : 'Zu hoch ↓'}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Fortschrittsbalken */}
+              <div className="relative w-full h-7 bg-zinc-800 rounded-lg overflow-hidden border border-zinc-700">
+                <motion.div
+                  className={`absolute left-0 top-0 bottom-0 ${
+                    phase === 'pre-hold' ? 'bg-orange-500/50' :
+                    phase === 'glissando' ? 'bg-white/30' :
+                    phase === 'sustain' ? `${selectedInterval.bgColor}` : 'bg-transparent'
+                  }`}
+                  style={{ width: `${progress}%` }}
+                />
+                <div className="relative z-10 flex w-full justify-between px-3 h-full items-center text-[10px] font-bold uppercase tracking-wider text-zinc-400">
+                  <span className={phase === 'pre-hold' ? 'text-white' : ''}>Einschwingen</span>
+                  <span className={phase === 'glissando' ? 'text-white' : ''}>Gleiten</span>
+                  <span className={phase === 'sustain' ? 'text-white' : ''}>Halten</span>
+                </div>
+              </div>
+
+              {/* Steuerung: Play + Oktave */}
+              <div className="flex items-center justify-between gap-4 px-1">
+                <Button
+                  size="lg"
+                  onClick={togglePlay}
+                  className={`w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center transition-all shadow-lg ${
+                    isPlaying
+                      ? 'bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700'
+                      : 'bg-orange-500 hover:bg-orange-600 text-white hover:scale-105'
+                  }`}
+                >
+                  {isPlaying ? <Pause size={24} /> : <Play size={24} className="ml-1" />}
+                </Button>
+                <div className="flex gap-1">
+                  {[[-1, 'Tief (M)'], [0, 'Normal'], [1, 'Hoch (W)']] .map(([shift, label]) => (
+                    <Button key={shift}
+                      variant={octaveShift === shift ? "default" : "outline"}
+                      onClick={() => setOctaveShift(shift as number)}
+                      className={`h-9 px-3 text-xs ${octaveShift === shift ? "bg-orange-500 hover:bg-orange-600" : "border-zinc-700 text-zinc-400"}`}
+                      disabled={isPlaying}
+                    >{label}</Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tempo-Slider */}
+              <div className="space-y-2 pt-2 border-t border-zinc-800">
+                <div className="flex justify-between text-xs">
+                  <span className="text-zinc-400">Glissando-Tempo</span>
+                  <span className="text-white font-mono">{duration[0]} Sek.</span>
+                </div>
+                <Slider
+                  value={duration}
+                  onValueChange={setDuration}
+                  min={3} max={30} step={1}
+                  disabled={isPlaying}
+                  className="cursor-pointer"
+                />
+                <div className="flex justify-between text-[10px] text-zinc-600">
+                  <span>Schnell (3s)</span>
+                  <span>Langsam (30s)</span>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Hinweis wenn noch keine Farbe gewählt */}
+          {!isReady && (
+            <p className="text-center text-zinc-500 text-sm py-4">
+              Wähle eine Lichtfarbe um das Training zu starten
+            </p>
+          )}
 
         </CardContent>
       </Card>

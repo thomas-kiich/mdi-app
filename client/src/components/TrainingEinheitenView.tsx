@@ -196,7 +196,7 @@ function DetailView({ einheit, onBack, onStartTrainer }: { einheit: Einheit; onB
             className={`w-full py-3 rounded-xl font-bold text-sm border transition-all hover:brightness-110 active:scale-[0.99] flex items-center justify-center gap-2 ${kat.bg} ${kat.border} ${kat.color}`}
           >
             <Play className="w-4 h-4" />
-            TRAINING STARTEN – {selectedDauer} min
+            {trainerType === "interval" ? "INTERVALL-TRAINER ÖFFNEN" : `TRAINING STARTEN – ${selectedDauer} min`}
           </button>
         )
       )}
