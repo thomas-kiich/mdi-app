@@ -358,39 +358,88 @@ export function TrainingEinheitenView({ initialKategorie, initialTrainingId, ext
         );
       })()}
 
-      {/* Kacheln */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {filtered.map((e) => {
-          const kat = KATEGORIEN.find((k) => k.id === e.kategorie) || KATEGORIEN[0];
-          const dauernList = e.dauern.split(",").map((d) => parseInt(d.trim())).filter(Boolean);
-          return (
-            <button
-              key={e.id}
-              onClick={() => setSelectedEinheit(e)}
-              className={`text-left rounded-xl p-4 border transition-all hover:scale-[1.01] active:scale-[0.99] ${kat.border} ${kat.bg} hover:brightness-110`}
-            >
-              <div className="flex items-start gap-3">
-                <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${kat.dot}`} />
-                <div className="flex-1 min-w-0">
-                  <p className={`text-xs font-bold mb-1 ${kat.color}`}>{kat.label}</p>
-                  <h3 className="text-white font-bold text-sm leading-tight">{e.titel}</h3>
-                  <p className="text-zinc-400 text-xs mt-1 line-clamp-2">{e.kurzbeschreibung}</p>
-                  <div className="flex items-center gap-3 mt-2 text-zinc-500 text-xs">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {dauernList.join(" / ")} min
-                    </span>
-                    {e.audioUrl && <span className="flex items-center gap-1 text-blue-400/60"><Music2 className="w-3 h-3" /></span>}
-                    {e.videoUrl && <span className="flex items-center gap-1 text-red-400/60"><Video className="w-3 h-3" /></span>}
-                    {e.infografikUrl && <span className="flex items-center gap-1 text-amber-400/60"><Image className="w-3 h-3" /></span>}
-                    {e.audioBeschreibungUrl && <span className="flex items-center gap-1 text-purple-400/60"><Headphones className="w-3 h-3" /></span>}
-                  </div>
+      {/* Kacheln – im "Alle"-Modus mit Kategorie-Header als Trennlinie */}
+      {filterKat === "alle" ? (
+        <div className="space-y-6">
+          {vorhandeneKats.map((kat) => {
+            const katEinheiten = einheiten.filter((e) => e.kategorie === kat.id);
+            if (katEinheiten.length === 0) return null;
+            return (
+              <div key={kat.id}>
+                {/* Kategorie-Header */}
+                <div className={`rounded-xl p-4 border ${kat.border} ${kat.bg} mb-3`}>
+                  <h2 className={`text-base font-bold tracking-wide mb-1 ${kat.color}`}>{kat.label}</h2>
+                  <p className="text-zinc-300 text-sm leading-relaxed">{kat.description}</p>
+                </div>
+                {/* Kacheln dieser Kategorie */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {katEinheiten.map((e) => {
+                    const dauernList = e.dauern.split(",").map((d) => parseInt(d.trim())).filter(Boolean);
+                    return (
+                      <button
+                        key={e.id}
+                        onClick={() => setSelectedEinheit(e)}
+                        className={`text-left rounded-xl p-4 border transition-all hover:scale-[1.01] active:scale-[0.99] ${kat.border} ${kat.bg} hover:brightness-110`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${kat.dot}`} />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-white font-bold text-sm leading-tight">{e.titel}</h3>
+                            <p className="text-zinc-400 text-xs mt-1 line-clamp-2">{e.kurzbeschreibung}</p>
+                            <div className="flex items-center gap-3 mt-2 text-zinc-500 text-xs">
+                              <span className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {dauernList.join(" / ")} min
+                              </span>
+                              {e.audioUrl && <span className="flex items-center gap-1 text-blue-400/60"><Music2 className="w-3 h-3" /></span>}
+                              {e.videoUrl && <span className="flex items-center gap-1 text-red-400/60"><Video className="w-3 h-3" /></span>}
+                              {e.infografikUrl && <span className="flex items-center gap-1 text-amber-400/60"><Image className="w-3 h-3" /></span>}
+                              {e.audioBeschreibungUrl && <span className="flex items-center gap-1 text-purple-400/60"><Headphones className="w-3 h-3" /></span>}
+                            </div>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            </button>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {filtered.map((e) => {
+            const kat = KATEGORIEN.find((k) => k.id === e.kategorie) || KATEGORIEN[0];
+            const dauernList = e.dauern.split(",").map((d) => parseInt(d.trim())).filter(Boolean);
+            return (
+              <button
+                key={e.id}
+                onClick={() => setSelectedEinheit(e)}
+                className={`text-left rounded-xl p-4 border transition-all hover:scale-[1.01] active:scale-[0.99] ${kat.border} ${kat.bg} hover:brightness-110`}
+              >
+                <div className="flex items-start gap-3">
+                  <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${kat.dot}`} />
+                  <div className="flex-1 min-w-0">
+                    <p className={`text-xs font-bold mb-1 ${kat.color}`}>{kat.label}</p>
+                    <h3 className="text-white font-bold text-sm leading-tight">{e.titel}</h3>
+                    <p className="text-zinc-400 text-xs mt-1 line-clamp-2">{e.kurzbeschreibung}</p>
+                    <div className="flex items-center gap-3 mt-2 text-zinc-500 text-xs">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {dauernList.join(" / ")} min
+                      </span>
+                      {e.audioUrl && <span className="flex items-center gap-1 text-blue-400/60"><Music2 className="w-3 h-3" /></span>}
+                      {e.videoUrl && <span className="flex items-center gap-1 text-red-400/60"><Video className="w-3 h-3" /></span>}
+                      {e.infografikUrl && <span className="flex items-center gap-1 text-amber-400/60"><Image className="w-3 h-3" /></span>}
+                      {e.audioBeschreibungUrl && <span className="flex items-center gap-1 text-purple-400/60"><Headphones className="w-3 h-3" /></span>}
+                    </div>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
