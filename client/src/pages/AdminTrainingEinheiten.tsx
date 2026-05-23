@@ -13,6 +13,7 @@ import {
   Music2, Video, Image, Headphones, ChevronDown, ChevronUp, Eye, EyeOff
 } from "lucide-react";
 import { Link } from "wouter";
+import { RichTextEditor } from "@/components/RichTextEditor";
 
 const KATEGORIEN = [
   { id: "befindlichkeit", label: "BEFINDLICHKEITSTRAINING", color: "bg-rose-500/20 text-rose-300 border-rose-500/30" },
@@ -287,13 +288,12 @@ export default function AdminTrainingEinheiten() {
             </div>
 
             <div>
-              <Label className="text-zinc-300 text-xs mb-1 block">DETAILBESCHREIBUNG (Hauptfenster)</Label>
-              <Textarea
-                placeholder="Detaillierte Anleitung und Beschreibung des Trainings..."
+              <Label className="text-zinc-300 text-xs mb-1 block">DETAILBESCHREIBUNG (Hauptfenster) – mit Formatierung &amp; Farben</Label>
+              <RichTextEditor
                 value={form.beschreibung}
-                onChange={(e) => setForm((f) => ({ ...f, beschreibung: e.target.value }))}
-                rows={5}
-                className="bg-zinc-800 border-zinc-700 text-white"
+                onChange={(html) => setForm((f) => ({ ...f, beschreibung: html }))}
+                placeholder="Detaillierte Anleitung und Beschreibung des Trainings..."
+                minHeight="180px"
               />
             </div>
 

@@ -35,6 +35,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { RichTextEditor, RichTextDisplay } from "@/components/RichTextEditor";
 import { VitalDashboard } from "@/components/VitalDashboard";
 import { HealthScreeningModal } from "@/components/HealthScreeningModal";
 import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
@@ -1040,7 +1041,7 @@ function Raum36Member() {
                           <div className="text-xs font-mono text-orange-500 uppercase tracking-widest mb-2">
                             Thomas antwortet
                           </div>
-                          <p className="text-zinc-300 leading-relaxed text-sm">{frage.antwort}</p>
+                          <RichTextDisplay html={frage.antwort ?? ""} className="text-sm" />
                           {frage.beantwortetAt && (
                             <span className="text-zinc-600 text-xs font-mono mt-2 block">
                               {new Date(frage.beantwortetAt).toLocaleDateString("de-DE")}
@@ -1055,13 +1056,12 @@ function Raum36Member() {
                           <div className="text-xs font-mono text-orange-500 uppercase tracking-widest mb-2">
                             Deine Antwort
                           </div>
-                          <Textarea
+                          <RichTextEditor
                             value={inlineAntwortText}
-                            onChange={(e) => setInlineAntwortText(e.target.value)}
+                            onChange={(html) => setInlineAntwortText(html)}
                             placeholder="Schreibe deine Antwort…"
-                            rows={4}
-                            className="bg-zinc-900 border-zinc-700 text-white text-sm resize-none mb-3"
-                            autoFocus
+                            minHeight="120px"
+                            className="mb-3"
                           />
                           <div className="flex gap-2">
                             <Button

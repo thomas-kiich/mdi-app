@@ -5,6 +5,7 @@
  * Beschreibung, Audio, Video, Infografik und Audiobeschreibung.
  */
 import { useState } from "react";
+import { RichTextDisplay } from "@/components/RichTextEditor";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Loader2, ArrowLeft, Play, Pause, Music2, Video, Image, Headphones, Clock } from "lucide-react";
@@ -85,7 +86,7 @@ function DetailView({ einheit, onBack }: { einheit: Einheit; onBack: () => void 
       {/* Beschreibung */}
       {einheit.beschreibung && (
         <div className="bg-zinc-800/50 rounded-xl p-4 border border-zinc-700">
-          <p className="text-zinc-300 text-sm leading-relaxed whitespace-pre-wrap">{einheit.beschreibung}</p>
+          <RichTextDisplay html={einheit.beschreibung} className="text-sm" />
         </div>
       )}
 
