@@ -176,6 +176,12 @@ export function TrainingEinheitenView({ initialKategorie, initialTrainingId }: T
   const [deepLinkHandled, setDeepLinkHandled] = useState(false);
 
   // Deeplink: Training direkt aufklappen wenn initialTrainingId gesetzt
+  // Bei Änderung der initialTrainingId (z.B. interner Link-Klick) deepLinkHandled zurücksetzen
+  useEffect(() => {
+    setDeepLinkHandled(false);
+    if (initialKategorie) setFilterKat(initialKategorie);
+  }, [initialTrainingId, initialKategorie]);
+
   useEffect(() => {
     if (!deepLinkHandled && einheiten && initialTrainingId) {
       const target = einheiten.find((e) => e.id === initialTrainingId);

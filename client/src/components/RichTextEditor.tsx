@@ -13,6 +13,7 @@ import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import Link from "@tiptap/extension-link";
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 
 // Farb-Palette für KIICH
@@ -353,7 +354,24 @@ export function RichTextDisplay({
   html: string;
   className?: string;
 }) {
+  const [, navigate] = useLocation();
+
   if (!html) return null;
+
+  // Interne Links (beginnen mit /) werden über den Router navigiert (kein Reload).
+  // Externe Links öffnen in neuem Tab.
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    const anchor = target.closest("a");
+    if (!anchor) return;
+    const href = anchor.getAttribute("href") || "";
+    if (href.startsWith("/")) {
+      e.preventDefault();
+      navigate(href);
+    }
+    // Externe Links: Browser-Standard (target=_blank) greift
+  };
+
   return (
     <div
       className={cn(
@@ -366,6 +384,7 @@ export function RichTextDisplay({
         "[&_a]:text-orange-400 [&_a]:underline [&_a]:cursor-pointer hover:[&_a]:text-orange-300",
         className
       )}
+      onClick={handleClick}
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

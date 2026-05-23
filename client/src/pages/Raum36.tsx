@@ -482,10 +482,6 @@ function Raum36Member() {
 
   // URL-Parameter auswerten: ?tab=methode&kategorie=befindlichkeit&training=3
   const [location] = useLocation();
-  const urlParams = new URLSearchParams(window.location.search);
-  const tabParam = urlParams.get("tab");
-  const kategorieParam = urlParams.get("kategorie") || undefined;
-  const trainingParam = urlParams.get("training") ? parseInt(urlParams.get("training")!) : undefined;
 
   // Tab-Mapping: URL-Param → interner Tab-Name
   const tabMap: Record<string, Tab> = {
@@ -500,9 +496,31 @@ function Raum36Member() {
     wissenspool: "wissenspool",
     frequenzlabor: "frequenzlabor",
   };
-  const initialTab: Tab = (tabParam && tabMap[tabParam]) ? tabMap[tabParam] : "methode36";
 
-  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
+  const parseUrlParams = () => {
+    const p = new URLSearchParams(window.location.search);
+    const tab = p.get("tab");
+    return {
+      tabParam: tab,
+      kategorieParam: p.get("kategorie") || undefined,
+      trainingParam: p.get("training") ? parseInt(p.get("training")!) : undefined,
+      resolvedTab: (tab && tabMap[tab]) ? tabMap[tab] as Tab : "methode36" as Tab,
+    };
+  };
+
+  const initialParsed = parseUrlParams();
+  const [activeTab, setActiveTab] = useState<Tab>(initialParsed.resolvedTab);
+  const [kategorieParam, setKategorieParam] = useState<string | undefined>(initialParsed.kategorieParam);
+  const [trainingParam, setTrainingParam] = useState<number | undefined>(initialParsed.trainingParam);
+
+  // Reagiert auf URL-Änderungen durch interne Navigation (z.B. Links im Kommunikationscenter)
+  useEffect(() => {
+    const parsed = parseUrlParams();
+    setActiveTab(parsed.resolvedTab);
+    setKategorieParam(parsed.kategorieParam);
+    setTrainingParam(parsed.trainingParam);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
   const [neueFrageText, setNeueFrageText] = useState("");
   const [showFrageForm, setShowFrageForm] = useState(false);
   const [pseudonymInput, setPseudonymInput] = useState("");
