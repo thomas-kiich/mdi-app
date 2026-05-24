@@ -1110,3 +1110,30 @@ export const trainingEinheiten = mysqlTable('training_einheiten', {
 });
 export type TrainingEinheit = typeof trainingEinheiten.$inferSelect;
 export type InsertTrainingEinheit = typeof trainingEinheiten.$inferInsert;
+
+
+/**
+ * KIICH PRAXIS PROJEKTE – Benutzerdefinierte Praxisprojekte
+ * Thomas kann neue Praxisprojekte über das Admin-Panel anlegen und verwalten.
+ * Diese werden dann im KIICH PRAXIS Bereich in RAUM 36 angezeigt.
+ */
+export const kiichPraxisProjekte = mysqlTable('kiich_praxis_projekte', {
+  id: int('id').autoincrement().primaryKey(),
+  /** Titel des Praxisprojekts, z.B. "KI & Kreativität" */
+  titel: varchar('titel', { length: 200 }).notNull(),
+  /** Kurzbeschreibung (1-2 Sätze) */
+  beschreibung: text('beschreibung').notNull(),
+  /** Detaillierte Beschreibung / Anleitung */
+  detailbeschreibung: text('detailbeschreibung'),
+  /** Link zum Projekt (relativ oder absolut) */
+  link: varchar('link', { length: 512 }).notNull(),
+  /** Sortierreihenfolge (niedrig = zuerst) */
+  sortOrder: int('sortOrder').notNull().default(0),
+  /** Ob dieses Projekt für Nutzer sichtbar ist */
+  aktiv: boolean('aktiv').notNull().default(true),
+  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  updatedAt: timestamp('updatedAt').defaultNow().onUpdateNow().notNull(),
+});
+
+export type KiichPraxisProjekt = typeof kiichPraxisProjekte.$inferSelect;
+export type InsertKiichPraxisProjekt = typeof kiichPraxisProjekte.$inferInsert;

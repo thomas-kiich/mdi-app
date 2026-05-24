@@ -1431,3 +1431,19 @@
 - [ ] Automatischer Versand: Willkommensmail bei Registrierung
 - [ ] Automatischer Versand: RAUM 36 Kaufbestätigung bei Stripe-Webhook
 - [ ] Automatischer Versand: Stimmklanganalyse Buchungsbestätigung bei Stripe-Webhook
+
+
+## KIICH PRAXIS Praxisprojekte (Session Mai 2026)
+- [ ] Datenbank-Schema: kiich_praxis_projekte Tabelle mit Titel, Beschreibung, Link, Reihenfolge
+- [ ] Admin-Seite AdminPraxisProjekte.tsx: CRUD für Praxisprojekte (Erstellen, Bearbeiten, Löschen, Reihenfolge)
+- [ ] KIICHPraxis.tsx vereinfachen: Text-Einstieg + dynamische Projektliste laden
+- [ ] tRPC-Procedures für Praxisprojekte (getPraxisProjekte, createPraxisProjekt, updatePraxisProjekt, deletePraxisProjekt)
+## Praxisprojekte Integration (Session Mai 2026)
+- [x] Datenbank-Schema: kiich_praxis_projekte Tabelle (Migration durchgeführt)
+- [x] tRPC-Router praxisProjekte.ts erstellt (getPraxisProjekte, getPraxisProjekteAdmin, createPraxisProjekt, updatePraxisProjekt, deletePraxisProjekt, reorderPraxisProjekte)
+- [x] praxisProjekteRouter in server/routers.ts eingebunden (spread-Syntax)
+- [x] AdminPraxisProjekte.tsx TypeScript-Fehler behoben (korrekte tRPC-Pfade, Typ-Annotationen)
+- [x] TypeScript: 0 Fehler (npx tsc --noEmit)
+- [ ] Route /admin/praxis-projekte in App.tsx registrieren
+- [ ] Admin-Sidebar-Link in AdminHub.tsx hinzufügen
+- [ ] KIICHPraxis.tsx auf trpc.getPraxisProjekte.useQuery() umstellen
