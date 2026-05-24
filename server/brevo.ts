@@ -71,96 +71,45 @@ export async function sendConfirmationEmail(
   name: string | null,
   confirmUrl: string
 ): Promise<boolean> {
-  const greeting = "HALLO!";
-
-  const htmlContent = `
-<!DOCTYPE html>
+  const htmlContent = `<!DOCTYPE html>
 <html lang="de">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Newsletter bestätigen – KIICH</title>
-</head>
-<body style="margin:0;padding:0;background:#0a0a0a;font-family:Georgia,serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px;">
-    <tr>
-      <td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-          <!-- Header -->
-          <tr>
-            <td style="padding:0 0 32px 0;">
-              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_f314ec60.png" alt="KIICH" width="120" style="display:block;border:0;" />
-            </td>
-          </tr>
-          <!-- Titel -->
-          <tr>
-            <td style="padding:0 0 24px 0;border-bottom:1px solid #27272a;">
-              <h1 style="margin:0;font-size:28px;font-weight:300;color:#ffffff;line-height:1.3;">
-                Noch ein Schritt zur Anmeldung
-              </h1>
-            </td>
-          </tr>
-          <!-- Inhalt -->
-          <tr>
-            <td style="padding:32px 0;">
-              <p style="margin:0 0 16px 0;font-size:16px;color:#a1a1aa;line-height:1.7;">
-                ${greeting},
-              </p>
-              <p style="margin:0 0 16px 0;font-size:16px;color:#a1a1aa;line-height:1.7;">
-                Du hast dich für den wöchentlichen Newsletter von <strong style="color:#e4e4e7;">KIICH</strong> angemeldet. Jeden Donnerstag erhältst du aktuelle NEWS zur Hörbuchserie <em style="color:#e4e4e7;">MASCHINEN ATMEN NICHT</em> sowie Gedanken zu Bewusstsein, Identität und selbstbestimmtem Leben im KI-Zeitalter.
-              </p>
-              <p style="margin:0 0 32px 0;font-size:16px;color:#a1a1aa;line-height:1.7;">
-                Klicke bitte auf den Button, um die Anmeldung rechtlich freizugeben:
-              </p>
-              <!-- Button -->
-              <table cellpadding="0" cellspacing="0">
-                <tr>
-                  <td style="background:#b45309;border-radius:4px;">
-                    <a href="${confirmUrl}" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;letter-spacing:1px;font-family:Arial,sans-serif;text-transform:uppercase;">
-                      Jetzt freigeben →
-                    </a>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <!-- Hinweis -->
-          <tr>
-            <td style="padding:24px 0 0 0;border-top:1px solid #27272a;">
-              <p style="margin:0;font-size:12px;color:#52525b;line-height:1.6;font-family:Arial,sans-serif;">
-                Falls du dich nicht angemeldet hast, ignoriere diese E-Mail einfach – es passiert nichts weiter.<br>
-                Dieser Link ist 48 Stunden gültig.<br><br>
-                <a href="${confirmUrl}" style="color:#52525b;word-break:break-all;">${confirmUrl}</a>
-              </p>
-            </td>
-          </tr>
-          <!-- Footer -->
-          <tr>
-            <td style="padding:32px 0 0 0;">
-              <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663036873684/VyRb5akas5jLZtUDKwE632/kiich-logo_f314ec60.png" alt="KIICH" width="80" style="display:block;border:0;margin-bottom:8px;" />
-              <p style="margin:0;font-size:11px;color:#3f3f46;font-family:Arial,sans-serif;">
-                Thomas Chochola · Lindacher Weg 17 · D-93128 Regenstauf<br>
-                <a href="https://kiich.de/datenschutz" style="color:#3f3f46;">Datenschutz</a> · 
-                <a href="https://kiich.de/impressum" style="color:#3f3f46;">Impressum</a>
-              </p>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
+<head><meta charset="UTF-8"/><title>Newsletter bestätigen – KIICH</title></head>
+<body style="margin:0;padding:0;background:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a10;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <tr><td align="center" style="padding-bottom:32px;">
+          <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#fff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
+          <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Newsletter</p>
+        </td></tr>
+        <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+          <p style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase;margin:0 0 24px;">ANMELDUNG BESTÄTIGEN</p>
+          <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px;">Du hast dich für den KIICH-Newsletter angemeldet. Bitte klicke auf den Button um deine Anmeldung zu bestätigen. Dieser Link ist 48 Stunden gültig.</p>
+          <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+            <tr><td style="background:#e85d04;border-radius:4px;">
+              <a href="${confirmUrl}" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;text-decoration:none;">ANMELDUNG BESTÄTIGEN →</a>
+            </td></tr>
+          </table>
+          <p style="font-size:12px;color:#555;line-height:1.6;margin:0;">Falls du dich nicht angemeldet hast, ignoriere diese E-Mail einfach – es passiert nichts weiter.<br/><a href="${confirmUrl}" style="color:#555;word-break:break-all;">${confirmUrl}</a></p>
+        </td></tr>
+        <tr><td align="center" style="padding-top:28px;">
+          <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">
+            <a href="https://www.kiich.de/datenschutz" style="color:#555;text-decoration:underline;">Datenschutz</a> · <a href="https://www.kiich.de/impressum" style="color:#555;text-decoration:underline;">Impressum</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
   </table>
 </body>
 </html>`;
 
-  const textContent = `${greeting},
+  const textContent = `ANMELDUNG BESTÄTIGEN
 
-Du hast dich für den wöchentlichen Newsletter von KIICH angemeldet.
-
-Klicke bitte auf den folgenden Link, um die Anmeldung rechtlich freizugeben:
+Du hast dich für den KIICH-Newsletter angemeldet.
+Bitte klicke auf den folgenden Link um deine Anmeldung zu bestätigen:
 ${confirmUrl}
 
 Dieser Link ist 48 Stunden gültig.
-
 Falls du dich nicht angemeldet hast, ignoriere diese E-Mail.
 
 Thomas Chochola · KIICH

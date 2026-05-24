@@ -76,70 +76,54 @@ export async function sendeWillkommensEmail(user: {
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-
-          <!-- Logo / Header -->
+          <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom:32px;">
-              <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">
-                K<span style="color:#e85d04;">II</span>CH
-              </p>
-              <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">
-                Dein Identitätssystem für das KI-Zeitalter
-              </p>
+              <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
+              <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Dein Identitätssystem für das KI-Zeitalter</p>
             </td>
           </tr>
-
           <!-- Hauptinhalt -->
           <tr>
             <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
-              <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 16px 0;">
-                Willkommen, ${vorname}.
-              </p>
-              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px 0;">
-                Du bist jetzt Teil von KIICH – einem System, das dir hilft, deine Identität im KI-Zeitalter zu verstehen, zu stärken und zu gestalten.
-              </p>
-              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 28px 0;">
-                Dein erster Schritt: Höre dir die aktuellen Episoden an und entdecke, was KIICH für dich bereithält.
-              </p>
-
-              <!-- CTA Button -->
-              <table cellpadding="0" cellspacing="0" style="margin:0 0 32px 0;">
+              <p style="font-size:26px;font-weight:900;letter-spacing:4px;color:#ffffff;text-transform:uppercase;margin:0 0 28px 0;">WILLKOMMEN</p>
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">Du kannst jetzt die KIICH Plattform nützen – ein Angebot, das dir Unterstützung und Überblick zu der Herausforderung des Mensch Seins im Zeitalter völlig neuer technologischer Möglichkeiten geben soll.</p>
+              <!-- Newsletter-Button -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 0 28px 0;">
                 <tr>
                   <td style="background-color:#e85d04;border-radius:4px;">
-                    <a href="https://www.kiich.de/episoden"
-                       style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">
-                      Episoden anhören →
-                    </a>
+                    <a href="https://www.kiich.de/newsletter" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">ZUM NEWSLETTER →</a>
                   </td>
                 </tr>
               </table>
-
-              <!-- 3 Punkte -->
-              <table cellpadding="0" cellspacing="0" width="100%">
-                <tr>
-                  <td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;margin-bottom:10px;">
-                    <p style="margin:0;font-size:13px;color:#f5a623;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Stimmklang-Analyse</p>
-                    <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Entdecke deinen persönlichen Wurzelklang durch eine einfache Stimmaufnahme.</p>
-                  </td>
-                </tr>
-                <tr><td style="height:8px;"></td></tr>
-                <tr>
-                  <td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
-                    <p style="margin:0;font-size:13px;color:#7c3aed;font-weight:700;letter-spacing:1px;text-transform:uppercase;">MOMENTAUFNAHME</p>
-                    <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Dein KI-Tagebuch. Sprich frei – MA hört zu und spiegelt dir zurück, was wirklich wichtig war.</p>
-                  </td>
-                </tr>
-                <tr><td style="height:8px;"></td></tr>
-                <tr>
-                  <td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
-                    <p style="margin:0;font-size:13px;color:#10b981;font-weight:700;letter-spacing:1px;text-transform:uppercase;">YOHN-Training</p>
-                    <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Die Methode 36 – Atemübung mit deinem persönlichen Ton für innere Stärke und Klarheit.</p>
-                  </td>
-                </tr>
+              <p style="font-size:13px;font-weight:700;color:#e85d04;letter-spacing:2px;text-transform:uppercase;margin:0 0 20px 0;">Die Angebote im Detail:</p>
+              <!-- Block 1 -->
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 16px 0;">
+                <tr><td style="padding:20px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+                  <p style="margin:0 0 8px 0;font-size:14px;font-weight:900;color:#ffffff;letter-spacing:2px;text-transform:uppercase;">1) MASCHINEN ATMEN NICHT</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Das Hörbuch mit wöchentlich erscheinenden EPISODEN. Abonniere gerne den Newsletter für aktuelle Informationen.</p>
+                  <a href="https://www.kiich.de/episoden" style="display:inline-block;padding:10px 22px;background-color:#e85d04;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">EPISODEN ANHÖREN →</a>
+                </td></tr>
               </table>
+              <!-- Block 2 -->
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 28px 0;">
+                <tr><td style="padding:20px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+                  <p style="margin:0 0 8px 0;font-size:14px;font-weight:900;color:#ffffff;letter-spacing:2px;text-transform:uppercase;">2) RAUM 36</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Hier findest du interaktive Möglichkeiten zu den besten Trainingsmethoden auf Basis optimaler Atmung. Es stehen dir wertvolle Werkzeuge wie ein persönlicher VITALMONITOR zur Verfügung, um dein Alltagsverhalten zu dokumentieren und Rückschlüsse über deinen Entwicklungsstand abzurufen.</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Zudem kannst du direkt Fragen stellen – mit Pseudonym oder mit deiner öffentlichen Klarstellung wer du bist. Allemal beantwortet dir Thomas deine Fragen detailgenau.</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Weiterführend kannst du tiefe Einblicke in deinen Stimmklang und den daraus resultierenden Talenten und Möglichkeiten abrufen. Stets auf Basis der verwendeten wissenschaftlichen wie empirischen Quellen.</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Im WISSENSPOOL werden ständig neue Informationen über Audios zur Verfügung gestellt, auch inspiriert durch die aufgeworfenen Fragen der RAUM 36 Mitglieder.</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">In einem eigenen Bereich zeige ich dir meinen persönlichen ethischen Umgang mit KI und gebe dir auch konkrete Anleitungen wie du KI in deinem Alltag nützen kannst.</p>
+                  <p style="margin:0 0 16px 0;font-size:13px;line-height:1.7;color:#aaa;">Das Kernstück ist das Trainingscenter von METHODE 36 – hier erhältst du detailgenaue Instruktionen zu den vielfältigen Trainingsangeboten.</p>
+                  <a href="https://www.kiich.de/raum36" style="display:inline-block;padding:10px 22px;background-color:#e85d04;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Zum RAUM 36 →</a>
+                </td></tr>
+              </table>
+              <!-- Signatur -->
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px 0;">Jedenfalls freue ich mich sehr über dein Dabei sein.</p>
+              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
             </td>
           </tr>
-
           <!-- Footer -->
           <tr>
             <td align="center" style="padding-top:28px;">
@@ -151,7 +135,6 @@ export async function sendeWillkommensEmail(user: {
               </p>
             </td>
           </tr>
-
         </table>
       </td>
     </tr>
@@ -216,64 +199,10 @@ export async function sendeStimmklangKaufBestaetigung(user: {
           <!-- Hauptinhalt -->
           <tr>
             <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
-              <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 8px 0;">
-                Buchung bestätigt, ${vorname}.
-              </p>
-              <p style="font-size:13px;letter-spacing:2px;color:#e85d04;text-transform:uppercase;font-weight:700;margin:0 0 24px 0;">
-                Stimmklanganalyse · € 150
-              </p>
-
-              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px 0;">
-                Deine Buchung ist eingegangen. Thomas Chochola wird sich in Kürze per E-Mail
-                bei dir melden, um einen Termin für das persönliche Coaching-Gespräch zu vereinbaren.
-              </p>
-
-              <!-- Nächste Schritte -->
-              <p style="font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;margin:0 0 16px 0;">Was jetzt passiert</p>
-
-              <table cellpadding="0" cellspacing="0" width="100%">
-                <tr>
-                  <td style="padding:14px 16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;margin-bottom:8px;">
-                    <p style="margin:0;font-size:12px;color:#e85d04;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Schritt 1 – Starte die Analyse</p>
-                    <p style="margin:6px 0 0 0;font-size:13px;color:#888;line-height:1.5;">
-                      Öffne die KIICH-App und starte die Stimmklanganalyse. Führe die Aufnahme
-                      an 3 aufeinanderfolgenden Tagen durch.
-                    </p>
-                  </td>
-                </tr>
-                <tr><td style="height:8px;"></td></tr>
-                <tr>
-                  <td style="padding:14px 16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;margin-bottom:8px;">
-                    <p style="margin:0;font-size:12px;color:#e85d04;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Schritt 2 – Thomas meldet sich</p>
-                    <p style="margin:6px 0 0 0;font-size:13px;color:#888;line-height:1.5;">
-                      Nach deinen 3 Analysetagen kontaktiert Thomas dich per E-Mail für
-                      einen 45-minütigen Coaching-Termin.
-                    </p>
-                  </td>
-                </tr>
-                <tr><td style="height:8px;"></td></tr>
-                <tr>
-                  <td style="padding:14px 16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
-                    <p style="margin:0;font-size:12px;color:#e85d04;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Schritt 3 – Finalcoaching</p>
-                    <p style="margin:6px 0 0 0;font-size:13px;color:#888;line-height:1.5;">
-                      Thomas erklärt dir dein Ergebnis und zeigt dir, wie du deinen Stimmklang
-                      für den Rest deines Lebens im Alltag nützen kannst.
-                    </p>
-                  </td>
-                </tr>
-              </table>
-
-              <!-- CTA -->
-              <table cellpadding="0" cellspacing="0" style="margin:32px 0 0 0;">
-                <tr>
-                  <td style="background-color:#e85d04;border-radius:4px;">
-                    <a href="https://www.kiich.de/stimmklanganalyse"
-                       style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">
-                      Zur Stimmklanganalyse →
-                    </a>
-                  </td>
-                </tr>
-              </table>
+              <p style="font-size:26px;font-weight:900;letter-spacing:4px;color:#ffffff;text-transform:uppercase;margin:0 0 28px 0;">BUCHUNG BESTÄTIGT</p>
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">Danke vielmals für deine Anmeldung. Ich melde mich zeitnah bei dir und erkläre dir den detailgenauen Ablauf des Rituals zu deinen Stimmfrequenzen.</p>
+              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
             </td>
           </tr>
 
@@ -500,34 +429,19 @@ export async function sendeRaum36KaufBestaetigung(user: {
           <!-- Hauptinhalt -->
           <tr>
             <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
-              <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 8px 0;">
-                Willkommen in RAUM 36, ${vorname}.
-              </p>
-              <p style="font-size:13px;letter-spacing:2px;color:#e85d04;text-transform:uppercase;font-weight:700;margin:0 0 24px 0;">
-                Abo aktiviert
-              </p>
-
-              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px 0;">
-                Dein Zugang zu RAUM 36 ist jetzt aktiv. Du hast Zugriff auf alle exklusiven Inhalte,
-                Übungen und Praktiken, die Thomas Chochola speziell für RAUM 36-Mitglieder bereitstellt.
-              </p>
-
+                <p style="font-size:26px;font-weight:900;letter-spacing:4px;color:#ffffff;text-transform:uppercase;margin:0 0 28px 0;">WILLKOMMEN in RAUM 36</p>
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 20px 0;">Dein Zugang ist jetzt aktiv. Du hast Zugriff auf alle aktuellen Angebote in RAUM 36. Stelle gerne deine Fragen direkt an mich – mit Pseudonym oder mit deiner klaren Identität.</p>
               <!-- CTA -->
-              <table cellpadding="0" cellspacing="0" style="margin:0 0 32px 0;">
+              <table cellpadding="0" cellspacing="0" style="margin:0 0 28px 0;">
                 <tr>
                   <td style="background-color:#e85d04;border-radius:4px;">
-                    <a href="https://www.kiich.de/raum36"
-                       style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">
-                      RAUM 36 betreten →
-                    </a>
+                    <a href="https://www.kiich.de/raum36" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">RAUM 36 BETRETEN →</a>
                   </td>
                 </tr>
               </table>
-
-              <p style="font-size:13px;line-height:1.7;color:#666;margin:0;">
-                Bei Fragen erreichst du Thomas unter
-                <a href="mailto:lkrforschung@gmail.com" style="color:#e85d04;text-decoration:none;">lkrforschung@gmail.com</a>
-              </p>
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px 0;">Ich freue mich sehr, dass du dabei bist.</p>
+              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
             </td>
           </tr>
 

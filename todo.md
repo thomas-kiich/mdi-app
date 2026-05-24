@@ -1424,3 +1424,10 @@
 - [ ] Placeholder im Link-URL-Feld auf /raum36?tab=methode&training=XXXXX ändern
 - [ ] Vollständige aufgelöste URL unter dem Button in der HTML-Vorschau anzeigen
 - [ ] Direkt-Link-Kopieren-Button bei Trainingseinheiten im Admin
+
+## Drei offene Punkte (Session Mai 2026)
+- [ ] Newsletter-Bestätigung (Double-Opt-In) finalisieren
+- [ ] KI-Bereich als Thema 6 in RAUM 36 / METHODE 36 anlegen
+- [ ] Automatischer Versand: Willkommensmail bei Registrierung
+- [ ] Automatischer Versand: RAUM 36 Kaufbestätigung bei Stripe-Webhook
+- [ ] Automatischer Versand: Stimmklanganalyse Buchungsbestätigung bei Stripe-Webhook

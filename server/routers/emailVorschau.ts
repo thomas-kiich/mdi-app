@@ -379,6 +379,9 @@ const TEMPLATE_FIELDS: Record<string, TemplateField[]> = {
     { key: "linkUrl", label: "Link-URL", type: "text", defaultValue: "/raum36?tab=methode", placeholder: "/raum36?tab=methode&training=XXXXX" },
     { key: "linkLabel", label: "Link-Beschriftung", type: "text", defaultValue: "Jetzt im RAUM 36 ansehen", placeholder: "Button-Text" },
   ],
+  newsletter_bestaetigung: [
+    { key: "betreff", label: "Betreff", type: "text", defaultValue: "Noch ein Schritt zur Anmeldung – KIICH", placeholder: "E-Mail-Betreff" },
+  ],
 };
 
 // ── Hilfsfunktion: HTML aus Feldern generieren ────────────────────────────────
@@ -402,9 +405,46 @@ function buildHtml(templateId: string, fields: Record<string, string>): string {
         fields.linkLabel || undefined,
         fields.typLabel || undefined
       );
+    case "newsletter_bestaetigung":
+      return getNewsletterBestaetigungHtml();
     default:
       return "";
   }
+}
+
+function getNewsletterBestaetigungHtml(): string {
+  const confirmUrl = "https://www.kiich.de/newsletter/bestaetigen?token=BEISPIEL-TOKEN";
+  return `<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8"/><title>Newsletter bestätigen – KIICH</title></head>
+<body style="margin:0;padding:0;background:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a10;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <tr><td align="center" style="padding-bottom:32px;">
+          <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#fff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
+          <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Newsletter</p>
+        </td></tr>
+        <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+          <p style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase;margin:0 0 24px;">ANMELDUNG BESTÄTIGEN</p>
+          <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px;">Du hast dich für den KIICH-Newsletter angemeldet. Bitte klicke auf den Button um deine Anmeldung zu bestätigen. Dieser Link ist 48 Stunden gültig.</p>
+          <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
+            <tr><td style="background:#e85d04;border-radius:4px;">
+              <a href="${confirmUrl}" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;text-decoration:none;">ANMELDUNG BESTÄTIGEN →</a>
+            </td></tr>
+          </table>
+          <p style="font-size:12px;color:#555;line-height:1.6;margin:0;">Falls du dich nicht angemeldet hast, ignoriere diese E-Mail einfach – es passiert nichts weiter.</p>
+        </td></tr>
+        <tr><td align="center" style="padding-top:28px;">
+          <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">
+            <a href="https://www.kiich.de/datenschutz" style="color:#555;text-decoration:underline;">Datenschutz</a> · <a href="https://www.kiich.de/impressum" style="color:#555;text-decoration:underline;">Impressum</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 }
 
 // ── Alle Templates als Konstante ─────────────────────────────────────────────
@@ -456,6 +496,14 @@ export const EMAIL_TEMPLATES = [
     empfaenger: "Mitglied",
     betreff: "⚡ Neues Training verfügbar – RAUM 36",
     getHtml: () => getRaum36NeuigkeitHtml(),
+  },
+  {
+    id: "newsletter_bestaetigung",
+    label: "Newsletter – Anmeldebestätigung",
+    beschreibung: "Double-Opt-In Bestätigungsmail nach Newsletter-Anmeldung",
+    empfaenger: "Interessent",
+    betreff: "Noch ein Schritt zur Anmeldung – KIICH",
+    getHtml: () => getNewsletterBestaetigungHtml(),
   },
 ] as const;
 export type EmailTemplateId = typeof EMAIL_TEMPLATES[number]["id"];
