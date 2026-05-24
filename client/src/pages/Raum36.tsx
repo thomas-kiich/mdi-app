@@ -47,6 +47,7 @@ import { ToneColorExplorer } from "@/components/ToneColorExplorer";
 import { BefindlichkeitsTraining } from "@/components/BefindlichkeitsTraining";
 import { KIBereich } from "@/components/KIBereich";
 import { KIICHPraxis } from "@/components/KIICHPraxis";
+import { Visionsraum } from "@/components/Visionsraum";
 
 const BOLT_LEVELS = [
   {
@@ -548,6 +549,7 @@ function Raum36Member() {
   const [m36TrainingItem, setM36TrainingItem] = useState<{ id: string; name: string; description: string; type: string } | null>(null);
   const [m36Duration, setM36Duration] = useState<number>(0);
   const [m36BasicData, setM36BasicData] = useState<{ freq: number; tone: string; color: string; typeId: number } | null>(null);
+  const [kiichPraxisView, setKiichPraxisView] = useState<string | null>(null);
 
   // Frequenz-Labor State
   const [flShowScanner, setFlShowScanner] = useState(false);
@@ -1307,7 +1309,12 @@ function Raum36Member() {
 
           {/* KIICH PRAXIS */}
           {activeTab === "kiich-praxis" && (
-            <KIICHPraxis />
+            <KIICHPraxis onOpenVisionsraum={() => setKiichPraxisView("visionsraum")} />
+          )}
+          {activeTab === "kiich-praxis" && kiichPraxisView === "visionsraum" && (
+            <div className="fixed inset-0 z-50 bg-zinc-950 overflow-y-auto">
+              <Visionsraum onClose={() => setKiichPraxisView(null)} />
+            </div>
           )}
 
           {/* Frequenz-Labor */}

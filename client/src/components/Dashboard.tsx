@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, GraduationCap, Flame, Moon, Lock, ChevronDown, ChevronUp, Headphones, LogOut, DoorOpen } from "lucide-react";
+import { Mic, Music2, Activity, ArrowRight, Wind, BarChart3, BookOpen, GraduationCap, Moon, Lock, ChevronDown, ChevronUp, Headphones, LogOut, DoorOpen } from "lucide-react";
 import { Link } from "wouter";
 import { calculateStreak } from "@/lib/training";
 import { useEffect, useState } from "react";
@@ -16,7 +16,6 @@ interface DashboardProps {
     onOpenKnowledge: () => void;
     onOpenTable: () => void;
     onOpenSleep: () => void;
-    onOpenVisionsraum: () => void;
     isPremium: boolean;
     onTogglePremium: () => void;
     userFreigaben?: Record<string, boolean>;
@@ -33,7 +32,6 @@ export function Dashboard({
     onOpenKnowledge, 
     onOpenTable,
     onOpenSleep,
-    onOpenVisionsraum,
     isPremium,
     onTogglePremium,
     userFreigaben = {},
@@ -276,36 +274,6 @@ export function Dashboard({
                                 <button onClick={() => handlePremiumClick(onOpenKnowledge, "Wissenspool", 'wissenspool')} className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
                                     Wissen Öffnen <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
                                 </button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-
-                 {/* Pillar 8: Visionsraum */}
-                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.8 }}
-                >
-                    <Card 
-                        className="bg-zinc-900/40 border-zinc-800 hover:bg-zinc-900 hover:border-yellow-500/50 transition-all group h-full relative overflow-hidden cursor-pointer"
-                        onClick={onOpenVisionsraum}
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <CardContent className="p-6 flex flex-col h-full relative z-10">
-                            <div className="w-12 h-12 rounded-xl bg-yellow-500/20 flex items-center justify-center mb-4 text-yellow-500 group-hover:scale-110 transition-transform">
-                                <Flame className="w-6 h-6" />
-                            </div>
-                            
-                            <h2 className="text-xl font-bold text-white mb-2">Visionsraum</h2>
-                            <p className="text-sm text-zinc-400 mb-6 leading-relaxed">
-                                Der Inkubator für neue Konzepte und Ideen der Expedition 2026.
-                            </p>
-
-                            <div className="mt-auto">
-                                <span className="text-orange-500 hover:text-orange-400 text-sm font-medium inline-flex items-center group/btn transition-colors">
-                                    Betreten <ArrowRight className="ml-1.5 w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                                </span>
                             </div>
                         </CardContent>
                     </Card>

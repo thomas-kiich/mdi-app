@@ -21,7 +21,6 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { Method36Trainer } from "@/components/Method36Trainer";
 import { TrainingCategoryStructure } from "@/components/TrainingCategoryStructure";
-import { Visionsraum } from "@/components/Visionsraum";
 import { AppInstallGuide } from "@/components/AppInstallGuide";
 import { PodcastFeature } from "@/components/PodcastFeature";
 import { WurzelklangVerification } from "@/components/WurzelklangVerification";
@@ -369,7 +368,6 @@ export default function Home() {
   const latestPodcastEpisode = podcastEpisodesData?.find(ep => ep.isLatest);
   const olderPodcastEpisodes = podcastEpisodesData?.filter(ep => !ep.isLatest) ?? [];
   const [showPodcast, setShowPodcast] = useState(false);
-  const [showVisionsraum, setShowVisionsraum] = useState(false);
   const [showPraxis01, setShowPraxis01] = useState(false);
   const [showAuthorText, setShowAuthorText] = useState(false);
   const [showMomentaufnahme, setShowMomentaufnahme] = useState(false);
@@ -875,7 +873,6 @@ export default function Home() {
                   onOpenKnowledge={() => setShowKnowledgePool(true)}
                   onOpenTable={() => setShowFrequencyTable(true)}
                   onOpenSleep={() => setShowSleepTheta(true)}
-                  onOpenVisionsraum={() => setShowVisionsraum(true)}
                   isPremium={isPremium || user?.role === "admin"}
                   onTogglePremium={() => {}}
                   userFreigaben={myDashboardFreigaben ?? {}}
@@ -1717,8 +1714,6 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
              </div>
           ) : showFrequencyTable ? (
             <FrequencyTable onClose={() => setShowFrequencyTable(false)} />
-          ) : showVisionsraum ? (
-            <Visionsraum onClose={() => setShowVisionsraum(false)} />
           ) : showMomentaufnahme ? (
             <div className="max-w-2xl mx-auto py-20 px-4 animate-in slide-in-from-bottom-8 duration-700 pt-32">
               <button
@@ -1798,7 +1793,7 @@ studyMdiResult: ${studyMdiResult ? 'ok' : 'missing'}
         </main>
         
         {/* Footer */}
-        {!showStory && !showSpectralScanner && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && !showVisionsraum && currentStep === 'dashboard' && (
+        {!showStory && !showSpectralScanner && !showIntervalTrainer && !showDirectTrainer && !showFrequencyTable && currentStep === 'dashboard' && (
             <footer className="mt-24 pb-8 border-t border-zinc-900 pt-8 flex flex-col gap-6 text-xs text-zinc-600">
                 {/* Disclaimer */}
                 <div className="bg-zinc-900/60 border border-zinc-800 rounded-lg px-5 py-4 text-zinc-400 text-xs leading-relaxed">
