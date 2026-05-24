@@ -43,23 +43,38 @@ export function BefindlichkeitsTraining({ onClose }: BefindlichkeitsTrainingProp
   const audioCtxRef = useRef<AudioContext | null>(null);
   const oscRef = useRef<OscillatorNode | null>(null);
   const gainRef = useRef<GainNode | null>(null);
+  const isHoveringRef = useRef(false);
 
   function getAudioCtx() {
     if (!audioCtxRef.current) {
       audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
+    if (audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume();
+    }
     return audioCtxRef.current;
   }
 
   function playTone(freq: number) {
-    stopTone();
     const ctx = getAudioCtx();
+    const currentTime = ctx.currentTime;
+    const targetVolume = 0.22;
+
+    // Wenn bereits ein Oszillator läuft, einfach Frequenz wechseln (kein Knacksen)
+    if (oscRef.current && gainRef.current) {
+      gainRef.current.gain.cancelScheduledValues(currentTime);
+      oscRef.current.frequency.setTargetAtTime(freq, currentTime, 0.05);
+      gainRef.current.gain.setTargetAtTime(targetVolume, currentTime, 0.05);
+      return;
+    }
+
+    // Neuen Oszillator erstellen
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = "sine";
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(0, ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + 0.1);
+    osc.frequency.setValueAtTime(freq, currentTime);
+    gain.gain.setValueAtTime(0, currentTime);
+    gain.gain.setTargetAtTime(targetVolume, currentTime, 0.1);
     osc.connect(gain);
     gain.connect(ctx.destination);
     osc.start();
@@ -70,17 +85,30 @@ export function BefindlichkeitsTraining({ onClose }: BefindlichkeitsTrainingProp
   function stopTone() {
     if (gainRef.current && audioCtxRef.current) {
       const ctx = audioCtxRef.current;
-      gainRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.25);
+      gainRef.current.gain.cancelScheduledValues(ctx.currentTime);
+      gainRef.current.gain.setTargetAtTime(0, ctx.currentTime, 0.15);
     }
+    // Erst nach dem Fade-Out wirklich stoppen
     setTimeout(() => {
-      oscRef.current?.stop();
-      oscRef.current = null;
-      gainRef.current = null;
-    }, 300);
+      if (!isHoveringRef.current && oscRef.current) {
+        try {
+          oscRef.current.stop();
+          oscRef.current.disconnect();
+          oscRef.current = null;
+          gainRef.current?.disconnect();
+          gainRef.current = null;
+        } catch (_) {
+          // bereits gestoppt
+        }
+      }
+    }, 600);
   }
 
   useEffect(() => {
-    return () => stopTone();
+    return () => {
+      isHoveringRef.current = false;
+      stopTone();
+    };
   }, []);
 
   // ── Trainer aktiv ──────────────────────────────────────────────────────────
@@ -224,9 +252,9 @@ export function BefindlichkeitsTraining({ onClose }: BefindlichkeitsTrainingProp
               background: `linear-gradient(135deg, ${typ.hex}18 0%, ${typ.hex}06 100%)`,
               borderColor: `${typ.hex}33`,
             }}
-            onMouseEnter={() => playTone(typ.frequency)}
-            onMouseLeave={stopTone}
-            onClick={() => { stopTone(); setSelected(typ); }}
+            onMouseEnter={() => { isHoveringRef.current = true; playTone(typ.frequency); }}
+            onMouseLeave={() => { isHoveringRef.current = false; stopTone(); }}
+            onClick={() => { isHoveringRef.current = false; stopTone(); setSelected(typ); }}
           >
             {/* Farbkreis */}
             <div

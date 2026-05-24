@@ -792,26 +792,24 @@ function Raum36Member() {
               {/* BEFINDLICHKEITSTRAINING – Thema 5 */}
               {!m36ActiveTrainer && (
                 <div className="mt-8 mb-4">
-                  <div
-                    className="group border border-zinc-800 hover:border-orange-500/40 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:bg-orange-500/5"
+                  {/* Kategorie-Header */}
+                  <div className="rounded-xl p-4 border border-orange-500/30 bg-orange-500/10 mb-3">
+                    <h2 className="text-base font-bold tracking-wide mb-1 text-orange-300">5 – BEFINDLICHKEITSTRAINING</h2>
+                    <p className="text-zinc-300 text-sm leading-relaxed">Wähle intuitiv deine momentane Stimmung und aktiviere dein Potential durch die passende Lichtklang-Frequenz.</p>
+                  </div>
+                  {/* Trainingskachel */}
+                  <button
+                    className="w-full text-left rounded-xl p-4 border border-orange-500/30 bg-orange-500/10 hover:brightness-110 transition-all hover:scale-[1.01] active:scale-[0.99]"
                     onClick={() => setM36ActiveTrainer("befindlichkeit")}
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500/20 to-red-500/10 flex items-center justify-center shrink-0 text-lg group-hover:scale-105 transition-transform">
-                        🌈
-                      </div>
-                      <div className="flex-1">
-                        <div className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-1">Thema 5</div>
-                        <h3 className="text-white font-bold tracking-wider mb-1">BEFINDLICHKEITSTRAINING</h3>
-                        <p className="text-zinc-400 text-sm leading-relaxed">
-                          Wähle die Lichtfarbe, die du gerade brauchst – und führe das YOHN-Training mit dieser spezifischen Frequenz durch. 12 Archetypen. 12 Wirkungsqualitäten.
-                        </p>
-                      </div>
-                      <div className="text-zinc-600 group-hover:text-orange-400 transition-colors shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                    <div className="flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-orange-400" />
+                      <div>
+                        <p className="text-xs font-bold mb-1 text-orange-300">BEFINDLICHKEITSTRAINING</p>
+                        <p className="text-zinc-300 text-sm leading-relaxed">12 Lichtfarben-Archetypen – wähle die Farbe, die du gerade brauchst, und starte das YOHN-Training mit der passenden Frequenz.</p>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 </div>
               )}
 
