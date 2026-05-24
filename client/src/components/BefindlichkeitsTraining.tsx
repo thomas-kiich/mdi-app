@@ -20,7 +20,7 @@ const KURZ_LABEL: Record<number, string> = {
   1:  "VERGANGENHEIT",
   3:  "KONSEQUENZ",
   5:  "KOMMUNIKATION",
-  7:  "KREATIVITÄT",
+  7:  "SENSIBILITÄT",
   9:  "EMPATHIE",
   11: "KRAFT",
   13: "INTELLEKT",
