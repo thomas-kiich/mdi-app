@@ -39,6 +39,7 @@ import CoachingDashboard from "@/pages/CoachingDashboard";
 import Raum36 from "@/pages/Raum36";
 import AdminZahlungen from "@/pages/AdminZahlungen";
 import AdminRaum36 from "@/pages/AdminRaum36";
+import AdminEmailVorschau from "@/pages/AdminEmailVorschau";
 import WasIstKIICH from "@/pages/WasIstKIICH";
 import KIICHFaq from "@/pages/KIICHFaq";
 import Stimmklanganalyse from "@/pages/Stimmklanganalyse";
@@ -85,6 +86,7 @@ function Router() {
       <Route path="/admin/coaching" component={CoachingDashboard} />
       <Route path="/admin/zahlungen" component={AdminZahlungen} />
       <Route path="/admin/raum36" component={AdminRaum36} />
+      <Route path="/admin/email-vorschau" component={AdminEmailVorschau} />
       <Route path="/raum36" component={Raum36} />
       <Route path="/stimmklanganalyse" component={Stimmklanganalyse} />
       <Route path="/was-ist-kiich" component={WasIstKIICH} />

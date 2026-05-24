@@ -1,0 +1,300 @@
+/**
+ * E-Mail-Vorschau-Router (Admin only)
+ * Gibt HTML-Vorschau aller E-Mail-Templates zurück und ermöglicht Test-Versand.
+ */
+import { z } from "zod";
+import { protectedProcedure, router } from "../_core/trpc";
+import { TRPCError } from "@trpc/server";
+import { sendEmail } from "../_core/email";
+
+const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.user.role !== "admin") {
+    throw new TRPCError({ code: "FORBIDDEN", message: "Nur für Admins" });
+  }
+  return next({ ctx });
+});
+
+// ── Hilfsfunktion: HTML-Vorschau generieren ──────────────────────────────────
+
+function getWillkommensHtml(vorname = "Thomas"): string {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Willkommen bei KIICH</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a10;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
+              <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Dein Identitätssystem für das KI-Zeitalter</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+              <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 16px 0;">Willkommen, ${vorname}.</p>
+              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px 0;">Du bist jetzt Teil von KIICH – einem System, das dir hilft, deine Identität im KI-Zeitalter zu verstehen, zu stärken und zu gestalten.</p>
+              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 28px 0;">Dein erster Schritt: Höre dir die aktuellen Episoden an und entdecke, was KIICH für dich bereithält.</p>
+              <table cellpadding="0" cellspacing="0" style="margin:0 0 32px 0;">
+                <tr>
+                  <td style="background-color:#e85d04;border-radius:4px;">
+                    <a href="https://www.kiich.de/episoden" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Episoden anhören →</a>
+                  </td>
+                </tr>
+              </table>
+              <table cellpadding="0" cellspacing="0" width="100%">
+                <tr><td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+                  <p style="margin:0;font-size:13px;color:#f5a623;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Stimmklang-Analyse</p>
+                  <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Entdecke deinen persönlichen Wurzelklang durch eine einfache Stimmaufnahme.</p>
+                </td></tr>
+                <tr><td style="height:8px;"></td></tr>
+                <tr><td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+                  <p style="margin:0;font-size:13px;color:#7c3aed;font-weight:700;letter-spacing:1px;text-transform:uppercase;">MOMENTAUFNAHME</p>
+                  <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Dein KI-Tagebuch. Sprich frei – MA hört zu und spiegelt dir zurück, was wirklich wichtig war.</p>
+                </td></tr>
+                <tr><td style="height:8px;"></td></tr>
+                <tr><td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+                  <p style="margin:0;font-size:13px;color:#10b981;font-weight:700;letter-spacing:1px;text-transform:uppercase;">YOHN-Training</p>
+                  <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Die Methode 36 – Atemübung mit deinem persönlichen Ton für innere Stärke und Klarheit.</p>
+                </td></tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding-top:28px;">
+              <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">Du erhältst diese E-Mail, weil du dich bei KIICH registriert hast.<br/>
+                <a href="https://www.kiich.de/datenschutz" style="color:#555;text-decoration:underline;">Datenschutz</a> · <a href="https://www.kiich.de/impressum" style="color:#555;text-decoration:underline;">Impressum</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function getRaum36AntwortHtml(): string {
+  return `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0a0a0a;color:#e5e5e5;padding:32px;">
+  <div style="border-bottom:1px solid #333;padding-bottom:16px;margin-bottom:24px;">
+    <span style="color:#f97316;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-family:monospace;">RAUM 36</span>
+  </div>
+  <h2 style="font-size:20px;font-weight:600;margin:0 0 16px;">Thomas hat deine Frage beantwortet</h2>
+  <div style="background:#1a1a1a;border-left:3px solid #555;padding:12px 16px;margin-bottom:20px;">
+    <p style="color:#999;font-size:12px;margin:0 0 6px;font-family:monospace;">Mondlicht fragte:</p>
+    <p style="margin:0;color:#ccc;">Was bedeutet der Lebensklang für meinen Alltag und wie kann ich ihn bewusst einsetzen?</p>
+  </div>
+  <div style="background:#1a1a1a;border-left:3px solid #f97316;padding:12px 16px;margin-bottom:28px;">
+    <p style="color:#f97316;font-size:12px;margin:0 0 6px;font-family:monospace;">Thomas antwortet:</p>
+    <p style="margin:0;color:#e5e5e5;white-space:pre-line;">Dein Lebensklang ist dein persönlicher Anker – eine Frequenz, die deinem Nervensystem signalisiert: Ich bin in Resonanz mit mir selbst. Im Alltag kannst du ihn morgens beim YOHN-Training einsetzen, um den Tag bewusst zu beginnen.</p>
+  </div>
+  <a href="https://kiich.de/raum36" style="display:inline-block;background:#f97316;color:#fff;text-decoration:none;padding:12px 24px;font-weight:bold;font-size:14px;letter-spacing:1px;">ZUM RAUM 36</a>
+  <p style="color:#555;font-size:12px;margin-top:32px;">Du erhältst diese E-Mail weil du Mitglied im RAUM 36 bist.</p>
+</div>`;
+}
+
+function getRaum36KaufHtml(vorname = "Thomas"): string {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8"/><title>Willkommen in RAUM 36</title></head>
+<body style="margin:0;padding:0;background:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a10;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <tr><td align="center" style="padding-bottom:32px;">
+          <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#fff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
+          <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Dein Identitätssystem für das KI-Zeitalter</p>
+        </td></tr>
+        <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+          <p style="font-size:22px;font-weight:700;color:#fff;margin:0 0 16px;">Willkommen in RAUM 36, ${vorname}.</p>
+          <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px;">Dein Zugang ist jetzt aktiv. Du hast Zugriff auf alle exklusiven Inhalte im RAUM 36 – Wochenvideos von Thomas, direkten Kontakt, den Wissenspool und den Vitalmonitor.</p>
+          <table cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
+            <tr><td style="background:#e85d04;border-radius:4px;">
+              <a href="https://www.kiich.de/raum36" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;text-decoration:none;">RAUM 36 betreten →</a>
+            </td></tr>
+          </table>
+        </td></tr>
+        <tr><td align="center" style="padding-top:28px;">
+          <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">
+            <a href="https://www.kiich.de/datenschutz" style="color:#555;text-decoration:underline;">Datenschutz</a> · <a href="https://www.kiich.de/impressum" style="color:#555;text-decoration:underline;">Impressum</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function getStimmklangKaufHtml(vorname = "Thomas"): string {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8"/><title>Buchungsbestätigung Stimmklanganalyse</title></head>
+<body style="margin:0;padding:0;background:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a10;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <tr><td align="center" style="padding-bottom:32px;">
+          <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#fff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
+          <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Stimmklanganalyse</p>
+        </td></tr>
+        <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+          <p style="font-size:22px;font-weight:700;color:#fff;margin:0 0 16px;">Buchung bestätigt, ${vorname}.</p>
+          <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px;">Deine Buchung für die Stimmklanganalyse ist eingegangen. Thomas Chochola wird sich in Kürze bei dir melden.</p>
+          <p style="font-size:14px;font-weight:700;color:#f5a623;margin:0 0 12px;letter-spacing:1px;text-transform:uppercase;">Nächste Schritte:</p>
+          <table cellpadding="0" cellspacing="0" width="100%">
+            <tr><td style="padding:12px 16px;background:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;margin-bottom:8px;">
+              <p style="margin:0;font-size:13px;color:#888;">1. Starte die Stimmklanganalyse in der KIICH-App (3 Tage)</p>
+            </td></tr>
+            <tr><td style="height:8px;"></td></tr>
+            <tr><td style="padding:12px 16px;background:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+              <p style="margin:0;font-size:13px;color:#888;">2. Thomas kontaktiert dich für den Coaching-Termin</p>
+            </td></tr>
+            <tr><td style="height:8px;"></td></tr>
+            <tr><td style="padding:12px 16px;background:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+              <p style="margin:0;font-size:13px;color:#888;">3. Finalcoaching mit Thomas</p>
+            </td></tr>
+          </table>
+          <table cellpadding="0" cellspacing="0" style="margin:28px 0 0;">
+            <tr><td style="background:#e85d04;border-radius:4px;">
+              <a href="https://www.kiich.de/stimmklanganalyse" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;text-decoration:none;">Zur Analyse →</a>
+            </td></tr>
+          </table>
+        </td></tr>
+        <tr><td align="center" style="padding-top:28px;">
+          <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">
+            Bei Fragen: <a href="mailto:lkrforschung@gmail.com" style="color:#555;">lkrforschung@gmail.com</a><br/>
+            <a href="https://www.kiich.de/datenschutz" style="color:#555;text-decoration:underline;">Datenschutz</a> · <a href="https://www.kiich.de/impressum" style="color:#555;text-decoration:underline;">Impressum</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function getAdminRegistrierungHtml(name = "Max Mustermann", email = "max@beispiel.de"): string {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8"/><title>Neue KIICH-Registrierung</title></head>
+<body style="margin:0;padding:0;background:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a10;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <tr><td align="center" style="padding-bottom:32px;">
+          <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#fff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
+          <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Admin-Benachrichtigung</p>
+        </td></tr>
+        <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+          <p style="font-size:22px;font-weight:700;color:#fff;margin:0 0 16px;">🎉 Neue Registrierung</p>
+          <table cellpadding="0" cellspacing="0" width="100%">
+            <tr><td style="padding:12px 16px;background:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+              <p style="margin:0;font-size:13px;color:#888;">Name: <span style="color:#e5e5e5;">${name}</span></p>
+              <p style="margin:4px 0 0;font-size:13px;color:#888;">E-Mail: <span style="color:#f5a623;">${email}</span></p>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+// ── Alle Templates als Konstante ─────────────────────────────────────────────
+
+export const EMAIL_TEMPLATES = [
+  {
+    id: "willkommen",
+    label: "Willkommens-E-Mail",
+    beschreibung: "Geht an neue KIICH-Nutzer nach der Registrierung",
+    empfaenger: "Nutzer",
+    betreff: "Willkommen bei KIICH – dein Identitätssystem",
+    getHtml: () => getWillkommensHtml("Thomas"),
+  },
+  {
+    id: "raum36_antwort",
+    label: "RAUM 36 – Frage beantwortet",
+    beschreibung: "Geht an Mitglied wenn Thomas eine Frage beantwortet",
+    empfaenger: "Mitglied",
+    betreff: "Thomas hat deine Frage im RAUM 36 beantwortet",
+    getHtml: () => getRaum36AntwortHtml(),
+  },
+  {
+    id: "raum36_kauf",
+    label: "RAUM 36 – Kaufbestätigung",
+    beschreibung: "Geht an Käufer nach erfolgreichem RAUM 36-Abo",
+    empfaenger: "Käufer",
+    betreff: "Willkommen in RAUM 36 – dein Zugang ist aktiv",
+    getHtml: () => getRaum36KaufHtml("Thomas"),
+  },
+  {
+    id: "stimmklang_kauf",
+    label: "Stimmklanganalyse – Kaufbestätigung",
+    beschreibung: "Geht an Käufer nach Buchung der Stimmklanganalyse",
+    empfaenger: "Käufer",
+    betreff: "Buchungsbestätigung: Stimmklanganalyse – KIICH",
+    getHtml: () => getStimmklangKaufHtml("Thomas"),
+  },
+  {
+    id: "admin_registrierung",
+    label: "Admin – Neue Registrierung",
+    beschreibung: "Geht an Thomas bei jeder neuen KIICH-Registrierung",
+    empfaenger: "Thomas (Admin)",
+    betreff: "🎉 Neue KIICH-Registrierung: Max Mustermann",
+    getHtml: () => getAdminRegistrierungHtml(),
+  },
+] as const;
+
+export type EmailTemplateId = typeof EMAIL_TEMPLATES[number]["id"];
+
+// ── Router ───────────────────────────────────────────────────────────────────
+
+export const emailVorschauRouter = router({
+  /** Alle Templates als Metadaten (ohne HTML) */
+  getTemplates: adminProcedure.query(() => {
+    return EMAIL_TEMPLATES.map(({ id, label, beschreibung, empfaenger, betreff }) => ({
+      id,
+      label,
+      beschreibung,
+      empfaenger,
+      betreff,
+    }));
+  }),
+
+  /** HTML-Vorschau eines Templates */
+  getVorschau: adminProcedure
+    .input(z.object({ templateId: z.string() }))
+    .query(({ input }) => {
+      const template = EMAIL_TEMPLATES.find((t) => t.id === input.templateId);
+      if (!template) throw new TRPCError({ code: "NOT_FOUND", message: "Template nicht gefunden" });
+      return {
+        html: template.getHtml(),
+        betreff: template.betreff,
+        label: template.label,
+      };
+    }),
+
+  /** Test-E-Mail an Thomas senden */
+  sendTestEmail: adminProcedure
+    .input(z.object({ templateId: z.string(), empfaengerEmail: z.string().email() }))
+    .mutation(async ({ input }) => {
+      const template = EMAIL_TEMPLATES.find((t) => t.id === input.templateId);
+      if (!template) throw new TRPCError({ code: "NOT_FOUND", message: "Template nicht gefunden" });
+
+      const success = await sendEmail({
+        to: [{ name: "Thomas Chochola", email: input.empfaengerEmail }],
+        subject: `[TEST] ${template.betreff}`,
+        htmlContent: template.getHtml(),
+      });
+
+      return { success };
+    }),
+});

@@ -30,6 +30,15 @@ const adminSections = [
         desc: "KI-gestützter Entwurf & Versand · Jeden Donnerstag",
       },
       {
+        href: "/admin/email-vorschau",
+        icon: Mail,
+        color: "text-orange-400",
+        border: "border-orange-500/30 hover:border-orange-400/60",
+        bg: "bg-orange-500/5 hover:bg-orange-500/10",
+        title: "E-Mail Vorschau",
+        desc: "Alle Templates ansehen · Test-E-Mail senden",
+      },
+      {
         href: "/admin/premium",
         icon: Crown,
         color: "text-amber-400",
