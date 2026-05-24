@@ -48,6 +48,15 @@ function getWillkommensHtml(_vorname = "Thomas"): string {
               <!-- Einleitungstext -->
               <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">Du kannst jetzt die KIICH Plattform nützen – ein Angebot, das dir Unterstützung und Überblick zu der Herausforderung des Mensch Seins im Zeitalter völlig neuer technologischer Möglichkeiten geben soll.</p>
 
+              <!-- EPISODEN-Button -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 0 28px 0;">
+                <tr>
+                  <td style="background-color:#e85d04;border-radius:4px;">
+                    <a href="https://www.kiich.de/episoden" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">EPISODEN ANHÖREN →</a>
+                  </td>
+                </tr>
+              </table>
+
               <p style="font-size:13px;font-weight:700;color:#e85d04;letter-spacing:2px;text-transform:uppercase;margin:0 0 20px 0;">Die Angebote im Detail:</p>
 
               <!-- Block 1: MASCHINEN ATMEN NICHT -->
