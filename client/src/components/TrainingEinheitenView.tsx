@@ -339,6 +339,8 @@ interface TrainingEinheitenViewProps {
   initialTrainingId?: number;
   /** Externer Filter – wird gesetzt wenn eine leere Kategorie im alten System angeklickt wird */
   externalFilterKat?: string;
+  /** Kategorien die ausgeblendet werden sollen (z.B. 'kiichpraxis' in METHODE36) */
+  excludeKat?: string[];
   /** Callback wenn ein Training mit Trainer-Komponente gestartet werden soll */
   onStartTrainer?: (payload: TrainerStartPayload) => void;
 }
@@ -355,7 +357,7 @@ function getTrainerType(titel: string): TrainerType | null {
   return TRAINER_MAP[titel.toLowerCase()] ?? null;
 }
 
-export function TrainingEinheitenView({ initialKategorie, initialTrainingId, externalFilterKat, onStartTrainer }: TrainingEinheitenViewProps = {}) {
+export function TrainingEinheitenView({ initialKategorie, initialTrainingId, externalFilterKat, excludeKat, onStartTrainer }: TrainingEinheitenViewProps = {}) {
   const { data: einheiten, isLoading } = trpc.trainingEinheiten.getAll.useQuery();
   const [selectedEinheit, setSelectedEinheit] = useState<Einheit | null>(null);
   const [filterKat, setFilterKat] = useState<string>(initialKategorie || "alle");
@@ -418,8 +420,11 @@ export function TrainingEinheitenView({ initialKategorie, initialTrainingId, ext
   }
 
   // Welche Kategorien haben Einheiten?
-  const vorhandeneKats = KATEGORIEN.filter((k) => einheiten.some((e) => e.kategorie === k.id));
-  const filtered = filterKat === "alle" ? einheiten : einheiten.filter((e) => e.kategorie === filterKat);
+  const sichtbareEinheiten = excludeKat && excludeKat.length > 0
+    ? einheiten.filter((e) => !excludeKat.includes(e.kategorie))
+    : einheiten;
+  const vorhandeneKats = KATEGORIEN.filter((k) => sichtbareEinheiten.some((e) => e.kategorie === k.id));
+  const filtered = filterKat === "alle" ? sichtbareEinheiten : sichtbareEinheiten.filter((e) => e.kategorie === filterKat);
 
   return (
     <div className="space-y-5">
