@@ -37,6 +37,8 @@ const EMPTY_FORM = {
   infografikUrl: "",
   infografik2Url: "",
   slideshowUrls: [] as string[],
+  externerLink: "",
+  externerLinkLabel: "",
   audioBeschreibungUrl: "",
   sortOrder: 0,
   aktiv: false,
@@ -117,6 +119,8 @@ export default function AdminTrainingEinheiten() {
       infografikUrl: e.infografikUrl || "",
       infografik2Url: e.infografik2Url || "",
       slideshowUrls: (() => { try { return e.slideshowUrls ? JSON.parse(e.slideshowUrls) : []; } catch { return []; } })(),
+      externerLink: e.externerLink || "",
+      externerLinkLabel: e.externerLinkLabel || "",
       audioBeschreibungUrl: e.audioBeschreibungUrl || "",
       sortOrder: e.sortOrder,
       aktiv: e.aktiv,
@@ -480,6 +484,27 @@ export default function AdminTrainingEinheiten() {
               {form.slideshowUrls.length > 0 && (
                 <p className="text-zinc-500 text-xs">{form.slideshowUrls.length} Bild(er) · Hover über ein Bild → ✕ zum Entfernen</p>
               )}
+            </div>
+
+            {/* Externer Link */}
+            <div className="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700 space-y-3">
+              <Label className="text-zinc-300 text-xs flex items-center gap-1.5">
+                &#128279; EXTERNER LINK (z.B. Google, Wikipedia)
+              </Label>
+              <div className="space-y-2">
+                <Input
+                  value={form.externerLink}
+                  onChange={(e) => setForm((f) => ({ ...f, externerLink: e.target.value }))}
+                  className="bg-zinc-900 border-zinc-600 text-white text-xs font-mono"
+                  placeholder="https://..."
+                />
+                <Input
+                  value={form.externerLinkLabel}
+                  onChange={(e) => setForm((f) => ({ ...f, externerLinkLabel: e.target.value }))}
+                  className="bg-zinc-900 border-zinc-600 text-white text-xs"
+                  placeholder="Beschriftung (optional), z.B. Mehr erfahren"
+                />
+              </div>
             </div>
 
             {/* Sortierung + Aktiv */}

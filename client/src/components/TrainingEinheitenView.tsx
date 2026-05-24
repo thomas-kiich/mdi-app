@@ -79,6 +79,10 @@ type Einheit = {
   audioUrl: string | null;
   videoUrl: string | null;
   infografikUrl: string | null;
+  infografik2Url: string | null;
+  slideshowUrls: string | null;
+  externerLink: string | null;
+  externerLinkLabel: string | null;
   audioBeschreibungUrl: string | null;
   sortOrder: number;
   aktiv: boolean;
@@ -259,13 +263,38 @@ function DetailView({ einheit, onBack, onStartTrainer }: { einheit: Einheit; onB
         </div>
       )}
 
-      {/* Infografik */}
+      {/* Infografik 1 */}
       {einheit.infografikUrl && (
         <div className="rounded-xl border border-amber-500/30 overflow-hidden">
           <p className="text-xs font-bold text-amber-300 flex items-center gap-1.5 px-4 pt-3 pb-2">
             <Image className="w-3.5 h-3.5" /> INFOGRAFIK
           </p>
           <img src={einheit.infografikUrl} alt="Infografik" className="w-full object-contain bg-zinc-900 max-h-96" />
+        </div>
+      )}
+
+      {/* Infografik 2 */}
+      {einheit.infografik2Url && (
+        <div className="rounded-xl border border-amber-500/30 overflow-hidden">
+          <p className="text-xs font-bold text-amber-300 flex items-center gap-1.5 px-4 pt-3 pb-2">
+            <Image className="w-3.5 h-3.5" /> INFOGRAFIK 2
+          </p>
+          <img src={einheit.infografik2Url} alt="Infografik 2" className="w-full object-contain bg-zinc-900 max-h-96" />
+        </div>
+      )}
+
+      {/* Externer Link */}
+      {einheit.externerLink && (
+        <div className="rounded-xl p-4 border border-sky-500/30 bg-sky-500/10">
+          <a
+            href={einheit.externerLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-sky-300 hover:text-sky-200 font-semibold text-sm transition-colors"
+          >
+            <span className="text-base">&#128279;</span>
+            {einheit.externerLinkLabel || einheit.externerLink}
+          </a>
         </div>
       )}
 

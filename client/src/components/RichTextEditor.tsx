@@ -122,12 +122,12 @@ export function RichTextEditor({
   return (
     <div
       className={cn(
-        "border border-white/20 rounded-lg overflow-hidden bg-black/30",
+        "border border-white/20 rounded-lg bg-black/30",
         className
       )}
     >
       {/* Toolbar */}
-      <div className="flex flex-wrap gap-1 p-2 border-b border-white/10 bg-black/40">
+      <div className="flex flex-wrap gap-1 p-2 border-b border-white/10 bg-black/40 overflow-visible relative">
         {/* Textformatierung */}
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
