@@ -1073,17 +1073,18 @@ export type InsertHealthScreening = typeof healthScreenings.$inferInsert;
  * Thomas kann neue Trainings über das Admin-Panel anlegen, bearbeiten und veröffentlichen.
  *
  * Kategorien:
- *   befindlichkeit | atemtraining | stimmklangtraining | bewegungstraining | umfeldaktivierung
+ *   befindlichkeit | atemtraining | stimmklangtraining | bewegungstraining | umfeldaktivierung | kiichpraxis
  */
 export const trainingEinheiten = mysqlTable('training_einheiten', {
   id: int('id').autoincrement().primaryKey(),
-  /** Kategorie: eine der 5 Trainingsbereiche */
+  /** Kategorie: eine der 6 Trainingsbereiche */
   kategorie: mysqlEnum('kategorie', [
     'befindlichkeit',
     'atemtraining',
     'stimmklangtraining',
     'bewegungstraining',
     'umfeldaktivierung',
+    'kiichpraxis',
   ]).notNull(),
   /** Titel der Kachel, z.B. "ATEMÜBUNG MORGEN" */
   titel: varchar('titel', { length: 200 }).notNull(),

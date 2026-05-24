@@ -1,0 +1,1 @@
+ALTER TABLE `training_einheiten` MODIFY COLUMN `kategorie` enum('befindlichkeit','atemtraining','stimmklangtraining','bewegungstraining','umfeldaktivierung','kiichpraxis') NOT NULL;

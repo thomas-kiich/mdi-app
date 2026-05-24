@@ -21,6 +21,7 @@ const KATEGORIEN = [
   { id: "stimmklangtraining", label: "STIMMKLANGTRAINING", color: "bg-purple-500/20 text-purple-300 border-purple-500/30" },
   { id: "bewegungstraining", label: "BEWEGUNGSTRAINING", color: "bg-green-500/20 text-green-300 border-green-500/30" },
   { id: "umfeldaktivierung", label: "UMFELDAKTIVIERUNG", color: "bg-amber-500/20 text-amber-300 border-amber-500/30" },
+  { id: "kiichpraxis", label: "KIICH PRAXIS", color: "bg-orange-500/20 text-orange-300 border-orange-500/30" },
 ] as const;
 
 type Kategorie = typeof KATEGORIEN[number]["id"];

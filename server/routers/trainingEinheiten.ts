@@ -16,6 +16,7 @@ const KATEGORIEN = [
   "stimmklangtraining",
   "bewegungstraining",
   "umfeldaktivierung",
+  "kiichpraxis",
 ] as const;
 
 const einheitInput = z.object({

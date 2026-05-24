@@ -295,6 +295,13 @@
       "when": 1779626907456,
       "tag": "0041_tranquil_trauma",
       "breakpoints": true
+    },
+    {
+      "idx": 42,
+      "version": "5",
+      "when": 1779630445393,
+      "tag": "0042_fair_daimon_hellstrom",
+      "breakpoints": true
     }
   ]
 }

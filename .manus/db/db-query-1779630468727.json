@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE `training_einheiten` MODIFY COLUMN `kategorie` enum('befindlichkeit','atemtraining','stimmklangtraining','bewegungstraining','umfeldaktivierung','kiichpraxis') NOT NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute ALTER TABLE `training_einheiten` MODIFY COLUMN `kategorie` enum('befindlichkeit','atemtraining','stimmklangtraining','bewegungstraining','umfeldaktivierung','kiichpraxis') NOT NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 401
+}
