@@ -46,6 +46,7 @@ import { SpectralScanner } from "@/components/SpectralScanner";
 import { ToneColorExplorer } from "@/components/ToneColorExplorer";
 import { BefindlichkeitsTraining } from "@/components/BefindlichkeitsTraining";
 import { KIBereich } from "@/components/KIBereich";
+import { KIICHPraxis } from "@/components/KIICHPraxis";
 
 const BOLT_LEVELS = [
   {
@@ -472,7 +473,7 @@ function Raum36Landing() {
 }
 
 // ─── Mitglieder-Bereich ──────────────────────────────────────────────────────
-type Tab = "methode36" | "fragen" | "videos" | "vital" | "wissenspool" | "frequenzlabor";
+type Tab = "methode36" | "fragen" | "videos" | "vital" | "wissenspool" | "frequenzlabor" | "kiich-praxis";
 
 // Freischaltungsdatum für neue Features (Vital Monitor)
 const FEATURE_UNLOCK = new Date("2026-05-14T00:00:00");
@@ -497,6 +498,7 @@ function Raum36Member() {
     vitalmonitor: "vital",
     wissenspool: "wissenspool",
     frequenzlabor: "frequenzlabor",
+    kiichPraxis: "kiich-praxis",
   };
 
   const urlParams = new URLSearchParams(search);
@@ -691,6 +693,7 @@ function Raum36Member() {
               { id: "vital", label: "VITALMONITOR", icon: <HeartPulse className="w-4 h-4" /> },
               { id: "wissenspool", label: "WISSENSPOOL", icon: <Lightbulb className="w-4 h-4" /> },
               { id: "frequenzlabor", label: "FREQUENZ-LABOR", icon: <span className="text-base">🔬</span> },
+              { id: "kiich-praxis", label: "KIICH PRAXIS", icon: <span className="text-base">🎯</span> },
             ] as { id: Tab; label: string; icon: React.ReactNode }[]
           ).map((tab) => (
             <button
@@ -1321,6 +1324,11 @@ function Raum36Member() {
                 </div>
               )}
             </div>
+          )}
+
+          {/* KIICH PRAXIS */}
+          {activeTab === "kiich-praxis" && (
+            <KIICHPraxis />
           )}
 
           {/* Frequenz-Labor */}
