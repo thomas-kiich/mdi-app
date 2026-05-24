@@ -153,13 +153,16 @@ function getRaum36KaufHtml(vorname = "Thomas"): string {
           <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Dein Identitätssystem für das KI-Zeitalter</p>
         </td></tr>
         <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
-          <p style="font-size:22px;font-weight:700;color:#fff;margin:0 0 16px;">Willkommen in RAUM 36, ${vorname}.</p>
-          <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px;">Dein Zugang ist jetzt aktiv. Du hast Zugriff auf alle exklusiven Inhalte im RAUM 36 – Wochenvideos von Thomas, direkten Kontakt, den Wissenspool und den Vitalmonitor.</p>
+          <p style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase;margin:0 0 24px;">WILLKOMMEN in RAUM 36</p>
+          <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px;">Dein Zugang ist jetzt aktiv. Du hast Zugriff auf alle aktuellen Angebote in RAUM 36. Stelle gerne deine Fragen direkt an mich – mit Pseudonym oder mit deiner klaren Identität.</p>
           <table cellpadding="0" cellspacing="0" style="margin:0 0 32px;">
             <tr><td style="background:#e85d04;border-radius:4px;">
-              <a href="https://www.kiich.de/raum36" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;text-decoration:none;">RAUM 36 betreten →</a>
+              <a href="https://www.kiich.de/raum36" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;text-decoration:none;">RAUM 36 BETRETEN →</a>
             </td></tr>
           </table>
+          <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px;">Ich freue mich sehr, dass du dabei bist.</p>
+          <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px;">BREATH WELL!</p>
+          <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
         </td></tr>
         <tr><td align="center" style="padding-top:28px;">
           <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">
