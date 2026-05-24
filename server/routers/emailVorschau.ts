@@ -18,7 +18,7 @@ const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
 
 // ── Hilfsfunktion: HTML-Vorschau generieren ──────────────────────────────────
 
-function getWillkommensHtml(vorname = "Thomas"): string {
+function getWillkommensHtml(_vorname = "Thomas"): string {
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -31,42 +31,55 @@ function getWillkommensHtml(vorname = "Thomas"): string {
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+          <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom:32px;">
               <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
               <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Dein Identitätssystem für das KI-Zeitalter</p>
             </td>
           </tr>
+          <!-- Hauptinhalt -->
           <tr>
             <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
-              <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 16px 0;">Willkommen, ${vorname}.</p>
-              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px 0;">Du bist jetzt Teil von KIICH – einem System, das dir hilft, deine Identität im KI-Zeitalter zu verstehen, zu stärken und zu gestalten.</p>
-              <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 28px 0;">Dein erster Schritt: Höre dir die aktuellen Episoden an und entdecke, was KIICH für dich bereithält.</p>
-              <table cellpadding="0" cellspacing="0" style="margin:0 0 32px 0;">
-                <tr>
-                  <td style="background-color:#e85d04;border-radius:4px;">
-                    <a href="https://www.kiich.de/episoden" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Episoden anhören →</a>
-                  </td>
-                </tr>
-              </table>
-              <table cellpadding="0" cellspacing="0" width="100%">
-                <tr><td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
-                  <p style="margin:0;font-size:13px;color:#f5a623;font-weight:700;letter-spacing:1px;text-transform:uppercase;">Stimmklang-Analyse</p>
-                  <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Entdecke deinen persönlichen Wurzelklang durch eine einfache Stimmaufnahme.</p>
-                </td></tr>
-                <tr><td style="height:8px;"></td></tr>
-                <tr><td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
-                  <p style="margin:0;font-size:13px;color:#7c3aed;font-weight:700;letter-spacing:1px;text-transform:uppercase;">MOMENTAUFNAHME</p>
-                  <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Dein KI-Tagebuch. Sprich frei – MA hört zu und spiegelt dir zurück, was wirklich wichtig war.</p>
-                </td></tr>
-                <tr><td style="height:8px;"></td></tr>
-                <tr><td style="padding:16px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
-                  <p style="margin:0;font-size:13px;color:#10b981;font-weight:700;letter-spacing:1px;text-transform:uppercase;">YOHN-Training</p>
-                  <p style="margin:4px 0 0 0;font-size:13px;color:#888;line-height:1.5;">Die Methode 36 – Atemübung mit deinem persönlichen Ton für innere Stärke und Klarheit.</p>
+
+              <!-- Überschrift -->
+              <p style="font-size:26px;font-weight:900;letter-spacing:4px;color:#ffffff;text-transform:uppercase;margin:0 0 28px 0;">WILLKOMMEN</p>
+
+              <!-- Einleitungstext -->
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">Du kannst jetzt die KIICH Plattform nützen – ein Angebot, das dir Unterstützung und Überblick zu der Herausforderung des Mensch Seins im Zeitalter völlig neuer technologischer Möglichkeiten geben soll.</p>
+
+              <p style="font-size:13px;font-weight:700;color:#e85d04;letter-spacing:2px;text-transform:uppercase;margin:0 0 20px 0;">Die Angebote im Detail:</p>
+
+              <!-- Block 1: MASCHINEN ATMEN NICHT -->
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 16px 0;">
+                <tr><td style="padding:20px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+                  <p style="margin:0 0 8px 0;font-size:14px;font-weight:900;color:#ffffff;letter-spacing:2px;text-transform:uppercase;">1) MASCHINEN ATMEN NICHT</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Das Hörbuch mit wöchentlich erscheinenden EPISODEN. Abonniere gerne den Newsletter für aktuelle Informationen.</p>
+                  <a href="https://www.kiich.de/newsletter" style="display:inline-block;padding:10px 22px;background-color:#e85d04;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Zum Newsletter →</a>
                 </td></tr>
               </table>
+
+              <!-- Block 2: RAUM 36 -->
+              <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 28px 0;">
+                <tr><td style="padding:20px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
+                  <p style="margin:0 0 8px 0;font-size:14px;font-weight:900;color:#ffffff;letter-spacing:2px;text-transform:uppercase;">2) RAUM 36</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Hier findest du interaktive Möglichkeiten zu den besten Trainingsmethoden auf Basis optimaler Atmung. Es stehen dir wertvolle Werkzeuge wie ein persönlicher VITALMONITOR zur Verfügung, um dein Alltagsverhalten zu dokumentieren und Rückschlüsse über deinen Entwicklungsstand abzurufen.</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Zudem kannst du direkt Fragen stellen – mit Pseudonym oder mit deiner öffentlichen Klarstellung wer du bist. Allemal beantwortet dir Thomas deine Fragen detailgenau.</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Weiterführend kannst du tiefe Einblicke in deinen Stimmklang und den daraus resultierenden Talenten und Möglichkeiten abrufen. Stets auf Basis der verwendeten wissenschaftlichen wie empirischen Quellen.</p>
+                  <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Im WISSENSPOOL werden ständig neue Informationen über Audios zur Verfügung gestellt, auch inspiriert durch die aufgeworfenen Fragen der RAUM 36 Mitglieder.</p>
+                  <p style="margin:0 0 16px 0;font-size:13px;line-height:1.7;color:#aaa;">Das Kernstück ist das Trainingscenter von METHODE 36 – hier erhältst du detailgenaue Instruktionen zu den vielfältigen Trainingsangeboten.</p>
+                  <a href="https://www.kiich.de/raum36" style="display:inline-block;padding:10px 22px;background-color:#e85d04;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Zum RAUM 36 →</a>
+                </td></tr>
+              </table>
+
+              <!-- Signatur -->
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px 0;">Jedenfalls freue ich mich sehr über dein Dabei sein.</p>
+              <p style="font-size:16px;font-weight:700;color:#e85d04;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
+
             </td>
           </tr>
+          <!-- Footer -->
           <tr>
             <td align="center" style="padding-top:28px;">
               <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">Du erhältst diese E-Mail, weil du dich bei KIICH registriert hast.<br/>
