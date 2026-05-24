@@ -105,22 +105,39 @@ function getWillkommensHtml(_vorname = "Thomas"): string {
 }
 
 function getRaum36AntwortHtml(): string {
-  return `<div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0a0a0a;color:#e5e5e5;padding:32px;">
-  <div style="border-bottom:1px solid #333;padding-bottom:16px;margin-bottom:24px;">
-    <span style="color:#f97316;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-family:monospace;">RAUM 36</span>
-  </div>
-  <h2 style="font-size:20px;font-weight:600;margin:0 0 16px;">Thomas hat deine Frage beantwortet</h2>
-  <div style="background:#1a1a1a;border-left:3px solid #555;padding:12px 16px;margin-bottom:20px;">
-    <p style="color:#999;font-size:12px;margin:0 0 6px;font-family:monospace;">Mondlicht fragte:</p>
-    <p style="margin:0;color:#ccc;">Was bedeutet der Lebensklang für meinen Alltag und wie kann ich ihn bewusst einsetzen?</p>
-  </div>
-  <div style="background:#1a1a1a;border-left:3px solid #f97316;padding:12px 16px;margin-bottom:28px;">
-    <p style="color:#f97316;font-size:12px;margin:0 0 6px;font-family:monospace;">Thomas antwortet:</p>
-    <p style="margin:0;color:#e5e5e5;white-space:pre-line;">Dein Lebensklang ist dein persönlicher Anker – eine Frequenz, die deinem Nervensystem signalisiert: Ich bin in Resonanz mit mir selbst. Im Alltag kannst du ihn morgens beim YOHN-Training einsetzen, um den Tag bewusst zu beginnen.</p>
-  </div>
-  <a href="https://kiich.de/raum36" style="display:inline-block;background:#f97316;color:#fff;text-decoration:none;padding:12px 24px;font-weight:bold;font-size:14px;letter-spacing:1px;">ZUM RAUM 36</a>
-  <p style="color:#555;font-size:12px;margin-top:32px;">Du erhältst diese E-Mail weil du Mitglied im RAUM 36 bist.</p>
-</div>`;
+  return `<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8"/><title>Thomas hat deine Frage beantwortet</title></head>
+<body style="margin:0;padding:0;background-color:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a10;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+        <!-- Logo -->
+        <tr><td align="center" style="padding-bottom:32px;">
+          <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">K<span style="color:#e85d04;">II</span>CH</p>
+          <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">RAUM 36</p>
+        </td></tr>
+        <!-- Hauptinhalt -->
+        <tr><td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+          <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 20px 0;">Thomas hat deine Frage beantwortet</p>
+          <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">Bitte klicke auf den untenstehenden Button und freue dich auf die Antwort auf deine Frage die du Thomas gestellt hattest.</p>
+          <table cellpadding="0" cellspacing="0" style="margin:0;">
+            <tr><td style="background-color:#e85d04;border-radius:4px;">
+              <a href="https://www.kiich.de/raum36" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">ZUM RAUM 36 →</a>
+            </td></tr>
+          </table>
+        </td></tr>
+        <!-- Footer -->
+        <tr><td align="center" style="padding-top:28px;">
+          <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">Du erhältst diese E-Mail weil du Mitglied im RAUM 36 bist.<br/>
+            <a href="https://www.kiich.de/datenschutz" style="color:#555;text-decoration:underline;">Datenschutz</a> · <a href="https://www.kiich.de/impressum" style="color:#555;text-decoration:underline;">Impressum</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 }
 
 function getRaum36KaufHtml(vorname = "Thomas"): string {
