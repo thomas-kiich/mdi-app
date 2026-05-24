@@ -51,7 +51,7 @@ const KATEGORIEN = [
   },
   {
     id: "umfeldaktivierung",
-    label: "4 – UMFELDAKTIVIERUNG",
+    label: "3 – UMFELDAKTIVIERUNG",
     color: "text-amber-300",
     border: "border-amber-500/30",
     bg: "bg-amber-500/10",

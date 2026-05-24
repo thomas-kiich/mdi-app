@@ -802,7 +802,7 @@ function Raum36Member() {
               {!m36ActiveTrainer && (
                 <div className="mt-8 mb-4">
                   <div className="rounded-xl p-4 border border-orange-500/30 bg-orange-500/10 mb-3">
-                    <h2 className="text-base font-bold tracking-wide mb-1 text-orange-300">3 – BEWEGUNGSTRAINING</h2>
+                    <h2 className="text-base font-bold tracking-wide mb-1 text-orange-300">4 – BEWEGUNGSTRAINING</h2>
                     <p className="text-zinc-300 text-sm leading-relaxed">Gezielte Bewegungsübungen zur Aktivierung und Unterstützung deines Trainings.</p>
                   </div>
                   <div className="rounded-xl p-4 border border-orange-500/20 bg-zinc-900/40">

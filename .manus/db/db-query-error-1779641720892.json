@@ -1,0 +1,8 @@
+{
+  "query": "SELECT id, name, beschreibung FROM training_kategorien WHERE id = 'umfeldaktivierung';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, name, beschreibung FROM training_kategorien WHERE id = 'umfeldaktivierung';",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1146 (42S02) at line 1: Table 'vyrb5akas5jlztudkwe632.training_kategorien' doesn't exist"
+  ]
+}
