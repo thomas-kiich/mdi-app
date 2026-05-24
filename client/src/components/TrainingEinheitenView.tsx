@@ -58,6 +58,15 @@ const KATEGORIEN = [
     dot: "bg-amber-400",
     description: "Übungen in diesem Segment dienen der Regulation des Umfelds durch sanfte Hintergrundkompositionen. Zudem motivieren die eingearbeiteten Pulsationen zu einem optimalen Atemrhythmus.",
   },
+  {
+    id: "kiichpraxis",
+    label: "KIICH PRAXIS",
+    color: "text-orange-300",
+    border: "border-orange-500/30",
+    bg: "bg-orange-500/10",
+    dot: "bg-orange-400",
+    description: "Konkrete Projekte und Übungen an der Schnittstelle von KI und menschlicher Identität.",
+  },
 ] as const;
 
 type Einheit = {
