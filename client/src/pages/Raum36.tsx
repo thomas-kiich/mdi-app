@@ -44,6 +44,7 @@ import { AmbientTrainer } from "@/components/AmbientTrainer";
 import { IntervalTrainer } from "@/components/IntervalTrainer";
 import { SpectralScanner } from "@/components/SpectralScanner";
 import { ToneColorExplorer } from "@/components/ToneColorExplorer";
+import { BefindlichkeitsTraining } from "@/components/BefindlichkeitsTraining";
 
 const BOLT_LEVELS = [
   {
@@ -758,6 +759,12 @@ function Raum36Member() {
                     setM36TrainingItem(null);
                   }}
                 />
+              ) : m36ActiveTrainer === "befindlichkeit" ? (
+                <BefindlichkeitsTraining
+                  onClose={() => {
+                    setM36ActiveTrainer(null);
+                  }}
+                />
               ) : null}
               {/* TRAININGSEINHEITEN (vom Admin verwaltet) – erscheinen zuerst */}
               {!m36ActiveTrainer && (
@@ -782,6 +789,32 @@ function Raum36Member() {
                   />
                 </div>
               )}
+              {/* BEFINDLICHKEITSTRAINING – Thema 5 */}
+              {!m36ActiveTrainer && (
+                <div className="mt-8 mb-4">
+                  <div
+                    className="group border border-zinc-800 hover:border-orange-500/40 rounded-xl p-6 cursor-pointer transition-all duration-200 hover:bg-orange-500/5"
+                    onClick={() => setM36ActiveTrainer("befindlichkeit")}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500/20 to-red-500/10 flex items-center justify-center shrink-0 text-lg group-hover:scale-105 transition-transform">
+                        🌈
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-orange-500 text-xs font-mono uppercase tracking-widest mb-1">Thema 5</div>
+                        <h3 className="text-white font-bold tracking-wider mb-1">BEFINDLICHKEITSTRAINING</h3>
+                        <p className="text-zinc-400 text-sm leading-relaxed">
+                          Wähle die Lichtfarbe, die du gerade brauchst – und führe das YOHN-Training mit dieser spezifischen Frequenz durch. 12 Archetypen. 12 Wirkungsqualitäten.
+                        </p>
+                      </div>
+                      <div className="text-zinc-600 group-hover:text-orange-400 transition-colors shrink-0">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Admin-Button: METHODE 36 bearbeiten */}
               {isAdmin && !m36ActiveTrainer && (
                 <div className="flex justify-end mb-4">

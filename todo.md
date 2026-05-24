@@ -1397,6 +1397,13 @@
 - [x] TrainingCategoryStructure-Komponente in den neuen METHODE-36-Tab einbetten
 - [x] Startseite: showTrainingCenter-State und zugehörige Logik bereinigen (wenn nicht mehr benötigt)
 
+## BEFINDLICHKEITSTRAINING (Session Mai 2026)
+- [x] BefindlichkeitsTraining.tsx Komponente erstellt: 12 Lichtfarben-Kacheln (TYPE 1–23 ungerade), Hover-Ton-Vorschau, Klick öffnet Detail-Ansicht
+- [x] Detail-Ansicht: Nutzungs-Beschreibungen (nutzung[]), Grundgefühl, Frequenz-Info, YOHN TRAINING STARTEN-Button
+- [x] In RAUM 36 / METHODE 36 als Thema 5 eingebunden (Einstiegskachel unterhalb TrainingEinheitenView)
+- [x] m36ActiveTrainer === "befindlichkeit" Zweig in Raum36.tsx ergänzt
+- [x] TypeScript: 0 Fehler
+
 ## RAUM 36 Neuigkeit E-Mail-Feature (Session Mai 2026)
 - [x] `sendeRaum36Neuigkeit`-Funktion und `Raum36NeuigkeitTyp`-Type in `server/_core/email.ts` implementiert
 - [x] `adminSendeNeuigkeit`-tRPC-Procedure in `server/routers/raum36.ts` hinzugefügt
