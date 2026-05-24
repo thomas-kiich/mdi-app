@@ -819,27 +819,6 @@ function Raum36Member() {
                 </div>
               )}
 
-              {/* KI & MENSCHLICHKEIT – Thema 6 */}
-              {!m36ActiveTrainer && (
-                <div className="mt-8 mb-4">
-                  <div className="rounded-xl p-4 border border-orange-500/30 bg-orange-500/10 mb-3">
-                    <h2 className="text-base font-bold tracking-wide mb-1 text-orange-300">6 – KI &amp; MENSCHLICHKEIT</h2>
-                    <p className="text-zinc-300 text-sm leading-relaxed">Mein persönlicher ethischer Umgang mit KI und konkrete Anleitungen wie du KI in deinem Alltag sinnvoll nützen kannst.</p>
-                  </div>
-                  <button
-                    className="w-full text-left rounded-xl p-4 border border-orange-500/30 bg-orange-500/10 hover:brightness-110 transition-all hover:scale-[1.01] active:scale-[0.99]"
-                    onClick={() => setM36ActiveTrainer("ki")}
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="w-2 h-2 rounded-full mt-1.5 shrink-0 bg-orange-400" />
-                      <div>
-                        <p className="text-xs font-bold mb-1 text-orange-300">KI &amp; MENSCHLICHKEIT</p>
-                        <p className="text-zinc-300 text-sm leading-relaxed">Ethischer Umgang mit KI, Grenzen der KI und konkrete Anleitungen für deinen Alltag.</p>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              )}
               {/* Admin-Button: METHODE 36 bearbeiten */}
               {isAdmin && !m36ActiveTrainer && (
                 <div className="flex justify-end mb-4">
