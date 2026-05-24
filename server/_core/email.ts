@@ -699,3 +699,143 @@ export async function sendeVoranmeldungStimmklang(data: {
     textContent: `Voranmeldung Stimmklanganalyse:\nName: ${data.name}\nE-Mail: ${data.email}\nNachricht: ${data.nachricht}\nZeitpunkt: ${zeitpunkt}`,
   });
 }
+
+/**
+ * Neuigkeit-E-Mail an alle RAUM 36-Mitglieder
+ * Wird von Thomas manuell aus dem Admin ausgelöst.
+ */
+export type Raum36NeuigkeitTyp = "training" | "wissenspool" | "technik" | "allgemein";
+
+const NEUIGKEIT_CONFIG: Record<Raum36NeuigkeitTyp, { label: string; color: string; emoji: string }> = {
+  training: { label: "NEUES TRAINING", color: "#e85d04", emoji: "⚡" },
+  wissenspool: { label: "WISSENSPOOL", color: "#7c3aed", emoji: "🧠" },
+  technik: { label: "NEUE FUNKTION", color: "#10b981", emoji: "🔧" },
+  allgemein: { label: "NEUIGKEIT", color: "#f5a623", emoji: "📣" },
+};
+
+export async function sendeRaum36Neuigkeit(opts: {
+  empfaenger: Array<{ name: string | null; email: string }>;
+  typ: Raum36NeuigkeitTyp;
+  titel: string;
+  text: string;
+  linkUrl?: string;
+  linkLabel?: string;
+}): Promise<{ gesendet: number; fehlgeschlagen: number }> {
+  const cfg = NEUIGKEIT_CONFIG[opts.typ];
+  let gesendet = 0;
+  let fehlgeschlagen = 0;
+
+  for (const empfaenger of opts.empfaenger) {
+    const vorname = empfaenger.name?.split(" ")[0] ?? "du";
+
+    const htmlContent = `<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${opts.titel}</title>
+</head>
+<body style="margin:0;padding:0;background-color:#0a0a10;font-family:Arial,sans-serif;color:#e5e5e5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0a0a10;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+          <!-- Logo / Header -->
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <p style="font-size:28px;font-weight:900;letter-spacing:6px;color:#ffffff;margin:0;">
+                K<span style="color:#e85d04;">II</span>CH
+              </p>
+              <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">
+                RAUM 36 – Mitglieder-Update
+              </p>
+            </td>
+          </tr>
+
+          <!-- Typ-Badge -->
+          <tr>
+            <td style="padding-bottom:16px;">
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:${cfg.color}20;border:1px solid ${cfg.color}40;border-radius:4px;padding:6px 14px;">
+                    <p style="margin:0;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:${cfg.color};">
+                      ${cfg.emoji} ${cfg.label}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Hauptinhalt -->
+          <tr>
+            <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
+              <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 20px 0;">
+                ${opts.titel}
+              </p>
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;white-space:pre-line;">
+                ${opts.text}
+              </p>
+
+              ${opts.linkUrl ? `
+              <!-- CTA Button -->
+              <table cellpadding="0" cellspacing="0" style="margin:0 0 8px 0;">
+                <tr>
+                  <td style="background-color:${cfg.color};border-radius:4px;">
+                    <a href="${opts.linkUrl}"
+                       style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">
+                      ${opts.linkLabel ?? "Jetzt ansehen →"}
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              ` : ""}
+
+              <!-- Signatur -->
+              <p style="font-size:13px;color:#666;margin:28px 0 0 0;border-top:1px solid #222;padding-top:20px;">
+                Thomas Chochola · KIICH
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top:28px;">
+              <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">
+                Du erhältst diese E-Mail als RAUM 36-Mitglied.<br/>
+                <a href="https://www.kiich.de/raum36" style="color:#555;text-decoration:underline;">Zum RAUM 36</a>
+                &nbsp;·&nbsp;
+                <a href="https://www.kiich.de/datenschutz" style="color:#555;text-decoration:underline;">Datenschutz</a>
+                &nbsp;·&nbsp;
+                <a href="https://www.kiich.de/impressum" style="color:#555;text-decoration:underline;">Impressum</a>
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+    const success = await sendEmail({
+      to: [{ name: empfaenger.name ?? undefined, email: empfaenger.email }],
+      subject: `${cfg.emoji} ${opts.titel} – RAUM 36`,
+      htmlContent,
+      textContent: `${opts.titel}\n\n${opts.text}${opts.linkUrl ? `\n\n${opts.linkLabel ?? "Jetzt ansehen"}: ${opts.linkUrl}` : ""}\n\nThomas Chochola · KIICH\nhttps://www.kiich.de/raum36`,
+    });
+
+    if (success) {
+      gesendet++;
+    } else {
+      fehlgeschlagen++;
+    }
+
+    // Kurze Pause um Brevo-Rate-Limit zu vermeiden
+    await new Promise((r) => setTimeout(r, 100));
+  }
+
+  return { gesendet, fehlgeschlagen };
+}

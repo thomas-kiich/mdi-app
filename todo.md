@@ -1396,3 +1396,10 @@
 - [x] METHODE 36 als 5. Tab in RAUM 36 einbauen (nach KOMMUNIKATIONSCENTER, vor TRAININGSCENTER)
 - [x] TrainingCategoryStructure-Komponente in den neuen METHODE-36-Tab einbetten
 - [x] Startseite: showTrainingCenter-State und zugehörige Logik bereinigen (wenn nicht mehr benötigt)
+
+## RAUM 36 Neuigkeit E-Mail-Feature (Session Mai 2026)
+- [x] `sendeRaum36Neuigkeit`-Funktion und `Raum36NeuigkeitTyp`-Type in `server/_core/email.ts` implementiert
+- [x] `adminSendeNeuigkeit`-tRPC-Procedure in `server/routers/raum36.ts` hinzugefügt
+- [x] Admin-Seite `/admin/raum36-neuigkeit` mit Formular, Vorschau und Test-Versand erstellt
+- [x] Route in `App.tsx` registriert, Link in `AdminHub.tsx` eingebaut
+- [x] Neuigkeit-Template in E-Mail-Vorschau-Seite (`/admin/email-vorschau`) integriert (6. Template)

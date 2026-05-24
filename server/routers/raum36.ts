@@ -15,7 +15,7 @@
 
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
-import { sendeVoranmeldungStimmklang } from "../_core/email";
+import { sendeVoranmeldungStimmklang, sendeRaum36Neuigkeit, Raum36NeuigkeitTyp } from "../_core/email";
 import { notifyOwner } from "../_core/notification";
 import { getDb } from "../db";
 import { raum36Subscriptions, raum36Fragen, raum36Posts, raum36Wissenspool, stimmklanganalyseOrders, users } from "../../drizzle/schema";
@@ -622,6 +622,63 @@ export const raum36Router = router({
     return rows;
   }),
 
+  /**
+   * Admin: Neuigkeit an alle aktiven RAUM 36-Mitglieder senden
+   */
+  adminSendeNeuigkeit: protectedProcedure
+    .input(
+      z.object({
+        typ: z.enum(["training", "wissenspool", "technik", "allgemein"]),
+        titel: z.string().min(3).max(120),
+        text: z.string().min(10).max(2000),
+        linkUrl: z.string().url().optional(),
+        linkLabel: z.string().max(60).optional(),
+        nurTest: z.boolean().default(false), // true = nur an Thomas senden
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      let empfaenger: Array<{ name: string | null; email: string }>;
+
+      if (input.nurTest) {
+        // Nur Test-Versand an Thomas
+        empfaenger = [{ name: "Thomas Chochola", email: "lkrforschung@gmail.com" }];
+      } else {
+        // Alle aktiven RAUM 36-Mitglieder mit E-Mail
+        const rows = await db
+          .select({
+            name: users.name,
+            email: users.email,
+          })
+          .from(raum36Subscriptions)
+          .leftJoin(users, eq(raum36Subscriptions.userId, users.id))
+          .where(eq(raum36Subscriptions.status, "active"));
+
+        empfaenger = rows
+          .filter((r) => r.email != null)
+          .map((r) => ({ name: r.name ?? null, email: r.email! }));
+      }
+
+      if (empfaenger.length === 0) {
+        return { gesendet: 0, fehlgeschlagen: 0, empfaengerAnzahl: 0 };
+      }
+
+      const result = await sendeRaum36Neuigkeit({
+        empfaenger,
+        typ: input.typ as Raum36NeuigkeitTyp,
+        titel: input.titel,
+        text: input.text,
+        linkUrl: input.linkUrl,
+        linkLabel: input.linkLabel,
+      });
+
+      return { ...result, empfaengerAnzahl: empfaenger.length };
+    }),
   /**
    * Admin: Zusammenfassung aller Zahlungen (Summen + Anzahlen)
    */

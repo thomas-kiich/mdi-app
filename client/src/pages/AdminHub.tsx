@@ -39,6 +39,15 @@ const adminSections = [
         desc: "Alle Templates ansehen · Test-E-Mail senden",
       },
       {
+        href: "/admin/raum36-neuigkeit",
+        icon: Mail,
+        color: "text-amber-400",
+        border: "border-amber-500/30 hover:border-amber-400/60",
+        bg: "bg-amber-500/5 hover:bg-amber-500/10",
+        title: "RAUM 36 Neuigkeit",
+        desc: "Mitglieder informieren · Training · Wissenspool · Technik",
+      },
+      {
         href: "/admin/premium",
         icon: Crown,
         color: "text-amber-400",
