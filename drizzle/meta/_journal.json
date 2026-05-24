@@ -302,6 +302,13 @@
       "when": 1779630445393,
       "tag": "0042_fair_daimon_hellstrom",
       "breakpoints": true
+    },
+    {
+      "idx": 43,
+      "version": "5",
+      "when": 1779633477943,
+      "tag": "0043_minor_jocasta",
+      "breakpoints": true
     }
   ]
 }

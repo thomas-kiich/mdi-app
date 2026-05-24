@@ -35,6 +35,7 @@ const EMPTY_FORM = {
   audioUrl: "",
   videoUrl: "",
   infografikUrl: "",
+  infografik2Url: "",
   audioBeschreibungUrl: "",
   sortOrder: 0,
   aktiv: false,
@@ -113,6 +114,7 @@ export default function AdminTrainingEinheiten() {
       audioUrl: e.audioUrl || "",
       videoUrl: e.videoUrl || "",
       infografikUrl: e.infografikUrl || "",
+      infografik2Url: e.infografik2Url || "",
       audioBeschreibungUrl: e.audioBeschreibungUrl || "",
       sortOrder: e.sortOrder,
       aktiv: e.aktiv,
@@ -349,6 +351,30 @@ export default function AdminTrainingEinheiten() {
                       MP3 hochladen
                     </Button>
                     <Input value={form.audioBeschreibungUrl} onChange={(e) => setForm((f) => ({ ...f, audioBeschreibungUrl: e.target.value }))} className="bg-zinc-900 border-zinc-600 text-white text-xs font-mono" placeholder="oder URL einfügen" />
+                  </div>
+                )}
+              </div>
+
+              {/* Infografik 2 */}
+              <div className="bg-zinc-800/50 rounded-lg p-3 border border-zinc-700">
+                <Label className="text-zinc-300 text-xs mb-2 flex items-center gap-1.5">
+                  <Image className="w-3.5 h-3.5 text-amber-400" /> INFOGRAFIK 2 (Bild)
+                </Label>
+                {form.infografik2Url ? (
+                  <div className="space-y-2">
+                    <img src={form.infografik2Url} alt="Infografik 2" className="w-full rounded max-h-32 object-contain bg-zinc-900" />
+                    <div className="flex gap-2">
+                      <Input value={form.infografik2Url} onChange={(e) => setForm((f) => ({ ...f, infografik2Url: e.target.value }))} className="bg-zinc-900 border-zinc-600 text-white text-xs font-mono" placeholder="CDN-URL" />
+                      <Button variant="ghost" size="sm" onClick={() => setForm((f) => ({ ...f, infografik2Url: "" }))} className="text-zinc-400 hover:text-red-400 shrink-0">✕</Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Button variant="outline" size="sm" onClick={() => handleFileUpload("infografik2Url", "image/*")} disabled={uploadingField === "infografik2Url"} className="w-full border-zinc-600 text-zinc-300 hover:text-white">
+                      {uploadingField === "infografik2Url" ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <Upload className="w-3.5 h-3.5 mr-1" />}
+                      Bild hochladen
+                    </Button>
+                    <Input value={form.infografik2Url} onChange={(e) => setForm((f) => ({ ...f, infografik2Url: e.target.value }))} className="bg-zinc-900 border-zinc-600 text-white text-xs font-mono" placeholder="oder URL einfügen" />
                   </div>
                 )}
               </div>
