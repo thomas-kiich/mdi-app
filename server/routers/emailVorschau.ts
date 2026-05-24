@@ -189,27 +189,10 @@ function getStimmklangKaufHtml(vorname = "Thomas"): string {
           <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Stimmklanganalyse</p>
         </td></tr>
         <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
-          <p style="font-size:22px;font-weight:700;color:#fff;margin:0 0 16px;">Buchung bestätigt, ${vorname}.</p>
-          <p style="font-size:15px;line-height:1.7;color:#aaa;margin:0 0 20px;">Deine Buchung für die Stimmklanganalyse ist eingegangen. Thomas Chochola wird sich in Kürze bei dir melden.</p>
-          <p style="font-size:14px;font-weight:700;color:#f5a623;margin:0 0 12px;letter-spacing:1px;text-transform:uppercase;">Nächste Schritte:</p>
-          <table cellpadding="0" cellspacing="0" width="100%">
-            <tr><td style="padding:12px 16px;background:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;margin-bottom:8px;">
-              <p style="margin:0;font-size:13px;color:#888;">1. Starte die Stimmklanganalyse in der KIICH-App (3 Tage)</p>
-            </td></tr>
-            <tr><td style="height:8px;"></td></tr>
-            <tr><td style="padding:12px 16px;background:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
-              <p style="margin:0;font-size:13px;color:#888;">2. Thomas kontaktiert dich für den Coaching-Termin</p>
-            </td></tr>
-            <tr><td style="height:8px;"></td></tr>
-            <tr><td style="padding:12px 16px;background:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
-              <p style="margin:0;font-size:13px;color:#888;">3. Finalcoaching mit Thomas</p>
-            </td></tr>
-          </table>
-          <table cellpadding="0" cellspacing="0" style="margin:28px 0 0;">
-            <tr><td style="background:#e85d04;border-radius:4px;">
-              <a href="https://www.kiich.de/stimmklanganalyse" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff;text-decoration:none;">Zur Analyse →</a>
-            </td></tr>
-          </table>
+          <p style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase;margin:0 0 24px;">BUCHUNG BESTÄTIGT</p>
+          <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px;">Danke vielmals für deine Anmeldung. Ich melde mich zeitnah bei dir und erkläre dir den detailgenauen Ablauf des Rituals zu deinen Stimmfrequenzen.</p>
+          <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px;">BREATH WELL!</p>
+          <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
         </td></tr>
         <tr><td align="center" style="padding-top:28px;">
           <p style="font-size:11px;color:#444;margin:0;line-height:1.6;">
