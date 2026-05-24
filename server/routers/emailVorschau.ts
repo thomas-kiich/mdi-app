@@ -497,16 +497,16 @@ export const emailVorschauRouter = router({
     }),
 
   /** Massen-Versand an RAUM 36-Mitglieder / KIICH-Nutzer / Newsletter (mit Deduplizierung) */
-  sendeAnGruppe: adminProcedure
+    sendeAnGruppe: adminProcedure
     .input(z.object({
-      gruppe: z.enum(["raum36", "kiich", "newsletter"]),
+      // gruppen ist jetzt ein Array – mehrere Gruppen werden in einem einzigen deduplizierten Versand zusammengeführt
+      gruppen: z.array(z.enum(["raum36", "kiich", "newsletter"])).min(1),
       fields: z.record(z.string(), z.string()),
     }))
     .mutation(async ({ input }) => {
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
-
-      // Alle drei Gruppen laden fuer Gruppen-Zugehoerigkeit
+      // Alle drei Gruppen laden
       const raum36Rows = await db
         .select({ name: users.name, email: users.email })
         .from(raum36Subscriptions)
@@ -515,29 +515,27 @@ export const emailVorschauRouter = router({
       const raum36Set = new Set(
         raum36Rows.filter((r) => r.email != null).map((r) => r.email!.toLowerCase())
       );
-
       const kiichRows = await db.select({ name: users.name, email: users.email }).from(users);
       const kiichSet = new Set(
         kiichRows.filter((r) => r.email != null).map((r) => r.email!.toLowerCase())
       );
-
       const newsletterRows = await db
         .select({ name: newsletterSubscribers.name, email: newsletterSubscribers.email })
         .from(newsletterSubscribers)
         .where(eq(newsletterSubscribers.active, true));
       const newsletterSet = new Set(newsletterRows.map((r) => r.email.toLowerCase()));
-
-      // Quell-Liste je nach gewaehlter Gruppe
+      // Alle gewählten Gruppen zusammenführen
       type EmpRow = { name: string | null; email: string };
-      let quelleRows: EmpRow[];
-      if (input.gruppe === "raum36") {
-        quelleRows = raum36Rows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! }));
-      } else if (input.gruppe === "kiich") {
-        quelleRows = kiichRows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! }));
-      } else {
-        quelleRows = newsletterRows.map((r) => ({ name: r.name ?? null, email: r.email }));
+      const quelleRows: EmpRow[] = [];
+      if (input.gruppen.includes("raum36")) {
+        quelleRows.push(...raum36Rows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! })));
       }
-
+      if (input.gruppen.includes("kiich")) {
+        quelleRows.push(...kiichRows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! })));
+      }
+      if (input.gruppen.includes("newsletter")) {
+        quelleRows.push(...newsletterRows.map((r) => ({ name: r.name ?? null, email: r.email })));
+       }
       // Deduplizierung: jede E-Mail-Adresse nur einmal (case-insensitive)
       const seenEmails = new Set<string>();
       const empfaenger: Array<{ name: string | null; email: string; gruppen: string[] }> = [];

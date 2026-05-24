@@ -31,10 +31,11 @@ export default function AdminEmailVorschau() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [testEmail, setTestEmail] = useState("lkrforschung@gmail.com");
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
-  // Bestätigungs-Dialog
-  const [confirmGruppe, setConfirmGruppe] = useState<GruppeKey | null>(null);
+  // Checkbox-Auswahl für Gruppen
+  const [selectedGruppen, setSelectedGruppen] = useState<GruppeKey[]>([]);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [versandListe, setVersandListe] = useState<Array<{ email: string; name: string; gruppen: string[] }> | null>(null);
-  const [versandInfo, setVersandInfo] = useState<{ gesendet: number; fehlgeschlagen: number; gruppe: string } | null>(null);
+  const [versandInfo, setVersandInfo] = useState<{ gesendet: number; fehlgeschlagen: number; gruppen: string } | null>(null);
 
   const { data: templates, isLoading: loadingTemplates } = trpc.emailVorschau.getTemplates.useQuery();
   const { data: templateFields } = trpc.emailVorschau.getTemplateFields.useQuery(
@@ -69,18 +70,21 @@ export default function AdminEmailVorschau() {
 
   const sendeAnGruppe = trpc.emailVorschau.sendeAnGruppe.useMutation({
     onSuccess: (data, variables) => {
-      toast.success(`Gesendet: ${data.gesendet} / ${data.empfaengerAnzahl} Empfänger`);
+      toast.success(`Gesendet: ${data.gesendet} / ${data.empfaengerAnzahl} Empfänger (dedupliziert)`);
       setVersandListe(data.empfaengerListe ?? []);
+      const gruppenLabels = variables.gruppen
+        .map((k) => GRUPPEN.find((g) => g.key === k)?.label ?? k)
+        .join(" + ");
       setVersandInfo({
         gesendet: data.gesendet,
         fehlgeschlagen: data.fehlgeschlagen,
-        gruppe: GRUPPEN.find((g) => g.key === variables.gruppe)?.label ?? variables.gruppe,
+        gruppen: gruppenLabels,
       });
-      setConfirmGruppe(null);
+      setConfirmOpen(false);
     },
     onError: (err) => {
       toast.error(`Fehler: ${err.message}`);
-      setConfirmGruppe(null);
+      setConfirmOpen(false);
     },
   });
 
@@ -112,6 +116,12 @@ export default function AdminEmailVorschau() {
     if (key === "raum36") return empfaengerAnzahl.raum36Count;
     if (key === "kiich") return empfaengerAnzahl.kiichCount;
     return empfaengerAnzahl.newsletterCount;
+  }
+
+  function toggleGruppe(key: GruppeKey) {
+    setSelectedGruppen((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
   }
 
   return (
@@ -246,26 +256,48 @@ export default function AdminEmailVorschau() {
 
                     {/* Massen-Versand – nur bei raum36_neuigkeit */}
                     {isNeuigkeit && (
-                      <div className="pt-3 border-t border-white/10 space-y-2">
-                        <p className="text-xs text-white/40 mb-3 flex items-center gap-2">
+                      <div className="pt-3 border-t border-white/10 space-y-3">
+                        <p className="text-xs text-white/40 flex items-center gap-2">
                           <Users className="w-3 h-3" />
-                          Versand an Gruppe:
+                          Empfänger auswählen (dedupliziert):
                         </p>
                         <div className="grid grid-cols-1 gap-2">
-                          {GRUPPEN.map((g) => (
-                            <button
-                              key={g.key}
-                              onClick={() => setConfirmGruppe(g.key)}
-                              disabled={sendeAnGruppe.isPending}
-                              className={`flex items-center justify-between px-4 py-3 rounded-lg border transition-all hover:opacity-90 ${g.color}`}
-                            >
-                              <span className="text-sm font-semibold">{g.label}</span>
-                              <span className="text-xs opacity-70">
-                                {empfaengerAnzahl ? `${getAnzahl(g.key)} Empfänger` : "…"}
-                              </span>
-                            </button>
-                          ))}
+                          {GRUPPEN.map((g) => {
+                            const checked = selectedGruppen.includes(g.key);
+                            return (
+                              <button
+                                key={g.key}
+                                onClick={() => toggleGruppe(g.key)}
+                                disabled={sendeAnGruppe.isPending}
+                                className={`flex items-center justify-between px-4 py-3 rounded-lg border transition-all ${
+                                  checked
+                                    ? g.color + " ring-2 ring-white/20"
+                                    : "border-white/10 bg-white/5 text-white/50 hover:bg-white/10"
+                                }`}
+                              >
+                                <span className="flex items-center gap-2 text-sm font-semibold">
+                                  <span className={`w-4 h-4 rounded border flex items-center justify-center text-xs ${
+                                    checked ? "bg-white/20 border-white/40" : "border-white/20"
+                                  }`}>{checked ? "✓" : ""}</span>
+                                  {g.label}
+                                </span>
+                                <span className="text-xs opacity-70">
+                                  {empfaengerAnzahl ? `${getAnzahl(g.key)} Empf.` : "…"}
+                                </span>
+                              </button>
+                            );
+                          })}
                         </div>
+                        <Button
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white gap-2 mt-1"
+                          disabled={selectedGruppen.length === 0 || sendeAnGruppe.isPending}
+                          onClick={() => setConfirmOpen(true)}
+                        >
+                          <Send className="w-4 h-4" />
+                          Senden ({selectedGruppen.length > 0
+                            ? selectedGruppen.map((k) => getAnzahl(k)).reduce((a, b) => a + b, 0) + " Empf. (vor Dedup.)"
+                            : "Gruppe wählen"})
+                        </Button>
                       </div>
                     )}
                   </CardContent>
@@ -316,7 +348,7 @@ export default function AdminEmailVorschau() {
                   Versand abgeschlossen
                 </p>
                 <p className="text-xs text-white/50 mt-1">
-                  {versandInfo.gruppe} · {versandInfo.gesendet} gesendet
+                  {versandInfo.gruppen} · {versandInfo.gesendet} gesendet
                   {versandInfo.fehlgeschlagen > 0 && (
                     <span className="text-red-400 ml-2">{versandInfo.fehlgeschlagen} fehlgeschlagen</span>
                   )}
@@ -373,7 +405,7 @@ export default function AdminEmailVorschau() {
       )}
 
       {/* Bestätigungs-Dialog */}
-      {confirmGruppe && (
+      {confirmOpen && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-[#111118] border border-white/20 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
             <div className="flex items-start justify-between mb-4">
@@ -384,11 +416,11 @@ export default function AdminEmailVorschau() {
                 <div>
                   <p className="font-bold text-white">Wirklich senden?</p>
                   <p className="text-xs text-white/50 mt-0.5">
-                    {GRUPPEN.find((g) => g.key === confirmGruppe)?.label}
+                    {selectedGruppen.map((k) => GRUPPEN.find((g) => g.key === k)?.label).join(" + ")}
                   </p>
                 </div>
               </div>
-              <button onClick={() => setConfirmGruppe(null)} className="text-white/40 hover:text-white transition-colors">
+              <button onClick={() => setConfirmOpen(false)} className="text-white/40 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -396,24 +428,25 @@ export default function AdminEmailVorschau() {
             <div className="bg-white/5 rounded-lg p-3 mb-5 space-y-1">
               <p className="text-xs text-white/50">Betreff:</p>
               <p className="text-sm text-white font-medium">{fieldValues.betreff || "–"}</p>
-              <p className="text-xs text-white/50 mt-2">Empfänger:</p>
+              <p className="text-xs text-white/50 mt-2">Empfänger (vor Deduplizierung):</p>
               <p className="text-sm text-orange-300 font-bold">
-                {getAnzahl(confirmGruppe)} Personen
+                {selectedGruppen.map((k) => getAnzahl(k)).reduce((a, b) => a + b, 0)} Personen
               </p>
+              <p className="text-xs text-white/40">Doppelte Adressen werden automatisch entfernt.</p>
             </div>
 
             <div className="flex gap-3">
               <Button
                 variant="outline"
                 className="flex-1 border-white/20 text-white/70 hover:text-white bg-transparent"
-                onClick={() => setConfirmGruppe(null)}
+                onClick={() => setConfirmOpen(false)}
                 disabled={sendeAnGruppe.isPending}
               >
                 Abbrechen
               </Button>
               <Button
                 className="flex-1 bg-orange-500 hover:bg-orange-600 text-white gap-2"
-                onClick={() => sendeAnGruppe.mutate({ gruppe: confirmGruppe, fields: fieldValues })}
+                onClick={() => sendeAnGruppe.mutate({ gruppen: selectedGruppen, fields: fieldValues })}
                 disabled={sendeAnGruppe.isPending}
               >
                 {sendeAnGruppe.isPending ? (
