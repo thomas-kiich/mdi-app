@@ -1102,6 +1102,8 @@ export const trainingEinheiten = mysqlTable('training_einheiten', {
   infografikUrl: text('infografikUrl'),
   /** CDN-URL der zweiten Infografik (Bild) */
   infografik2Url: text('infografik2Url'),
+  /** Slideshow-Bilder als JSON-Array von URLs, z.B. ["https://...", "https://..."] */
+  slideshowUrls: text('slideshowUrls'),
   /** CDN-URL der Audiobeschreibung / Podcast-Audio */
   audioBeschreibungUrl: text('audioBeschreibungUrl'),
   /** Sortierreihenfolge innerhalb der Kategorie (niedrig = zuerst) */

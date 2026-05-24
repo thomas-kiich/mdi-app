@@ -1,0 +1,1 @@
+ALTER TABLE `training_einheiten` ADD `slideshowUrls` text;

@@ -36,6 +36,7 @@ const EMPTY_FORM = {
   videoUrl: "",
   infografikUrl: "",
   infografik2Url: "",
+  slideshowUrls: [] as string[],
   audioBeschreibungUrl: "",
   sortOrder: 0,
   aktiv: false,
@@ -115,6 +116,7 @@ export default function AdminTrainingEinheiten() {
       videoUrl: e.videoUrl || "",
       infografikUrl: e.infografikUrl || "",
       infografik2Url: e.infografik2Url || "",
+      slideshowUrls: (() => { try { return e.slideshowUrls ? JSON.parse(e.slideshowUrls) : []; } catch { return []; } })(),
       audioBeschreibungUrl: e.audioBeschreibungUrl || "",
       sortOrder: e.sortOrder,
       aktiv: e.aktiv,
@@ -416,6 +418,68 @@ export default function AdminTrainingEinheiten() {
                   </div>
                 )}
               </div>
+            </div>
+
+            {/* Slideshow */}
+            <div className="bg-zinc-800/50 rounded-lg p-4 border border-zinc-700 space-y-3">
+              <Label className="text-zinc-300 text-xs flex items-center gap-1.5">
+                <Image className="w-3.5 h-3.5 text-sky-400" /> SLIDESHOW (mehrere Bilder)
+              </Label>
+
+              {/* Vorschau-Grid */}
+              {form.slideshowUrls.length > 0 && (
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                  {form.slideshowUrls.map((url, idx) => (
+                    <div key={idx} className="relative group">
+                      <img src={url} alt={`Slide ${idx + 1}`} className="w-full h-20 object-cover rounded bg-zinc-900" />
+                      <button
+                        onClick={() => setForm((f) => ({ ...f, slideshowUrls: f.slideshowUrls.filter((_, i) => i !== idx) }))}
+                        className="absolute top-1 right-1 bg-black/70 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                      >✕</button>
+                      <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-1 rounded">{idx + 1}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Upload-Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={uploadingField === "slideshow"}
+                onClick={() => {
+                  const input = document.createElement("input");
+                  input.type = "file";
+                  input.accept = "image/*";
+                  input.multiple = true;
+                  input.onchange = async (e: any) => {
+                    const files: File[] = Array.from(e.target.files || []);
+                    if (!files.length) return;
+                    setUploadingField("slideshow");
+                    const newUrls: string[] = [];
+                    for (const file of files) {
+                      try {
+                        const formData = new FormData();
+                        formData.append("image", file);
+                        const res = await fetch("/api/training/upload-image", { method: "POST", body: formData, credentials: "include" });
+                        const data = await res.json();
+                        if (data.url) newUrls.push(data.url);
+                      } catch {}
+                    }
+                    setForm((f) => ({ ...f, slideshowUrls: [...f.slideshowUrls, ...newUrls] }));
+                    setUploadingField(null);
+                    if (newUrls.length) toast({ title: `✓ ${newUrls.length} Bild(er) hochgeladen` });
+                  };
+                  input.click();
+                }}
+                className="w-full border-zinc-600 text-zinc-300 hover:text-white"
+              >
+                {uploadingField === "slideshow" ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <Upload className="w-3.5 h-3.5 mr-1" />}
+                Bilder hinzufügen (Mehrfachauswahl möglich)
+              </Button>
+              {form.slideshowUrls.length > 0 && (
+                <p className="text-zinc-500 text-xs">{form.slideshowUrls.length} Bild(er) · Hover über ein Bild → ✕ zum Entfernen</p>
+              )}
             </div>
 
             {/* Sortierung + Aktiv */}
