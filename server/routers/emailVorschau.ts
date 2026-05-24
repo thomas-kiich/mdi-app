@@ -5,7 +5,10 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "../_core/trpc";
 import { TRPCError } from "@trpc/server";
-import { sendEmail } from "../_core/email";
+import { sendEmail, sendeRaum36Neuigkeit, Raum36NeuigkeitTyp } from "../_core/email";
+import { getDb } from "../db";
+import { users, raum36Subscriptions, newsletterSubscribers } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== "admin") {
     throw new TRPCError({ code: "FORBIDDEN", message: "Nur für Admins" });
@@ -463,6 +466,81 @@ export const emailVorschauRouter = router({
         : template.getHtml();
       const betreff = fields.betreff || template.betreff;
       return { html, betreff, label: template.label };
+    }),
+
+  /** Empfänger-Anzahl für Massen-Versand abfragen */
+  getEmpfaengerAnzahl: adminProcedure
+    .query(async () => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+      const raum36Rows = await db
+        .select({ email: users.email })
+        .from(raum36Subscriptions)
+        .leftJoin(users, eq(raum36Subscriptions.userId, users.id))
+        .where(eq(raum36Subscriptions.status, "active"));
+      const raum36Count = raum36Rows.filter((r) => r.email != null).length;
+
+      const kiichRows = await db
+        .select({ email: users.email })
+        .from(users);
+      const kiichCount = kiichRows.filter((r) => r.email != null).length;
+
+      const newsletterRows = await db
+        .select({ email: newsletterSubscribers.email })
+        .from(newsletterSubscribers)
+        .where(eq(newsletterSubscribers.active, true));
+      const newsletterCount = newsletterRows.length;
+
+      return { raum36Count, kiichCount, newsletterCount };
+    }),
+
+  /** Massen-Versand an RAUM 36-Mitglieder / KIICH-Nutzer / Newsletter */
+  sendeAnGruppe: adminProcedure
+    .input(z.object({
+      gruppe: z.enum(["raum36", "kiich", "newsletter"]),
+      fields: z.record(z.string(), z.string()),
+    }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      let empfaenger: Array<{ name: string | null; email: string }>;
+
+      if (input.gruppe === "raum36") {
+        const rows = await db
+          .select({ name: users.name, email: users.email })
+          .from(raum36Subscriptions)
+          .leftJoin(users, eq(raum36Subscriptions.userId, users.id))
+          .where(eq(raum36Subscriptions.status, "active"));
+        empfaenger = rows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! }));
+      } else if (input.gruppe === "kiich") {
+        const rows = await db.select({ name: users.name, email: users.email }).from(users);
+        empfaenger = rows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! }));
+      } else {
+        const rows = await db
+          .select({ name: newsletterSubscribers.name, email: newsletterSubscribers.email })
+          .from(newsletterSubscribers)
+          .where(eq(newsletterSubscribers.active, true));
+        empfaenger = rows.map((r) => ({ name: r.name ?? null, email: r.email }));
+      }
+
+      if (empfaenger.length === 0) {
+        return { gesendet: 0, fehlgeschlagen: 0, empfaengerAnzahl: 0 };
+      }
+
+      const f = input.fields;
+      const result = await sendeRaum36Neuigkeit({
+        empfaenger,
+        typ: (f.typLabel?.toLowerCase().includes("wissen") ? "wissenspool"
+          : f.typLabel?.toLowerCase().includes("technik") ? "technik"
+          : f.typLabel?.toLowerCase().includes("allgemein") ? "allgemein"
+          : "training") as Raum36NeuigkeitTyp,
+        titel: f.titel || "Neuigkeit aus dem RAUM 36",
+        text: f.text || "",
+        linkUrl: f.linkUrl || undefined,
+        linkLabel: f.linkLabel || undefined,
+      });
+      return { ...result, empfaengerAnzahl: empfaenger.length };
     }),
 
   /** Test-E-Mail mit angepassten Feldern senden */

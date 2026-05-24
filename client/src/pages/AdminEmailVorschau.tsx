@@ -6,7 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Mail, Send, Eye, ChevronLeft, Loader2, CheckCircle2, XCircle, RefreshCw } from "lucide-react";
+import {
+  Mail, Send, Eye, ChevronLeft, Loader2, CheckCircle2,
+  XCircle, RefreshCw, Users, AlertTriangle, X
+} from "lucide-react";
 import { Link } from "wouter";
 
 const EMPFAENGER_COLOR: Record<string, string> = {
@@ -16,32 +19,38 @@ const EMPFAENGER_COLOR: Record<string, string> = {
   "Thomas (Admin)": "bg-purple-500/20 text-purple-300 border-purple-500/30",
 };
 
+type GruppeKey = "raum36" | "kiich" | "newsletter";
+
+const GRUPPEN: Array<{ key: GruppeKey; label: string; color: string; countKey: keyof { raum36Count: number; kiichCount: number; newsletterCount: number } }> = [
+  { key: "raum36", label: "RAUM 36-Mitglieder", color: "border-orange-500/60 bg-orange-500/10 text-orange-300", countKey: "raum36Count" },
+  { key: "kiich", label: "KIICH-Nutzer", color: "border-blue-500/60 bg-blue-500/10 text-blue-300", countKey: "kiichCount" },
+  { key: "newsletter", label: "Newsletter-Abonnenten", color: "border-green-500/60 bg-green-500/10 text-green-300", countKey: "newsletterCount" },
+];
+
 export default function AdminEmailVorschau() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [testEmail, setTestEmail] = useState("lkrforschung@gmail.com");
-  // Editierbare Feldwerte: key → value
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
+  // Bestätigungs-Dialog
+  const [confirmGruppe, setConfirmGruppe] = useState<GruppeKey | null>(null);
 
-  // Templates-Liste
   const { data: templates, isLoading: loadingTemplates } = trpc.emailVorschau.getTemplates.useQuery();
-
-  // Felder-Definition für das gewählte Template
   const { data: templateFields } = trpc.emailVorschau.getTemplateFields.useQuery(
     { templateId: selectedId! },
     { enabled: !!selectedId }
   );
+  const { data: empfaengerAnzahl } = trpc.emailVorschau.getEmpfaengerAnzahl.useQuery(
+    undefined,
+    { enabled: selectedId === "raum36_neuigkeit" }
+  );
 
-  // Wenn ein neues Template gewählt wird: Felder mit Standardwerten befüllen
   useEffect(() => {
     if (!templateFields) return;
     const defaults: Record<string, string> = {};
-    for (const f of templateFields) {
-      defaults[f.key] = f.defaultValue;
-    }
+    for (const f of templateFields) defaults[f.key] = f.defaultValue;
     setFieldValues(defaults);
   }, [templateFields, selectedId]);
 
-  // Live-Vorschau: wird bei jedem Feldwert-Wechsel neu geladen
   const { data: vorschau, isLoading: loadingVorschau, refetch: refetchVorschau } =
     trpc.emailVorschau.getVorschau.useQuery(
       { templateId: selectedId!, fields: fieldValues },
@@ -50,19 +59,35 @@ export default function AdminEmailVorschau() {
 
   const sendTest = trpc.emailVorschau.sendTestEmail.useMutation({
     onSuccess: (data) => {
-      if (data.success) {
-        toast.success(`Test-E-Mail gesendet an ${testEmail}`);
-      } else {
-        toast.error("Versand fehlgeschlagen – Brevo-Fehler");
-      }
+      if (data.success) toast.success(`Test-E-Mail gesendet an ${testEmail}`);
+      else toast.error("Versand fehlgeschlagen");
     },
     onError: (err) => toast.error(`Fehler: ${err.message}`),
   });
 
+  const sendeAnGruppe = trpc.emailVorschau.sendeAnGruppe.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Gesendet: ${data.gesendet} / ${data.empfaengerAnzahl} Empfänger`);
+      setConfirmGruppe(null);
+    },
+    onError: (err) => {
+      toast.error(`Fehler: ${err.message}`);
+      setConfirmGruppe(null);
+    },
+  });
+
   const selected = templates?.find((t) => t.id === selectedId);
+  const isNeuigkeit = selectedId === "raum36_neuigkeit";
 
   function handleFieldChange(key: string, value: string) {
     setFieldValues((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function getAnzahl(key: GruppeKey): number {
+    if (!empfaengerAnzahl) return 0;
+    if (key === "raum36") return empfaengerAnzahl.raum36Count;
+    if (key === "kiich") return empfaengerAnzahl.kiichCount;
+    return empfaengerAnzahl.newsletterCount;
   }
 
   return (
@@ -92,14 +117,12 @@ export default function AdminEmailVorschau() {
             <p className="text-xs text-white/40 uppercase tracking-widest mb-4">
               Templates ({templates?.length ?? 0})
             </p>
-
             {loadingTemplates && (
               <div className="flex items-center gap-2 text-white/40 text-sm">
                 <Loader2 className="w-4 h-4 animate-spin" />
                 Lade Templates…
               </div>
             )}
-
             {templates?.map((t) => (
               <button
                 key={t.id}
@@ -121,7 +144,7 @@ export default function AdminEmailVorschau() {
             ))}
           </div>
 
-          {/* Rechte Spalte: Felder + Vorschau */}
+          {/* Rechte Spalte: Felder + Versand + Vorschau */}
           <div className="lg:col-span-2 space-y-4">
             {!selectedId ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-24 border border-dashed border-white/10 rounded-xl">
@@ -142,7 +165,6 @@ export default function AdminEmailVorschau() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {/* Dynamische Felder */}
                     {templateFields?.map((field) => (
                       <div key={field.key}>
                         <Label className="text-xs text-white/50 mb-1.5 block">{field.label}</Label>
@@ -178,37 +200,50 @@ export default function AdminEmailVorschau() {
                         />
                         <Button
                           size="sm"
-                          onClick={() =>
-                            sendTest.mutate({
-                              templateId: selectedId,
-                              empfaengerEmail: testEmail,
-                              fields: fieldValues,
-                            })
-                          }
+                          onClick={() => sendTest.mutate({ templateId: selectedId, empfaengerEmail: testEmail, fields: fieldValues })}
                           disabled={sendTest.isPending || !testEmail}
                           className="bg-orange-500 hover:bg-orange-600 text-white gap-2 whitespace-nowrap"
                         >
-                          {sendTest.isPending ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Send className="w-4 h-4" />
-                          )}
-                          Senden
+                          {sendTest.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                          Test
                         </Button>
                       </div>
                       {sendTest.isSuccess && (
                         <div className="flex items-center gap-2 mt-2 text-xs text-green-400">
-                          <CheckCircle2 className="w-3 h-3" />
-                          Test-E-Mail gesendet
+                          <CheckCircle2 className="w-3 h-3" /> Test-E-Mail gesendet
                         </div>
                       )}
                       {sendTest.isError && (
                         <div className="flex items-center gap-2 mt-2 text-xs text-red-400">
-                          <XCircle className="w-3 h-3" />
-                          Versand fehlgeschlagen
+                          <XCircle className="w-3 h-3" /> Versand fehlgeschlagen
                         </div>
                       )}
                     </div>
+
+                    {/* Massen-Versand – nur bei raum36_neuigkeit */}
+                    {isNeuigkeit && (
+                      <div className="pt-3 border-t border-white/10 space-y-2">
+                        <p className="text-xs text-white/40 mb-3 flex items-center gap-2">
+                          <Users className="w-3 h-3" />
+                          Versand an Gruppe:
+                        </p>
+                        <div className="grid grid-cols-1 gap-2">
+                          {GRUPPEN.map((g) => (
+                            <button
+                              key={g.key}
+                              onClick={() => setConfirmGruppe(g.key)}
+                              disabled={sendeAnGruppe.isPending}
+                              className={`flex items-center justify-between px-4 py-3 rounded-lg border transition-all hover:opacity-90 ${g.color}`}
+                            >
+                              <span className="text-sm font-semibold">{g.label}</span>
+                              <span className="text-xs opacity-70">
+                                {empfaengerAnzahl ? `${getAnzahl(g.key)} Empfänger` : "…"}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
 
@@ -245,6 +280,62 @@ export default function AdminEmailVorschau() {
           </div>
         </div>
       </div>
+
+      {/* Bestätigungs-Dialog */}
+      {confirmGruppe && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#111118] border border-white/20 rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-orange-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-white">Wirklich senden?</p>
+                  <p className="text-xs text-white/50 mt-0.5">
+                    {GRUPPEN.find((g) => g.key === confirmGruppe)?.label}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setConfirmGruppe(null)} className="text-white/40 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="bg-white/5 rounded-lg p-3 mb-5 space-y-1">
+              <p className="text-xs text-white/50">Betreff:</p>
+              <p className="text-sm text-white font-medium">{fieldValues.betreff || "–"}</p>
+              <p className="text-xs text-white/50 mt-2">Empfänger:</p>
+              <p className="text-sm text-orange-300 font-bold">
+                {getAnzahl(confirmGruppe)} Personen
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 border-white/20 text-white/70 hover:text-white bg-transparent"
+                onClick={() => setConfirmGruppe(null)}
+                disabled={sendeAnGruppe.isPending}
+              >
+                Abbrechen
+              </Button>
+              <Button
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white gap-2"
+                onClick={() => sendeAnGruppe.mutate({ gruppe: confirmGruppe, fields: fieldValues })}
+                disabled={sendeAnGruppe.isPending}
+              >
+                {sendeAnGruppe.isPending ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4" />
+                )}
+                Jetzt senden
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
