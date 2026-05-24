@@ -33,6 +33,8 @@ export default function AdminEmailVorschau() {
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
   // Bestätigungs-Dialog
   const [confirmGruppe, setConfirmGruppe] = useState<GruppeKey | null>(null);
+  const [versandListe, setVersandListe] = useState<Array<{ email: string; name: string; gruppen: string[] }> | null>(null);
+  const [versandInfo, setVersandInfo] = useState<{ gesendet: number; fehlgeschlagen: number; gruppe: string } | null>(null);
 
   const { data: templates, isLoading: loadingTemplates } = trpc.emailVorschau.getTemplates.useQuery();
   const { data: templateFields } = trpc.emailVorschau.getTemplateFields.useQuery(
@@ -66,8 +68,14 @@ export default function AdminEmailVorschau() {
   });
 
   const sendeAnGruppe = trpc.emailVorschau.sendeAnGruppe.useMutation({
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       toast.success(`Gesendet: ${data.gesendet} / ${data.empfaengerAnzahl} Empfänger`);
+      setVersandListe(data.empfaengerListe ?? []);
+      setVersandInfo({
+        gesendet: data.gesendet,
+        fehlgeschlagen: data.fehlgeschlagen,
+        gruppe: GRUPPEN.find((g) => g.key === variables.gruppe)?.label ?? variables.gruppe,
+      });
       setConfirmGruppe(null);
     },
     onError: (err) => {
@@ -81,6 +89,22 @@ export default function AdminEmailVorschau() {
 
   function handleFieldChange(key: string, value: string) {
     setFieldValues((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function downloadCsv() {
+    if (!versandListe) return;
+    const header = "Name,E-Mail,Gruppen";
+    const rows = versandListe.map(
+      (e) => `"${e.name}","${e.email}","${e.gruppen.join(" | ")}"`
+    );
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `empfaenger-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   function getAnzahl(key: GruppeKey): number {
@@ -280,6 +304,73 @@ export default function AdminEmailVorschau() {
           </div>
         </div>
       </div>
+
+      {/* Empfänger-Liste nach Versand */}
+      {versandListe && versandInfo && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-[#111118] border border-white/20 rounded-2xl p-6 max-w-lg w-full shadow-2xl max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <p className="font-bold text-white flex items-center gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-green-400" />
+                  Versand abgeschlossen
+                </p>
+                <p className="text-xs text-white/50 mt-1">
+                  {versandInfo.gruppe} · {versandInfo.gesendet} gesendet
+                  {versandInfo.fehlgeschlagen > 0 && (
+                    <span className="text-red-400 ml-2">{versandInfo.fehlgeschlagen} fehlgeschlagen</span>
+                  )}
+                </p>
+              </div>
+              <button onClick={() => setVersandListe(null)} className="text-white/40 hover:text-white transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-xs text-white/40 uppercase tracking-widest">
+                {versandListe.length} Empfänger (dedupliziert)
+              </p>
+              <button
+                onClick={downloadCsv}
+                className="flex items-center gap-1.5 text-xs text-orange-400 hover:text-orange-300 transition-colors border border-orange-500/30 rounded px-2 py-1"
+              >
+                <RefreshCw className="w-3 h-3" />
+                CSV herunterladen
+              </button>
+            </div>
+
+            <div className="overflow-y-auto flex-1 space-y-1 pr-1">
+              {versandListe.map((e, i) => (
+                <div key={i} className="flex items-center justify-between py-2 px-3 rounded-lg bg-white/5 hover:bg-white/8 transition-colors">
+                  <div className="min-w-0">
+                    {e.name && <p className="text-xs text-white/70 truncate">{e.name}</p>}
+                    <p className="text-sm text-white truncate">{e.email}</p>
+                  </div>
+                  <div className="flex gap-1 ml-3 flex-shrink-0">
+                    {e.gruppen.map((g) => (
+                      <span key={g} className={`text-xs px-1.5 py-0.5 rounded border ${
+                        g === "RAUM 36" ? "bg-orange-500/20 text-orange-300 border-orange-500/30" :
+                        g === "KIICH" ? "bg-blue-500/20 text-blue-300 border-blue-500/30" :
+                        "bg-green-500/20 text-green-300 border-green-500/30"
+                      }`}>{g}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="pt-4 border-t border-white/10 mt-4">
+              <Button
+                className="w-full bg-white/10 hover:bg-white/20 text-white"
+                onClick={() => setVersandListe(null)}
+              >
+                Schließen
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bestätigungs-Dialog */}
       {confirmGruppe && (

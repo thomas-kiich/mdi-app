@@ -494,7 +494,7 @@ export const emailVorschauRouter = router({
       return { raum36Count, kiichCount, newsletterCount };
     }),
 
-  /** Massen-Versand an RAUM 36-Mitglieder / KIICH-Nutzer / Newsletter */
+  /** Massen-Versand an RAUM 36-Mitglieder / KIICH-Nutzer / Newsletter (mit Deduplizierung) */
   sendeAnGruppe: adminProcedure
     .input(z.object({
       gruppe: z.enum(["raum36", "kiich", "newsletter"]),
@@ -504,33 +504,59 @@ export const emailVorschauRouter = router({
       const db = await getDb();
       if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
 
-      let empfaenger: Array<{ name: string | null; email: string }>;
+      // Alle drei Gruppen laden fuer Gruppen-Zugehoerigkeit
+      const raum36Rows = await db
+        .select({ name: users.name, email: users.email })
+        .from(raum36Subscriptions)
+        .leftJoin(users, eq(raum36Subscriptions.userId, users.id))
+        .where(eq(raum36Subscriptions.status, "active"));
+      const raum36Set = new Set(
+        raum36Rows.filter((r) => r.email != null).map((r) => r.email!.toLowerCase())
+      );
 
+      const kiichRows = await db.select({ name: users.name, email: users.email }).from(users);
+      const kiichSet = new Set(
+        kiichRows.filter((r) => r.email != null).map((r) => r.email!.toLowerCase())
+      );
+
+      const newsletterRows = await db
+        .select({ name: newsletterSubscribers.name, email: newsletterSubscribers.email })
+        .from(newsletterSubscribers)
+        .where(eq(newsletterSubscribers.active, true));
+      const newsletterSet = new Set(newsletterRows.map((r) => r.email.toLowerCase()));
+
+      // Quell-Liste je nach gewaehlter Gruppe
+      type EmpRow = { name: string | null; email: string };
+      let quelleRows: EmpRow[];
       if (input.gruppe === "raum36") {
-        const rows = await db
-          .select({ name: users.name, email: users.email })
-          .from(raum36Subscriptions)
-          .leftJoin(users, eq(raum36Subscriptions.userId, users.id))
-          .where(eq(raum36Subscriptions.status, "active"));
-        empfaenger = rows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! }));
+        quelleRows = raum36Rows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! }));
       } else if (input.gruppe === "kiich") {
-        const rows = await db.select({ name: users.name, email: users.email }).from(users);
-        empfaenger = rows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! }));
+        quelleRows = kiichRows.filter((r) => r.email != null).map((r) => ({ name: r.name ?? null, email: r.email! }));
       } else {
-        const rows = await db
-          .select({ name: newsletterSubscribers.name, email: newsletterSubscribers.email })
-          .from(newsletterSubscribers)
-          .where(eq(newsletterSubscribers.active, true));
-        empfaenger = rows.map((r) => ({ name: r.name ?? null, email: r.email }));
+        quelleRows = newsletterRows.map((r) => ({ name: r.name ?? null, email: r.email }));
+      }
+
+      // Deduplizierung: jede E-Mail-Adresse nur einmal (case-insensitive)
+      const seenEmails = new Set<string>();
+      const empfaenger: Array<{ name: string | null; email: string; gruppen: string[] }> = [];
+      for (const row of quelleRows) {
+        const key = row.email.toLowerCase();
+        if (seenEmails.has(key)) continue;
+        seenEmails.add(key);
+        const gruppen: string[] = [];
+        if (raum36Set.has(key)) gruppen.push("RAUM 36");
+        if (kiichSet.has(key)) gruppen.push("KIICH");
+        if (newsletterSet.has(key)) gruppen.push("Newsletter");
+        empfaenger.push({ ...row, gruppen });
       }
 
       if (empfaenger.length === 0) {
-        return { gesendet: 0, fehlgeschlagen: 0, empfaengerAnzahl: 0 };
+        return { gesendet: 0, fehlgeschlagen: 0, empfaengerAnzahl: 0, empfaengerListe: [] };
       }
 
       const f = input.fields;
       const result = await sendeRaum36Neuigkeit({
-        empfaenger,
+        empfaenger: empfaenger.map((e) => ({ name: e.name, email: e.email })),
         typ: (f.typLabel?.toLowerCase().includes("wissen") ? "wissenspool"
           : f.typLabel?.toLowerCase().includes("technik") ? "technik"
           : f.typLabel?.toLowerCase().includes("allgemein") ? "allgemein"
@@ -540,7 +566,16 @@ export const emailVorschauRouter = router({
         linkUrl: f.linkUrl || undefined,
         linkLabel: f.linkLabel || undefined,
       });
-      return { ...result, empfaengerAnzahl: empfaenger.length };
+
+      return {
+        ...result,
+        empfaengerAnzahl: empfaenger.length,
+        empfaengerListe: empfaenger.map((e) => ({
+          email: e.email,
+          name: e.name ?? "",
+          gruppen: e.gruppen,
+        })),
+      };
     }),
 
   /** Test-E-Mail mit angepassten Feldern senden */
