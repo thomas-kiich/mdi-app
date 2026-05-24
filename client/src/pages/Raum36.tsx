@@ -774,20 +774,7 @@ function Raum36Member() {
               ) : m36ActiveTrainer === "ki" ? (
                 <KIBereich onBack={() => setM36ActiveTrainer(null)} />
               ) : null}
-              {/* BEWEGUNGSTRAINING – Thema 3 */}
-              {!m36ActiveTrainer && (
-                <div className="mt-8 mb-4">
-                  <div className="rounded-xl p-4 border border-orange-500/30 bg-orange-500/10 mb-3">
-                    <h2 className="text-base font-bold tracking-wide mb-1 text-orange-300">3 – BEWEGUNGSTRAINING</h2>
-                    <p className="text-zinc-300 text-sm leading-relaxed">Gezielte Bewegungsübungen zur Aktivierung und Unterstützung deines Trainings.</p>
-                  </div>
-                  <div className="rounded-xl p-4 border border-orange-500/20 bg-zinc-900/40">
-                    <p className="text-zinc-500 text-sm text-center">Inhalte folgen in Kürze.</p>
-                  </div>
-                </div>
-              )}
-
-              {/* TRAININGSEINHEITEN (vom Admin verwaltet) – 4-UMFELDAKTIVIERUNG etc. */}
+              {/* TRAININGSEINHEITEN (vom Admin verwaltet) – 1-Atemtraining, 2-Stimmklang, 4-Umfeldaktivierung */}
               {!m36ActiveTrainer && (
                 <div className="mb-8" ref={trainingViewRef}>
                   <TrainingEinheitenView
@@ -799,7 +786,6 @@ function Raum36Member() {
                       setM36Duration(payload.duration);
                       setM36ActiveTrainer(payload.trainer);
                       if (payload.trainer === "yohn") {
-                        // YOHN: Lichtfarbe aus Auswahl übernehmen (oder Fallback)
                         setM36BasicData({
                           freq: payload.freq ?? 97.2,
                           tone: payload.tone ?? "G",
@@ -809,6 +795,19 @@ function Raum36Member() {
                       }
                     }}
                   />
+                </div>
+              )}
+
+              {/* BEWEGUNGSTRAINING – Thema 3 */}
+              {!m36ActiveTrainer && (
+                <div className="mt-8 mb-4">
+                  <div className="rounded-xl p-4 border border-orange-500/30 bg-orange-500/10 mb-3">
+                    <h2 className="text-base font-bold tracking-wide mb-1 text-orange-300">3 – BEWEGUNGSTRAINING</h2>
+                    <p className="text-zinc-300 text-sm leading-relaxed">Gezielte Bewegungsübungen zur Aktivierung und Unterstützung deines Trainings.</p>
+                  </div>
+                  <div className="rounded-xl p-4 border border-orange-500/20 bg-zinc-900/40">
+                    <p className="text-zinc-500 text-sm text-center">Inhalte folgen in Kürze.</p>
+                  </div>
                 </div>
               )}
               {/* BEFINDLICHKEITSTRAINING – Thema 5 */}
