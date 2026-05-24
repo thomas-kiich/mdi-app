@@ -83,7 +83,8 @@ export async function sendConfirmationEmail(
           <p style="font-size:11px;letter-spacing:3px;color:#888;margin:6px 0 0 0;text-transform:uppercase;">Newsletter</p>
         </td></tr>
         <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
-          <p style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase;margin:0 0 24px;">ANMELDUNG BESTÄTIGEN</p>
+          <p style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">ANMELDUNG BESTÄTIGEN</p>
+          <p style="font-size:16px;font-weight:700;color:#e85d04;letter-spacing:2px;margin:0 0 24px;">VIELEN DANK!</p>
           <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px;">Du hast dich für den KIICH-Newsletter angemeldet. Bitte klicke auf den Button um deine Anmeldung zu bestätigen. Dieser Link ist 48 Stunden gültig.</p>
           <table cellpadding="0" cellspacing="0" style="margin:0 0 28px;">
             <tr><td style="background:#e85d04;border-radius:4px;">
