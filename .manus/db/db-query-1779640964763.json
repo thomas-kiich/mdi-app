@@ -1,0 +1,64 @@
+{
+  "query": "SELECT id, titel, kategorie, sortOrder FROM training_einheiten ORDER BY sortOrder LIMIT 30;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, titel, kategorie, sortOrder FROM training_einheiten ORDER BY sortOrder LIMIT 30;",
+  "rows": [
+    {
+      "id": "60001",
+      "titel": "INFOGRAFIK",
+      "kategorie": "kiichpraxis",
+      "sortOrder": "0"
+    },
+    {
+      "id": "30001",
+      "titel": "GANZKÖRPERATMUNG (GKA)",
+      "kategorie": "atemtraining",
+      "sortOrder": "1"
+    },
+    {
+      "id": "60002",
+      "titel": "MEIN ETHISCHER UMGANG MIT KI",
+      "kategorie": "kiichpraxis",
+      "sortOrder": "1"
+    },
+    {
+      "id": "60003",
+      "titel": "KI ALS WERKZEUG – KONKRETE ANLEITUNGEN",
+      "kategorie": "kiichpraxis",
+      "sortOrder": "2"
+    },
+    {
+      "id": "60004",
+      "titel": "WO KI AN IHRE GRENZEN STÖSST",
+      "kategorie": "kiichpraxis",
+      "sortOrder": "3"
+    },
+    {
+      "id": "30004",
+      "titel": "RESONANZ AUS DEM RAUM",
+      "kategorie": "umfeldaktivierung",
+      "sortOrder": "10"
+    },
+    {
+      "id": "30002",
+      "titel": "YOHN-Atmung",
+      "kategorie": "stimmklangtraining",
+      "sortOrder": "10"
+    },
+    {
+      "id": "30005",
+      "titel": "MAYERWELLE 5,5 / MW",
+      "kategorie": "umfeldaktivierung",
+      "sortOrder": "20"
+    },
+    {
+      "id": "30003",
+      "titel": "Intervall-Training",
+      "kategorie": "stimmklangtraining",
+      "sortOrder": "20"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttitel\tkategorie\tsortOrder\n60001\tINFOGRAFIK\tkiichpraxis\t0\n30001\tGANZKÖRPERATMUNG (GKA)\tatemtraining\t1\n60002\tMEIN ETHISCHER UMGANG MIT KI\tkiichpraxis\t1\n60003\tKI ALS WERKZEUG – KONKRETE ANLEITUNGEN\tkiichpraxis\t2\n60004\tWO KI AN IHRE GRENZEN STÖSST\tkiichpraxis\t3\n30004\tRESONANZ AUS DEM RAUM\tumfeldaktivierung\t10\n30002\tYOHN-Atmung\tstimmklangtraining\t10\n30005\tMAYERWELLE 5,5 / MW\tumfeldaktivierung\t20\n30003\tIntervall-Training\tstimmklangtraining\t20\n",
+  "stderr": "",
+  "execution_time_ms": 265
+}
