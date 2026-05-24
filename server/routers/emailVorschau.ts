@@ -266,7 +266,6 @@ function getRaum36NeuigkeitHtml(
           <!-- Hauptinhalt -->
           <tr>
             <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
-              <p style="font-size:13px;color:#888;margin:0 0 8px 0;letter-spacing:1px;text-transform:uppercase;">Hallo ${vorname},</p>
               <p style="font-size:22px;font-weight:700;color:#ffffff;margin:0 0 20px 0;line-height:1.3;">${titel}</p>
               <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">${text}</p>
               <table cellpadding="0" cellspacing="0">
