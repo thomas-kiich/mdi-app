@@ -224,7 +224,9 @@ function getRaum36NeuigkeitHtml(
   const vorname = "Thomas";
   const titel = titelParam || "YOHN-Atemübung: Neue Variante verfügbar";
   const text = textParam || "Im RAUM 36 steht dir ab sofort eine neue Variante der YOHN-Atemübung zur Verfügung. Die erweiterte Sequenz integriert die Lichtfarben-Auswahl direkt in den Atemrhythmus – für eine tiefere Resonanzwirkung.";
-  const linkUrl = linkUrlParam || "https://www.kiich.de/raum36?tab=methode";
+  // Relative URLs (z.B. "/raum36?tab=methode") automatisch mit Basis-URL ergänzen
+  const rawLinkUrl = linkUrlParam || "/raum36?tab=methode";
+  const linkUrl = rawLinkUrl.startsWith("http") ? rawLinkUrl : `https://www.kiich.de${rawLinkUrl.startsWith("/") ? rawLinkUrl : "/" + rawLinkUrl}`;
   const linkLabel = linkLabelParam || "Jetzt im RAUM 36 ansehen";
 
   return `<!DOCTYPE html>
