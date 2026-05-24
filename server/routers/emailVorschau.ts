@@ -48,11 +48,11 @@ function getWillkommensHtml(_vorname = "Thomas"): string {
               <!-- Einleitungstext -->
               <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">Du kannst jetzt die KIICH Plattform nützen – ein Angebot, das dir Unterstützung und Überblick zu der Herausforderung des Mensch Seins im Zeitalter völlig neuer technologischer Möglichkeiten geben soll.</p>
 
-              <!-- EPISODEN-Button -->
+              <!-- Newsletter-Button -->
               <table cellpadding="0" cellspacing="0" style="margin:0 0 28px 0;">
                 <tr>
                   <td style="background-color:#e85d04;border-radius:4px;">
-                    <a href="https://www.kiich.de/episoden" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">EPISODEN ANHÖREN →</a>
+                    <a href="https://www.kiich.de/newsletter" style="display:inline-block;padding:14px 32px;font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">ZUM NEWSLETTER →</a>
                   </td>
                 </tr>
               </table>
@@ -64,7 +64,7 @@ function getWillkommensHtml(_vorname = "Thomas"): string {
                 <tr><td style="padding:20px;background-color:#0d0d16;border:1px solid #1e1e2e;border-radius:8px;">
                   <p style="margin:0 0 8px 0;font-size:14px;font-weight:900;color:#ffffff;letter-spacing:2px;text-transform:uppercase;">1) MASCHINEN ATMEN NICHT</p>
                   <p style="margin:0 0 14px 0;font-size:13px;line-height:1.7;color:#aaa;">Das Hörbuch mit wöchentlich erscheinenden EPISODEN. Abonniere gerne den Newsletter für aktuelle Informationen.</p>
-                  <a href="https://www.kiich.de/newsletter" style="display:inline-block;padding:10px 22px;background-color:#e85d04;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">Zum Newsletter →</a>
+                  <a href="https://www.kiich.de/episoden" style="display:inline-block;padding:10px 22px;background-color:#e85d04;border-radius:4px;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#ffffff;text-decoration:none;">EPISODEN ANHÖREN →</a>
                 </td></tr>
               </table>
 
