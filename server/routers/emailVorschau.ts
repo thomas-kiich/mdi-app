@@ -83,7 +83,7 @@ function getWillkommensHtml(_vorname = "Thomas"): string {
 
               <!-- Signatur -->
               <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px 0;">Jedenfalls freue ich mich sehr über dein Dabei sein.</p>
-              <p style="font-size:16px;font-weight:700;color:#e85d04;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
               <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
 
             </td>
