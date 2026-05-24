@@ -276,6 +276,7 @@ function getRaum36NeuigkeitHtml(
                   </td>
                 </tr>
               </table>
+              <p style="font-size:11px;color:#555;margin:10px 0 0 0;word-break:break-all;">🔗 ${linkUrl}</p>
             </td>
           </tr>
 
@@ -350,7 +351,7 @@ const TEMPLATE_FIELDS: Record<string, TemplateField[]> = {
     { key: "typLabel", label: "Typ-Badge (oben)", type: "text", defaultValue: "NEUES TRAINING", placeholder: "z.B. NEUES TRAINING / WISSENSPOOL / TECHNIK" },
     { key: "titel", label: "Titel", type: "text", defaultValue: "YOHN-Atemübung: Neue Variante verfügbar", placeholder: "Hauptüberschrift der E-Mail" },
     { key: "text", label: "Text", type: "textarea", defaultValue: "Im RAUM 36 steht dir ab sofort eine neue Variante der YOHN-Atemübung zur Verfügung. Die erweiterte Sequenz integriert die Lichtfarben-Auswahl direkt in den Atemrhythmus – für eine tiefere Resonanzwirkung.", placeholder: "Beschreibungstext" },
-    { key: "linkUrl", label: "Link-URL", type: "text", defaultValue: "https://www.kiich.de/raum36?tab=methode", placeholder: "https://..." },
+    { key: "linkUrl", label: "Link-URL", type: "text", defaultValue: "/raum36?tab=methode", placeholder: "/raum36?tab=methode&training=XXXXX" },
     { key: "linkLabel", label: "Link-Beschriftung", type: "text", defaultValue: "Jetzt im RAUM 36 ansehen", placeholder: "Button-Text" },
   ],
 };

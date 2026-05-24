@@ -480,9 +480,12 @@ export default function AdminTrainingEinheiten() {
                         <span className="text-xs text-zinc-500">Dauer: {e.dauern} min</span>
                         <span
                           className="text-xs font-mono bg-zinc-800 border border-zinc-600 text-orange-400 px-2 py-0.5 rounded cursor-pointer hover:bg-zinc-700 select-all"
-                          title="Deeplink kopieren"
+                          title="Vollständigen Link für E-Mail kopieren"
                           onClick={() => {
-                            navigator.clipboard.writeText(`/raum36?tab=methode&training=${e.id}`);
+                            const fullUrl = `https://www.kiich.de/raum36?tab=methode&training=${e.id}`;
+                            navigator.clipboard.writeText(fullUrl).then(() => {
+                              toast({ title: "✓ Link kopiert", description: fullUrl });
+                            });
                           }}
                         >
                           #{e.id} — /raum36?tab=methode&training={e.id}

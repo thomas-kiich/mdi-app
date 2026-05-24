@@ -1419,3 +1419,8 @@
 - [x] Backend: getVorschau + sendTestEmail um optionales fields-Objekt erweitert
 - [x] Frontend: AdminEmailVorschau.tsx komplett neu gebaut: dynamische Felder, Live-Vorschau, Test-Versand mit angepassten Werten
 - [x] TypeScript: 0 Fehler
+
+## E-Mail-Vorschau UX-Verbesserungen (Session Mai 2026)
+- [ ] Placeholder im Link-URL-Feld auf /raum36?tab=methode&training=XXXXX ändern
+- [ ] Vollständige aufgelöste URL unter dem Button in der HTML-Vorschau anzeigen
+- [ ] Direkt-Link-Kopieren-Button bei Trainingseinheiten im Admin
