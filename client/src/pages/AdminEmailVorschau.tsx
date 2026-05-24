@@ -1,23 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Mail, Send, Eye, ChevronLeft, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { Mail, Send, Eye, ChevronLeft, Loader2, CheckCircle2, XCircle, RefreshCw } from "lucide-react";
 import { Link } from "wouter";
+
+const EMPFAENGER_COLOR: Record<string, string> = {
+  "Nutzer": "bg-blue-500/20 text-blue-300 border-blue-500/30",
+  "Mitglied": "bg-orange-500/20 text-orange-300 border-orange-500/30",
+  "Käufer": "bg-green-500/20 text-green-300 border-green-500/30",
+  "Thomas (Admin)": "bg-purple-500/20 text-purple-300 border-purple-500/30",
+};
 
 export default function AdminEmailVorschau() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [testEmail, setTestEmail] = useState("lkrforschung@gmail.com");
+  // Editierbare Feldwerte: key → value
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>({});
 
+  // Templates-Liste
   const { data: templates, isLoading: loadingTemplates } = trpc.emailVorschau.getTemplates.useQuery();
 
-  const { data: vorschau, isLoading: loadingVorschau } = trpc.emailVorschau.getVorschau.useQuery(
+  // Felder-Definition für das gewählte Template
+  const { data: templateFields } = trpc.emailVorschau.getTemplateFields.useQuery(
     { templateId: selectedId! },
     { enabled: !!selectedId }
   );
+
+  // Wenn ein neues Template gewählt wird: Felder mit Standardwerten befüllen
+  useEffect(() => {
+    if (!templateFields) return;
+    const defaults: Record<string, string> = {};
+    for (const f of templateFields) {
+      defaults[f.key] = f.defaultValue;
+    }
+    setFieldValues(defaults);
+  }, [templateFields, selectedId]);
+
+  // Live-Vorschau: wird bei jedem Feldwert-Wechsel neu geladen
+  const { data: vorschau, isLoading: loadingVorschau, refetch: refetchVorschau } =
+    trpc.emailVorschau.getVorschau.useQuery(
+      { templateId: selectedId!, fields: fieldValues },
+      { enabled: !!selectedId && Object.keys(fieldValues).length > 0 }
+    );
 
   const sendTest = trpc.emailVorschau.sendTestEmail.useMutation({
     onSuccess: (data) => {
@@ -32,12 +61,9 @@ export default function AdminEmailVorschau() {
 
   const selected = templates?.find((t) => t.id === selectedId);
 
-  const empfaengerColor: Record<string, string> = {
-    "Nutzer": "bg-blue-500/20 text-blue-300 border-blue-500/30",
-    "Mitglied": "bg-orange-500/20 text-orange-300 border-orange-500/30",
-    "Käufer": "bg-green-500/20 text-green-300 border-green-500/30",
-    "Thomas (Admin)": "bg-purple-500/20 text-purple-300 border-purple-500/30",
-  };
+  function handleFieldChange(key: string, value: string) {
+    setFieldValues((prev) => ({ ...prev, [key]: value }));
+  }
 
   return (
     <div className="min-h-screen bg-[#0a0a10] text-white">
@@ -63,7 +89,9 @@ export default function AdminEmailVorschau() {
 
           {/* Linke Spalte: Template-Liste */}
           <div className="lg:col-span-1 space-y-3">
-            <p className="text-xs text-white/40 uppercase tracking-widest mb-4">Templates ({templates?.length ?? 0})</p>
+            <p className="text-xs text-white/40 uppercase tracking-widest mb-4">
+              Templates ({templates?.length ?? 0})
+            </p>
 
             {loadingTemplates && (
               <div className="flex items-center gap-2 text-white/40 text-sm">
@@ -84,7 +112,7 @@ export default function AdminEmailVorschau() {
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <p className="text-sm font-semibold text-white leading-tight">{t.label}</p>
-                  <span className={`text-xs px-2 py-0.5 rounded border whitespace-nowrap ${empfaengerColor[t.empfaenger] ?? "bg-white/10 text-white/60 border-white/20"}`}>
+                  <span className={`text-xs px-2 py-0.5 rounded border whitespace-nowrap ${EMPFAENGER_COLOR[t.empfaenger] ?? "bg-white/10 text-white/60 border-white/20"}`}>
                     {t.empfaenger}
                   </span>
                 </div>
@@ -93,37 +121,53 @@ export default function AdminEmailVorschau() {
             ))}
           </div>
 
-          {/* Rechte Spalte: Vorschau + Test-Versand */}
-          <div className="lg:col-span-2">
+          {/* Rechte Spalte: Felder + Vorschau */}
+          <div className="lg:col-span-2 space-y-4">
             {!selectedId ? (
               <div className="h-full flex flex-col items-center justify-center text-center py-24 border border-dashed border-white/10 rounded-xl">
                 <Eye className="w-12 h-12 text-white/20 mb-4" />
                 <p className="text-white/40 text-sm">Template auswählen um Vorschau zu sehen</p>
               </div>
             ) : (
-              <div className="space-y-4">
-                {/* Meta-Infos */}
+              <>
+                {/* Editierbare Felder */}
                 <Card className="bg-[#111118] border-white/10">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base text-white flex items-center gap-2">
                       <Mail className="w-4 h-4 text-orange-400" />
                       {selected?.label}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div>
-                      <p className="text-xs text-white/40 mb-1">Betreff</p>
-                      <p className="text-sm text-white/80 font-mono bg-white/5 px-3 py-2 rounded">{selected?.betreff}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-white/40 mb-1">Empfänger</p>
-                      <span className={`text-xs px-2 py-1 rounded border ${empfaengerColor[selected?.empfaenger ?? ""] ?? "bg-white/10 text-white/60 border-white/20"}`}>
+                      <span className={`ml-auto text-xs px-2 py-0.5 rounded border ${EMPFAENGER_COLOR[selected?.empfaenger ?? ""] ?? "bg-white/10 text-white/60 border-white/20"}`}>
                         {selected?.empfaenger}
                       </span>
-                    </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {/* Dynamische Felder */}
+                    {templateFields?.map((field) => (
+                      <div key={field.key}>
+                        <Label className="text-xs text-white/50 mb-1.5 block">{field.label}</Label>
+                        {field.type === "textarea" ? (
+                          <Textarea
+                            value={fieldValues[field.key] ?? field.defaultValue}
+                            onChange={(e) => handleFieldChange(field.key, e.target.value)}
+                            placeholder={field.placeholder}
+                            className="bg-white/5 border-white/20 text-white text-sm resize-none"
+                            rows={4}
+                          />
+                        ) : (
+                          <Input
+                            type={field.type}
+                            value={fieldValues[field.key] ?? field.defaultValue}
+                            onChange={(e) => handleFieldChange(field.key, e.target.value)}
+                            placeholder={field.placeholder}
+                            className="bg-white/5 border-white/20 text-white text-sm h-9"
+                          />
+                        )}
+                      </div>
+                    ))}
 
                     {/* Test-Versand */}
-                    <div className="pt-2 border-t border-white/10">
+                    <div className="pt-3 border-t border-white/10">
                       <p className="text-xs text-white/40 mb-2">Test-E-Mail senden an:</p>
                       <div className="flex gap-2">
                         <Input
@@ -134,7 +178,13 @@ export default function AdminEmailVorschau() {
                         />
                         <Button
                           size="sm"
-                          onClick={() => sendTest.mutate({ templateId: selectedId, empfaengerEmail: testEmail })}
+                          onClick={() =>
+                            sendTest.mutate({
+                              templateId: selectedId,
+                              empfaengerEmail: testEmail,
+                              fields: fieldValues,
+                            })
+                          }
                           disabled={sendTest.isPending || !testEmail}
                           className="bg-orange-500 hover:bg-orange-600 text-white gap-2 whitespace-nowrap"
                         >
@@ -162,9 +212,18 @@ export default function AdminEmailVorschau() {
                   </CardContent>
                 </Card>
 
-                {/* HTML-Vorschau im iFrame */}
+                {/* HTML-Vorschau */}
                 <div>
-                  <p className="text-xs text-white/40 uppercase tracking-widest mb-3">Vorschau</p>
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs text-white/40 uppercase tracking-widest">Vorschau</p>
+                    <button
+                      onClick={() => refetchVorschau()}
+                      className="flex items-center gap-1.5 text-xs text-white/40 hover:text-white/70 transition-colors"
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Aktualisieren
+                    </button>
+                  </div>
                   {loadingVorschau ? (
                     <div className="flex items-center justify-center py-16 border border-white/10 rounded-xl">
                       <Loader2 className="w-6 h-6 animate-spin text-white/40" />
@@ -181,7 +240,7 @@ export default function AdminEmailVorschau() {
                     </div>
                   ) : null}
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>

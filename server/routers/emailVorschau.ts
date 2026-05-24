@@ -209,13 +209,20 @@ function getAdminRegistrierungHtml(name = "Max Mustermann", email = "max@beispie
 
 // ── Neuigkeit-Vorschau-HTML (Beispieldaten) ─────────────────────────────────
 
-function getRaum36NeuigkeitHtml(): string {
-  const cfg = { label: "NEUES TRAINING", color: "#e85d04", emoji: "⚡" };
+function getRaum36NeuigkeitHtml(
+  titelParam?: string,
+  textParam?: string,
+  linkUrlParam?: string,
+  linkLabelParam?: string,
+  typLabelParam?: string
+): string {
+  const typLabel = typLabelParam || "NEUES TRAINING";
+  const cfg = { label: typLabel, color: "#e85d04", emoji: "⚡" };
   const vorname = "Thomas";
-  const titel = "YOHN-Atemübung: Neue Variante verfügbar";
-  const text = "Im RAUM 36 steht dir ab sofort eine neue Variante der YOHN-Atemübung zur Verfügung. Die erweiterte Sequenz integriert die Lichtfarben-Auswahl direkt in den Atemrhythmus – für eine tiefere Resonanzwirkung.";
-  const linkUrl = "https://www.kiich.de/raum36?tab=methode";
-  const linkLabel = "Jetzt im RAUM 36 ansehen";
+  const titel = titelParam || "YOHN-Atemübung: Neue Variante verfügbar";
+  const text = textParam || "Im RAUM 36 steht dir ab sofort eine neue Variante der YOHN-Atemübung zur Verfügung. Die erweiterte Sequenz integriert die Lichtfarben-Auswahl direkt in den Atemrhythmus – für eine tiefere Resonanzwirkung.";
+  const linkUrl = linkUrlParam || "https://www.kiich.de/raum36?tab=methode";
+  const linkLabel = linkLabelParam || "Jetzt im RAUM 36 ansehen";
 
   return `<!DOCTYPE html>
 <html lang="de">
@@ -303,8 +310,73 @@ function getRaum36NeuigkeitHtml(): string {
 </html>`;
 }
 
-// ── Alle Templates als Konstante ─────────────────────────────────────────────
+// ── Feld-Definitionen pro Template ──────────────────────────────────────────
+export type TemplateField = {
+  key: string;
+  label: string;
+  type: "text" | "textarea" | "email";
+  defaultValue: string;
+  placeholder?: string;
+};
 
+const TEMPLATE_FIELDS: Record<string, TemplateField[]> = {
+  willkommen: [
+    { key: "vorname", label: "Vorname", type: "text", defaultValue: "Thomas", placeholder: "Vorname des Empfängers" },
+    { key: "betreff", label: "Betreff", type: "text", defaultValue: "Willkommen bei KIICH – dein Identitätssystem", placeholder: "E-Mail-Betreff" },
+  ],
+  raum36_antwort: [
+    { key: "betreff", label: "Betreff", type: "text", defaultValue: "Thomas hat deine Frage im RAUM 36 beantwortet", placeholder: "E-Mail-Betreff" },
+  ],
+  raum36_kauf: [
+    { key: "vorname", label: "Vorname", type: "text", defaultValue: "Thomas", placeholder: "Vorname des Empfängers" },
+    { key: "betreff", label: "Betreff", type: "text", defaultValue: "Willkommen in RAUM 36 – dein Zugang ist aktiv", placeholder: "E-Mail-Betreff" },
+  ],
+  stimmklang_kauf: [
+    { key: "vorname", label: "Vorname", type: "text", defaultValue: "Thomas", placeholder: "Vorname des Empfängers" },
+    { key: "betreff", label: "Betreff", type: "text", defaultValue: "Buchungsbestätigung: Stimmklanganalyse – KIICH", placeholder: "E-Mail-Betreff" },
+  ],
+  admin_registrierung: [
+    { key: "name", label: "Name des Nutzers", type: "text", defaultValue: "Max Mustermann", placeholder: "Vollständiger Name" },
+    { key: "email", label: "E-Mail des Nutzers", type: "email", defaultValue: "max@beispiel.de", placeholder: "E-Mail-Adresse" },
+    { key: "betreff", label: "Betreff", type: "text", defaultValue: "🎉 Neue KIICH-Registrierung: Max Mustermann", placeholder: "E-Mail-Betreff" },
+  ],
+  raum36_neuigkeit: [
+    { key: "betreff", label: "Betreff", type: "text", defaultValue: "⚡ Neues Training verfügbar – RAUM 36", placeholder: "E-Mail-Betreff" },
+    { key: "typLabel", label: "Typ-Badge (oben)", type: "text", defaultValue: "NEUES TRAINING", placeholder: "z.B. NEUES TRAINING / WISSENSPOOL / TECHNIK" },
+    { key: "titel", label: "Titel", type: "text", defaultValue: "YOHN-Atemübung: Neue Variante verfügbar", placeholder: "Hauptüberschrift der E-Mail" },
+    { key: "text", label: "Text", type: "textarea", defaultValue: "Im RAUM 36 steht dir ab sofort eine neue Variante der YOHN-Atemübung zur Verfügung. Die erweiterte Sequenz integriert die Lichtfarben-Auswahl direkt in den Atemrhythmus – für eine tiefere Resonanzwirkung.", placeholder: "Beschreibungstext" },
+    { key: "linkUrl", label: "Link-URL", type: "text", defaultValue: "https://www.kiich.de/raum36?tab=methode", placeholder: "https://..." },
+    { key: "linkLabel", label: "Link-Beschriftung", type: "text", defaultValue: "Jetzt im RAUM 36 ansehen", placeholder: "Button-Text" },
+  ],
+};
+
+// ── Hilfsfunktion: HTML aus Feldern generieren ────────────────────────────────
+function buildHtml(templateId: string, fields: Record<string, string>): string {
+  switch (templateId) {
+    case "willkommen":
+      return getWillkommensHtml(fields.vorname || "Thomas");
+    case "raum36_antwort":
+      return getRaum36AntwortHtml();
+    case "raum36_kauf":
+      return getRaum36KaufHtml(fields.vorname || "Thomas");
+    case "stimmklang_kauf":
+      return getStimmklangKaufHtml(fields.vorname || "Thomas");
+    case "admin_registrierung":
+      return getAdminRegistrierungHtml(fields.name || "Max Mustermann", fields.email || "max@beispiel.de");
+    case "raum36_neuigkeit":
+      return getRaum36NeuigkeitHtml(
+        fields.titel || undefined,
+        fields.text || undefined,
+        fields.linkUrl || undefined,
+        fields.linkLabel || undefined,
+        fields.typLabel || undefined
+      );
+    default:
+      return "";
+  }
+}
+
+// ── Alle Templates als Konstante ─────────────────────────────────────────────
 export const EMAIL_TEMPLATES = [
   {
     id: "willkommen",
@@ -348,18 +420,15 @@ export const EMAIL_TEMPLATES = [
   },
   {
     id: "raum36_neuigkeit",
-    label: "RAUM 36 – Neuigkeit (Beispiel)",
+    label: "RAUM 36 – Neuigkeit",
     beschreibung: "Manuell von Thomas versendetes Update an alle aktiven RAUM 36-Mitglieder",
     empfaenger: "Mitglied",
     betreff: "⚡ Neues Training verfügbar – RAUM 36",
     getHtml: () => getRaum36NeuigkeitHtml(),
   },
 ] as const;
-
 export type EmailTemplateId = typeof EMAIL_TEMPLATES[number]["id"];
-
-// ── Router ───────────────────────────────────────────────────────────────────
-
+// ── Router ────────────────────────────────────────────────────────────────────
 export const emailVorschauRouter = router({
   /** Alle Templates als Metadaten (ohne HTML) */
   getTemplates: adminProcedure.query(() => {
@@ -372,32 +441,50 @@ export const emailVorschauRouter = router({
     }));
   }),
 
-  /** HTML-Vorschau eines Templates */
-  getVorschau: adminProcedure
+  /** Felder-Definition für ein Template */
+  getTemplateFields: adminProcedure
     .input(z.object({ templateId: z.string() }))
+    .query(({ input }) => {
+      return TEMPLATE_FIELDS[input.templateId] ?? [];
+    }),
+
+  /** HTML-Vorschau eines Templates mit optionalen Feld-Werten */
+  getVorschau: adminProcedure
+    .input(z.object({
+      templateId: z.string(),
+      fields: z.record(z.string(), z.string()).optional(),
+    }))
     .query(({ input }) => {
       const template = EMAIL_TEMPLATES.find((t) => t.id === input.templateId);
       if (!template) throw new TRPCError({ code: "NOT_FOUND", message: "Template nicht gefunden" });
-      return {
-        html: template.getHtml(),
-        betreff: template.betreff,
-        label: template.label,
-      };
+      const fields = input.fields ?? {};
+      const html = Object.keys(fields).length > 0
+        ? buildHtml(input.templateId, fields)
+        : template.getHtml();
+      const betreff = fields.betreff || template.betreff;
+      return { html, betreff, label: template.label };
     }),
 
-  /** Test-E-Mail an Thomas senden */
+  /** Test-E-Mail mit angepassten Feldern senden */
   sendTestEmail: adminProcedure
-    .input(z.object({ templateId: z.string(), empfaengerEmail: z.string().email() }))
+    .input(z.object({
+      templateId: z.string(),
+      empfaengerEmail: z.string().email(),
+      fields: z.record(z.string(), z.string()).optional(),
+    }))
     .mutation(async ({ input }) => {
       const template = EMAIL_TEMPLATES.find((t) => t.id === input.templateId);
       if (!template) throw new TRPCError({ code: "NOT_FOUND", message: "Template nicht gefunden" });
-
+      const fields = input.fields ?? {};
+      const html = Object.keys(fields).length > 0
+        ? buildHtml(input.templateId, fields)
+        : template.getHtml();
+      const betreff = fields.betreff || template.betreff;
       const success = await sendEmail({
         to: [{ name: "Thomas Chochola", email: input.empfaengerEmail }],
-        subject: `[TEST] ${template.betreff}`,
-        htmlContent: template.getHtml(),
+        subject: `[TEST] ${betreff}`,
+        htmlContent: html,
       });
-
       return { success };
     }),
 });

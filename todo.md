@@ -1410,3 +1410,12 @@
 - [x] Admin-Seite `/admin/raum36-neuigkeit` mit Formular, Vorschau und Test-Versand erstellt
 - [x] Route in `App.tsx` registriert, Link in `AdminHub.tsx` eingebaut
 - [x] Neuigkeit-Template in E-Mail-Vorschau-Seite (`/admin/email-vorschau`) integriert (6. Template)
+
+## E-Mail-Vorschau editierbar (Session Mai 2026)
+- [x] Backend: getRaum36NeuigkeitHtml mit 5 optionalen Parametern (titel, text, linkUrl, linkLabel, typLabel)
+- [x] Backend: TEMPLATE_FIELDS-Konstante mit Feld-Definitionen pro Template (6 Templates)
+- [x] Backend: buildHtml()-Hilfsfunktion für parametrisiertes HTML
+- [x] Backend: getTemplateFields-Procedure (gibt Felder-Definition zurück)
+- [x] Backend: getVorschau + sendTestEmail um optionales fields-Objekt erweitert
+- [x] Frontend: AdminEmailVorschau.tsx komplett neu gebaut: dynamische Felder, Live-Vorschau, Test-Versand mit angepassten Werten
+- [x] TypeScript: 0 Fehler
