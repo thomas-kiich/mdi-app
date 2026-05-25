@@ -17,10 +17,13 @@ export function useWaterSound() {
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
   const lfoRef = useRef<OscillatorNode | null>(null);
   const isPlayingRef = useRef(false);
+  const isFadingOutRef = useRef(false); // verhindert doppelten Fade-out
 
   const stop = useCallback(() => {
     if (!isPlayingRef.current) return;
+    if (isFadingOutRef.current) return; // Fade läuft bereits – nicht nochmal starten
     isPlayingRef.current = false;
+    isFadingOutRef.current = true;
 
     const ctx = ctxRef.current;
     const gain = masterGainRef.current;
@@ -41,11 +44,13 @@ export function useWaterSound() {
       masterGainRef.current = null;
       sourceRef.current = null;
       lfoRef.current = null;
+      isFadingOutRef.current = false; // bereit für nächsten Start
     }, 6200);
   }, []);
 
   const start = useCallback(() => {
     if (isPlayingRef.current) return;
+    isFadingOutRef.current = false; // Fade abbrechen falls neuer Start kommt
 
     try {
       const ctx = new AudioContext();
