@@ -17,6 +17,7 @@ import {
   Loader2, Mic, ArrowRight, Sparkles, Check, Download, Music2, ArrowLeft,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useWaterSound } from "@/hooks/useWaterSound";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
 import { trpc } from "@/lib/trpc";
@@ -73,13 +74,18 @@ export default function StimmklangWizard() {
   // Relaxation timer
   const [relaxationTimeLeft, setRelaxationTimeLeft] = useState(180);
   const [isRelaxing, setIsRelaxing] = useState(false);
+  const waterSound = useWaterSound();
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let interval: any;
     if (isRelaxing && relaxationTimeLeft > 0) {
-      interval = setInterval(() => setRelaxationTimeLeft((p) => p - 1), 1000);
+      interval = setInterval(() => {
+        setRelaxationTimeLeft(prev => prev - 1);
+      }, 1000);
     } else if (relaxationTimeLeft === 0) {
       setIsRelaxing(false);
+      waterSound.stop();
     }
     return () => clearInterval(interval);
   }, [isRelaxing, relaxationTimeLeft]);
@@ -305,9 +311,9 @@ export default function StimmklangWizard() {
                 <div className="text-6xl font-mono text-orange-500 mb-8">
                   {Math.floor(relaxationTimeLeft / 60)}:{(relaxationTimeLeft % 60).toString().padStart(2, "0")}
                 </div>
-                <audio autoPlay loop src="/water-stream.mp3" />
+                {/* Wassergeräusch via Web Audio API – kein externes File nötig */}
                 <p className="text-zinc-500">Bitte schließe deine Augen und entspanne.</p>
-                <Button onClick={() => setIsRelaxing(false)} variant="ghost" className="mt-8 text-zinc-500 hover:text-white">Überspringen</Button>
+                <Button onClick={() => { setIsRelaxing(false); waterSound.stop(); }} variant="ghost" className="mt-8 text-zinc-500 hover:text-white">Überspringen</Button>
               </div>
             ) : (
               <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-4">
@@ -316,7 +322,7 @@ export default function StimmklangWizard() {
                     <Sparkles className="w-5 h-5" /> Entspannungsphase abgeschlossen.
                   </p>
                 )}
-                <Button onClick={() => setIsRelaxing(true)} size="lg" className="w-full max-w-xs h-14 text-lg rounded-full mb-4">
+                <Button onClick={() => { setIsRelaxing(true); waterSound.start(); }} size="lg" className="w-full max-w-xs h-14 text-lg rounded-full mb-4">
                   Entspannung starten
                 </Button>
                 {relaxationTimeLeft < 180 && (
