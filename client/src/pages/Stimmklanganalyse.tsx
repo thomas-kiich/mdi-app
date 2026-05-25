@@ -27,9 +27,11 @@ import { Link } from "wouter";
 import type { RouteComponentProps } from "wouter";
 
 export default function Stimmklanganalyse({ embedded = false }: RouteComponentProps & { embedded?: boolean }) {
-  const { isAuthenticated, user } = useAuth();
-  const [previewMode, setPreviewMode] = useState(false);
-  const isAdmin = (user as any)?.role === 'admin';
+  const { isAuthenticated } = useAuth();
+  const [previewMode, setPreviewMode] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('preview') === '1';
+  });
   const [datenschutzOpen, setDatenschutzOpen] = useState(false);
 
   const checkoutMutation = trpc.raum36.createCheckoutStimmklang.useMutation({
@@ -189,14 +191,7 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
               </Button>
               <p className="text-zinc-500 text-sm mt-3">€ 150 · Einmalzahlung</p>
             </div>
-            {isAdmin && (
-              <button
-                onClick={() => setPreviewMode(true)}
-                className="text-xs font-mono text-yellow-600 hover:text-yellow-400 border border-yellow-600/30 hover:border-yellow-400/50 px-3 py-2 uppercase tracking-widest transition-colors mt-1"
-              >
-                Käufer-Ansicht (Vorschau)
-              </button>
-            )}
+
           </div>
         </div>
       </section>

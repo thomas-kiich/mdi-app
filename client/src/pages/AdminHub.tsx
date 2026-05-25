@@ -98,6 +98,15 @@ const adminSections = [
         title: "Zahlungen (Stripe)",
         desc: "RAUM 36 Abos · Stimmklanganalyse-Käufe · Übersicht",
       },
+      {
+        href: "/stimmklanganalyse?preview=1",
+        icon: Mic,
+        color: "text-orange-400",
+        border: "border-orange-500/30 hover:border-orange-400/60 border-dashed",
+        bg: "bg-orange-500/5 hover:bg-orange-500/10",
+        title: "Stimmklanganalyse – Vorschau",
+        desc: "Käufer-Ansicht ohne DB-Eintrag öffnen",
+      },
     ],
   },
   {
