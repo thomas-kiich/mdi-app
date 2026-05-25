@@ -81,11 +81,12 @@ export default function StimmklangWizard() {
 
   useEffect(() => {
     if (!isRelaxing) {
-      // Interval sofort stoppen wenn isRelaxing auf false geht (Überspringen, goBack oder Timer-Ende)
+      // Interval stoppen wenn isRelaxing auf false geht (Überspringen oder goBack)
+      // Beim Timer-Ende ist relaxIntervalRef bereits null (wurde im Callback gecleart)
       if (relaxIntervalRef.current) {
         clearInterval(relaxIntervalRef.current);
         relaxIntervalRef.current = null;
-        // Ton ausblenden – nur wenn der Interval noch lief (= Sound war aktiv)
+        // Ton ausblenden – nur beim manuellen Abbruch (Überspringen/goBack)
         waterSound.stop();
       }
       return;
@@ -94,7 +95,12 @@ export default function StimmklangWizard() {
     relaxIntervalRef.current = setInterval(() => {
       setRelaxationTimeLeft(prev => {
         if (prev <= 1) {
-          // Timer abgelaufen: nur setIsRelaxing(false) – der useEffect stoppt dann den Ton
+          // Timer abgelaufen: Interval sofort stoppen, Ton ausblenden, State zurücksetzen
+          if (relaxIntervalRef.current) {
+            clearInterval(relaxIntervalRef.current);
+            relaxIntervalRef.current = null;
+          }
+          waterSound.stop();
           setIsRelaxing(false);
           return 0;
         }
