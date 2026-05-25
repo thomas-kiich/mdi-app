@@ -1164,3 +1164,61 @@ export const kiichPraxisProjekte = mysqlTable('kiich_praxis_projekte', {
 
 export type KiichPraxisProjekt = typeof kiichPraxisProjekte.$inferSelect;
 export type InsertKiichPraxisProjekt = typeof kiichPraxisProjekte.$inferInsert;
+
+/**
+ * STIMMKLANG-TAGESMESSUNGEN
+ * Speichert das Ergebnis jeder abgeschlossenen Stimmklanganalyse pro User und Tag.
+ * Nach 3 Messungen an 3 verschiedenen Tagen gilt das Profil als valide.
+ * Das Ergebnis (dominante MDI-ID, Frequenz, Verteilung) wird serverseitig gespeichert
+ * damit es geräteübergreifend verfügbar ist und für die Beratungsanfrage genutzt werden kann.
+ */
+export const stimmklangMessungen = mysqlTable("stimmklang_messungen", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** ISO-Datum YYYY-MM-DD der Messung */
+  datumISO: varchar("datumISO", { length: 10 }).notNull(),
+  /** Dominante MDI-Typ-ID (1–24) */
+  dominanteMdiId: int("dominanteMdiId").notNull(),
+  /** Dominante Frequenz in Hz */
+  dominanteFrequenz: float("dominanteFrequenz").notNull(),
+  /** Metapher / Name des Lichtklangcharakters */
+  metapher: varchar("metapher", { length: 128 }),
+  /** Farbwert des dominanten Typs */
+  farbHex: varchar("farbHex", { length: 7 }),
+  /** Wurzelklang MDI-ID (optional) */
+  wurzelklangMdiId: int("wurzelklangMdiId"),
+  /** Vollständige MDI-Verteilung als JSON-String */
+  mdiVerteilung: text("mdiVerteilung"),
+  /** Tag-Nummer in der 3-Tage-Serie (1, 2 oder 3) */
+  tagNummer: int("tagNummer").notNull().default(1),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type StimmklangMessung = typeof stimmklangMessungen.$inferSelect;
+export type InsertStimmklangMessung = typeof stimmklangMessungen.$inferInsert;
+
+/**
+ * STIMMKLANG-BERATUNGSANFRAGEN
+ * Wenn ein User nach 3 Messungen eine persönliche Beratung bei Thomas anfragt,
+ * wird die Anfrage hier gespeichert und eine E-Mail an yohn@kiich.de gesendet.
+ */
+export const stimmklangBeratungsanfragen = mysqlTable("stimmklang_beratungsanfragen", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Name des Anfragenden */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** E-Mail des Anfragenden */
+  email: varchar("email", { length: 320 }).notNull(),
+  /** Optionale persönliche Nachricht */
+  nachricht: text("nachricht"),
+  /** Dominante MDI-ID aus dem 3-Tage-Durchschnitt */
+  dominanteMdiId: int("dominanteMdiId"),
+  /** Metapher des Lichtklangcharakters */
+  metapher: varchar("metapher", { length: 128 }),
+  /** Ob die Benachrichtigungs-E-Mail erfolgreich versendet wurde */
+  emailVersendet: boolean("emailVersendet").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type StimmklangBeratungsanfrage = typeof stimmklangBeratungsanfragen.$inferSelect;
+export type InsertStimmklangBeratungsanfrage = typeof stimmklangBeratungsanfragen.$inferInsert;

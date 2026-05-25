@@ -27,6 +27,7 @@ import { trainingEinheitenRouter } from "./routers/trainingEinheiten";
 import { adminMaStimmeRouter } from "./routers/adminMaStimme";
 import { emailVorschauRouter } from "./routers/emailVorschau";
 import { praxisProjekteRouter } from "./routers/praxisProjekte";
+import { stimmklangRouter } from "./routers/stimmklang";
 import { storageGet } from "./storage";
 
 export const appRouter = router({
@@ -68,6 +69,7 @@ export const appRouter = router({
   adminMaStimme: adminMaStimmeRouter,
   emailVorschau: emailVorschauRouter,
   ...praxisProjekteRouter,
+  stimmklang: stimmklangRouter,
   storage: router({
     getPodcastUrl: publicProcedure.query(async () => {
       const { url } = await storageGet('DERWAHREWERTMEINERGESUNDHEIT_67a0aff6.mp3');

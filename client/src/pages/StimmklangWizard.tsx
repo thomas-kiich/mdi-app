@@ -250,6 +250,19 @@ export default function StimmklangWizard() {
           toneDistribution: combinedDistribution, mdiDistribution: combinedMdiDistribution,
         };
         saveDailyResult(syntheticResult);
+
+        // Messung serverseitig speichern
+        messungSpeichernMutation.mutate({
+          dominanteMdiId: mdi.id,
+          dominanteFrequenz: finalHz,
+          metapher: mdi.metaphor ?? undefined,
+          farbHex: mdi.hex ?? undefined,
+          mdiVerteilung: combinedMdiDistribution as Record<string, number>,
+        }, {
+          onSuccess: (data) => {
+            setServerTagNummer(data.tagNummer);
+          }
+        });
       }
     }
 
@@ -265,6 +278,17 @@ export default function StimmklangWizard() {
       }
     }
   };
+
+  // tRPC Mutations für Stimmklang
+  const messungSpeichernMutation = trpc.stimmklang.messungSpeichern.useMutation();
+  const beratungsanfrageMutation = trpc.stimmklang.beratungsanfrage.useMutation();
+  const { data: stimmklangStatus } = trpc.stimmklang.status.useQuery(undefined, { enabled: !!user });
+
+  // Beratungsanfrage-State
+  const [beratungNachricht, setBeratungNachricht] = useState("");
+  const [beratungGesendet, setBeratungGesendet] = useState(false);
+  const [beratungLaedt, setBeratungLaedt] = useState(false);
+  const [serverTagNummer, setServerTagNummer] = useState<number | null>(null);
 
   // Loading / access check
   if (!user || checkingPayment) {
@@ -555,9 +579,6 @@ export default function StimmklangWizard() {
                 </Card>
 
                 <div className="grid gap-3">
-                  <Button size="lg" className="w-full bg-white text-black hover:bg-zinc-200" onClick={() => setShowInterpretation(true)}>
-                    Detaillierte Deutung ansehen <ArrowRight className="ml-2 w-4 h-4" />
-                  </Button>
                   <div className="grid grid-cols-2 gap-3">
                     <Button variant="outline" className="border-zinc-800 hover:bg-zinc-800 cursor-pointer"
                       onClick={() => setShowWurzelklangVerification(true)}>
@@ -602,18 +623,103 @@ export default function StimmklangWizard() {
               </div>
             )}
 
-            {!isStudyComplete && (
-              <div className="mb-12 bg-zinc-900/30 border border-zinc-800 rounded-xl p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-semibold text-white">Deine 3-Tage-Messung</h3>
-                    <p className="text-sm text-zinc-400">Wir benötigen 3 Messungen für dein valides Profil.</p>
+            {/* 3-Tage-Fortschritt */}
+            {(() => {
+              const gesamtTage = stimmklangStatus?.gesamtTage ?? daysCompleted;
+              const istVollstaendig = gesamtTage >= 3;
+              return (
+                <div className="mb-12 bg-zinc-900/30 border border-zinc-800 rounded-xl p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-semibold text-white">Deine 3-Tage-Messung</h3>
+                      <p className="text-sm text-zinc-400">
+                        {istVollstaendig
+                          ? "Dein Stimmklangprofil ist vollständig – alle 3 Messungen abgeschlossen."
+                          : `Messung ${gesamtTage} von 3 abgeschlossen. Bitte morgen wieder messen.`}
+                      </p>
+                    </div>
+                    <div className="text-2xl font-bold" style={{ color: istVollstaendig ? "#22c55e" : "#f97316" }}>
+                      {gesamtTage} / 3
+                    </div>
                   </div>
-                  <div className="text-2xl font-bold text-orange-500">{daysCompleted} / 3</div>
+                  <div className="flex gap-2 mb-4">
+                    {[1, 2, 3].map((tag) => (
+                      <div
+                        key={tag}
+                        className="flex-1 h-3 rounded-full"
+                        style={{ backgroundColor: tag <= gesamtTage ? (istVollstaendig ? "#22c55e" : "#f97316") : "#27272a" }}
+                      />
+                    ))}
+                  </div>
+                  {istVollstaendig && (
+                    <div className="text-center mt-4">
+                      <p className="text-green-400 text-sm font-medium mb-2">✓ Profil valide – bereit für dein persönliches Gespräch</p>
+                    </div>
+                  )}
                 </div>
-                <Progress value={(daysCompleted / 3) * 100} className="h-2 bg-zinc-800" />
-              </div>
-            )}
+              );
+            })()}
+
+            {/* Beratungsanfrage */}
+            {(() => {
+              const gesamtTage = stimmklangStatus?.gesamtTage ?? daysCompleted;
+              const metapher = mdiResult?.metaphor ?? studyMdiResult?.metaphor;
+              const mdiId = mdiResult?.id ?? studyMdiResult?.id;
+              return (
+                <div className="mb-12 bg-zinc-900/50 border border-orange-500/30 rounded-xl p-6">
+                  <div className="text-center mb-6">
+                    <h3 className="text-xl font-bold text-white mb-2">Persönliches Gespräch mit Thomas</h3>
+                    <p className="text-zinc-400 text-sm">
+                      Weitere Informationen zu deinem Lichtklangcharakter erhältst du im persönlichen Gespräch mit Thomas.
+                    </p>
+                    {gesamtTage < 3 && (
+                      <p className="text-orange-400 text-xs mt-2">
+                        Empfehlung: Schließe zuerst alle 3 Messungen ab für ein vollständiges Profil.
+                      </p>
+                    )}
+                  </div>
+                  {beratungGesendet ? (
+                    <div className="text-center py-4">
+                      <div className="text-green-400 text-lg font-bold mb-2">✓ Anfrage gesendet</div>
+                      <p className="text-zinc-400 text-sm">Thomas meldet sich bei dir unter {user?.email}.</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <textarea
+                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-white text-sm placeholder:text-zinc-500 resize-none focus:outline-none focus:border-orange-500"
+                        rows={3}
+                        placeholder="Optionale Nachricht an Thomas (z.B. bevorzugte Kontaktzeit, Fragen, ...)"
+                        value={beratungNachricht}
+                        onChange={(e) => setBeratungNachricht(e.target.value)}
+                      />
+                      <button
+                        onClick={async () => {
+                          setBeratungLaedt(true);
+                          try {
+                            await beratungsanfrageMutation.mutateAsync({
+                              nachricht: beratungNachricht || undefined,
+                              dominanteMdiId: mdiId,
+                              metapher: metapher ?? undefined,
+                            });
+                            setBeratungGesendet(true);
+                          } finally {
+                            setBeratungLaedt(false);
+                          }
+                        }}
+                        disabled={beratungLaedt}
+                        className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                      >
+                        {beratungLaedt ? (
+                          <><Loader2 className="w-4 h-4 animate-spin" /> Wird gesendet...</>
+                        ) : (
+                          <>Gespräch anfragen →</>
+                        )}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {showInterpretation && mdi && (
               <InterpretationView mdiResult={mdi} onClose={() => setShowInterpretation(false)} />
