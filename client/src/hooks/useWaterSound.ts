@@ -8,7 +8,7 @@ import { useEffect, useRef, useCallback } from "react";
  * stop() kann beliebig oft aufgerufen werden – nur der erste Aufruf löst den Fade aus.
  */
 
-const AUDIO_URL = "/api/audio-proxy?url=" + encodeURIComponent("/manus-storage/rauschen3_97bc79d2.mp3");
+const AUDIO_URL = "/manus-storage/rauschen3_97bc79d2.mp3";
 const FADE_IN_SEC = 2.0;
 const FADE_OUT_SEC = 6.0;
 const MASTER_GAIN = 0.9;
