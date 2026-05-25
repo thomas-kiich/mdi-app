@@ -26,10 +26,12 @@ export function useWaterSound() {
     const gain = masterGainRef.current;
     if (!ctx || !gain) return;
 
-    // Sanftes Fade-out über 1.5 Sekunden
+    // Fließendes Fade-out über 6 Sekunden (exponentiell = natürlicher als linear)
     const now = ctx.currentTime;
-    gain.gain.setValueAtTime(gain.gain.value, now);
-    gain.gain.linearRampToValueAtTime(0, now + 1.5);
+    const currentGain = gain.gain.value || 0.001; // exponentialRamp braucht Wert > 0
+    gain.gain.setValueAtTime(currentGain, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 6.0);
+    gain.gain.linearRampToValueAtTime(0, now + 6.1);
 
     setTimeout(() => {
       try { sourceRef.current?.stop(); } catch (_) {}
@@ -39,7 +41,7 @@ export function useWaterSound() {
       masterGainRef.current = null;
       sourceRef.current = null;
       lfoRef.current = null;
-    }, 1600);
+    }, 6200);
   }, []);
 
   const start = useCallback(() => {
