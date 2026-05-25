@@ -291,14 +291,14 @@ export default function StimmklangWizard() {
     recording1: "Dein Tagesablauf",
     recording2: "Herzens-Erinnerung",
     recording3: "TON SUMMEN",
-    recording4: "Tiefstes Summen",
+    recording4: "VISION",
   };
 
   const recordingInstructions: Record<string, string> = {
     recording1: "Beginne bitte nun mit ganz normaler Sprechstimme zu erzählen, wie dein bisheriger Tag verlaufen ist. Erinnere dich einfach an die Ereignisse des Tages und erzähle davon. Nimm dir dafür zumindest eine Minute, aber gerne auch länger Zeit dafür.\n\nDRÜCKE DEN STARTBUTTON BEVOR DU BEGINNST ZU ERZÄHLEN.",
     recording2: "Schliesse deine Augen. Wandere mit deiner inneren Aufmerksamkeit in dein Herzzentrum. Atme sanft dreimal in deine Brust und erinnere dich an ein wunderschönes Erlebnis. Es kann aus deiner Kindheit oder auch aus der nahen Vergangenheit stammen. Wichtig ist, dass es eine schöne, angenehme Erinnerung ist, die in dein Bewusstsein tritt.\n\nDRÜCKE BITTE DEN STARTBUTTON\nNun erzähle davon. Wenn du fertig bist öffne deine Augen und drücke den Stoppbutton.",
     recording3: "Atme über die Nase ein und summe zweimal hintereinander einen dir angenehmen Ton mit geschlossenen Lippen. Es klingt wie ein langes MMMMMMMMMMM. Vor Beginn bitte den Startbutton drücken und nach Beendigung des Summens auf Stop drücken.",
-    recording4: "Zum Abschluss versuchst du nun den tiefsten Ton zu tönen der dir möglich scheint. Verwende dazu die Silbe NOOOOOO und töne tief in deine Wirbelsäule hinab nachdem du den Startbutton gedrückt hast. Wiederhole diesen tiefsten Summton noch weitere 2x.",
+    recording4: "Zum Abschluss wanderst du bitte in dein drittes Auge zwischen deinen Augen. Erzähle spontan etwas über deine Visionen im Leben, etwas das du gerne noch erleben oder erreichen möchtest. Sprich gerne rund eine Minute darüber oder auch etwas länger. Drücke vor Beginn den START button und nach Beendigung auf die STOP taste.",
   };
 
   const isCurrentStepDone =
