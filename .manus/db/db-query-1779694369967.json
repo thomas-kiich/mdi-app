@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO stimmklanganalyse_orders (userId, status, stripePaymentIntentId, stripeCustomerId, paidAt, createdAt)\nVALUES ('1', 'paid', 'pi_test_thomas_dev', 'cus_test_thomas_dev', NOW(), NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute INSERT INTO stimmklanganalyse_orders (userId, status, stripePaymentIntentId, stripeCustomerId, paidAt, createdAt)\nVALUES ('1', 'paid', 'pi_test_thomas_dev', 'cus_test_thomas_dev', NOW(), NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 282
+}

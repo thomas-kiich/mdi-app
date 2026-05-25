@@ -1,0 +1,15 @@
+{
+  "query": "SELECT id, name, email FROM users WHERE name LIKE '%thomas%' OR name LIKE '%Thomas%' OR email LIKE '%thomas%' LIMIT 5;\nSELECT * FROM stimmklanganalyse_orders LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute SELECT id, name, email FROM users WHERE name LIKE '%thomas%' OR name LIKE '%Thomas%' OR email LIKE '%thomas%' LIMIT 5;\nSELECT * FROM stimmklanganalyse_orders LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Thomas Chochola",
+      "email": "lkrforschung@gmail.com"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\temail\n1\tThomas Chochola\tlkrforschung@gmail.com\n",
+  "stderr": "",
+  "execution_time_ms": 399
+}

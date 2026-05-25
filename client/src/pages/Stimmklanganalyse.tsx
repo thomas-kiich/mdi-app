@@ -27,7 +27,9 @@ import { Link } from "wouter";
 import type { RouteComponentProps } from "wouter";
 
 export default function Stimmklanganalyse({ embedded = false }: RouteComponentProps & { embedded?: boolean }) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
+  const [previewMode, setPreviewMode] = useState(false);
+  const isAdmin = (user as any)?.role === 'admin';
   const [datenschutzOpen, setDatenschutzOpen] = useState(false);
 
   const checkoutMutation = trpc.raum36.createCheckoutStimmklang.useMutation({
@@ -64,8 +66,8 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
     checkoutMutation.mutate({ origin: window.location.origin });
   };
 
-  // Im embedded-Modus (RAUM 36 Mitglieder-Bereich nach Kauf) nur kompakten Hinweis zeigen
-  if (embedded) {
+  // Admin-Vorschau: embedded-Ansicht ohne echten DB-Eintrag
+  if (previewMode || embedded) {
     return (
       <div className="text-white">
         <div className="border border-zinc-800 bg-zinc-900/40 p-6 mb-2">
@@ -82,7 +84,13 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
                 Ergebnis persönlich mit dir.
               </p>
               <div className="flex flex-wrap gap-3">
-                <a
+                {previewMode && (
+                <div className="w-full mb-3 px-3 py-2 bg-yellow-500/10 border border-yellow-500/30 text-yellow-400 text-xs font-mono uppercase tracking-widest">
+                  Vorschau-Modus (Admin) – kein echter DB-Eintrag
+                  <button onClick={() => setPreviewMode(false)} className="ml-3 underline">Beenden</button>
+                </div>
+              )}
+              <a
                   href="/"
                   className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white text-sm font-bold px-5 py-3 uppercase tracking-wide transition-colors"
                 >
@@ -181,6 +189,14 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
               </Button>
               <p className="text-zinc-500 text-sm mt-3">€ 150 · Einmalzahlung</p>
             </div>
+            {isAdmin && (
+              <button
+                onClick={() => setPreviewMode(true)}
+                className="text-xs font-mono text-yellow-600 hover:text-yellow-400 border border-yellow-600/30 hover:border-yellow-400/50 px-3 py-2 uppercase tracking-widest transition-colors mt-1"
+              >
+                Käufer-Ansicht (Vorschau)
+              </button>
+            )}
           </div>
         </div>
       </section>

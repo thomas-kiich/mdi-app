@@ -1,0 +1,9 @@
+{
+  "query": "DELETE FROM stimmklanganalyse_orders WHERE stripePaymentIntentId = 'pi_test_thomas_dev';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute DELETE FROM stimmklanganalyse_orders WHERE stripePaymentIntentId = 'pi_test_thomas_dev';",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 407
+}
