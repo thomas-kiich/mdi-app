@@ -76,19 +76,32 @@ export default function StimmklangWizard() {
   const [isRelaxing, setIsRelaxing] = useState(false);
   const waterSound = useWaterSound();
 
+  // Ref verhindert doppelten stop()-Aufruf wenn React den Effect mehrfach ausführt
+  const didStopOnTimerRef = useRef(false);
+
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let interval: any;
-    if (isRelaxing && relaxationTimeLeft > 0) {
-      interval = setInterval(() => {
-        setRelaxationTimeLeft(prev => prev - 1);
-      }, 1000);
-    } else if (relaxationTimeLeft === 0) {
-      setIsRelaxing(false);
-      waterSound.stop();
+    if (!isRelaxing) {
+      didStopOnTimerRef.current = false; // Reset wenn neue Entspannung startet
+      return;
     }
+    // Timer läuft
+    const interval = setInterval(() => {
+      setRelaxationTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          setIsRelaxing(false);
+          // Nur einmal stoppen, auch wenn React diesen Block mehrfach ausführt
+          if (!didStopOnTimerRef.current) {
+            didStopOnTimerRef.current = true;
+            waterSound.stop();
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
     return () => clearInterval(interval);
-  }, [isRelaxing, relaxationTimeLeft]);
+  }, [isRelaxing]); // nur isRelaxing als Dependency – kein relaxationTimeLeft
 
   // Final result states
   const [finalResult, setFinalResult] = useState<any | null>(null);
