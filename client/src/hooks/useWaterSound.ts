@@ -1,62 +1,68 @@
 import { useEffect, useRef, useCallback } from "react";
 
 /**
- * useWaterSound – erzeugt ein sanftes Wasserplätschern via Web Audio API.
+ * useWaterSound – sanftes Wasserplätschern via Web Audio API.
  * Kein externes File nötig. Funktioniert in allen modernen Browsern.
  *
- * Technik:
- * - White Noise Buffer (2 Sekunden, looped)
- * - BiquadFilter (bandpass ~600 Hz, Q=0.8) → dumpfes Rauschen
- * - Zweiter BiquadFilter (lowpass ~1200 Hz) → weicher Klang
- * - GainNode mit langsamer LFO-Modulation → natürliches Fließen
- * - Fade-in / Fade-out über GainNode
+ * Architektur: Der AudioContext bleibt beim stop() offen und faded nur den Gain aus.
+ * stopAndClose() wird exklusiv über einen internen Timeout aufgerufen – niemals doppelt.
  */
 export function useWaterSound() {
   const ctxRef = useRef<AudioContext | null>(null);
   const masterGainRef = useRef<GainNode | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
   const lfoRef = useRef<OscillatorNode | null>(null);
-  const isPlayingRef = useRef(false);
-  const isFadingOutRef = useRef(false); // verhindert doppelten Fade-out
+  const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stateRef = useRef<"idle" | "playing" | "fading">("idle");
+
+  const stopAndClose = useCallback(() => {
+    if (fadeTimerRef.current) {
+      clearTimeout(fadeTimerRef.current);
+      fadeTimerRef.current = null;
+    }
+    try { sourceRef.current?.stop(); } catch (_) {}
+    try { lfoRef.current?.stop(); } catch (_) {}
+    try { ctxRef.current?.close(); } catch (_) {}
+    ctxRef.current = null;
+    masterGainRef.current = null;
+    sourceRef.current = null;
+    lfoRef.current = null;
+    stateRef.current = "idle";
+  }, []);
 
   const stop = useCallback(() => {
-    if (!isPlayingRef.current) return;
-    if (isFadingOutRef.current) return; // Fade läuft bereits – nicht nochmal starten
-    isPlayingRef.current = false;
-    isFadingOutRef.current = true;
+    // Bereits im Fade oder idle → nichts tun
+    if (stateRef.current !== "playing") return;
+    stateRef.current = "fading";
 
     const ctx = ctxRef.current;
     const gain = masterGainRef.current;
-    if (!ctx || !gain) return;
+    if (!ctx || !gain) { stopAndClose(); return; }
 
-    // Fließendes Fade-out über 6 Sekunden (exponentiell = natürlicher als linear)
+    // Fließendes Fade-out über 6 Sekunden
     const now = ctx.currentTime;
-    const currentGain = gain.gain.value || 0.001; // exponentialRamp braucht Wert > 0
+    const currentGain = Math.max(gain.gain.value, 0.001);
+    gain.gain.cancelScheduledValues(now);
     gain.gain.setValueAtTime(currentGain, now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 6.0);
     gain.gain.linearRampToValueAtTime(0, now + 6.1);
 
-    setTimeout(() => {
-      try { sourceRef.current?.stop(); } catch (_) {}
-      try { lfoRef.current?.stop(); } catch (_) {}
-      try { ctx.close(); } catch (_) {}
-      ctxRef.current = null;
-      masterGainRef.current = null;
-      sourceRef.current = null;
-      lfoRef.current = null;
-      isFadingOutRef.current = false; // bereit für nächsten Start
+    // Exakt einmal nach 6.2 Sekunden schließen
+    fadeTimerRef.current = setTimeout(() => {
+      fadeTimerRef.current = null;
+      stopAndClose();
     }, 6200);
-  }, []);
+  }, [stopAndClose]);
 
   const start = useCallback(() => {
-    if (isPlayingRef.current) return;
-    isFadingOutRef.current = false; // Fade abbrechen falls neuer Start kommt
+    // Bereits aktiv → nichts tun
+    if (stateRef.current !== "idle") return;
 
     try {
       const ctx = new AudioContext();
       ctxRef.current = ctx;
 
-      // White Noise Buffer (2 Sekunden)
+      // White Noise Buffer (2 Sekunden, looped)
       const bufferSize = ctx.sampleRate * 2;
       const buffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
       for (let ch = 0; ch < 2; ch++) {
@@ -71,19 +77,19 @@ export function useWaterSound() {
       source.loop = true;
       sourceRef.current = source;
 
-      // Filter 1: Bandpass ~600 Hz – formt das Rauschen zu Wasser
+      // Filter 1: Bandpass ~600 Hz
       const bp = ctx.createBiquadFilter();
       bp.type = "bandpass";
       bp.frequency.value = 600;
       bp.Q.value = 0.8;
 
-      // Filter 2: Lowpass ~1400 Hz – entfernt harsche Höhen
+      // Filter 2: Lowpass ~1400 Hz
       const lp = ctx.createBiquadFilter();
       lp.type = "lowpass";
       lp.frequency.value = 1400;
       lp.Q.value = 0.5;
 
-      // Filter 3: Highpass ~150 Hz – entfernt tiefes Grummeln
+      // Filter 3: Highpass ~150 Hz
       const hp = ctx.createBiquadFilter();
       hp.type = "highpass";
       hp.frequency.value = 150;
@@ -93,30 +99,27 @@ export function useWaterSound() {
       masterGain.gain.value = 0;
       masterGainRef.current = masterGain;
 
-      // LFO für sanfte Lautstärke-Modulation (0.08 Hz = ~12 Sek. Zyklus)
+      // LFO für sanfte Lautstärke-Modulation
       const lfo = ctx.createOscillator();
       lfo.type = "sine";
       lfo.frequency.value = 0.08;
       lfoRef.current = lfo;
 
       const lfoGain = ctx.createGain();
-      lfoGain.gain.value = 0.12; // ±12% Modulation
+      lfoGain.gain.value = 0.12;
 
-      // Routing: source → bp → lp → hp → masterGain → destination
+      // Routing
       source.connect(bp);
       bp.connect(lp);
       lp.connect(hp);
       hp.connect(masterGain);
       masterGain.connect(ctx.destination);
-
-      // LFO moduliert masterGain
       lfo.connect(lfoGain);
       lfoGain.connect(masterGain.gain);
 
-      // Starten
       source.start();
       lfo.start();
-      isPlayingRef.current = true;
+      stateRef.current = "playing";
 
       // Fade-in über 2 Sekunden
       const now = ctx.currentTime;
@@ -125,15 +128,19 @@ export function useWaterSound() {
 
     } catch (err) {
       console.error("[useWaterSound] Fehler:", err);
+      stateRef.current = "idle";
     }
   }, []);
 
-  // Cleanup beim Unmount
+  // Cleanup beim Unmount – sofort stoppen ohne Fade
   useEffect(() => {
     return () => {
-      stop();
+      if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
+      try { sourceRef.current?.stop(); } catch (_) {}
+      try { lfoRef.current?.stop(); } catch (_) {}
+      try { ctxRef.current?.close(); } catch (_) {}
     };
-  }, [stop]);
+  }, []);
 
   return { start, stop };
 }
