@@ -349,7 +349,7 @@ export const stimmklangRouter = router({
       tage: Array<{ datum: string; mdiId: number; metapher: string | null }>;
     }> = [];
 
-    for (const [userId, messungen] of userMap.entries()) {
+    for (const [userId, messungen] of Array.from(userMap.entries())) {
       // Pro Tag neueste Messung
       const tageMap = new Map<string, typeof messungen[0]>();
       for (const m of messungen) {
