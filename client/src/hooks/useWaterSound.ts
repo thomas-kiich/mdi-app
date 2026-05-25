@@ -1,143 +1,102 @@
 import { useEffect, useRef, useCallback } from "react";
 
 /**
- * useWaterSound – sanftes Wasserplätschern via Web Audio API.
- * Kein externes File nötig. Funktioniert in allen modernen Browsern.
+ * useWaterSound – spielt die Studio-Wassergeräusch-Datei (rauschen3.mp3).
+ * Fade-in: 2 Sek, Fade-out: 6 Sek (exponentiell).
  *
- * Architektur: Der AudioContext bleibt beim stop() offen und faded nur den Gain aus.
- * stopAndClose() wird exklusiv über einen internen Timeout aufgerufen – niemals doppelt.
+ * Architektur: HTMLAudioElement + Web Audio API GainNode für sauberes Fading.
+ * stop() kann beliebig oft aufgerufen werden – nur der erste Aufruf löst den Fade aus.
  */
+
+const AUDIO_URL = "/api/audio-proxy?url=" + encodeURIComponent("/manus-storage/rauschen3_97bc79d2.mp3");
+const FADE_IN_SEC = 2.0;
+const FADE_OUT_SEC = 6.0;
+const MASTER_GAIN = 0.9;
+
 export function useWaterSound() {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const ctxRef = useRef<AudioContext | null>(null);
-  const masterGainRef = useRef<GainNode | null>(null);
-  const sourceRef = useRef<AudioBufferSourceNode | null>(null);
-  const lfoRef = useRef<OscillatorNode | null>(null);
+  const gainRef = useRef<GainNode | null>(null);
   const fadeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rafRef = useRef<number | null>(null);
   const stateRef = useRef<"idle" | "playing" | "fading">("idle");
 
-  const stopAndClose = useCallback(() => {
-    if (fadeTimerRef.current) {
-      clearTimeout(fadeTimerRef.current);
-      fadeTimerRef.current = null;
-    }
-    try { sourceRef.current?.stop(); } catch (_) {}
-    try { lfoRef.current?.stop(); } catch (_) {}
+  const cleanup = useCallback(() => {
+    if (fadeTimerRef.current) { clearTimeout(fadeTimerRef.current); fadeTimerRef.current = null; }
+    if (rafRef.current) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
+    try { audioRef.current?.pause(); } catch (_) {}
     try { ctxRef.current?.close(); } catch (_) {}
+    audioRef.current = null;
     ctxRef.current = null;
-    masterGainRef.current = null;
-    sourceRef.current = null;
-    lfoRef.current = null;
+    gainRef.current = null;
     stateRef.current = "idle";
   }, []);
 
   const stop = useCallback(() => {
-    // Bereits im Fade oder idle → nichts tun
     if (stateRef.current !== "playing") return;
     stateRef.current = "fading";
 
     const ctx = ctxRef.current;
-    const gain = masterGainRef.current;
-    if (!ctx || !gain) { stopAndClose(); return; }
+    const gain = gainRef.current;
+    if (!ctx || !gain) { cleanup(); return; }
 
-    // Fließendes Fade-out über 6 Sekunden
+    // Exponentielles Fade-out über FADE_OUT_SEC Sekunden
     const now = ctx.currentTime;
-    const currentGain = Math.max(gain.gain.value, 0.001);
+    const currentVal = Math.max(gain.gain.value, 0.001);
     gain.gain.cancelScheduledValues(now);
-    gain.gain.setValueAtTime(currentGain, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 6.0);
-    gain.gain.linearRampToValueAtTime(0, now + 6.1);
+    gain.gain.setValueAtTime(currentVal, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + FADE_OUT_SEC);
+    gain.gain.linearRampToValueAtTime(0, now + FADE_OUT_SEC + 0.1);
 
-    // Exakt einmal nach 6.2 Sekunden schließen
     fadeTimerRef.current = setTimeout(() => {
       fadeTimerRef.current = null;
-      stopAndClose();
-    }, 6200);
-  }, [stopAndClose]);
+      cleanup();
+    }, (FADE_OUT_SEC + 0.2) * 1000);
+  }, [cleanup]);
 
   const start = useCallback(() => {
-    // Bereits aktiv → nichts tun
     if (stateRef.current !== "idle") return;
 
     try {
+      const audio = new Audio(AUDIO_URL);
+      audio.loop = true;
+      audio.crossOrigin = "anonymous";
+      audioRef.current = audio;
+
       const ctx = new AudioContext();
       ctxRef.current = ctx;
 
-      // White Noise Buffer (2 Sekunden, looped)
-      const bufferSize = ctx.sampleRate * 2;
-      const buffer = ctx.createBuffer(2, bufferSize, ctx.sampleRate);
-      for (let ch = 0; ch < 2; ch++) {
-        const data = buffer.getChannelData(ch);
-        for (let i = 0; i < bufferSize; i++) {
-          data[i] = Math.random() * 2 - 1;
-        }
-      }
+      const source = ctx.createMediaElementSource(audio);
+      const gain = ctx.createGain();
+      gainRef.current = gain;
 
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      source.loop = true;
-      sourceRef.current = source;
+      source.connect(gain);
+      gain.connect(ctx.destination);
 
-      // Filter 1: Bandpass ~600 Hz
-      const bp = ctx.createBiquadFilter();
-      bp.type = "bandpass";
-      bp.frequency.value = 600;
-      bp.Q.value = 0.8;
-
-      // Filter 2: Lowpass ~1400 Hz
-      const lp = ctx.createBiquadFilter();
-      lp.type = "lowpass";
-      lp.frequency.value = 1400;
-      lp.Q.value = 0.5;
-
-      // Filter 3: Highpass ~150 Hz
-      const hp = ctx.createBiquadFilter();
-      hp.type = "highpass";
-      hp.frequency.value = 150;
-
-      // Master Gain
-      const masterGain = ctx.createGain();
-      masterGain.gain.value = 0;
-      masterGainRef.current = masterGain;
-
-      // LFO für sanfte Lautstärke-Modulation
-      const lfo = ctx.createOscillator();
-      lfo.type = "sine";
-      lfo.frequency.value = 0.08;
-      lfoRef.current = lfo;
-
-      const lfoGain = ctx.createGain();
-      lfoGain.gain.value = 0.12;
-
-      // Routing
-      source.connect(bp);
-      bp.connect(lp);
-      lp.connect(hp);
-      hp.connect(masterGain);
-      masterGain.connect(ctx.destination);
-      lfo.connect(lfoGain);
-      lfoGain.connect(masterGain.gain);
-
-      source.start();
-      lfo.start();
-      stateRef.current = "playing";
-
-      // Fade-in über 2 Sekunden
+      // Fade-in
       const now = ctx.currentTime;
-      masterGain.gain.setValueAtTime(0, now);
-      masterGain.gain.linearRampToValueAtTime(0.35, now + 2.0);
+      gain.gain.setValueAtTime(0, now);
+      gain.gain.linearRampToValueAtTime(MASTER_GAIN, now + FADE_IN_SEC);
+
+      audio.play().then(() => {
+        stateRef.current = "playing";
+      }).catch((err) => {
+        console.error("[useWaterSound] Wiedergabe fehlgeschlagen:", err);
+        cleanup();
+      });
 
     } catch (err) {
-      console.error("[useWaterSound] Fehler:", err);
+      console.error("[useWaterSound] Fehler beim Start:", err);
       stateRef.current = "idle";
     }
-  }, []);
+  }, [cleanup]);
 
-  // Cleanup beim Unmount – sofort stoppen ohne Fade
+  // Cleanup beim Unmount – sofort ohne Fade
   useEffect(() => {
     return () => {
       if (fadeTimerRef.current) clearTimeout(fadeTimerRef.current);
-      try { sourceRef.current?.stop(); } catch (_) {}
-      try { lfoRef.current?.stop(); } catch (_) {}
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      try { audioRef.current?.pause(); } catch (_) {}
       try { ctxRef.current?.close(); } catch (_) {}
     };
   }, []);
