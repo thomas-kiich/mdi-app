@@ -755,6 +755,12 @@ export default function StimmklangWizard() {
                     <p className="text-orange-400 text-xs mt-3 font-mono">
                       NÄCHSTE MESSUNG: TAG {abgeschlosseneTage + 1} / 3
                     </p>
+                    <button
+                      onClick={() => setLocation("/raum36")}
+                      className="mt-5 w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-xl transition-colors"
+                    >
+                      Zurück zu RAUM 36
+                    </button>
                   </div>
                 )}
 
