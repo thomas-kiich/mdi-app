@@ -359,7 +359,6 @@ export default function StimmklangWizard() {
                 </div>
                 {/* Wassergeräusch via Web Audio API – kein externes File nötig */}
                 <p className="text-zinc-500">Bitte schließe deine Augen und entspanne.</p>
-                <Button onClick={() => setIsRelaxing(false)} variant="ghost" className="mt-8 text-zinc-500 hover:text-white">Überspringen</Button>
               </div>
             ) : (
               <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-4">
