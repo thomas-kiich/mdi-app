@@ -324,6 +324,98 @@ export const stimmklangRouter = router({
   }),
 
   /**
+   * Admin: Finales Profil pro User berechnen (für Admin-Übersicht).
+   * Gibt für jeden User der >= 3 Messungen hat das gemittelte Profil zurück.
+   */
+  adminFinaleProfile: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new Error("DB nicht verfügbar");
+
+    const alleMessungen = await db.select().from(stimmklangMessungen);
+
+    // Messungen nach User gruppieren
+    const userMap = new Map<number, typeof alleMessungen>();
+    for (const m of alleMessungen) {
+      if (!userMap.has(m.userId)) userMap.set(m.userId, []);
+      userMap.get(m.userId)!.push(m);
+    }
+
+    const ergebnisse: Array<{
+      userId: number;
+      gesamtTage: number;
+      grundtonMdiId: number;
+      grundtonMetapher: string | null;
+      top5: Array<{ mdiId: number; prozent: number }>;
+      tage: Array<{ datum: string; mdiId: number; metapher: string | null }>;
+    }> = [];
+
+    for (const [userId, messungen] of userMap.entries()) {
+      // Pro Tag neueste Messung
+      const tageMap = new Map<string, typeof messungen[0]>();
+      for (const m of messungen) {
+        const ex = tageMap.get(m.datumISO);
+        if (!ex || (m.createdAt && ex.createdAt && new Date(m.createdAt) > new Date(ex.createdAt))) {
+          tageMap.set(m.datumISO, m);
+        }
+      }
+      const eindeutigeTage = Array.from(tageMap.values()).sort((a, b) => a.datumISO.localeCompare(b.datumISO));
+
+      if (eindeutigeTage.length < 3) continue;
+
+      const letzte3 = eindeutigeTage.slice(-3);
+      const summen: Record<string, number> = {};
+      let anzahl = 0;
+
+      for (const m of letzte3) {
+        if (!m.mdiVerteilung) continue;
+        try {
+          const v: Record<string, number> = JSON.parse(m.mdiVerteilung);
+          anzahl++;
+          for (const [id, pct] of Object.entries(v)) {
+            summen[id] = (summen[id] || 0) + pct;
+          }
+        } catch { /* ignorieren */ }
+      }
+
+      let rangliste: Array<{ mdiId: number; prozent: number }>;
+
+      if (anzahl === 0) {
+        // Fallback auf dominanteMdiId
+        const fb: Record<string, number> = {};
+        for (const m of letzte3) {
+          const id = m.dominanteMdiId.toString();
+          fb[id] = (fb[id] || 0) + (100 / letzte3.length);
+        }
+        rangliste = Object.entries(fb)
+          .map(([id, pct]) => ({ mdiId: parseInt(id), prozent: Math.round(pct * 10) / 10 }))
+          .sort((a, b) => b.prozent - a.prozent);
+      } else {
+        const gemittelt: Record<string, number> = {};
+        for (const [id, s] of Object.entries(summen)) gemittelt[id] = s / anzahl;
+        const gesamt = Object.values(gemittelt).reduce((a, b) => a + b, 0);
+        if (gesamt > 0) for (const id in gemittelt) gemittelt[id] = (gemittelt[id] / gesamt) * 100;
+        rangliste = Object.entries(gemittelt)
+          .map(([id, pct]) => ({ mdiId: parseInt(id), prozent: Math.round(pct * 10) / 10 }))
+          .sort((a, b) => b.prozent - a.prozent);
+      }
+
+      const grundton = rangliste[0];
+      const grundtonMessung = letzte3.find((m) => m.dominanteMdiId === grundton.mdiId);
+
+      ergebnisse.push({
+        userId,
+        gesamtTage: eindeutigeTage.length,
+        grundtonMdiId: grundton.mdiId,
+        grundtonMetapher: grundtonMessung?.metapher ?? null,
+        top5: rangliste.slice(0, 5),
+        tage: letzte3.map((m) => ({ datum: m.datumISO, mdiId: m.dominanteMdiId, metapher: m.metapher ?? null })),
+      });
+    }
+
+    return ergebnisse;
+  }),
+
+  /**
    * Admin: Alle Beratungsanfragen abrufen.
    */
   adminBeratungsanfragen: adminProcedure.query(async () => {

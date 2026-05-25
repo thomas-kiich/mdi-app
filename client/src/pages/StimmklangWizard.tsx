@@ -659,6 +659,54 @@ export default function StimmklangWizard() {
               </div>
             )}
 
+            {/* Rangliste aller 24 Typen – nur nach finalem Abschluss */}
+            {istFinal && serverProfil?.rangliste && serverProfil.rangliste.length > 0 && (
+              <div className="mb-12">
+                <div className="bg-zinc-900/30 border border-zinc-800 rounded-xl p-6">
+                  <h3 className="text-lg font-semibold text-white mb-1 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-orange-500" />
+                    Dein vollständiges Frequenzprofil
+                  </h3>
+                  <p className="text-xs text-zinc-500 mb-5">Gemittelter Prozentwert über alle 3 Tage · Grundton hervorgehoben</p>
+                  <div className="space-y-2">
+                    {serverProfil.rangliste.map((eintrag, idx) => {
+                      const mdiEntry = frequencyData.find((f) => f.id === eintrag.mdiId);
+                      if (!mdiEntry) return null;
+                      const istGrundton = eintrag.mdiId === serverProfil.grundtonMdiId;
+                      return (
+                        <div key={eintrag.mdiId}
+                          className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-colors ${
+                            istGrundton ? "bg-zinc-800 border border-orange-500/40" : "hover:bg-zinc-900/50"
+                          }`}>
+                          <div className="w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-xs font-bold text-white"
+                            style={{ backgroundColor: mdiEntry.hex }}>
+                            {idx + 1}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-sm font-medium truncate ${ istGrundton ? "text-orange-400" : "text-zinc-300" }`}>
+                                {mdiEntry.metaphor || mdiEntry.colorName}
+                              </span>
+                              {istGrundton && (
+                                <span className="text-xs bg-orange-500/20 text-orange-400 px-1.5 py-0.5 rounded font-mono shrink-0">GRUNDTON</span>
+                              )}
+                            </div>
+                            <div className="mt-1 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
+                              <div className="h-full rounded-full transition-all duration-700"
+                                style={{ width: `${Math.min(eintrag.prozent, 100)}%`, backgroundColor: mdiEntry.hex }} />
+                            </div>
+                          </div>
+                          <div className="text-xs font-mono shrink-0" style={{ color: istGrundton ? "#f97316" : "#71717a" }}>
+                            {eintrag.prozent.toFixed(1)}%
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* 3-Tage-Fortschritt + Gesprächsanfrage */}
             {statusLaedt ? (
               <div className="mb-12 bg-zinc-900/30 border border-zinc-800 rounded-xl p-6 flex items-center justify-center gap-3">

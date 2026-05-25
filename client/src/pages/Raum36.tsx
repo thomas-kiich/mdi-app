@@ -558,6 +558,11 @@ function Raum36Member() {
   const statusQuery = trpc.raum36.getStatus.useQuery();
   // Vital Monitor ist für alle aktiven RAUM 36 Mitglieder zugänglich (kein separater Kauf nötig)
   const isVitalUnlocked = isAdmin || statusQuery.data?.isActive === true;
+  // Stimmklang-Status für Erinnerungs-Banner
+  const { data: stimmklangStatus } = trpc.stimmklang.status.useQuery(
+    undefined,
+    { enabled: !!user && (statusQuery.data?.hasStimmklangAccess === true || isAdmin) }
+  );
   const postsQuery = trpc.raum36.getPosts.useQuery(undefined, {
     enabled: activeTab === "videos",
   });
@@ -680,6 +685,31 @@ function Raum36Member() {
                 Abbrechen
               </Button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stimmklang-Erinnerungs-Banner */}
+      {stimmklangStatus && stimmklangStatus.gesamtTage < 3 && stimmklangStatus.gesamtTage > 0 && (
+        <div className="px-6 py-3 bg-orange-950/40 border-b border-orange-800/40">
+          <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Mic className="w-4 h-4 text-orange-400 shrink-0" />
+              <div>
+                <span className="text-orange-300 text-sm font-medium">
+                  Stimmklangmessung Tag {stimmklangStatus.gesamtTage + 1} / 3 steht aus
+                </span>
+                <span className="text-zinc-500 text-xs ml-2">
+                  Für ein vollständiges Profil bitte heute messen.
+                </span>
+              </div>
+            </div>
+            <a
+              href="/stimmklanganalyse/wizard"
+              className="shrink-0 text-xs font-mono bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded transition-colors"
+            >
+              Jetzt messen →
+            </a>
           </div>
         </div>
       )}

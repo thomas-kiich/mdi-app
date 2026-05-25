@@ -1,12 +1,13 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Loader2, Mail, Mic, CheckCircle, Clock, User } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, Mic, CheckCircle, Clock, User, BarChart2 } from "lucide-react";
 import { Link } from "wouter";
 
 export default function AdminStimmklang() {
   const { user, loading, isAuthenticated } = useAuth();
   const { data: anfragen, isLoading: laedtAnfragen } = trpc.stimmklang.adminBeratungsanfragen.useQuery();
   const { data: messungen, isLoading: laedtMessungen } = trpc.stimmklang.adminMessungen.useQuery();
+  const { data: finaleProfile, isLoading: laedtProfile } = trpc.stimmklang.adminFinaleProfile.useQuery();
 
   if (loading) {
     return (
@@ -167,6 +168,86 @@ export default function AdminStimmklang() {
           ) : (
             <div className="text-center py-12 text-zinc-600 text-sm">
               Noch keine Beratungsanfragen eingegangen.
+            </div>
+          )}
+        </div>
+
+        {/* Finale Profile pro User */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart2 className="w-4 h-4 text-purple-400" />
+            <h2 className="text-sm font-mono tracking-widest text-purple-400/60 uppercase">Finale Profile (nach 3 Tagen)</h2>
+            <span className="text-zinc-600 text-xs ml-auto">
+              {laedtProfile ? "…" : `${finaleProfile?.length ?? 0} vollständige Profile`}
+            </span>
+          </div>
+
+          {laedtProfile ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-6 h-6 text-zinc-600 animate-spin" />
+            </div>
+          ) : finaleProfile && finaleProfile.length > 0 ? (
+            <div className="space-y-4">
+              {finaleProfile.map((profil) => (
+                <div key={profil.userId} className="bg-zinc-900/30 border border-zinc-800 rounded-xl p-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                        <User className="w-4 h-4 text-purple-400" />
+                      </div>
+                      <div>
+                        <div className="text-xs text-zinc-500 font-mono">User-ID {String(profil.userId).slice(0, 8)}…</div>
+                        <div className="text-sm font-semibold text-white">
+                          {profil.grundtonMetapher ?? `MDI-Typ ${profil.grundtonMdiId}`}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs text-zinc-500">{profil.gesamtTage} Messtage</div>
+                      <div className="text-xs text-purple-400 font-mono">GRUNDTON: TYP {profil.grundtonMdiId}</div>
+                    </div>
+                  </div>
+
+                  {/* Top-5 Balken */}
+                  <div className="space-y-1.5 mb-3">
+                    {profil.top5.map((eintrag, idx) => (
+                      <div key={eintrag.mdiId} className="flex items-center gap-2">
+                        <div className="text-xs text-zinc-600 font-mono w-4">{idx + 1}.</div>
+                        <div className="flex-1 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${Math.min(eintrag.prozent, 100)}%`,
+                              backgroundColor: idx === 0 ? "#a855f7" : "#52525b",
+                            }}
+                          />
+                        </div>
+                        <div className="text-xs font-mono text-zinc-400 w-12 text-right">
+                          Typ {eintrag.mdiId}
+                        </div>
+                        <div className="text-xs font-mono text-zinc-500 w-10 text-right">
+                          {eintrag.prozent.toFixed(1)}%
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 3 Messtage */}
+                  <div className="flex gap-2 pt-3 border-t border-zinc-800">
+                    {profil.tage.map((tag, idx) => (
+                      <div key={tag.datum} className="flex-1 bg-zinc-800/50 rounded-lg p-2 text-center">
+                        <div className="text-xs text-zinc-500 mb-0.5">Tag {idx + 1}</div>
+                        <div className="text-xs text-zinc-300 font-mono">{tag.datum}</div>
+                        <div className="text-xs text-zinc-400 mt-0.5 truncate">{tag.metapher ?? `Typ ${tag.mdiId}`}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-zinc-600 text-sm">
+              Noch keine vollständigen 3-Tage-Profile vorhanden.
             </div>
           )}
         </div>
