@@ -39,14 +39,14 @@ export const stimmklangRouter = router({
       const vorhandene = await db
         .select()
         .from(stimmklangMessungen)
-        .where(eq(stimmklangMessungen.userId, userId))
-        .orderBy(stimmklangMessungen.createdAt);
+        .where(eq(stimmklangMessungen.userId, userId));
 
       // Prüfen ob heute schon eine Messung existiert
       const heutigeMessung = vorhandene.find((m) => m.datumISO === heute);
 
       // Eindeutige Tage zählen (ohne heute)
-      const andereTage = [...new Set(vorhandene.filter((m) => m.datumISO !== heute).map((m) => m.datumISO))];
+      const andereTageSet = new Set(vorhandene.filter((m) => m.datumISO !== heute).map((m) => m.datumISO));
+      const andereTage = Array.from(andereTageSet);
       const tagNummer = andereTage.length + 1;
 
       if (heutigeMessung) {
@@ -82,10 +82,9 @@ export const stimmklangRouter = router({
       const alle = await (db)
         .select()
         .from(stimmklangMessungen)
-        .where(eq(stimmklangMessungen.userId, userId))
-        .orderBy(stimmklangMessungen.createdAt);
+        .where(eq(stimmklangMessungen.userId, userId));
 
-      const eindeutigeTage = [...new Set(alle.map((m) => m.datumISO))];
+      const eindeutigeTage = Array.from(new Set(alle.map((m) => m.datumISO)));
 
       return {
         tagNummer,
@@ -107,10 +106,9 @@ export const stimmklangRouter = router({
       const messungen = await db
         .select()
         .from(stimmklangMessungen)
-        .where(eq(stimmklangMessungen.userId, userId))
-        .orderBy(stimmklangMessungen.createdAt);
+        .where(eq(stimmklangMessungen.userId, userId));
 
-    const eindeutigeTage = [...new Set(messungen.map((m) => m.datumISO))];
+    const eindeutigeTage = Array.from(new Set(messungen.map((m) => m.datumISO)));
     const istVollstaendig = eindeutigeTage.length >= 3;
 
     // Letzte Messung
