@@ -218,6 +218,112 @@ export const stimmklangRouter = router({
     }),
 
   /**
+   * Finales 3-Tage-MDI-Profil berechnen.
+   * Lädt alle Messungen des Users, mittelt die mdiVerteilung über alle Tage
+   * und gibt die 24 Typen nach Prozentwert absteigend sortiert zurück.
+   */
+  finalesMdiProfil: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.user.id;
+    const db = await getDb();
+    if (!db) throw new Error("DB nicht verfügbar");
+
+    const messungen = await db
+      .select()
+      .from(stimmklangMessungen)
+      .where(eq(stimmklangMessungen.userId, userId));
+
+    // Eindeutige Tage ermitteln (neueste 3)
+    const tageMap = new Map<string, typeof messungen[0]>();
+    for (const m of messungen) {
+      // Pro Tag die neueste Messung verwenden
+      const existing = tageMap.get(m.datumISO);
+      if (!existing || (m.createdAt && existing.createdAt && new Date(m.createdAt) > new Date(existing.createdAt))) {
+        tageMap.set(m.datumISO, m);
+      }
+    }
+
+    const eindeutigeTage = Array.from(tageMap.values())
+      .sort((a, b) => a.datumISO.localeCompare(b.datumISO));
+
+    if (eindeutigeTage.length < 3) {
+      return { istVollstaendig: false, gesamtTage: eindeutigeTage.length, profil: null };
+    }
+
+    // Die letzten 3 Tage nehmen
+    const letzte3 = eindeutigeTage.slice(-3);
+
+    // mdiVerteilung über alle 3 Tage mitteln
+    const summen: Record<string, number> = {};
+    let anzahlMitVerteilung = 0;
+
+    for (const messung of letzte3) {
+      if (!messung.mdiVerteilung) continue;
+      try {
+        const verteilung: Record<string, number> = JSON.parse(messung.mdiVerteilung);
+        anzahlMitVerteilung++;
+        for (const [id, prozent] of Object.entries(verteilung)) {
+          summen[id] = (summen[id] || 0) + prozent;
+        }
+      } catch {
+        // Ungueltige JSON-Daten ignorieren
+      }
+    }
+
+    if (anzahlMitVerteilung === 0) {
+      // Fallback: dominanteMdiId aus den 3 Tagen verwenden
+      const fallbackVerteilung: Record<string, number> = {};
+      for (const messung of letzte3) {
+        const id = messung.dominanteMdiId.toString();
+        fallbackVerteilung[id] = (fallbackVerteilung[id] || 0) + (100 / letzte3.length);
+      }
+      const sortiert = Object.entries(fallbackVerteilung)
+        .map(([id, prozent]) => ({ mdiId: parseInt(id), prozent: Math.round(prozent * 10) / 10 }))
+        .sort((a, b) => b.prozent - a.prozent);
+      const grundton = sortiert[0];
+      return {
+        istVollstaendig: true,
+        gesamtTage: eindeutigeTage.length,
+        profil: {
+          grundtonMdiId: grundton.mdiId,
+          rangliste: sortiert,
+          tage: letzte3.map((m) => ({ datum: m.datumISO, mdiId: m.dominanteMdiId, metapher: m.metapher })),
+        },
+      };
+    }
+
+    // Durchschnitt berechnen und normalisieren
+    const gemittelt: Record<string, number> = {};
+    for (const [id, summe] of Object.entries(summen)) {
+      gemittelt[id] = summe / anzahlMitVerteilung;
+    }
+
+    // Normalisieren auf 100%
+    const gesamtProzent = Object.values(gemittelt).reduce((s, v) => s + v, 0);
+    if (gesamtProzent > 0) {
+      for (const id in gemittelt) {
+        gemittelt[id] = (gemittelt[id] / gesamtProzent) * 100;
+      }
+    }
+
+    // Absteigend sortieren
+    const rangliste = Object.entries(gemittelt)
+      .map(([id, prozent]) => ({ mdiId: parseInt(id), prozent: Math.round(prozent * 10) / 10 }))
+      .sort((a, b) => b.prozent - a.prozent);
+
+    const grundton = rangliste[0];
+
+    return {
+      istVollstaendig: true,
+      gesamtTage: eindeutigeTage.length,
+      profil: {
+        grundtonMdiId: grundton?.mdiId ?? letzte3[0].dominanteMdiId,
+        rangliste,
+        tage: letzte3.map((m) => ({ datum: m.datumISO, mdiId: m.dominanteMdiId, metapher: m.metapher })),
+      },
+    };
+  }),
+
+  /**
    * Admin: Alle Beratungsanfragen abrufen.
    */
   adminBeratungsanfragen: adminProcedure.query(async () => {

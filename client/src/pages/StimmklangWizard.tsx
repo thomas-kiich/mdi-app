@@ -261,6 +261,9 @@ export default function StimmklangWizard() {
         }, {
           onSuccess: (data) => {
             setServerTagNummer(data.tagNummer);
+            // Status und finales Profil neu laden
+            refetchStatus();
+            refetchFinalesProfil();
           }
         });
       }
@@ -282,7 +285,12 @@ export default function StimmklangWizard() {
   // tRPC Mutations für Stimmklang
   const messungSpeichernMutation = trpc.stimmklang.messungSpeichern.useMutation();
   const beratungsanfrageMutation = trpc.stimmklang.beratungsanfrage.useMutation();
-  const { data: stimmklangStatus } = trpc.stimmklang.status.useQuery(undefined, { enabled: !!user });
+  const { data: stimmklangStatus, refetch: refetchStatus } = trpc.stimmklang.status.useQuery(undefined, { enabled: !!user });
+  // Finales 3-Tage-Profil vom Server (wird nach Messung neu geladen)
+  const { data: finalesProfil, refetch: refetchFinalesProfil } = trpc.stimmklang.finalesMdiProfil.useQuery(
+    undefined,
+    { enabled: !!user }
+  );
 
   // Beratungsanfrage-State
   const [beratungNachricht, setBeratungNachricht] = useState("");
@@ -520,9 +528,19 @@ export default function StimmklangWizard() {
         const abgeschlosseneTage = serverTage ?? daysCompleted;
         const istFinal = abgeschlosseneTage >= 3;
 
-        // Finales gemitteltes Ergebnis (nur nach 3 Tagen)
-        const finalesRes = istFinal ? (isStudyComplete ? studyResult : tagesRes) : null;
-        const finalesMdi = istFinal ? (isStudyComplete ? studyMdiResult : tagesMdi) : null;
+        // Finales gemitteltes Ergebnis vom Server (nach 3 Tagen)
+        // finalesProfil.profil.rangliste enthält alle 24 MDI-Typen nach gemitteltem Prozentwert sortiert
+        const serverProfil = finalesProfil?.profil;
+        const finalesMdiId = serverProfil?.grundtonMdiId;
+        const finalesMdiServer = finalesMdiId ? frequencyData.find((f) => f.id === finalesMdiId) : null;
+
+        // Gemittelte mdiDistribution aus Rangliste aufbauen
+        const gemittelteVerteilung: Record<string, number> = {};
+        if (serverProfil?.rangliste) {
+          for (const eintrag of serverProfil.rangliste) {
+            gemittelteVerteilung[eintrag.mdiId.toString()] = eintrag.prozent;
+          }
+        }
 
         if (!tagesRes || !tagesMdi) return (
           <div className="text-white p-8 pt-16 text-center">
@@ -531,9 +549,11 @@ export default function StimmklangWizard() {
           </div>
         );
 
-        // Welches Ergebnis anzeigen: nach 3 Tagen das finale, sonst das Tagesergebnis
-        const res = finalesRes ?? tagesRes;
-        const mdi = finalesMdi ?? tagesMdi;
+        // Welches Ergebnis anzeigen: nach 3 Tagen das finale (Server-Mittelung), sonst das Tagesergebnis
+        const res = istFinal && finalesMdiServer
+          ? { ...tagesRes, mdiDistribution: gemittelteVerteilung }
+          : tagesRes;
+        const mdi = (istFinal && finalesMdiServer) ? finalesMdiServer : tagesMdi;
 
         return (
           <div className="max-w-4xl mx-auto py-8 px-4 animate-in fade-in duration-1000 pt-16">
