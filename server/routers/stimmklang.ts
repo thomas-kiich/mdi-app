@@ -5,7 +5,7 @@
  * - Beratungsanfrage an yohn@kiich.de senden
  */
 import { z } from "zod";
-import { protectedProcedure, router } from "../_core/trpc";
+import { protectedProcedure, adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
 import { stimmklangMessungen, stimmklangBeratungsanfragen } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
@@ -216,4 +216,45 @@ export const stimmklangRouter = router({
 
       return { success: true, emailVersendet: emailOk };
     }),
+
+  /**
+   * Admin: Alle Beratungsanfragen abrufen.
+   */
+  adminBeratungsanfragen: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new Error("DB nicht verfügbar");
+
+    const anfragen = await db
+      .select()
+      .from(stimmklangBeratungsanfragen);
+
+    // Sortiert nach Datum absteigend
+    anfragen.sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+
+    return anfragen;
+  }),
+
+  /**
+   * Admin: Alle Stimmklang-Messungen abrufen (für Übersicht).
+   */
+  adminMessungen: adminProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) throw new Error("DB nicht verfügbar");
+
+    const messungen = await db
+      .select()
+      .from(stimmklangMessungen);
+
+    messungen.sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+
+    return messungen;
+  }),
 });

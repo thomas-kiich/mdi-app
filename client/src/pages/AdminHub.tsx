@@ -99,6 +99,15 @@ const adminSections = [
         desc: "RAUM 36 Abos · Stimmklanganalyse-Käufe · Übersicht",
       },
       {
+        href: "/admin/stimmklang",
+        icon: Mic,
+        color: "text-orange-400",
+        border: "border-orange-500/30 hover:border-orange-400/60",
+        bg: "bg-orange-500/5 hover:bg-orange-500/10",
+        title: "Stimmklang-Analyse",
+        desc: "Beratungsanfragen · Messungen · Nutzer-Übersicht",
+      },
+      {
         href: "/stimmklanganalyse?preview=1",
         icon: Mic,
         color: "text-orange-400",
