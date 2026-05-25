@@ -297,7 +297,7 @@ export default function StimmklangWizard() {
             <h2 className="text-2xl md:text-4xl font-bold text-center text-white mb-8 max-w-2xl leading-tight">Entspannung</h2>
             <div className="mb-8 p-6 bg-zinc-900/50 rounded-xl border border-zinc-800 text-left w-full max-w-md">
               <p className="text-zinc-300 text-lg leading-relaxed">
-                Du hörst nun für drei Minuten ein sanftes Wasserplätschern. Atme entspannt durch die Nase ein und aus. Beobachte den Atemfluss und entspanne dich.
+                Du hörst nun für drei Minuten ein sanftes Wasserplätschern. Sitze auf deinem Platz, schliesse die Augen und atme entspannt durch die Nase ein und aus. Lasse deine Gedanken mit dem Wasser dahinfliessen und versuche ein zartes Lächeln in dein Gesicht zu zaubern. Starte bitte mit der Entspannungsphase.
               </p>
             </div>
             {isRelaxing ? (
