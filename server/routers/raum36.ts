@@ -18,7 +18,7 @@ import { protectedProcedure, publicProcedure, router } from "../_core/trpc";
 import { sendeVoranmeldungStimmklang, sendeRaum36Neuigkeit, Raum36NeuigkeitTyp } from "../_core/email";
 import { notifyOwner } from "../_core/notification";
 import { getDb } from "../db";
-import { raum36Subscriptions, raum36Fragen, raum36Posts, raum36Wissenspool, stimmklanganalyseOrders, users } from "../../drizzle/schema";
+import { raum36Subscriptions, raum36Fragen, raum36Posts, raum36Wissenspool, raum36Sendungen, stimmklanganalyseOrders, users } from "../../drizzle/schema";
 import { eq, desc, and, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { getStripe, getRaum36PriceId, getStimmklanganalysePriceId } from "../stripe/products";
@@ -677,6 +677,22 @@ export const raum36Router = router({
         linkLabel: input.linkLabel,
       });
 
+      // Sendung in Historien-Tabelle protokollieren
+      try {
+        await db.insert(raum36Sendungen).values({
+          typ: input.typ,
+          titel: input.titel,
+          text: input.text,
+          empfaengerAnzahl: empfaenger.length,
+          gesendet: result.gesendet,
+          fehlgeschlagen: result.fehlgeschlagen,
+          nurTest: input.nurTest ? 1 : 0,
+        });
+      } catch (logErr) {
+        console.error("[Sendungshistorie] Fehler beim Protokollieren:", logErr);
+        // Nicht werfen – Versand war erfolgreich, nur Logging fehlgeschlagen
+      }
+
       return { ...result, empfaengerAnzahl: empfaenger.length };
     }),
   /**
@@ -716,5 +732,24 @@ export const raum36Router = router({
       stimmklangTotalCount: Number(stimmklangTotal?.count ?? 0),
       stimmklangRevenue: Number(stimmklangPaid?.count ?? 0) * 150,
     };
+  }),
+
+  /**
+   * Admin: Sendungshistorie abrufen (neueste zuerst)
+   */
+  adminGetSendungshistorie: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "admin") {
+      throw new TRPCError({ code: "FORBIDDEN" });
+    }
+    const db = await getDb();
+    if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+    const rows = await db
+      .select()
+      .from(raum36Sendungen)
+      .orderBy(desc(raum36Sendungen.createdAt))
+      .limit(100);
+
+    return rows;
   }),
 });

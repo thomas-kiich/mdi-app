@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `raum36_sendungen` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `typ` varchar(32) NOT NULL,\n  `titel` varchar(255) NOT NULL,\n  `text` text NOT NULL,\n  `empfaenger_anzahl` int NOT NULL DEFAULT 0,\n  `gesendet` int NOT NULL DEFAULT 0,\n  `fehlgeschlagen` int NOT NULL DEFAULT 0,\n  `nur_test` int NOT NULL DEFAULT 0,\n  `created_at` timestamp NOT NULL DEFAULT (now()),\n  CONSTRAINT `raum36_sendungen_id` PRIMARY KEY(`id`)\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute CREATE TABLE IF NOT EXISTS `raum36_sendungen` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `typ` varchar(32) NOT NULL,\n  `titel` varchar(255) NOT NULL,\n  `text` text NOT NULL,\n  `empfaenger_anzahl` int NOT NULL DEFAULT 0,\n  `gesendet` int NOT NULL DEFAULT 0,\n  `fehlgeschlagen` int NOT NULL DEFAULT 0,\n  `nur_test` int NOT NULL DEFAULT 0,\n  `created_at` timestamp NOT NULL DEFAULT (now()),\n  CONSTRAINT `raum36_sendungen_id` PRIMARY KEY(`id`)\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 335
+}

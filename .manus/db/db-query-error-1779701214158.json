@@ -1,0 +1,8 @@
+{
+  "query": "\nSELECT \n  f.id,\n  f.frage,\n  f.pseudonym,\n  f.status,\n  f.userId,\n  u.name AS user_name,\n  u.email AS user_email,\n  f.createdAt,\n  f.beantwortetAt\nFROM raum36_fragen f\nLEFT JOIN users u ON f.userId = u.id\nORDER BY f.createdAt DESC\nLIMIT 20;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute \nSELECT \n  f.id,\n  f.frage,\n  f.pseudonym,\n  f.status,\n  f.userId,\n  u.name AS user_name,\n  u.email AS user_email,\n  f.createdAt,\n  f.beantwortetAt\nFROM raum36_fragen f\nLEFT JOIN users u ON f.userId = u.id\nORDER BY f.createdAt DESC\nLIMIT 20;\n",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 2: Unknown column 'f.status' in 'field list'"
+  ]
+}

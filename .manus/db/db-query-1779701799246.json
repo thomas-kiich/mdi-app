@@ -1,0 +1,45 @@
+{
+  "query": "\nSELECT \n  rs.id,\n  rs.status,\n  rs.createdAt,\n  u.name,\n  u.email\nFROM raum36_subscriptions rs\nLEFT JOIN users u ON rs.userId = u.id\nWHERE rs.status = 'active'\nORDER BY rs.createdAt DESC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute \nSELECT \n  rs.id,\n  rs.status,\n  rs.createdAt,\n  u.name,\n  u.email\nFROM raum36_subscriptions rs\nLEFT JOIN users u ON rs.userId = u.id\nWHERE rs.status = 'active'\nORDER BY rs.createdAt DESC;\n",
+  "rows": [
+    {
+      "id": "90001",
+      "status": "active",
+      "createdAt": "2026-05-21 08:17:43",
+      "name": "monikafeldmeier",
+      "email": "monikafeldmeier@hotmail.de"
+    },
+    {
+      "id": "60001",
+      "status": "active",
+      "createdAt": "2026-05-18 08:48:51",
+      "name": "Barbara Kissling",
+      "email": "kisslingbarbara@gmail.com"
+    },
+    {
+      "id": "30001",
+      "status": "active",
+      "createdAt": "2026-05-11 10:27:06",
+      "name": "stefan",
+      "email": "stefan@neuheimer.at"
+    },
+    {
+      "id": "2",
+      "status": "active",
+      "createdAt": "2026-05-10 15:41:20",
+      "name": "Johannes Ederer",
+      "email": "jederer@gmx.net"
+    },
+    {
+      "id": "1",
+      "status": "active",
+      "createdAt": "2026-05-10 12:27:14",
+      "name": "Thomas Chochola",
+      "email": "lkrforschung@gmail.com"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tstatus\tcreatedAt\tname\temail\n90001\tactive\t2026-05-21 08:17:43\tmonikafeldmeier\tmonikafeldmeier@hotmail.de\n60001\tactive\t2026-05-18 08:48:51\tBarbara Kissling\tkisslingbarbara@gmail.com\n30001\tactive\t2026-05-11 10:27:06\tstefan\tstefan@neuheimer.at\n2\tactive\t2026-05-10 15:41:20\tJohannes Ederer\tjederer@gmx.net\n1\tactive\t2026-05-10 12:27:14\tThomas Chochola\tlkrforschung@gmail.com\n",
+  "stderr": "",
+  "execution_time_ms": 259
+}

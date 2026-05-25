@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { Link } from "wouter";
-import { ArrowLeft, Send, Eye, Zap, Brain, Wrench, Megaphone, CheckCircle, AlertCircle } from "lucide-react";
+import { ArrowLeft, Send, Eye, Zap, Brain, Wrench, Megaphone, CheckCircle, AlertCircle, Clock, Users, TestTube } from "lucide-react";
 
 type Typ = "training" | "wissenspool" | "technik" | "allgemein";
 
@@ -40,6 +40,18 @@ const TYP_CONFIG: Record<Typ, { label: string; color: string; border: string; bg
   },
 };
 
+function formatDatum(ts: Date | string | null | undefined): string {
+  if (!ts) return "–";
+  const d = new Date(ts);
+  return d.toLocaleString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function AdminRaum36Neuigkeit() {
   const [typ, setTyp] = useState<Typ>("training");
   const [titel, setTitel] = useState("");
@@ -48,15 +60,20 @@ export default function AdminRaum36Neuigkeit() {
   const [linkLabel, setLinkLabel] = useState("");
   const [ergebnis, setErgebnis] = useState<{ gesendet: number; fehlgeschlagen: number; empfaengerAnzahl: number } | null>(null);
 
+  const utils = trpc.useUtils();
+
   const sendeNeuigkeit = trpc.raum36.adminSendeNeuigkeit.useMutation({
     onSuccess: (data) => {
       setErgebnis(data);
       toast.success(`E-Mail an ${data.gesendet} Mitglieder gesendet`);
+      utils.raum36.adminGetSendungshistorie.invalidate();
     },
     onError: (err) => {
       toast.error("Fehler beim Senden: " + err.message);
     },
   });
+
+  const { data: historie, isLoading: historieLoading } = trpc.raum36.adminGetSendungshistorie.useQuery();
 
   const handleSend = (nurTest: boolean) => {
     if (!titel.trim() || !text.trim()) {
@@ -243,6 +260,83 @@ export default function AdminRaum36Neuigkeit() {
         <p className="text-xs text-zinc-600 mt-3 text-center">
           "Test an mich senden" schickt die E-Mail nur an lkrforschung@gmail.com
         </p>
+
+        {/* ─── Sendungshistorie ─── */}
+        <div className="mt-14">
+          <div className="flex items-center gap-2 mb-4">
+            <Clock className="w-4 h-4 text-zinc-500" />
+            <h2 className="text-sm font-bold tracking-widest text-zinc-400 uppercase">Sendungshistorie</h2>
+          </div>
+
+          {historieLoading ? (
+            <p className="text-zinc-600 text-sm">Lade Historie…</p>
+          ) : !historie || historie.length === 0 ? (
+            <div className="rounded-lg border border-zinc-800 p-6 text-center text-zinc-600 text-sm">
+              Noch keine Sendungen protokolliert.
+            </div>
+          ) : (
+            <div className="rounded-lg border border-zinc-800 overflow-hidden">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-zinc-800 bg-zinc-900/60">
+                    <th className="text-left px-4 py-3 text-xs font-semibold tracking-widest text-zinc-500 uppercase">Datum</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold tracking-widest text-zinc-500 uppercase">Typ</th>
+                    <th className="text-left px-4 py-3 text-xs font-semibold tracking-widest text-zinc-500 uppercase">Titel</th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold tracking-widest text-zinc-500 uppercase">Empf.</th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold tracking-widest text-zinc-500 uppercase">OK</th>
+                    <th className="text-right px-4 py-3 text-xs font-semibold tracking-widest text-zinc-500 uppercase">Fehler</th>
+                    <th className="text-center px-4 py-3 text-xs font-semibold tracking-widest text-zinc-500 uppercase">Test</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {historie.map((s) => {
+                    const typCfg = TYP_CONFIG[s.typ as Typ] ?? TYP_CONFIG.allgemein;
+                    return (
+                      <tr key={s.id} className="border-b border-zinc-800/50 hover:bg-zinc-900/30 transition-colors">
+                        <td className="px-4 py-3 text-zinc-400 whitespace-nowrap text-xs">
+                          {formatDatum(s.createdAt)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-flex items-center gap-1 text-xs font-bold tracking-wider uppercase ${typCfg.color}`}>
+                            {typCfg.icon}
+                            {typCfg.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-zinc-200 max-w-[200px] truncate" title={s.titel}>
+                          {s.titel}
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className="inline-flex items-center gap-1 text-zinc-400 text-xs">
+                            <Users className="w-3 h-3" />
+                            {s.empfaengerAnzahl}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className="text-emerald-400 font-semibold text-xs">{s.gesendet}</span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <span className={`font-semibold text-xs ${s.fehlgeschlagen > 0 ? "text-red-400" : "text-zinc-600"}`}>
+                            {s.fehlgeschlagen}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          {s.nurTest ? (
+                            <span className="inline-flex items-center gap-1 text-xs text-amber-400">
+                              <TestTube className="w-3 h-3" />
+                              Test
+                            </span>
+                          ) : (
+                            <span className="text-zinc-700 text-xs">–</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

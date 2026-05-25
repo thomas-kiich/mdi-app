@@ -1,0 +1,40 @@
+{
+  "query": "\nSELECT \n  f.id,\n  LEFT(f.frage, 60) AS frage_kurz,\n  f.pseudonym,\n  f.userId,\n  u.name AS user_name,\n  u.email AS user_email,\n  f.beantwortetAt,\n  f.createdAt\nFROM raum36_fragen f\nLEFT JOIN users u ON f.userId = u.id\nORDER BY f.createdAt DESC\nLIMIT 20;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 4YZcaRPyS9hakch.root --database VyRb5akas5jLZtUDKwE632 --execute \nSELECT \n  f.id,\n  LEFT(f.frage, 60) AS frage_kurz,\n  f.pseudonym,\n  f.userId,\n  u.name AS user_name,\n  u.email AS user_email,\n  f.beantwortetAt,\n  f.createdAt\nFROM raum36_fragen f\nLEFT JOIN users u ON f.userId = u.id\nORDER BY f.createdAt DESC\nLIMIT 20;\n",
+  "rows": [
+    {
+      "id": "30001",
+      "frage_kurz": "Hi Thomas, du hast mir im persönlichen Gespräch mitgeteilt, ",
+      "pseudonym": "Stefan",
+      "userId": "6120005",
+      "user_name": "stefan",
+      "user_email": "stefan@neuheimer.at",
+      "beantwortetAt": "2026-05-23 12:19:37",
+      "createdAt": "2026-05-21 18:58:51"
+    },
+    {
+      "id": "2",
+      "frage_kurz": "Ich nutze nun jedes mal wenn ich in einer Stresssituationen ",
+      "pseudonym": "DerWanderndeJo",
+      "userId": "2010010",
+      "user_name": "Johannes Ederer",
+      "user_email": "jederer@gmx.net",
+      "beantwortetAt": "2026-05-24 07:41:06",
+      "createdAt": "2026-05-10 15:45:33"
+    },
+    {
+      "id": "1",
+      "frage_kurz": "gibt es auch wissenschaftliche hinweise auf mögliche Unterst",
+      "pseudonym": "twin",
+      "userId": "1",
+      "user_name": "Thomas Chochola",
+      "user_email": "lkrforschung@gmail.com",
+      "beantwortetAt": "2026-05-12 11:34:49",
+      "createdAt": "2026-05-10 13:45:12"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tfrage_kurz\tpseudonym\tuserId\tuser_name\tuser_email\tbeantwortetAt\tcreatedAt\n30001\tHi Thomas, du hast mir im persönlichen Gespräch mitgeteilt, \tStefan\t6120005\tstefan\tstefan@neuheimer.at\t2026-05-23 12:19:37\t2026-05-21 18:58:51\n2\tIch nutze nun jedes mal wenn ich in einer Stresssituationen \tDerWanderndeJo\t2010010\tJohannes Ederer\tjederer@gmx.net\t2026-05-24 07:41:06\t2026-05-10 15:45:33\n1\tgibt es auch wissenschaftliche hinweise auf mögliche Unterst\ttwin\t1\tThomas Chochola\tlkrforschung@gmail.com\t2026-05-12 11:34:49\t2026-05-10 13:45:12\n",
+  "stderr": "",
+  "execution_time_ms": 269
+}

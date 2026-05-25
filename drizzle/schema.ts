@@ -904,6 +904,24 @@ export type Raum36Wissenspool = typeof raum36Wissenspool.$inferSelect;
 export type InsertRaum36Wissenspool = typeof raum36Wissenspool.$inferInsert;
 
 /**
+ * RAUM 36 – Sendungshistorie
+ * Protokolliert jeden Versand einer Neuigkeit an Mitglieder.
+ */
+export const raum36Sendungen = mysqlTable("raum36_sendungen", {
+  id: int("id").autoincrement().primaryKey(),
+  typ: varchar("typ", { length: 32 }).notNull(), // training | wissenspool | technik | allgemein
+  titel: varchar("titel", { length: 255 }).notNull(),
+  text: text("text").notNull(),
+  empfaengerAnzahl: int("empfaenger_anzahl").notNull().default(0),
+  gesendet: int("gesendet").notNull().default(0),
+  fehlgeschlagen: int("fehlgeschlagen").notNull().default(0),
+  nurTest: int("nur_test").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+export type Raum36Sendung = typeof raum36Sendungen.$inferSelect;
+export type InsertRaum36Sendung = typeof raum36Sendungen.$inferInsert;
+
+/**
  * Stimmklanganalyse – Bestellungen (Einmalzahlung €96)
  * Stripe ist die Quelle der Wahrheit für den Zahlungsstatus.
  */
