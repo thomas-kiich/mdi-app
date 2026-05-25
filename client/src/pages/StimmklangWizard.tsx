@@ -132,6 +132,22 @@ export default function StimmklangWizard() {
     }
   };
 
+  const goBack = () => {
+    // Beim Zurückgehen: laufende Aufnahme stoppen, Wassergeräusch stoppen
+    if (isRecording) stopRecording();
+    waterSound.stop();
+    setIsRelaxing(false);
+    if (currentStep === "relaxation") setCurrentStep("preparation");
+    else if (currentStep === "recording1") { setCurrentStep("relaxation"); setRelaxationTimeLeft(180); }
+    else if (currentStep === "pause1") { setCurrentStep("recording1"); setResults((p) => ({ ...p, r1: null })); }
+    else if (currentStep === "recording2") setCurrentStep("pause1");
+    else if (currentStep === "pause2") { setCurrentStep("recording2"); setResults((p) => ({ ...p, r2: null })); }
+    else if (currentStep === "recording3") setCurrentStep("pause2");
+    else if (currentStep === "pause3") { setCurrentStep("recording3"); setResults((p) => ({ ...p, r3: null })); }
+    else if (currentStep === "recording4") setCurrentStep("pause3");
+    else if (currentStep === "result") setCurrentStep("preparation");
+  };
+
   const calculateFinalResult = () => {
     const combinedMdiDistribution: Record<string, number> = {};
     const combinedDistribution: Record<string, number> = {};
@@ -291,9 +307,14 @@ export default function StimmklangWizard() {
                 </Card>
               ))}
             </div>
-            <Button onClick={advanceStep} size="lg" className="w-full h-14 text-lg rounded-full">
-              Ich bin bereit – Analyse starten <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
+            <div className="flex flex-col gap-3">
+              <Button onClick={advanceStep} size="lg" className="w-full h-14 text-lg rounded-full">
+                Ich bin bereit – Analyse starten <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+              <Button onClick={() => setLocation("/raum36")} variant="ghost" className="text-zinc-500 hover:text-white">
+                <ArrowLeft className="mr-2 w-4 h-4" /> Zurück zu RAUM 36
+              </Button>
+            </div>
           </div>
         );
 
@@ -330,6 +351,9 @@ export default function StimmklangWizard() {
                     Weiter zur Aufnahme <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 )}
+                <Button onClick={goBack} variant="ghost" className="mt-4 text-zinc-500 hover:text-white text-sm">
+                  <ArrowLeft className="mr-2 w-4 h-4" /> Zurück zur Vorbereitung
+                </Button>
               </div>
             )}
           </div>
@@ -347,6 +371,9 @@ export default function StimmklangWizard() {
             <p className="text-zinc-300 text-lg mb-12 text-center max-w-md">Nimm wieder einen Schluck Wasser zu dir.</p>
             <Button onClick={advanceStep} size="lg" className="w-full max-w-xs h-14 text-lg rounded-full">
               Weiter <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
+            <Button onClick={goBack} variant="ghost" className="mt-2 text-zinc-500 hover:text-white text-sm">
+              <ArrowLeft className="mr-2 w-4 h-4" /> Zurück
             </Button>
           </div>
         );
@@ -404,14 +431,22 @@ export default function StimmklangWizard() {
               </div>
             )}
             {!isRecording && isCurrentStepDone && (
-              <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 flex flex-col items-center">
-                <p className="text-green-500 mb-4 flex items-center justify-center gap-2">
+              <div className="mt-8 animate-in fade-in slide-in-from-bottom-4 flex flex-col items-center gap-3">
+                <p className="text-green-500 mb-2 flex items-center justify-center gap-2">
                   <Sparkles className="w-4 h-4" /> Aufnahme erfolgreich!
                 </p>
                 <Button onClick={advanceStep} variant="outline" className="border-zinc-700 hover:bg-zinc-800 h-12 px-8 text-lg">
                   {currentStep === "recording4" ? "Analyse abschließen" : "Nächster Schritt"} <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
+                <Button onClick={goBack} variant="ghost" className="text-zinc-500 hover:text-white text-sm">
+                  <ArrowLeft className="mr-2 w-4 h-4" /> Zurück (Aufnahme wiederholen)
+                </Button>
               </div>
+            )}
+            {!isRecording && !isCurrentStepDone && currentStep !== "recording1" && (
+              <Button onClick={goBack} variant="ghost" className="mt-6 text-zinc-500 hover:text-white text-sm">
+                <ArrowLeft className="mr-2 w-4 h-4" /> Zurück
+              </Button>
             )}
           </div>
         );
