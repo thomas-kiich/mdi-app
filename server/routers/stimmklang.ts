@@ -25,7 +25,7 @@ export const stimmklangRouter = router({
         metapher: z.string().optional(),
         farbHex: z.string().optional(),
         wurzelklangMdiId: z.number().int().optional(),
-        mdiVerteilung: z.record(z.number()).optional(),
+        mdiVerteilung: z.record(z.string(), z.number()).optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
