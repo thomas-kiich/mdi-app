@@ -93,7 +93,7 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
                 </div>
               )}
               <a
-                  href="/"
+                  href="/stimmklang-start"
                   className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-500 text-white text-sm font-bold px-5 py-3 uppercase tracking-wide transition-colors"
                 >
                   <Mic className="w-4 h-4" />
