@@ -268,9 +268,9 @@ export default function StimmklangWizard() {
             <h2 className="text-3xl font-bold text-white mb-8">Vorbereitung zur Stimmklanganalyse</h2>
             <div className="space-y-4 mb-12">
               {[
-                { num: "0", title: "Voraussetzungen", text: "Du solltest die folgende Stimmklanganalyse nur machen, wenn deine Stimme frei ist von Einschränkungen jeglicher Art (Schnupfen, Husten, Heiserkeit, überanstrengte Stimme aus dem Tagesgeschehen). Mache die Analyse deiner Stimme nicht am Morgen, nicht nachdem du gegessen hast (mindestens zwei Stunden sollten vergangen sein) und nicht wenn du von einer anstrengenden Tätigkeit kommst." },
-                { num: "1", title: "Ruhige Umgebung", text: "Nimm dir 10 min Zeit an einem ruhigen ungestörten Platz deiner Wahl. Du benötigst einen Sitzplatz auf dem du aufrecht Platz nehmen kannst. Weiche Sofas oder ähnliche Sitzmöglichkeiten sind ungeeignet. Es dürfen keine Nebengeräusche im Umfeld vorhanden sein." },
-                { num: "2", title: "Wasser bereitstellen", text: "Stelle für dich ein Glas mit angenehm warmen Trinkwasser bereit und öffne das Stimmklangprogramm auf deinem Handy oder Computer." },
+                { num: "0", title: "Voraussetzungen", text: "Du solltest die folgende Stimmklanganalyse nur machen, wenn deine Stimme frei ist von Einschränkungen jeglicher Art (Schnupfen, Husten, Heiserkeit, überanstrengte Stimme aus dem Tagesgeschehen). Mache die Analyse deiner Stimme nicht am Morgen, nicht nachdem du gegessen hast (mindestens zwei Stunden sollten vergangen sein) und nicht wenn du von einer – psychisch oder physisch – anstrengenden Tätigkeit kommst." },
+                { num: "1", title: "Ruhige Umgebung", text: "Nimm dir 30 min Zeit an einem ruhigen ungestörten Platz deiner Wahl. Du benötigst einen Sitzplatz auf dem du aufrecht Platz nehmen kannst. Weiche Sofas oder ähnliche Sitzmöglichkeiten sind ungeeignet. Es dürfen keine Nebengeräusche im Umfeld vorhanden sein." },
+                { num: "2", title: "Wasser bereitstellen", text: "Stelle ein Glas angenehm temperiertes Trinkwasser bereit und nimm einen Schluck jeweils vor dem Einsprechen. Klicke nun bitte weiter zu Analyse starten." },
               ].map(({ num, title, text }) => (
                 <Card key={num} className="bg-zinc-900/50 border-zinc-800">
                   <CardContent className="p-6 flex items-start gap-4">
