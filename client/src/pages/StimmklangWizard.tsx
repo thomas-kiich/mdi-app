@@ -509,21 +509,37 @@ export default function StimmklangWizard() {
         );
 
       case "result": {
-        const res = isStudyComplete ? studyResult : finalResult;
-        const mdi = isStudyComplete ? studyMdiResult : mdiResult;
+        // Tages-Ergebnis (immer verfügbar nach Analyse)
+        const tagesRes = finalResult;
+        const tagesMdi = mdiResult;
 
-        if (!res || !mdi) return (
+        // Server-Status (geladene Tage)
+        const serverTage = stimmklangStatus?.gesamtTage;
+        const statusLaedt = serverTage === undefined;
+        // Anzahl abgeschlossener Tage: Server hat Vorrang, Fallback auf localStorage
+        const abgeschlosseneTage = serverTage ?? daysCompleted;
+        const istFinal = abgeschlosseneTage >= 3;
+
+        // Finales gemitteltes Ergebnis (nur nach 3 Tagen)
+        const finalesRes = istFinal ? (isStudyComplete ? studyResult : tagesRes) : null;
+        const finalesMdi = istFinal ? (isStudyComplete ? studyMdiResult : tagesMdi) : null;
+
+        if (!tagesRes || !tagesMdi) return (
           <div className="text-white p-8 pt-16 text-center">
             <h2 className="text-2xl font-bold text-red-500 mb-4">Fehler bei der Auswertung.</h2>
             <Button onClick={() => window.location.reload()} variant="outline">Neu starten</Button>
           </div>
         );
 
+        // Welches Ergebnis anzeigen: nach 3 Tagen das finale, sonst das Tagesergebnis
+        const res = finalesRes ?? tagesRes;
+        const mdi = finalesMdi ?? tagesMdi;
+
         return (
           <div className="max-w-4xl mx-auto py-8 px-4 animate-in fade-in duration-1000 pt-16">
             <div className="text-center mb-12">
               <div className="inline-block mb-4 px-4 py-1 rounded-full bg-zinc-800/50 border border-zinc-700 text-xs font-mono text-zinc-400">
-                {isStudyComplete ? "LÄNGSSCHNITT-STUDIE ABGESCHLOSSEN" : "TAGES-MESSUNG"}
+                {istFinal ? "FINALER LICHTKLANGCHARAKTER" : `TAGES-MESSUNG ${abgeschlosseneTage} / 3`}
               </div>
               <h1 className="text-5xl md:text-7xl font-bold mb-2 tracking-tighter" style={{ color: mdi.hex }}>
                 {mdi.metaphor || "–"}
@@ -623,103 +639,110 @@ export default function StimmklangWizard() {
               </div>
             )}
 
-            {/* 3-Tage-Fortschritt */}
-            {(() => {
-              const gesamtTage = stimmklangStatus?.gesamtTage ?? daysCompleted;
-              const istVollstaendig = gesamtTage >= 3;
-              return (
-                <div className="mb-12 bg-zinc-900/30 border border-zinc-800 rounded-xl p-6">
+            {/* 3-Tage-Fortschritt + Gesprächsanfrage */}
+            {statusLaedt ? (
+              <div className="mb-12 bg-zinc-900/30 border border-zinc-800 rounded-xl p-6 flex items-center justify-center gap-3">
+                <Loader2 className="w-5 h-5 text-orange-400 animate-spin" />
+                <span className="text-zinc-400 text-sm">Lade Messungs-Status...</span>
+              </div>
+            ) : (
+              <div className="mb-12">
+                {/* Fortschrittsbalken */}
+                <div className="bg-zinc-900/30 border border-zinc-800 rounded-xl p-6 mb-6">
                   <div className="flex items-center justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-semibold text-white">Deine 3-Tage-Messung</h3>
                       <p className="text-sm text-zinc-400">
-                        {istVollstaendig
-                          ? "Dein Stimmklangprofil ist vollständig – alle 3 Messungen abgeschlossen."
-                          : `Messung ${gesamtTage} von 3 abgeschlossen. Bitte morgen wieder messen.`}
+                        {istFinal
+                          ? "Alle 3 Messungen abgeschlossen – dein Stimmklangprofil ist vollständig."
+                          : abgeschlosseneTage === 1
+                          ? "Tag 1 abgeschlossen. Komm morgen für Tag 2 wieder."
+                          : `Tag ${abgeschlosseneTage} abgeschlossen. Komm morgen für Tag ${abgeschlosseneTage + 1} wieder.`}
                       </p>
                     </div>
-                    <div className="text-2xl font-bold" style={{ color: istVollstaendig ? "#22c55e" : "#f97316" }}>
-                      {gesamtTage} / 3
+                    <div className="text-2xl font-bold" style={{ color: istFinal ? "#22c55e" : "#f97316" }}>
+                      {abgeschlosseneTage} / 3
                     </div>
                   </div>
-                  <div className="flex gap-2 mb-4">
+                  <div className="flex gap-2">
                     {[1, 2, 3].map((tag) => (
                       <div
                         key={tag}
-                        className="flex-1 h-3 rounded-full"
-                        style={{ backgroundColor: tag <= gesamtTage ? (istVollstaendig ? "#22c55e" : "#f97316") : "#27272a" }}
+                        className="flex-1 h-3 rounded-full transition-all duration-500"
+                        style={{ backgroundColor: tag <= abgeschlosseneTage ? (istFinal ? "#22c55e" : "#f97316") : "#27272a" }}
                       />
                     ))}
                   </div>
-                  {istVollstaendig && (
-                    <div className="text-center mt-4">
-                      <p className="text-green-400 text-sm font-medium mb-2">✓ Profil valide – bereit für dein persönliches Gespräch</p>
-                    </div>
-                  )}
                 </div>
-              );
-            })()}
 
-            {/* Beratungsanfrage */}
-            {(() => {
-              const gesamtTage = stimmklangStatus?.gesamtTage ?? daysCompleted;
-              const metapher = mdiResult?.metaphor ?? studyMdiResult?.metaphor;
-              const mdiId = mdiResult?.id ?? studyMdiResult?.id;
-              return (
-                <div className="mb-12 bg-zinc-900/50 border border-orange-500/30 rounded-xl p-6">
-                  <div className="text-center mb-6">
-                    <h3 className="text-xl font-bold text-white mb-2">Persönliches Gespräch mit Thomas</h3>
-                    <p className="text-zinc-400 text-sm">
-                      Weitere Informationen zu deinem Lichtklangcharakter erhältst du im persönlichen Gespräch mit Thomas.
+                {/* Noch nicht fertig: Hinweis zum Wiederkommen */}
+                {!istFinal && (
+                  <div className="bg-zinc-900/20 border border-zinc-800 border-dashed rounded-xl p-6 text-center">
+                    <div className="text-4xl mb-3">🌙</div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Komm morgen wieder</h3>
+                    <p className="text-zinc-400 text-sm leading-relaxed">
+                      Dein finaler Lichtklangcharakter und die Möglichkeit zum persönlichen Gespräch mit Thomas
+                      erscheinen nach Abschluss aller 3 Messungen an 3 aufeinanderfolgenden Tagen.
                     </p>
-                    {gesamtTage < 3 && (
-                      <p className="text-orange-400 text-xs mt-2">
-                        Empfehlung: Schließe zuerst alle 3 Messungen ab für ein vollständiges Profil.
+                    <p className="text-orange-400 text-xs mt-3 font-mono">
+                      NÄCHSTE MESSUNG: TAG {abgeschlosseneTage + 1} / 3
+                    </p>
+                  </div>
+                )}
+
+                {/* Fertig: Gesprächsanfrage */}
+                {istFinal && (
+                  <div className="bg-zinc-900/50 border border-orange-500/30 rounded-xl p-6">
+                    <div className="text-center mb-6">
+                      <div className="text-green-400 text-sm font-medium mb-3">✓ Profil vollständig – alle 3 Messungen abgeschlossen</div>
+                      <h3 className="text-xl font-bold text-white mb-2">Persönliches Gespräch mit Thomas</h3>
+                      <p className="text-zinc-400 text-sm">
+                        Weitere Informationen zu deinem Lichtklangcharakter erhältst du im persönlichen Gespräch mit Thomas.
                       </p>
+                    </div>
+                    {beratungGesendet ? (
+                      <div className="text-center py-4">
+                        <div className="text-green-400 text-lg font-bold mb-2">✓ Anfrage gesendet</div>
+                        <p className="text-zinc-400 text-sm">Thomas meldet sich bei dir unter {user?.email}.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <textarea
+                          className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-white text-sm placeholder:text-zinc-500 resize-none focus:outline-none focus:border-orange-500"
+                          rows={3}
+                          placeholder="Optionale Nachricht an Thomas (z.B. bevorzugte Kontaktzeit, Fragen, ...)"
+                          value={beratungNachricht}
+                          onChange={(e) => setBeratungNachricht(e.target.value)}
+                        />
+                        <button
+                          onClick={async () => {
+                            setBeratungLaedt(true);
+                            try {
+                              await beratungsanfrageMutation.mutateAsync({
+                                nachricht: beratungNachricht || undefined,
+                                dominanteMdiId: tagesMdi?.id,
+                                metapher: tagesMdi?.metaphor ?? undefined,
+                              });
+                              setBeratungGesendet(true);
+                            } finally {
+                              setBeratungLaedt(false);
+                            }
+                          }}
+                          disabled={beratungLaedt}
+                          className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+                        >
+                          {beratungLaedt ? (
+                            <><Loader2 className="w-4 h-4 animate-spin" /> Wird gesendet...</>
+                          ) : (
+                            <>Gespräch anfragen →</>
+                          )}
+                        </button>
+                      </div>
                     )}
                   </div>
-                  {beratungGesendet ? (
-                    <div className="text-center py-4">
-                      <div className="text-green-400 text-lg font-bold mb-2">✓ Anfrage gesendet</div>
-                      <p className="text-zinc-400 text-sm">Thomas meldet sich bei dir unter {user?.email}.</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <textarea
-                        className="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-3 text-white text-sm placeholder:text-zinc-500 resize-none focus:outline-none focus:border-orange-500"
-                        rows={3}
-                        placeholder="Optionale Nachricht an Thomas (z.B. bevorzugte Kontaktzeit, Fragen, ...)"
-                        value={beratungNachricht}
-                        onChange={(e) => setBeratungNachricht(e.target.value)}
-                      />
-                      <button
-                        onClick={async () => {
-                          setBeratungLaedt(true);
-                          try {
-                            await beratungsanfrageMutation.mutateAsync({
-                              nachricht: beratungNachricht || undefined,
-                              dominanteMdiId: mdiId,
-                              metapher: metapher ?? undefined,
-                            });
-                            setBeratungGesendet(true);
-                          } finally {
-                            setBeratungLaedt(false);
-                          }
-                        }}
-                        disabled={beratungLaedt}
-                        className="w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
-                      >
-                        {beratungLaedt ? (
-                          <><Loader2 className="w-4 h-4 animate-spin" /> Wird gesendet...</>
-                        ) : (
-                          <>Gespräch anfragen →</>
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
+                )}
+              </div>
+            )}
 
             {showInterpretation && mdi && (
               <InterpretationView mdiResult={mdi} onClose={() => setShowInterpretation(false)} />
