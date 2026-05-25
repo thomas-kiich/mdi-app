@@ -76,32 +76,38 @@ export default function StimmklangWizard() {
   const [isRelaxing, setIsRelaxing] = useState(false);
   const waterSound = useWaterSound();
 
-  // Ref verhindert doppelten stop()-Aufruf wenn React den Effect mehrfach ausführt
-  const didStopOnTimerRef = useRef(false);
+  // Ref auf den laufenden Interval – damit kann er von außen (Überspringen) sofort gestoppt werden
+  const relaxIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     if (!isRelaxing) {
-      didStopOnTimerRef.current = false; // Reset wenn neue Entspannung startet
+      // Interval sofort stoppen wenn isRelaxing auf false geht (Überspringen, goBack oder Timer-Ende)
+      if (relaxIntervalRef.current) {
+        clearInterval(relaxIntervalRef.current);
+        relaxIntervalRef.current = null;
+        // Ton ausblenden – nur wenn der Interval noch lief (= Sound war aktiv)
+        waterSound.stop();
+      }
       return;
     }
-    // Timer läuft
-    const interval = setInterval(() => {
+    // Timer starten
+    relaxIntervalRef.current = setInterval(() => {
       setRelaxationTimeLeft(prev => {
         if (prev <= 1) {
-          clearInterval(interval);
+          // Timer abgelaufen: nur setIsRelaxing(false) – der useEffect stoppt dann den Ton
           setIsRelaxing(false);
-          // Nur einmal stoppen, auch wenn React diesen Block mehrfach ausführt
-          if (!didStopOnTimerRef.current) {
-            didStopOnTimerRef.current = true;
-            waterSound.stop();
-          }
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-    return () => clearInterval(interval);
-  }, [isRelaxing]); // nur isRelaxing als Dependency – kein relaxationTimeLeft
+    return () => {
+      if (relaxIntervalRef.current) {
+        clearInterval(relaxIntervalRef.current);
+        relaxIntervalRef.current = null;
+      }
+    };
+  }, [isRelaxing]); // nur isRelaxing als Dependency
 
   // Final result states
   const [finalResult, setFinalResult] = useState<any | null>(null);
@@ -146,9 +152,9 @@ export default function StimmklangWizard() {
   };
 
   const goBack = () => {
-    // Beim Zurückgehen: laufende Aufnahme stoppen, Wassergeräusch stoppen
+    // Beim Zurückgehen: laufende Aufnahme stoppen
+    // Wassergeräusch wird über setIsRelaxing(false) gestoppt (useEffect reagiert darauf)
     if (isRecording) stopRecording();
-    waterSound.stop();
     setIsRelaxing(false);
     if (currentStep === "relaxation") setCurrentStep("preparation");
     else if (currentStep === "recording1") { setCurrentStep("relaxation"); setRelaxationTimeLeft(180); }
@@ -347,7 +353,7 @@ export default function StimmklangWizard() {
                 </div>
                 {/* Wassergeräusch via Web Audio API – kein externes File nötig */}
                 <p className="text-zinc-500">Bitte schließe deine Augen und entspanne.</p>
-                <Button onClick={() => { setIsRelaxing(false); waterSound.stop(); }} variant="ghost" className="mt-8 text-zinc-500 hover:text-white">Überspringen</Button>
+                <Button onClick={() => setIsRelaxing(false)} variant="ghost" className="mt-8 text-zinc-500 hover:text-white">Überspringen</Button>
               </div>
             ) : (
               <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-4">
