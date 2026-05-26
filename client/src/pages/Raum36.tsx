@@ -705,7 +705,7 @@ function Raum36Member() {
               </div>
             </div>
             <a
-              href="/stimmklanganalyse/wizard"
+              href="/stimmklang-start"
               className="shrink-0 text-xs font-mono bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded transition-colors"
             >
               Jetzt messen →
