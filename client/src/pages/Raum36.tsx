@@ -598,12 +598,15 @@ function Raum36Member() {
 
   // Admin: Inline-Antwort direkt im Forum
   const [answeringFrageId, setAnsweringFrageId] = useState<number | null>(null);
-  const [inlineAntwortText, setInlineAntwortText] = useState("");
+  // Map: frageId → Antworttext (jede Frage hat ihren eigenen State)
+  const [antwortTexte, setAntwortTexte] = useState<Record<number, string>>({});
+  const setAntwortText = (frageId: number, text: string) =>
+    setAntwortTexte(prev => ({ ...prev, [frageId]: text }));
   const adminAntworte = trpc.raum36.adminAntworte.useMutation({
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       toast.success("Antwort gespeichert!");
       setAnsweringFrageId(null);
-      setInlineAntwortText("");
+      setAntwortTexte(prev => { const next = { ...prev }; delete next[variables.frageId]; return next; });
       utils.raum36.getFragen.invalidate();
     },
     onError: (e) => toast.error(e.message),
@@ -1185,8 +1188,8 @@ function Raum36Member() {
                             Deine Antwort
                           </div>
                           <RichTextEditor
-                            value={inlineAntwortText}
-                            onChange={(html) => setInlineAntwortText(html)}
+                            value={antwortTexte[frage.id] ?? ""}
+                            onChange={(html) => setAntwortText(frage.id, html)}
                             placeholder="Schreibe deine Antwort…"
                             minHeight="120px"
                             className="mb-3"
@@ -1194,8 +1197,8 @@ function Raum36Member() {
                           <div className="flex gap-2">
                             <Button
                               size="sm"
-                              onClick={() => adminAntworte.mutate({ frageId: frage.id, antwort: inlineAntwortText })}
-                              disabled={!inlineAntwortText.trim() || adminAntworte.isPending}
+                              onClick={() => adminAntworte.mutate({ frageId: frage.id, antwort: antwortTexte[frage.id] ?? "" })}
+                              disabled={!(antwortTexte[frage.id] ?? "").replace(/<[^>]*>/g, "").trim() || adminAntworte.isPending}
                               className="bg-orange-600 hover:bg-orange-500 text-white rounded-none h-8 text-xs"
                             >
                               {adminAntworte.isPending ? <Loader2 className="w-3 h-3 animate-spin" /> : "Speichern"}
@@ -1203,7 +1206,7 @@ function Raum36Member() {
                             <Button
                               size="sm"
                               variant="ghost"
-                              onClick={() => { setAnsweringFrageId(null); setInlineAntwortText(""); }}
+                              onClick={() => { setAnsweringFrageId(null); setAntwortText(frage.id, ""); }}
                               className="text-zinc-500 hover:text-white rounded-none h-8 text-xs"
                             >
                               Abbrechen
@@ -1219,7 +1222,7 @@ function Raum36Member() {
                               </span>
                               {isAdmin && (
                                 <button
-                                  onClick={() => { setAnsweringFrageId(frage.id); setInlineAntwortText(frage.antwort ?? ""); }}
+                                  onClick={() => { setAnsweringFrageId(frage.id); setAntwortText(frage.id, frage.antwort ?? ""); }}
                                   className="text-orange-500 text-xs font-mono hover:text-orange-400 underline underline-offset-2"
                                 >
                                   Antworten
@@ -1230,7 +1233,7 @@ function Raum36Member() {
                           {frage.antwort && isAdmin && (
                             <div className="ml-9 mt-2">
                               <button
-                                onClick={() => { setAnsweringFrageId(frage.id); setInlineAntwortText(frage.antwort ?? ""); }}
+                                onClick={() => { setAnsweringFrageId(frage.id); setAntwortText(frage.id, frage.antwort ?? ""); }}
                                 className="text-zinc-600 text-xs font-mono hover:text-orange-400 underline underline-offset-2"
                               >
                                 Antwort bearbeiten
