@@ -321,6 +321,7 @@ export const raum36Router = router({
         const frageKurz = frage.frage.length > 120 ? frage.frage.slice(0, 120) + "…" : frage.frage;
         await sendEmail({
           to: [{ name: frage.userName ?? frage.pseudonym ?? undefined, email: frage.userEmail }],
+          bcc: [{ name: "Thomas", email: "yohn@kiich.de" }],
           subject: "Thomas hat deine Frage im RAUM 36 beantwortet",
           htmlContent: `
             <div style="font-family:sans-serif;max-width:600px;margin:0 auto;background:#0a0a0a;color:#e5e5e5;padding:32px;">

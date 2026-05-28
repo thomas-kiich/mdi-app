@@ -12,6 +12,7 @@ const SENDER = { name: "KIICH", email: "yohn@kiich.de" };
 
 export interface SendEmailOptions {
   to: { name?: string; email: string }[];
+  bcc?: { name?: string; email: string }[];
   subject: string;
   htmlContent: string;
   textContent?: string;
@@ -28,6 +29,7 @@ export async function sendEmail(opts: SendEmailOptions): Promise<boolean> {
       {
         sender: SENDER,
         to: opts.to,
+        ...(opts.bcc && opts.bcc.length > 0 ? { bcc: opts.bcc } : {}),
         subject: opts.subject,
         htmlContent: opts.htmlContent,
         textContent: opts.textContent ?? opts.subject,
