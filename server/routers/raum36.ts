@@ -182,7 +182,11 @@ export const raum36Router = router({
       .select()
       .from(raum36Fragen)
       .where(eq(raum36Fragen.sichtbar, true))
-      .orderBy(desc(raum36Fragen.createdAt));
+      .orderBy(
+        // Unbeantwortete Fragen zuerst (beantwortetAt IS NULL → 1, sonst 0)
+        sql`CASE WHEN ${raum36Fragen.beantwortetAt} IS NULL THEN 1 ELSE 0 END DESC`,
+        desc(raum36Fragen.createdAt)
+      );
   }),
 
   /**
