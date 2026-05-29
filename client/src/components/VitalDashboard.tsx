@@ -240,7 +240,7 @@ export const VitalDashboard: React.FC<VitalDashboardProps> = ({ onClose }) => {
 
   const [activeTab, setActiveTab] = useState<'heute' | 'essverhalten' | 'statistik' | 'verlauf' | 'coaching'>('heute');
   const [statsZeitraum, setStatsZeitraum] = useState<'woche' | 'monat'>('woche');
-  const [showVitalForm, setShowVitalForm] = useState(false);
+  const [showVitalForm, setShowVitalForm] = useState(true);
   const vitalFormRef = React.useRef<HTMLDivElement>(null);
   const [showAddItem, setShowAddItem] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
