@@ -757,15 +757,15 @@ export default function StimmklangWizard() {
                   <div className="bg-zinc-900/50 border border-orange-500/30 rounded-xl p-6">
                     <div className="text-center mb-6">
                       <div className="text-green-400 text-sm font-medium mb-3">✓ Profil vollständig – alle 3 Messungen abgeschlossen</div>
-                      <h3 className="text-xl font-bold text-white mb-2">Persönliches Gespräch mit Thomas</h3>
+                      <h3 className="text-xl font-bold text-white mb-2">Coaching-Gespräch mit Thomas</h3>
                       <p className="text-zinc-400 text-sm">
-                        Weitere Informationen zu deinem Lichtklangcharakter erhältst du im persönlichen Gespräch mit Thomas.
+                        Deine 3 Messungen sind abgeschlossen. Thomas meldet sich nach deiner Anfrage für ein persönliches Gespräch zu deinem Lichtklangcharakter bei dir.
                       </p>
                     </div>
                     {beratungGesendet ? (
                       <div className="text-center py-4">
                         <div className="text-green-400 text-lg font-bold mb-2">✓ Anfrage gesendet</div>
-                        <p className="text-zinc-400 text-sm">Thomas meldet sich bei dir unter {user?.email}.</p>
+                        <p className="text-zinc-400 text-sm">Thomas meldet sich in Kürze bei dir unter {user?.email} für das Coaching-Gespräch.</p>
                       </div>
                     ) : (
                       <div className="space-y-3">
