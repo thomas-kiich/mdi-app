@@ -867,18 +867,7 @@ function Raum36Member() {
                 </div>
               )}
 
-              {/* Admin-Button: METHODE 36 bearbeiten */}
-              {isAdmin && !m36ActiveTrainer && (
-                <div className="flex justify-end mb-4">
-                  <a
-                    href="/admin/training-einheiten"
-                    className="flex items-center gap-2 text-xs text-orange-400 border border-orange-500/30 hover:border-orange-400/60 bg-orange-500/5 hover:bg-orange-500/10 px-3 py-1.5 rounded transition-colors"
-                  >
-                    <Settings className="w-3 h-3" />
-                    METHODE 36 bearbeiten
-                  </a>
-                </div>
-              )}
+
             </div>
           )}
 
