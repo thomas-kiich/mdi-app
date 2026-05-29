@@ -7,7 +7,7 @@
 import { z } from "zod";
 import { protectedProcedure, adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { stimmklangMessungen, stimmklangBeratungsanfragen, users } from "../../drizzle/schema";
+import { stimmklangMessungen, stimmklangBeratungsanfragen, users, coachNotizen } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { sendEmail } from "../_core/email";
 
@@ -490,4 +490,48 @@ export const stimmklangRouter = router({
 
     return messungen;
   }),
+
+  /**
+   * Admin: Coach-Notiz für einen User lesen.
+   */
+  adminGetCoachNotiz: adminProcedure
+    .input(z.object({ userId: z.number().int() }))
+    .query(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+      const rows = await db
+        .select()
+        .from(coachNotizen)
+        .where(eq(coachNotizen.userId, input.userId))
+        .limit(1);
+      return rows[0] ?? null;
+    }),
+
+  /**
+   * Admin: Coach-Notiz für einen User speichern (upsert).
+   */
+  adminSaveCoachNotiz: adminProcedure
+    .input(z.object({ userId: z.number().int(), notiz: z.string() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("DB nicht verfügbar");
+      // Prüfen ob bereits vorhanden
+      const existing = await db
+        .select({ id: coachNotizen.id })
+        .from(coachNotizen)
+        .where(eq(coachNotizen.userId, input.userId))
+        .limit(1);
+      if (existing.length > 0) {
+        await db
+          .update(coachNotizen)
+          .set({ notiz: input.notiz })
+          .where(eq(coachNotizen.userId, input.userId));
+      } else {
+        await db.insert(coachNotizen).values({
+          userId: input.userId,
+          notiz: input.notiz,
+        });
+      }
+      return { success: true };
+    }),
 });

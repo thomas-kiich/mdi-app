@@ -337,6 +337,13 @@
       "when": 1779720509911,
       "tag": "0047_dark_rachel_grey",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "5",
+      "when": 1780045445114,
+      "tag": "0048_last_vance_astro",
+      "breakpoints": true
     }
   ]
 }

@@ -1,9 +1,52 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Loader2, Mail, Mic, CheckCircle, Clock, User, BarChart2, Unlock, CreditCard, Gift } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, Mic, CheckCircle, Clock, User, BarChart2, Unlock, CreditCard, Gift, NotebookPen, Save } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+
+// Inline Coach-Notiz-Komponente pro Profil
+function CoachNotiz({ userId }: { userId: number }) {
+  const { data, isLoading } = trpc.stimmklang.adminGetCoachNotiz.useQuery({ userId });
+  const utils = trpc.useUtils();
+  const [text, setText] = useState<string | null>(null);
+  const aktuell = text ?? data?.notiz ?? "";
+  const saveMutation = trpc.stimmklang.adminSaveCoachNotiz.useMutation({
+    onSuccess: () => {
+      toast.success("Notiz gespeichert");
+      utils.stimmklang.adminGetCoachNotiz.invalidate({ userId });
+    },
+    onError: (err) => toast.error(err.message),
+  });
+  if (isLoading) return <div className="text-xs text-zinc-600 mt-3">Lade Notiz…</div>;
+  return (
+    <div className="mt-4 pt-4 border-t border-zinc-800">
+      <div className="flex items-center gap-2 mb-2">
+        <NotebookPen className="w-3.5 h-3.5 text-orange-400" />
+        <span className="text-xs font-mono tracking-widest text-orange-400/60 uppercase">Coach-Notiz</span>
+      </div>
+      <Textarea
+        value={aktuell}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Persönliche Notiz nach dem Coaching-Gespräch…"
+        className="bg-zinc-900 border-zinc-700 text-zinc-300 text-xs resize-none min-h-[80px] placeholder:text-zinc-600"
+        rows={3}
+      />
+      <Button
+        size="sm"
+        variant="outline"
+        className="mt-2 border-orange-800 text-orange-400 hover:bg-orange-900/20 text-xs"
+        disabled={saveMutation.isPending || aktuell === (data?.notiz ?? "")}
+        onClick={() => saveMutation.mutate({ userId, notiz: aktuell })}
+      >
+        {saveMutation.isPending ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Save className="w-3 h-3 mr-1" />}
+        Speichern
+      </Button>
+    </div>
+  );
+}
 
 export default function AdminStimmklang() {
   const { user, loading, isAuthenticated } = useAuth();
@@ -370,6 +413,9 @@ export default function AdminStimmklang() {
                       </div>
                     ))}
                   </div>
+
+                  {/* Coach-Notiz */}
+                  <CoachNotiz userId={profil.userId} />
                 </div>
               ))}
             </div>

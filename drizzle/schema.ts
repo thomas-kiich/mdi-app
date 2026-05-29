@@ -1222,3 +1222,21 @@ export const stimmklangBeratungsanfragen = mysqlTable("stimmklang_beratungsanfra
 
 export type StimmklangBeratungsanfrage = typeof stimmklangBeratungsanfragen.$inferSelect;
 export type InsertStimmklangBeratungsanfrage = typeof stimmklangBeratungsanfragen.$inferInsert;
+
+/**
+ * COACH-NOTIZEN
+ * Persönliche Notizen von Thomas zu einem User nach dem Coaching-Gespräch.
+ * Nur für Admins sichtbar, nie für den User selbst.
+ */
+export const coachNotizen = mysqlTable("coach_notizen", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Referenz auf den User */
+  userId: int("userId").notNull().unique(),
+  /** Freitext-Notiz des Coaches */
+  notiz: text("notiz").notNull().default(""),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type CoachNotiz = typeof coachNotizen.$inferSelect;
+export type InsertCoachNotiz = typeof coachNotizen.$inferInsert;
