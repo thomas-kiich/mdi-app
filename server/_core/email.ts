@@ -202,7 +202,11 @@ export async function sendeStimmklangKaufBestaetigung(user: {
           <tr>
             <td style="background-color:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
               <p style="font-size:26px;font-weight:900;letter-spacing:4px;color:#ffffff;text-transform:uppercase;margin:0 0 28px 0;">BUCHUNG BESTÄTIGT</p>
-              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">Danke vielmals für deine Anmeldung. Ich melde mich zeitnah bei dir und erkläre dir den detailgenauen Ablauf des Rituals zu deinen Stimmfrequenzen.</p>
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 16px 0;">Willkommen – dein Zugang zur Stimmklanganalyse ist jetzt aktiv. Du kannst mit Tag 1 starten wenn du bereit bist.</p>
+              <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px 0;">Du findest in RAUM 36 den jeweiligen aktuellen Stand deiner Analyse angezeigt.</p>
+              <p style="margin:0 0 28px 0;">
+                <a href="https://www.kiich.de/stimmklang-start" style="display:inline-block;background:#e85d04;color:#ffffff;text-decoration:none;padding:14px 28px;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;">JETZT STARTEN</a>
+              </p>
               <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
               <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
             </td>
