@@ -609,17 +609,11 @@ export default function StimmklangWizard() {
                 </Card>
 
                 <div className="grid gap-3">
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="border-zinc-800 hover:bg-zinc-800 cursor-pointer"
-                      onClick={() => setShowWurzelklangVerification(true)}>
-                      Wurzelklang prüfen
-                    </Button>
-                    <Button variant="outline" className="border-zinc-800 hover:bg-zinc-800 cursor-pointer text-xs"
-                      onClick={() => setLocation("/raum36")}>
-                      <Music2 className="mr-2 h-4 w-4 shrink-0" />
-                      YOHNTRAINING in RAUM 36 →
-                    </Button>
-                  </div>
+                  <Button variant="outline" className="border-zinc-800 hover:bg-zinc-800 cursor-pointer text-xs"
+                    onClick={() => setLocation("/raum36")}>
+                    <Music2 className="mr-2 h-4 w-4 shrink-0" />
+                    YOHNTRAINING in RAUM 36 →
+                  </Button>
                   <Button variant="ghost" className="text-zinc-500 hover:text-white border border-dashed border-zinc-800"
                     onClick={() => setShowCertificate(true)}>
                     <Download className="mr-2 h-4 w-4" />
