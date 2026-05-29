@@ -1,6 +1,6 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Loader2, Mail, Mic, CheckCircle, Clock, User, BarChart2, Unlock } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, Mic, CheckCircle, Clock, User, BarChart2, Unlock, CreditCard, Gift } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -9,10 +9,13 @@ export default function AdminStimmklang() {
   const { user, loading, isAuthenticated } = useAuth();
   const { data: anfragen, isLoading: laedtAnfragen } = trpc.stimmklang.adminBeratungsanfragen.useQuery();
   const [freischaltEmail, setFreischaltEmail] = useState("");
-  const freischaltenMutation = trpc.raum36.adminFreischaltenStimmklang.useMutation({
+  // freischaltenMutation wird weiter unten als freischaltenMutationWithRefetch definiert
+  const { data: alleZugaenge, isLoading: laedtZugaenge, refetch: refetchZugaenge } = trpc.raum36.adminGetStimmklangOrders.useQuery();
+  const freischaltenMutationWithRefetch = trpc.raum36.adminFreischaltenStimmklang.useMutation({
     onSuccess: (data) => {
       toast.success(`Zugang freigeschaltet für ${data.userName ?? data.userEmail} – Bestätigungs-E-Mail wurde versendet.`);
       setFreischaltEmail("");
+      refetchZugaenge();
     },
     onError: (err) => {
       toast.error(err.message);
@@ -105,16 +108,16 @@ export default function AdminStimmklang() {
               className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500/60 transition-colors"
               onKeyDown={(e) => {
                 if (e.key === "Enter" && freischaltEmail.trim()) {
-                  freischaltenMutation.mutate({ userEmail: freischaltEmail.trim() });
+                  freischaltenMutationWithRefetch.mutate({ userEmail: freischaltEmail.trim() });
                 }
               }}
             />
             <button
-              onClick={() => freischaltenMutation.mutate({ userEmail: freischaltEmail.trim() })}
-              disabled={!freischaltEmail.trim() || freischaltenMutation.isPending}
+              onClick={() => freischaltenMutationWithRefetch.mutate({ userEmail: freischaltEmail.trim() })}
+              disabled={!freischaltEmail.trim() || freischaltenMutationWithRefetch.isPending}
               className="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors"
             >
-              {freischaltenMutation.isPending ? (
+              {freischaltenMutationWithRefetch.isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <Unlock className="w-4 h-4" />
@@ -122,6 +125,76 @@ export default function AdminStimmklang() {
               Freischalten
             </button>
           </div>
+        </div>
+
+        {/* Zugangsliste */}
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <Unlock className="w-4 h-4 text-orange-400" />
+            <h2 className="text-sm font-mono tracking-widest text-orange-400/60 uppercase">Alle Zugänge</h2>
+            <span className="text-zinc-600 text-xs ml-auto">
+              {laedtZugaenge ? "…" : `${alleZugaenge?.filter(z => z.status === "paid").length ?? 0} aktiv`}
+            </span>
+          </div>
+
+          {laedtZugaenge ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 text-zinc-600 animate-spin" />
+            </div>
+          ) : alleZugaenge && alleZugaenge.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-zinc-800">
+                    <th className="text-left text-zinc-500 font-normal pb-3 pr-4">Name</th>
+                    <th className="text-left text-zinc-500 font-normal pb-3 pr-4">E-Mail</th>
+                    <th className="text-left text-zinc-500 font-normal pb-3 pr-4">Status</th>
+                    <th className="text-left text-zinc-500 font-normal pb-3 pr-4">Art</th>
+                    <th className="text-left text-zinc-500 font-normal pb-3">Datum</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {alleZugaenge.map((z) => (
+                    <tr key={z.id} className="border-b border-zinc-900 hover:bg-zinc-900/30 transition-colors">
+                      <td className="py-3 pr-4 text-white font-medium">{z.userName ?? "–"}</td>
+                      <td className="py-3 pr-4">
+                        <a href={`mailto:${z.userEmail}`} className="text-orange-400 hover:underline">{z.userEmail ?? "–"}</a>
+                      </td>
+                      <td className="py-3 pr-4">
+                        {z.status === "paid" ? (
+                          <span className="flex items-center gap-1 text-green-400">
+                            <CheckCircle className="w-3 h-3" /> Aktiv
+                          </span>
+                        ) : (
+                          <span className="text-zinc-500">{z.status}</span>
+                        )}
+                      </td>
+                      <td className="py-3 pr-4">
+                        {z.stripePaymentIntentId ? (
+                          <span className="flex items-center gap-1 text-blue-400">
+                            <CreditCard className="w-3 h-3" /> Stripe
+                          </span>
+                        ) : (
+                          <span className="flex items-center gap-1 text-orange-400">
+                            <Gift className="w-3 h-3" /> Manuell
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3 text-zinc-400">
+                        {z.paidAt
+                          ? new Date(z.paidAt).toLocaleDateString("de-AT", { day: "2-digit", month: "2-digit", year: "numeric" })
+                          : "–"}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-zinc-600 text-sm">
+              Noch keine Zugänge vorhanden.
+            </div>
+          )}
         </div>
 
         {/* Beratungsanfragen */}
