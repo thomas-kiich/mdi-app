@@ -175,7 +175,7 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
           </p>
           <p className="text-zinc-500 max-w-xl leading-relaxed mb-12">
             3 Tage Selbstanalyse mit der KIICH-App. Danach ein persönliches Coaching-Gespräch
-            mit Thomas Chochola – er erklärt dir dein Ergebnis und zeigt dir, was es bedeutet.
+            mit Thomas Chochola – du findest in RAUM 36 jederzeit den aktuellen Stand deiner Analyse.
           </p>
 
           <div className="flex flex-col sm:flex-row items-start gap-6">
@@ -222,10 +222,10 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
             </p>
 
             <p className="text-zinc-400 leading-relaxed">
-              Danach führst du ein Gespräch mit Thomas. Er bespricht mit dir eingehend das Ergebnis
+              Nach den drei Tagen führst du ein Gespräch mit Thomas. Er bespricht mit dir eingehend das Ergebnis
               und führt eine finale Justierung deines Stimmklangs durch. Als Abschluss erklärt dir
               Thomas die Möglichkeiten, wie du deinen Stimmklang für den Rest deines Lebens im Alltag
-              nützen kannst.
+              nützen kannst. Den aktuellen Stand deiner Analyse findest du jederzeit in RAUM 36.
             </p>
 
             {/* Datenschutz-Hinweis */}
@@ -268,8 +268,8 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
               {
                 step: "03",
                 icon: <Calendar className="w-5 h-5 text-orange-500" />,
-                title: "Termin vereinbaren",
-                desc: "Thomas kontaktiert dich per E-Mail, um einen 45-minütigen Coaching-Termin zu vereinbaren.",
+                title: "Coaching-Gespräch",
+                desc: "Thomas kontaktiert dich nach Abschluss der 3 Tage per E-Mail, um einen 45-minütigen Coaching-Termin zu vereinbaren.",
               },
               {
                 step: "04",
@@ -390,7 +390,7 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
                 <strong className="text-zinc-300">Welche Daten werden verarbeitet:</strong><br />
                 Deine Stimmaufnahmen (Frequenzanalysen über 3 Tage), die daraus berechneten
                 Klangparameter (Lebensklang, Wurzelklang) sowie deine Kontaktdaten (Name, E-Mail)
-                für die Terminvereinbarung.
+                für die Durchführung der Analyse und das abschließende Coaching-Gespräch.
               </p>
               <p>
                 <strong className="text-zinc-300">Zugriff:</strong><br />
