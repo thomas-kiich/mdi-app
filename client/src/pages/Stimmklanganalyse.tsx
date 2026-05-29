@@ -51,9 +51,11 @@ export default function Stimmklanganalyse({ embedded = false }: RouteComponentPr
     const params = new URLSearchParams(window.location.search);
     if (params.get("checkout") === "success") {
       toast.success(
-        "Vielen Dank! Thomas wird sich in Kürze bei dir melden, um den Coaching-Termin zu vereinbaren."
+        "Willkommen – dein Zugang zur Stimmklanganalyse ist jetzt aktiv. Du kannst mit Tag 1 starten wenn du bereit bist. Du findest in RAUM 36 den jeweiligen aktuellen Stand deiner Analyse angezeigt.",
+        { duration: 8000 }
       );
-      window.history.replaceState({}, "", "/stimmklanganalyse");
+      // Direkt zum Analysetool weiterleiten
+      window.location.href = "/stimmklang-start";
     } else if (params.get("checkout") === "cancelled") {
       toast.info("Checkout abgebrochen.");
       window.history.replaceState({}, "", "/stimmklanganalyse");
