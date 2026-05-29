@@ -84,7 +84,7 @@ function getWillkommensHtml(_vorname = "Thomas"): string {
 
               <!-- Signatur -->
               <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px 0;">Jedenfalls freue ich mich sehr über dein Dabei sein.</p>
-              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATHE WELL!</p>
               <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
 
             </td>
@@ -162,7 +162,7 @@ function getRaum36KaufHtml(vorname = "Thomas"): string {
             </td></tr>
           </table>
           <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px;">Ich freue mich sehr, dass du dabei bist.</p>
-          <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px;">BREATH WELL!</p>
+          <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px;">BREATHE WELL!</p>
           <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
         </td></tr>
         <tr><td align="center" style="padding-top:28px;">
@@ -192,7 +192,7 @@ function getStimmklangKaufHtml(vorname = "Thomas"): string {
         <tr><td style="background:#111118;border:1px solid #222230;border-radius:12px;padding:40px 36px;">
           <p style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;text-transform:uppercase;margin:0 0 24px;">BUCHUNG BESTÄTIGT</p>
           <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 28px;">Danke vielmals für deine Anmeldung. Ich melde mich zeitnah bei dir und erkläre dir den detailgenauen Ablauf des Rituals zu deinen Stimmfrequenzen.</p>
-          <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px;">BREATH WELL!</p>
+          <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px;">BREATHE WELL!</p>
           <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
         </td></tr>
         <tr><td align="center" style="padding-top:28px;">

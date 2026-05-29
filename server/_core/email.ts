@@ -122,7 +122,7 @@ export async function sendeWillkommensEmail(user: {
               </table>
               <!-- Signatur -->
               <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px 0;">Jedenfalls freue ich mich sehr über dein Dabei sein.</p>
-              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATHE WELL!</p>
               <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
             </td>
           </tr>
@@ -207,7 +207,7 @@ export async function sendeStimmklangKaufBestaetigung(user: {
               <p style="margin:0 0 28px 0;">
                 <a href="https://www.kiich.de/stimmklang-start" style="display:inline-block;background:#e85d04;color:#ffffff;text-decoration:none;padding:14px 28px;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;">JETZT STARTEN</a>
               </p>
-              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATHE WELL!</p>
               <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
             </td>
           </tr>
@@ -446,7 +446,7 @@ export async function sendeRaum36KaufBestaetigung(user: {
                 </tr>
               </table>
               <p style="font-size:15px;line-height:1.8;color:#aaa;margin:0 0 8px 0;">Ich freue mich sehr, dass du dabei bist.</p>
-              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATH WELL!</p>
+              <p style="font-size:16px;font-weight:700;color:#ffffff;letter-spacing:2px;margin:0 0 4px 0;">BREATHE WELL!</p>
               <p style="font-size:14px;color:#888;margin:0;">Thomas</p>
             </td>
           </tr>
