@@ -1,11 +1,23 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
-import { ArrowLeft, Loader2, Mail, Mic, CheckCircle, Clock, User, BarChart2 } from "lucide-react";
+import { ArrowLeft, Loader2, Mail, Mic, CheckCircle, Clock, User, BarChart2, Unlock } from "lucide-react";
 import { Link } from "wouter";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function AdminStimmklang() {
   const { user, loading, isAuthenticated } = useAuth();
   const { data: anfragen, isLoading: laedtAnfragen } = trpc.stimmklang.adminBeratungsanfragen.useQuery();
+  const [freischaltEmail, setFreischaltEmail] = useState("");
+  const freischaltenMutation = trpc.raum36.adminFreischaltenStimmklang.useMutation({
+    onSuccess: (data) => {
+      toast.success(`Zugang freigeschaltet für ${data.userName ?? data.userEmail} – Bestätigungs-E-Mail wurde versendet.`);
+      setFreischaltEmail("");
+    },
+    onError: (err) => {
+      toast.error(err.message);
+    },
+  });
   const { data: messungen, isLoading: laedtMessungen } = trpc.stimmklang.adminMessungen.useQuery();
   const { data: finaleProfile, isLoading: laedtProfile } = trpc.stimmklang.adminFinaleProfile.useQuery();
 
@@ -71,6 +83,44 @@ export default function AdminStimmklang() {
               {laedtMessungen ? "…" : eindeutigeNutzer.length}
             </div>
             <div className="text-xs text-zinc-500">Nutzer haben gemessen</div>
+          </div>
+        </div>
+
+        {/* Manueller Freischalt-Button */}
+        <div className="bg-zinc-900/50 border border-orange-500/20 rounded-xl p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Unlock className="w-4 h-4 text-orange-400" />
+            <h2 className="text-sm font-mono tracking-widest text-orange-400/80 uppercase">Manuell freischalten</h2>
+          </div>
+          <p className="text-zinc-500 text-xs mb-4 leading-relaxed">
+            Schaltet die Stimmklanganalyse für einen User ohne Stripe-Zahlung frei (Testpersonen, Einladungen, Tausch).
+            Der User erhält automatisch die Bestätigungs-E-Mail mit dem Zugangslink.
+          </p>
+          <div className="flex gap-3">
+            <input
+              type="email"
+              value={freischaltEmail}
+              onChange={(e) => setFreischaltEmail(e.target.value)}
+              placeholder="E-Mail-Adresse des Users"
+              className="flex-1 bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-orange-500/60 transition-colors"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && freischaltEmail.trim()) {
+                  freischaltenMutation.mutate({ userEmail: freischaltEmail.trim() });
+                }
+              }}
+            />
+            <button
+              onClick={() => freischaltenMutation.mutate({ userEmail: freischaltEmail.trim() })}
+              disabled={!freischaltEmail.trim() || freischaltenMutation.isPending}
+              className="flex items-center gap-2 bg-orange-600 hover:bg-orange-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold px-5 py-2.5 rounded-lg transition-colors"
+            >
+              {freischaltenMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Unlock className="w-4 h-4" />
+              )}
+              Freischalten
+            </button>
           </div>
         </div>
 

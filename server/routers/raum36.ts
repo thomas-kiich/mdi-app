@@ -740,6 +740,73 @@ export const raum36Router = router({
   }),
 
   /**
+   * Admin: Stimmklanganalyse manuell freischalten (ohne Stripe-Zahlung)
+   */
+  adminFreischaltenStimmklang: protectedProcedure
+    .input(z.object({ userEmail: z.string().email() }))
+    .mutation(async ({ ctx, input }) => {
+      if (ctx.user.role !== "admin") {
+        throw new TRPCError({ code: "FORBIDDEN" });
+      }
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR" });
+
+      // User per E-Mail suchen
+      const userRows = await db
+        .select({ id: users.id, name: users.name, email: users.email })
+        .from(users)
+        .where(eq(users.email, input.userEmail))
+        .limit(1);
+
+      if (userRows.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Kein User mit E-Mail "${input.userEmail}" gefunden.`,
+        });
+      }
+
+      const targetUser = userRows[0];
+
+      // Bestehenden Eintrag prüfen
+      const existing = await db
+        .select()
+        .from(stimmklanganalyseOrders)
+        .where(eq(stimmklanganalyseOrders.userId, targetUser.id))
+        .limit(1);
+
+      if (existing.length > 0 && existing[0].status === "paid") {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: `${targetUser.name ?? targetUser.email} hat bereits einen aktiven Zugang.`,
+        });
+      }
+
+      if (existing.length > 0) {
+        await db
+          .update(stimmklanganalyseOrders)
+          .set({ status: "paid", paidAt: new Date() })
+          .where(eq(stimmklanganalyseOrders.userId, targetUser.id));
+      } else {
+        await db.insert(stimmklanganalyseOrders).values({
+          userId: targetUser.id,
+          status: "paid",
+          paidAt: new Date(),
+        });
+      }
+
+      // Bestätigungs-E-Mail an User senden
+      try {
+        const { sendeStimmklangKaufBestaetigung } = await import("../_core/email");
+        await sendeStimmklangKaufBestaetigung({ name: targetUser.name, email: targetUser.email });
+      } catch (emailErr: any) {
+        console.error("[AdminFreischaltung] E-Mail fehlgeschlagen:", emailErr.message);
+      }
+
+      console.log(`[AdminFreischaltung] Stimmklang freigeschaltet für userId=${targetUser.id} (${targetUser.email}) durch Admin ${ctx.user.id}`);
+      return { success: true, userName: targetUser.name, userEmail: targetUser.email };
+    }),
+
+  /**
    * Admin: Sendungshistorie abrufen (neueste zuerst)
    */
   adminGetSendungshistorie: protectedProcedure.query(async ({ ctx }) => {
