@@ -565,13 +565,7 @@ export default function StimmklangWizard() {
                 {mdi.metaphor || "–"}
               </h1>
               <p className="text-xl text-orange-500 font-medium">{mdi.frequency} Hz (Lebensklang)</p>
-              {wurzelklangMdi && (
-                <div className="inline-block bg-zinc-900/80 border border-zinc-800 rounded-xl p-4 mt-4">
-                  <p className="text-sm text-zinc-400 uppercase tracking-widest mb-1">Dein Wurzelklang</p>
-                  <p className="text-2xl font-bold text-white">{wurzelklangMdi.colorName}</p>
-                  <p className="text-md text-orange-400">{wurzelklangMdi.frequency} Hz</p>
-                </div>
-              )}
+
             </div>
 
             <div className="grid md:grid-cols-2 gap-8 mb-12">
