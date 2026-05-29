@@ -319,8 +319,13 @@ export default function AdminStimmklang() {
                         <User className="w-4 h-4 text-purple-400" />
                       </div>
                       <div>
-                        <div className="text-xs text-zinc-500 font-mono">User-ID {String(profil.userId).slice(0, 8)}…</div>
                         <div className="text-sm font-semibold text-white">
+                          {profil.userName ?? `User ${String(profil.userId).slice(0, 6)}…`}
+                        </div>
+                        {profil.userEmail && (
+                          <a href={`mailto:${profil.userEmail}`} className="text-xs text-orange-400 hover:underline">{profil.userEmail}</a>
+                        )}
+                        <div className="text-xs text-purple-300 mt-0.5">
                           {profil.grundtonMetapher ?? `MDI-Typ ${profil.grundtonMdiId}`}
                         </div>
                       </div>
@@ -395,7 +400,8 @@ export default function AdminStimmklang() {
                 <thead>
                   <tr className="border-b border-zinc-800">
                     <th className="text-left text-zinc-500 font-normal pb-3 pr-4">Datum</th>
-                    <th className="text-left text-zinc-500 font-normal pb-3 pr-4">User-ID</th>
+                    <th className="text-left text-zinc-500 font-normal pb-3 pr-4">Name</th>
+                    <th className="text-left text-zinc-500 font-normal pb-3 pr-4">E-Mail</th>
                     <th className="text-left text-zinc-500 font-normal pb-3 pr-4">Tag</th>
                     <th className="text-left text-zinc-500 font-normal pb-3 pr-4">MDI-Typ</th>
                     <th className="text-left text-zinc-500 font-normal pb-3 pr-4">Lichtklangcharakter</th>
@@ -406,7 +412,12 @@ export default function AdminStimmklang() {
                   {messungen.map((m) => (
                     <tr key={m.id} className="border-b border-zinc-900 hover:bg-zinc-900/30 transition-colors">
                       <td className="py-3 pr-4 text-zinc-400">{m.datumISO}</td>
-                      <td className="py-3 pr-4 text-zinc-600 font-mono">{String(m.userId).slice(0, 8)}…</td>
+                      <td className="py-3 pr-4 text-white font-medium">{m.userName ?? `User ${String(m.userId).slice(0, 6)}…`}</td>
+                      <td className="py-3 pr-4">
+                        {m.userEmail ? (
+                          <a href={`mailto:${m.userEmail}`} className="text-orange-400 hover:underline">{m.userEmail}</a>
+                        ) : <span className="text-zinc-600">–</span>}
+                      </td>
                       <td className="py-3 pr-4">
                         <span
                           className="px-2 py-0.5 rounded-full text-xs font-bold"

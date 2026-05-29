@@ -7,7 +7,7 @@
 import { z } from "zod";
 import { protectedProcedure, adminProcedure, router } from "../_core/trpc";
 import { getDb } from "../db";
-import { stimmklangMessungen, stimmklangBeratungsanfragen } from "../../drizzle/schema";
+import { stimmklangMessungen, stimmklangBeratungsanfragen, users } from "../../drizzle/schema";
 import { eq, and } from "drizzle-orm";
 import { sendEmail } from "../_core/email";
 
@@ -331,7 +331,23 @@ export const stimmklangRouter = router({
     const db = await getDb();
     if (!db) throw new Error("DB nicht verfügbar");
 
-    const alleMessungen = await db.select().from(stimmklangMessungen);
+    const alleMessungen = await db
+      .select({
+        id: stimmklangMessungen.id,
+        userId: stimmklangMessungen.userId,
+        dominanteMdiId: stimmklangMessungen.dominanteMdiId,
+        dominanteFrequenz: stimmklangMessungen.dominanteFrequenz,
+        metapher: stimmklangMessungen.metapher,
+        farbHex: stimmklangMessungen.farbHex,
+        wurzelklangMdiId: stimmklangMessungen.wurzelklangMdiId,
+        mdiVerteilung: stimmklangMessungen.mdiVerteilung,
+        datumISO: stimmklangMessungen.datumISO,
+        createdAt: stimmklangMessungen.createdAt,
+        userName: users.name,
+        userEmail: users.email,
+      })
+      .from(stimmklangMessungen)
+      .leftJoin(users, eq(stimmklangMessungen.userId, users.id));
 
     // Messungen nach User gruppieren
     const userMap = new Map<number, typeof alleMessungen>();
@@ -342,6 +358,8 @@ export const stimmklangRouter = router({
 
     const ergebnisse: Array<{
       userId: number;
+      userName: string | null;
+      userEmail: string | null;
       gesamtTage: number;
       grundtonMdiId: number;
       grundtonMetapher: string | null;
@@ -404,6 +422,8 @@ export const stimmklangRouter = router({
 
       ergebnisse.push({
         userId,
+        userName: eindeutigeTage[0]?.userName ?? null,
+        userEmail: eindeutigeTage[0]?.userEmail ?? null,
         gesamtTage: eindeutigeTage.length,
         grundtonMdiId: grundton.mdiId,
         grundtonMetapher: grundtonMessung?.metapher ?? null,
@@ -444,8 +464,23 @@ export const stimmklangRouter = router({
     if (!db) throw new Error("DB nicht verfügbar");
 
     const messungen = await db
-      .select()
-      .from(stimmklangMessungen);
+      .select({
+        id: stimmklangMessungen.id,
+        userId: stimmklangMessungen.userId,
+        dominanteMdiId: stimmklangMessungen.dominanteMdiId,
+        dominanteFrequenz: stimmklangMessungen.dominanteFrequenz,
+        metapher: stimmklangMessungen.metapher,
+        farbHex: stimmklangMessungen.farbHex,
+        wurzelklangMdiId: stimmklangMessungen.wurzelklangMdiId,
+        mdiVerteilung: stimmklangMessungen.mdiVerteilung,
+        datumISO: stimmklangMessungen.datumISO,
+        tagNummer: stimmklangMessungen.tagNummer,
+        createdAt: stimmklangMessungen.createdAt,
+        userName: users.name,
+        userEmail: users.email,
+      })
+      .from(stimmklangMessungen)
+      .leftJoin(users, eq(stimmklangMessungen.userId, users.id));
 
     messungen.sort((a, b) => {
       const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
